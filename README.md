@@ -14,11 +14,13 @@ The guiding principal we have for this project is to focus on providing a soluti
 Additionally, the solution is desired to be easy to use and to support that is built with support for [Github Codespaces](https://github.com/features/codespaces) along with the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/).
 
 
-## Features
+## Setup
 
-This solution uses features of Azure that are in Public Preview and might require some features to be registered for use.
+__Features__
 
-Register the AzureServiceMeshPreview feature flag by using the az feature register command:
+This solution makes use of features in Azure that are in Public Preview and might require some features to be registered for use.
+
+Register the _AzureServiceMeshPreview_ feature flag by using the az feature register command:
 
 ```bash
 az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
@@ -36,7 +38,11 @@ When the status reflects Registered, refresh the registration of the Microsoft.C
 az provider register --namespace Microsoft.ContainerService
 ```
 
-## Setup
+This solution uses Resource Group Scoped Deployments which is an Alpha Feature for the Azure Developer CLI.
+
+```bash
+azd config set alpha.resourceGroupDeployments on   # Enable Alpha Feature
+```
 
 __Login__
 
@@ -44,7 +50,7 @@ Log into the Azure CLI from a command line and set the subscription.
 If running with windows ensure that Azure Powershell is connected as well.
 
 ```bash
-azd auth login  # (Optional) --use-device-code
+azd auth login
 ```
 
 __Environment Variables__
@@ -59,9 +65,13 @@ An environment must be created using the following environment variables.
 | :-------------------- | :-------------------------------------- |
 | AZURE_SUBSCRIPTION_ID | The Azure Subscription _(GUID)_         |
 | AZURE_LOCATION        | The Azure Region                        |
+| AZURE_CLIENT_ID       | Azure AD Application Client Id _(GUID)_ |
 
 ```bash
 azd init -e dev
+
+APP_NAME=                                          # <-- <your_ad_application_name>
+azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
 ```
 
 ### Workspace
@@ -73,6 +83,9 @@ The developer workspace is brought online using the azure developer cli
 | Start  | `azd up`                   |
 | Stop   | `azd down --purge --force` |
 
+
+![[0]][0]
+_Architecture Diagram_
 
 ## Contributing
 
@@ -95,3 +108,5 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+[0]: docs/images/architecture.png "Architecture Diagram"

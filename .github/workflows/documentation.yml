@@ -18,7 +18,7 @@ jobs:
 
       # https://github.com/crate-ci/typos
       - name: Check spelling of markdown files
-        uses: crate-ci/typos@1.17.1
+        uses: crate-ci/typos@master
         with:
           files: ./*.md
           config: ./.github/_typos.toml

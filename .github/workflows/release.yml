@@ -1,0 +1,56 @@
+name: Infra - Release
+
+on:
+  workflow_dispatch:
+
+env:
+  CLI_VERSION: latest
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Github Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+          environment: azurecloud
+          allow-no-subscriptions: false
+
+      - name: Github Checkin
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: "Initialize Software Install"
+          add: "."
+
+      - name: Build ARM Template
+        uses: Azure/bicep-build-action@v1.0.0
+        with:
+          bicepFilePath: bicep/main.bicep
+          outputFilePath: azuredeploy.json
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.40.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+
+      - name: Find Latest Tag
+        uses: oprypin/find-latest-tag@v1.1.0
+        id: latest
+        with:
+          repository: ${{ github.repository }}
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.latest.outputs.tag }}
+          artifacts: "azuredeploy.json"

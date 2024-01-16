@@ -173,7 +173,7 @@ jobs:
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
           LOCATION: ${{ steps.params.outputs.REGION }}
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
@@ -194,7 +194,7 @@ jobs:
         if: github.event.inputs.doVerifySteps == 'true'
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
@@ -236,7 +236,7 @@ jobs:
           }
 
       - name: Create Parameter file imperative override string
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         id: imperitiveparams
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
@@ -248,7 +248,7 @@ jobs:
             echo "##vso[task.setvariable variable=PARAMOVERRIDES;isOutput=true]${PARAMOVERRIDES}"
 
       - name: Validate Infrastructure deployment
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
         with:
@@ -260,7 +260,7 @@ jobs:
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
       - name: What If
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         id: whatif
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
@@ -345,7 +345,7 @@ jobs:
 
       - name: Deploy Infrastructure
         id: deployAks
-        uses: Azure/cli@1.0.9
+        uses: azure/CLI@v1
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |

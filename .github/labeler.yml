@@ -1,13 +1,13 @@
-Documentation:
-- changed-files:
-  - any-glob-to-any-file: ['docs/**', '**/*.md']
-
 Infrastructure:
-- changed-files:
-  - any-glob-to-any-file: ['bicep/**']
-  - all-globs-to-all-files: '!bicep/*.md'
+  - bicep/main.js
+  - bicep/private/modules/**/*
+
+# Add 'documentation' label to any change to *.md files
+Documentation:
+  - "*.md"
+  - "docs/*.md"
 
 Software:
-- changed-files:
-  - any-glob-to-any-file: ['software/**', 'stamp/**', 'charts/**']
-  - all-globs-to-all-files: ['!software/*.md', '!stamp/*.md', '!charts/*.md']
+  - software/**/*
+  - stamp/**/*
+  - charts/**/*

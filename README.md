@@ -4,6 +4,76 @@
 
 This project is intended to provide a simple way of providing a mechanism to develop for OSDU using the Azure Cloud.
 
+## Project Principals
+
+The guiding principal we have for this project is to focus on providing a solution to allow for an easy way to develop for OSDU using the Azure cloud. It is not intended to support any kind of a production scenario and no support for this solution is provided.  It is built with the following 2 pillars of the [Azure Well-Architected-Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework) kept in mind.
+
+1. Cost Optimization -- A cost optimized solution with cost in mind but accepting the tradeoff of security.
+2. Security -- The intent is to provide a feature enabled solution to increase levels of security as best as possible.
+
+Additionally, the solution is desired to be easy to use and to support that is built with support for [Github Codespaces](https://github.com/features/codespaces) along with the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/).
+
+
+## Features
+
+This solution uses features of Azure that are in Public Preview and might require some features to be registered for use.
+
+Register the AzureServiceMeshPreview feature flag by using the az feature register command:
+
+```bash
+az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
+```
+
+It takes a few minutes for the feature to register. Verify the registration status by using the az feature show command:
+
+```bash
+az feature show --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
+```
+
+When the status reflects Registered, refresh the registration of the Microsoft.ContainerService resource provider by using the az provider register command:
+
+```bash
+az provider register --namespace Microsoft.ContainerService
+```
+
+## Setup
+
+__Login__
+
+Log into the Azure CLI from a command line and set the subscription. 
+If running with windows ensure that Azure Powershell is connected as well.
+
+```bash
+azd auth login  # (Optional) --use-device-code
+```
+
+__Environment Variables__
+
+An environment must be created using the following environment variables.
+
+**Environment Variables**
+
+An environment must be created using the following environment variables.
+
+| Variable              | Purpose                                 |
+| :-------------------- | :-------------------------------------- |
+| AZURE_SUBSCRIPTION_ID | The Azure Subscription _(GUID)_         |
+| AZURE_LOCATION        | The Azure Region                        |
+
+```bash
+azd init -e dev
+```
+
+### Workspace
+
+The developer workspace is brought online using the azure developer cli
+
+| Action | Command                    |
+| :----- | :------------------------- |
+| Start  | `azd up`                   |
+| Stop   | `azd down --purge --force` |
+
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

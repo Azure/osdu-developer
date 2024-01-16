@@ -1,0 +1,34 @@
+{
+    "analyzers": {
+      "core": {
+        "enabled": true,
+        "rules": {
+          "no-hardcoded-env-urls": {
+            "level": "off"
+          },
+          "explicit-values-for-loc-params": {
+            "level": "off"
+          },
+          "no-unnecessary-dependson": {
+            "level": "off"
+          },
+          "no-unused-params": {
+            "level": "warning"
+          },
+          "no-unused-vars": {
+            "level": "warning"
+          },
+          "prefer-interpolation": {
+            "level": "warning"
+          },
+          "secure-parameter-default": {
+            "level": "warning"
+          },
+          "simplify-interpolation": {
+            "level": "warning"
+          }
+        }
+      }
+    }
+  }
+  

@@ -50,11 +50,11 @@ The first, and often easiest activity is to test using the service. Attempting t
 
 This action will run a Validate Step to ensure any changes to bicep is acceptable. It also will trigger a Standards Check that is non blocking in order to determine if the solution passes the PSRule checks.
 
-### Build
+### Infra - Build
 
+This action ensures that the bicep can build properly.
 
-
-### Release
+### Infra - Release
 
 The release action will run whenever a release is created to ensure we have a copy of the ARM template from that release that could then be used by other systems as necessary.
 

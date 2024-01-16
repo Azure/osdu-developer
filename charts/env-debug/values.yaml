@@ -1,0 +1,42 @@
+# This file contains the essential configs for the osdu on azure helm chart
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+################################################################################
+# Specify the azure environment specific values
+#
+# azure:
+#   enabled: true
+#   tenant: <tenant_id>
+#   subscription: <subscription_id>
+#   resourcegroup: <central_resource_group>
+#   identity: <identity_name>
+#   identity_id: <identity_id>
+#   keyvault: <keyvault_name>
+#   appid: <client_id>
+
+env:
+- name: MESSAGE
+  value: Hello World!
+- name: AZURE_TENANT_ID
+  secret:
+    name: active-directory
+    key: tenantid
+- name: WORKSPACE_ID
+  secret:
+    name: central-logging
+    key: log-workspace-id

@@ -1,0 +1,17 @@
+{{- $serviceType := .Values.service.type }}
+{{- $servicePort := .Values.service.port }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "env-debug.fullname" . }}
+  labels:
+    {{- include "env-debug.labels" . | nindent 4 }}
+spec:
+  type: {{ $serviceType }}
+  ports:
+    - port: {{ $servicePort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "env-debug.selectorLabels" . | nindent 4 }}

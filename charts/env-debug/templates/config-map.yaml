@@ -1,0 +1,8 @@
+{{- $namespace := .Release.Namespace }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "env-debug.fullname" . }}-config
+  namespace: {{ $namespace }}
+data:
+  MESSAGE: "From config-map.yaml"

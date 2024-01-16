@@ -1,13 +1,11 @@
-Infrastructure:
-  - bicep/main.js
-  - bicep/private/modules/**/*
-
-# Add 'documentation' label to any change to *.md files
 Documentation:
-  - "*.md"
-  - "docs/*.md"
+- changed-files:
+  - any-glob-to-any-file:  ['docs/*', '**/*.md']
 
 Software:
-  - software/**/*
-  - stamp/**/*
-  - charts/**/*
+- changed-files:
+  - any-glob-to-any-file:  ['software/**/*', 'stamp/**/*', 'charts/**/*']
+
+Infrastructure:
+- changed-files:
+  - any-glob-to-any-file:  ['bicep/**/*', 'infrastructure/**/*']

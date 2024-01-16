@@ -1,13 +1,11 @@
 Documentation:
 - changed-files:
-  - any-glob-to-any-file: ['docs/**', '**/*.md']
-
-Infrastructure:
-- changed-files:
-  - any-glob-to-any-file: ['bicep/**']
-  - all-globs-to-all-files: '!bicep/*.md'
+  - any-glob-to-any-file:  ['docs/*', '**/*.md']
 
 Software:
 - changed-files:
-  - any-glob-to-any-file: ['software/**', 'stamp/**', 'charts/**']
-  - all-globs-to-all-files: ['!software/*.md', '!stamp/*.md', '!charts/*.md']
+  - any-glob-to-any-file:  ['software/**/*', 'stamp/**/*', 'charts/**/*']
+
+Infrastructure:
+- changed-files:
+  - any-glob-to-any-file:  ['bicep/**/*', 'infrastructure/**/*']

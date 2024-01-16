@@ -28,7 +28,7 @@ on:
     inputs:
       ResourceGroup:
         description: "Which Resource Group to deploy to"
-        default: "osdudeveloper-integration"
+        default: "gh-osdu-developer"
         type: string
         required: false
       region:
@@ -130,7 +130,7 @@ jobs:
       - name: Parameter Value Augmentation
         id: params
         env:
-          DEFAULTRGNAME: osdudeveloper-integration
+          DEFAULTRGNAME: gh-osdu-developer
         run: |
           if [ -z "${{ github.event.inputs.region }}" ]
           then

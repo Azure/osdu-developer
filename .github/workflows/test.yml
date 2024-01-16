@@ -277,7 +277,7 @@ jobs:
                 echo "The WhatIf json file was created"
             fi
             cat $WHATIFPATH
-            echo "edgeSuccess=true >> $GITHUB_OUTPUT
+            echo "edgeSuccess=true" >> $GITHUB_OUTPUT
 
       - name: What If Analysis Output - Parse output
         if: github.event.inputs.doVerifySteps == 'true'

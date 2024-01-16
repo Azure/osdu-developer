@@ -141,15 +141,15 @@ jobs:
             REGION="${{ github.event.inputs.region }}"
           fi
           echo $REGION
-          echo "##vso[task.setvariable variable=REGION;isOutput=true]${REGION}"
+          echo "::set-output name=REGION::$REGION"
           if [ -z "${{ github.event.inputs.ResourceGroup }}" ]
           then
             echo "ResourceGroup parameter not available through GitHub event data, setting to default"
             echo $DEFAULTRGNAME
-            echo "##vso[task.setvariable variable=DEFAULTRGNAME;isOutput=true]${DEFAULTRGNAME}"
+            echo "::set-output name=RESOURCEGROUP::$DEFAULTRGNAME"
           else
             echo "Resource Group parameter found in GitHub event (${{ github.event.inputs.ResourceGroup }})"
-            echo "##vso[task.setvariable variable=RESOURCEGROUP;isOutput=true]${RESOURCEGROUP}"
+            echo "::set-output name=RESOURCEGROUP::${{ github.event.inputs.ResourceGroup }}"
           fi
 
       - name: Azure Login
@@ -204,7 +204,7 @@ jobs:
             echo "Active deployments : $RUNCOUNT"
             echo 'Active deployment list'
             az deployment group list -g $RESOURCE_GROUP --query "[?properties.provisioningState=='Running'].[properties.provisioningState, name]"
-            echo "##vso[task.setvariable variable=RUNCOUNT;isOutput=true]${RUNCOUNT}"
+            echo "::set-output name=RUNCOUNT::$RUNCOUNT" #outputting for condition
 
       - name: Verify AKS Preview Features are available in target Subscription
         if: github.event.inputs.doVerifySteps == 'true'
@@ -245,7 +245,7 @@ jobs:
           inlineScript: |
             PARAMOVERRIDES="location=${{ steps.params.outputs.REGION }}"
             echo $PARAMOVERRIDES
-            echo "##vso[task.setvariable variable=PARAMOVERRIDES;isOutput=true]${PARAMOVERRIDES}"
+            echo "::set-output name=PARAMOVERRIDES::$PARAMOVERRIDES"
 
       - name: Validate Infrastructure deployment
         uses: azure/CLI@v1
@@ -277,7 +277,7 @@ jobs:
                 echo "The WhatIf json file was created"
             fi
             cat $WHATIFPATH
-            echo "##vso[task.setvariable variable=edgeSuccess;isOutput=true]true"
+            echo "::set-output name=edgeSuccess::true"
 
       - name: What If Analysis Output - Parse output
         if: github.event.inputs.doVerifySteps == 'true'
@@ -356,7 +356,7 @@ jobs:
 
             #outputs
             AKS_NAME=$(az deployment group show -n $DEPNAME -g $RESOURCE_GROUP --query "properties.outputs.aksName.value" -o tsv)
-            echo "##vso[task.setvariable variable=AKS_NAME;isOutput=true]${AKS_NAME}"
+            echo "::set-output name=AKS_NAME::$AKS_NAME"
 
   Verify:
     name: Verify

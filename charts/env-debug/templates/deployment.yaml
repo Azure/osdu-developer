@@ -1,0 +1,116 @@
+{{- $namespace := .Release.Namespace }}
+{{- $nodePool := .Values.nodePool}}
+{{- $toleration := .Values.toleration}}
+{{- $affinity := .Values.affinity}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "env-debug.fullname" . }}
+  labels:
+    {{- include "env-debug.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "env-debug.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "env-debug.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if $nodePool }}
+      nodeSelector:
+        nodepool: {{ $nodePool }}
+      {{- end }}
+      {{- if $affinity }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if $affinity.zones }}
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                {{- range $affinity.zones }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+              {{- if $affinity.pools }}
+              - key: agentpool
+                operator: In
+                values:
+                {{- range $affinity.pools }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+      {{- end }}
+      {{- if $toleration }}
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: {{ $toleration }}
+        effect: "NoSchedule"
+      {{- end }}
+    {{- if .Values.azure.enabled }}
+      volumes:
+        - name: azure-keyvault
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: azure-keyvault
+        - name: azure-share
+          persistentVolumeClaim:
+            claimName: {{ include "env-debug.fullname" . }}-pvc
+    {{- end }}
+      containers:
+        - image: gcr.io/kuar-demo/kuard-amd64:1
+          name: kuard
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          {{- if .Values.azure.enabled }}
+          volumeMounts:
+            - name: azure-keyvault
+              mountPath: "/mnt/azure-keyvault"
+              readOnly: true
+            - name: azure-share
+              mountPath: "/mnt/azure-share"
+              readOnly: true
+          {{- end }}
+          env:
+            - name: STATIC_ENV_VALUE
+              value: "From Deployment.yaml"
+            - name: CONFIG_ENV_VALUE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "env-debug.fullname" . }}-config
+                  key: MESSAGE
+          {{- if .Values.env }}
+          {{- range .Values.env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value | quote }}
+              {{- end }}
+              {{- if .config }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "env-debug.fullname" . }}-config
+                  key: {{ .config.key | quote }}
+              {{- end }}
+              {{- if .secret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secret.name | quote }}
+                  key: {{ .secret.key | quote }}
+              {{- end }}
+          {{- end }}
+          {{- end }}

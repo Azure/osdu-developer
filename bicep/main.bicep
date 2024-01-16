@@ -6,6 +6,13 @@ param location string = resourceGroup().location
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool = false
 
+/////////////////
+// Settings Blade 
+/////////////////
+@description('Specify the AD Application Client Id.')
+param applicationClientId string
+
+output applicationClientId string = applicationClientId
 
 //*****************************************************************//
 //  Common Section                                                 //

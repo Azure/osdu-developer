@@ -57,7 +57,7 @@ param podSubnetAddressPrefix string = '10.1.19.0/20'
 @description('Feature Flag to Enable VPN Gateway Functionality')
 param enableVpnGateway bool = false
 
-@description('Feature Flag to Enable VPN Gateway Functionality')
+@description('Shared Key for VPN Gateway')
 @secure()
 param vpnSharedKey string = ''
 

@@ -1,1 +1,0 @@
-# Gitops Platform Configuration

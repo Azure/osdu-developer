@@ -1,0 +1,15 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: elastic-operator
+  namespace: elastic-system
+spec:
+  interval: 5m
+  url: https://github.com/elastic/cloud-on-k8s
+  ref:
+    branch: "2.5"
+  ignore: |
+    # exclude all
+    /*
+    !/deploy/eck-operator

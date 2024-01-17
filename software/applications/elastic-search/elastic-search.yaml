@@ -1,0 +1,117 @@
+# This sets up an Elasticsearch cluster with 3 nodes.
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch-ha
+  namespace: elastic-search
+spec:
+  version: 8.5.3
+  nodeSets:
+    - name: master
+      count: 3
+      config:
+        node:
+          roles: ["master"]
+          store.allow_mmap: false
+      podTemplate:
+        spec:
+          tolerations:
+            - effect: NoSchedule
+              key: app
+              value: "elasticsearch"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: agentpool
+                        operator: In
+                        values:
+                          - espoolz1
+                          - espoolz2
+                          - espoolz3
+                  - matchExpressions:
+                      - key: topology.kubernetes.io/zone
+                        operator: In
+                        values:
+                          - southcentralus-1 # THIS DEPENDS ON LOCATION
+                          - southcentralus-2 # THIS DEPENDS ON LOCATION
+                          - southcentralus-3 # THIS DEPENDS ON LOCATION
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+
+    - name: coordinating
+      count: 3
+      config:
+        node:
+          roles: []
+          store.allow_mmap: false
+      podTemplate:
+        spec:
+          tolerations:
+            - effect: NoSchedule
+              key: app
+              value: "elasticsearch"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: agentpool
+                        operator: In
+                        values:
+                          - espoolz1
+                          - espoolz2
+                          - espoolz3
+                  - matchExpressions:
+                      - key: topology.kubernetes.io/zone
+                        operator: In
+                        values:
+                          - eastus2-1 # THIS DEPENDS ON LOCATION
+                          - eastus2-2 # THIS DEPENDS ON LOCATION
+                          - eastus2-3 # THIS DEPENDS ON LOCATION
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+
+    - name: data
+      count: 6
+      config:
+        node:
+          roles: ["data"]
+          store.allow_mmap: false
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: es-storageclass
+      podTemplate:
+        spec:
+          tolerations:
+            - effect: NoSchedule
+              key: app
+              value: "elasticsearch"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: agentpool
+                        operator: In
+                        values:
+                          - espoolz1
+                          - espoolz2
+                          - espoolz3
+                  - matchExpressions:
+                      - key: topology.kubernetes.io/zone
+                        operator: In
+                        values:
+                          - eastus2-1 # THIS DEPENDS ON LOCATION
+                          - eastus2-2 # THIS DEPENDS ON LOCATION
+                          - eastus2-3 # THIS DEPENDS ON LOCATION
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"

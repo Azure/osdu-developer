@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic-system
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+    istio-injection: enabled

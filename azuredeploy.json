@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "8345717965934980829"
+      "templateHash": "16869636000797096972"
     }
   },
   "parameters": {
@@ -23,11 +23,171 @@
         "description": "Feature Flag to Enable Telemetry"
       }
     },
+    "applicationClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the AD Application Client Id."
+      }
+    },
+    "clusterIngress": {
+      "type": "string",
+      "defaultValue": "Both",
+      "allowedValues": [
+        "Internal",
+        "External",
+        "Both"
+      ],
+      "metadata": {
+        "description": "The Cluster Ingress Mode"
+      }
+    },
+    "partitions": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "opendes"
+        }
+      ],
+      "metadata": {
+        "description": "List of Data Partitions"
+      }
+    },
+    "clusterSize": {
+      "type": "string",
+      "defaultValue": "CostOptimised",
+      "allowedValues": [
+        "CostOptimised",
+        "Standard",
+        "HighSpec"
+      ],
+      "metadata": {
+        "description": "The Cluster Size"
+      }
+    },
+    "softwareRepository": {
+      "type": "string",
+      "defaultValue": "https://github.com/azure/osdu-developer",
+      "metadata": {
+        "description": "Software GIT Repository URL"
+      }
+    },
+    "softwareBranch": {
+      "type": "string",
+      "defaultValue": "main",
+      "metadata": {
+        "description": "Software GIT Repository Branch"
+      }
+    },
+    "enableBastion": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Feature Flag to Enable Bastion"
+      }
+    },
+    "vmAdminUsername": {
+      "type": "string",
+      "defaultValue": "[if(parameters('enableBastion'), 'azureUser', newGuid())]",
+      "metadata": {
+        "description": "Specifies the name of the administrator account of the virtual machine."
+      }
+    },
+    "vmAdminPasswordOrKey": {
+      "type": "securestring",
+      "defaultValue": "[if(parameters('enableBastion'), '', newGuid())]",
+      "metadata": {
+        "description": "Specifies the SSH Key or password for the virtual machine. SSH key is recommended."
+      }
+    },
+    "bastionSubnetName": {
+      "type": "string",
+      "defaultValue": "AzureBastionSubnet",
+      "metadata": {
+        "description": "New or Existing subnet Name"
+      }
+    },
+    "bastionSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.16.0/24",
+      "metadata": {
+        "description": "Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space."
+      }
+    },
+    "vmSubnetName": {
+      "type": "string",
+      "defaultValue": "VmSubnet",
+      "metadata": {
+        "description": "Specifies the name of the subnet which contains the virtual machine."
+      }
+    },
+    "vmSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.18.0/24",
+      "metadata": {
+        "description": "Specifies the address prefix of the subnet which contains the virtual machine."
+      }
+    },
+    "enableVpnGateway": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Feature Flag to Enable VPN Gateway Functionality"
+      }
+    },
+    "vpnSharedKey": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Shared Key for VPN Gateway"
+      }
+    },
+    "remoteVpnPrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "IP Address of the Remote VPN Gateway"
+      }
+    },
+    "remoteNetworkPrefix": {
+      "type": "string",
+      "defaultValue": "192.168.1.0/24",
+      "metadata": {
+        "description": "IP Address Segment of the Remote Network"
+      }
+    },
+    "gatewaySubnetName": {
+      "type": "string",
+      "defaultValue": "GatewaySubnet",
+      "metadata": {
+        "description": "New or Existing subnet Name"
+      }
+    },
+    "gatewaySubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.17.0/24",
+      "metadata": {
+        "description": "Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space."
+      }
+    },
     "enablePodSubnet": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
         "description": "Feature Flag to Enable a Pod Subnet"
+      }
+    },
+    "podSubnetName": {
+      "type": "string",
+      "defaultValue": "PodSubnet",
+      "metadata": {
+        "description": "New or Existing subnet Name"
+      }
+    },
+    "podSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.19.0/20",
+      "metadata": {
+        "description": "Subnet address prefix"
       }
     },
     "virtualNetworkNewOrExisting": {
@@ -72,90 +232,6 @@
         "description": "Subnet address prefix"
       }
     },
-    "bastionSubnetName": {
-      "type": "string",
-      "defaultValue": "AzureBastionSubnet",
-      "metadata": {
-        "description": "New or Existing subnet Name"
-      }
-    },
-    "bastionSubnetAddressPrefix": {
-      "type": "string",
-      "defaultValue": "10.1.16.0/24",
-      "metadata": {
-        "description": "Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space."
-      }
-    },
-    "gatewaySubnetName": {
-      "type": "string",
-      "defaultValue": "GatewaySubnet",
-      "metadata": {
-        "description": "New or Existing subnet Name"
-      }
-    },
-    "gatewaySubnetAddressPrefix": {
-      "type": "string",
-      "defaultValue": "10.1.17.0/24",
-      "metadata": {
-        "description": "Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space."
-      }
-    },
-    "vmSubnetName": {
-      "type": "string",
-      "defaultValue": "VmSubnet",
-      "metadata": {
-        "description": "Specifies the name of the subnet which contains the virtual machine."
-      }
-    },
-    "vmSubnetAddressPrefix": {
-      "type": "string",
-      "defaultValue": "10.1.18.0/24",
-      "metadata": {
-        "description": "Specifies the address prefix of the subnet which contains the virtual machine."
-      }
-    },
-    "podSubnetName": {
-      "type": "string",
-      "defaultValue": "PodSubnet",
-      "metadata": {
-        "description": "New or Existing subnet Name"
-      }
-    },
-    "podSubnetAddressPrefix": {
-      "type": "string",
-      "defaultValue": "10.1.19.0/20",
-      "metadata": {
-        "description": "Subnet address prefix"
-      }
-    },
-    "enableVpnGateway": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Feature Flag to Enable VPN Gateway Functionality"
-      }
-    },
-    "vpnSharedKey": {
-      "type": "securestring",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Shared Key for VPN Gateway"
-      }
-    },
-    "remoteVpnPrefix": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "IP Address of the Remote VPN Gateway"
-      }
-    },
-    "remoteNetworkPrefix": {
-      "type": "string",
-      "defaultValue": "192.168.1.0/24",
-      "metadata": {
-        "description": "IP Address Segment of the Remote Network"
-      }
-    },
     "enablePrivateLink": {
       "type": "bool",
       "defaultValue": false,
@@ -174,73 +250,11 @@
         "description": "Optional. Customer Managed Encryption Key."
       }
     },
-    "applicationClientId": {
-      "type": "string",
-      "metadata": {
-        "description": "Specify the AD Application Client Id."
-      }
-    },
-    "partitions": {
-      "type": "array",
-      "defaultValue": [
-        {
-          "name": "opendes"
-        }
-      ],
-      "metadata": {
-        "description": "List of Data Partitions"
-      }
-    },
-    "clusterSize": {
-      "type": "string",
-      "defaultValue": "CostOptimised",
-      "allowedValues": [
-        "CostOptimised",
-        "Standard",
-        "HighSpec"
-      ],
-      "metadata": {
-        "description": "The Cluster Size"
-      }
-    },
-    "clusterIngress": {
-      "type": "string",
-      "defaultValue": "Both",
-      "allowedValues": [
-        "Internal",
-        "External",
-        "Both"
-      ],
-      "metadata": {
-        "description": "The Cluster Ingress Mode"
-      }
-    },
     "clusterAdminIds": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "Optional: Specify the AD Users and/or Groups that can manage the cluster."
-      }
-    },
-    "enableBastion": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Feature Flag to Enable Bastion"
-      }
-    },
-    "vmAdminUsername": {
-      "type": "string",
-      "defaultValue": "[if(parameters('enableBastion'), 'azureUser', newGuid())]",
-      "metadata": {
-        "description": "Specifies the name of the administrator account of the virtual machine."
-      }
-    },
-    "vmAdminPasswordOrKey": {
-      "type": "securestring",
-      "defaultValue": "[if(parameters('enableBastion'), '', newGuid())]",
-      "metadata": {
-        "description": "Specifies the SSH Key or password for the virtual machine. SSH key is recommended."
       }
     }
   },
@@ -664,8 +678,8 @@
       },
       "gitops": {
         "name": "flux-system",
-        "url": "https://github.com/azure/osdu-developer",
-        "branch": "aks_update",
+        "url": "[parameters('softwareRepository')]",
+        "branch": "[parameters('softwareBranch')]",
         "components": "./stamp/components",
         "applications": "./stamp/applications"
       },
@@ -698,13 +712,13 @@
   "resources": [
     {
       "type": "Microsoft.Network/virtualWans",
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2023-06-01",
       "name": "[format('{0}-wan', variables('commonLayerConfig').network.name)]",
       "location": "[parameters('location')]"
     },
     {
       "type": "Microsoft.Network/virtualHubs",
-      "apiVersion": "2022-01-01",
+      "apiVersion": "2023-06-01",
       "name": "[format('{0}-hub', variables('commonLayerConfig').network.name)]",
       "location": "[parameters('location')]",
       "properties": {

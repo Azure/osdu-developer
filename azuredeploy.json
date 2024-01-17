@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "17494608709267209629"
+      "templateHash": "15099609505329783468"
     }
   },
   "parameters": {
@@ -17649,7 +17649,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "5023481025050801947"
+              "templateHash": "14862025164983561930"
             }
           },
           "parameters": {
@@ -18367,7 +18367,7 @@
           "resources": [
             {
               "type": "Microsoft.ContainerService/managedClusters",
-              "apiVersion": "2023-09-01",
+              "apiVersion": "2023-10-01",
               "name": "[if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -18486,7 +18486,7 @@
             },
             "aksOidcIssuerUrl": {
               "type": "string",
-              "value": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-09-01').oidcIssuerProfile.issuerURL, '')]"
+              "value": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-10-01').oidcIssuerProfile.issuerURL, '')]"
             },
             "userNodePoolName": {
               "type": "string",
@@ -18502,11 +18502,11 @@
             },
             "privateFQDN": {
               "type": "string",
-              "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-09-01').privateFQDN, '')]"
+              "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-10-01').privateFQDN, '')]"
             },
             "aksPrivateDnsZoneName": {
               "type": "string",
-              "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), join(skip(split(reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-09-01').privateFQDN, '.'), 1), '.'), '')]"
+              "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), join(skip(split(reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-10-01').privateFQDN, '.'), 1), '.'), '')]"
             },
             "aksOidcFedIdentityProperties": {
               "type": "object",
@@ -18514,7 +18514,7 @@
                 "description": "This output can be directly leveraged when creating a ManagedId Federated Identity"
               },
               "value": {
-                "issuer": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-09-01').oidcIssuerProfile.issuerURL, '')]",
+                "issuer": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-10-01').oidcIssuerProfile.issuerURL, '')]",
                 "audiences": [
                   "api://AzureADTokenExchange"
                 ],
@@ -18526,7 +18526,7 @@
               "metadata": {
                 "description": "The name of the managed resource group AKS uses"
               },
-              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-09-01').nodeResourceGroup]"
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-10-01').nodeResourceGroup]"
             },
             "aksResourceId": {
               "type": "string",
@@ -18603,7 +18603,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "15553702140565975041"
+              "templateHash": "2918991882660483195"
             }
           },
           "parameters": {
@@ -18700,7 +18700,7 @@
           "resources": [
             {
               "type": "Microsoft.ContainerService/managedClusters/agentPools",
-              "apiVersion": "2021-10-01",
+              "apiVersion": "2023-10-02-preview",
               "name": "[format('{0}/{1}', parameters('AksName'), parameters('PoolName'))]",
               "properties": {
                 "mode": "User",
@@ -18781,7 +18781,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "15553702140565975041"
+              "templateHash": "2918991882660483195"
             }
           },
           "parameters": {
@@ -18878,7 +18878,7 @@
           "resources": [
             {
               "type": "Microsoft.ContainerService/managedClusters/agentPools",
-              "apiVersion": "2021-10-01",
+              "apiVersion": "2023-10-02-preview",
               "name": "[format('{0}/{1}', parameters('AksName'), parameters('PoolName'))]",
               "properties": {
                 "mode": "User",
@@ -18959,7 +18959,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "15553702140565975041"
+              "templateHash": "2918991882660483195"
             }
           },
           "parameters": {
@@ -19056,7 +19056,7 @@
           "resources": [
             {
               "type": "Microsoft.ContainerService/managedClusters/agentPools",
-              "apiVersion": "2021-10-01",
+              "apiVersion": "2023-10-02-preview",
               "name": "[format('{0}/{1}', parameters('AksName'), parameters('PoolName'))]",
               "properties": {
                 "mode": "User",

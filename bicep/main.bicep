@@ -6,13 +6,104 @@ param location string = resourceGroup().location
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool = false
 
+@description('Specify the AD Application Client Id.')
+param applicationClientId string
+
+@allowed([
+  'Internal'
+  'External'
+  'Both'
+])
+@description('The Cluster Ingress Mode')
+param clusterIngress string = 'Both'
+
+@description('List of Data Partitions')
+param partitions array = [
+  {
+    name: 'opendes'
+  }
+]
+
+@allowed([
+  'CostOptimised'
+  'Standard'
+  'HighSpec'
+])
+@description('The Cluster Size')
+param clusterSize string = 'CostOptimised'
+
+/////////////////
+// Software Blade
+/////////////////
+
+@description('Software GIT Repository URL')
+param softwareRepository string = 'https://github.com/azure/osdu-developer'
+
+@description('Software GIT Repository Branch')
+param softwareBranch string = 'main'
+
+
+/////////////////
+// Bastion Blade
+/////////////////
+
+@description('Feature Flag to Enable Bastion')
+param enableBastion bool = false
+
+@description('Specifies the name of the administrator account of the virtual machine.')
+param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
+
+@description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
+@secure()
+param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
+
+@description('New or Existing subnet Name')
+param bastionSubnetName string = 'AzureBastionSubnet'
+
+@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
+param bastionSubnetAddressPrefix string = '10.1.16.0/24'
+
+@description('Specifies the name of the subnet which contains the virtual machine.')
+param vmSubnetName string = 'VmSubnet'
+
+@description('Specifies the address prefix of the subnet which contains the virtual machine.')
+param vmSubnetAddressPrefix string = '10.1.18.0/24'
 
 
 /////////////////
 // Network Blade 
 /////////////////
+@description('Feature Flag to Enable VPN Gateway Functionality')
+param enableVpnGateway bool = false
+
+@description('Shared Key for VPN Gateway')
+@secure()
+param vpnSharedKey string = ''
+
+@description('IP Address of the Remote VPN Gateway')
+param remoteVpnPrefix string = ''
+
+@description('IP Address Segment of the Remote Network')
+param remoteNetworkPrefix string = '192.168.1.0/24'
+
+@description('New or Existing subnet Name')
+param gatewaySubnetName string = 'GatewaySubnet'
+
+@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
+param gatewaySubnetAddressPrefix string = '10.1.17.0/24'
+
+// --
+
 @description('Feature Flag to Enable a Pod Subnet')
 param enablePodSubnet bool = false
+
+@description('New or Existing subnet Name')
+param podSubnetName string = 'PodSubnet'
+
+@description('Subnet address prefix')
+param podSubnetAddressPrefix string = '10.1.19.0/20'
+
+// --
 
 @description('Boolean indicating whether the VNet is new or existing')
 param virtualNetworkNewOrExisting string = 'new'
@@ -32,44 +123,6 @@ param aksSubnetName string = 'ClusterSubnet'
 @description('Subnet address prefix')
 param aksSubnetAddressPrefix string = '10.1.0.0/20'
 
-@description('New or Existing subnet Name')
-param bastionSubnetName string = 'AzureBastionSubnet'
-
-@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
-param bastionSubnetAddressPrefix string = '10.1.16.0/24'
-
-@description('New or Existing subnet Name')
-param gatewaySubnetName string = 'GatewaySubnet'
-
-@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
-param gatewaySubnetAddressPrefix string = '10.1.17.0/24'
-
-@description('Specifies the name of the subnet which contains the virtual machine.')
-param vmSubnetName string = 'VmSubnet'
-
-@description('Specifies the address prefix of the subnet which contains the virtual machine.')
-param vmSubnetAddressPrefix string = '10.1.18.0/24'
-
-@description('New or Existing subnet Name')
-param podSubnetName string = 'PodSubnet'
-
-@description('Subnet address prefix')
-param podSubnetAddressPrefix string = '10.1.19.0/20'
-
-@description('Feature Flag to Enable VPN Gateway Functionality')
-param enableVpnGateway bool = false
-
-@description('Shared Key for VPN Gateway')
-@secure()
-param vpnSharedKey string = ''
-
-@description('IP Address of the Remote VPN Gateway')
-param remoteVpnPrefix string = ''
-
-@description('IP Address Segment of the Remote Network')
-param remoteNetworkPrefix string = '192.168.1.0/24'
-
-
 
 /////////////////
 // Security Blade 
@@ -84,55 +137,8 @@ param cmekConfiguration object = {
   identityId: ''
 }
 
-
-
-/////////////////
-// Settings Blade 
-/////////////////
-@description('Specify the AD Application Client Id.')
-param applicationClientId string
-
-@description('List of Data Partitions')
-param partitions array = [
-  {
-    name: 'opendes'
-  }
-]
-
-@allowed([
-  'CostOptimised'
-  'Standard'
-  'HighSpec'
-])
-@description('The Cluster Size')
-param clusterSize string = 'CostOptimised'
-
-@allowed([
-  'Internal'
-  'External'
-  'Both'
-])
-@description('The Cluster Ingress Mode')
-param clusterIngress string = 'Both'
-
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array = []
-
-
-
-/////////////////
-// Bastion Blade
-/////////////////
-
-@description('Feature Flag to Enable Bastion')
-param enableBastion bool = false
-
-@description('Specifies the name of the administrator account of the virtual machine.')
-param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
-
-@description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
-@secure()
-param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
 
 
 
@@ -599,12 +605,12 @@ module network 'br/public:avm/res/network/virtual-network:0.1.0' = {
   ]
 }
 
-resource virtualWan 'Microsoft.Network/virtualWans@2023-04-01' = {
+resource virtualWan 'Microsoft.Network/virtualWans@2023-06-01' = {
   name: '${commonLayerConfig.network.name}-wan'
   location: location
 }
 
-resource virtualHub 'Microsoft.Network/virtualHubs@2022-01-01' = {
+resource virtualHub 'Microsoft.Network/virtualHubs@2023-06-01' = {
   name: '${commonLayerConfig.network.name}-hub'
   location: location
   properties: {
@@ -1468,8 +1474,8 @@ var serviceLayerConfig = {
   }
   gitops: {
     name: 'flux-system'
-    url: 'https://github.com/azure/osdu-developer'
-    branch: 'aks_update'
+    url: softwareRepository
+    branch: softwareBranch
     components: './stamp/components'
     applications: './stamp/applications'
   }

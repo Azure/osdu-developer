@@ -699,6 +699,8 @@ module keyvault 'br:osdubicep.azurecr.io/public/azure-keyvault:1.0.7' = {
     diagnosticWorkspaceId: logAnalytics.outputs.resourceId
     diagnosticLogsRetentionInDays: 0
 
+    enablePurgeProtection: false
+
     // Configure Access
     accessPolicies: [
       {

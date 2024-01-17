@@ -6,6 +6,8 @@ param location string = resourceGroup().location
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool = false
 
+
+
 /////////////////
 // Network Blade 
 /////////////////
@@ -68,6 +70,7 @@ param remoteVpnPrefix string = ''
 param remoteNetworkPrefix string = '192.168.1.0/24'
 
 
+
 /////////////////
 // Security Blade 
 /////////////////
@@ -82,11 +85,39 @@ param cmekConfiguration object = {
 }
 
 
+
 /////////////////
 // Settings Blade 
 /////////////////
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
+
+@description('List of Data Partitions')
+param partitions array = [
+  {
+    name: 'opendes'
+  }
+]
+
+@allowed([
+  'CostOptimised'
+  'Standard'
+  'HighSpec'
+])
+@description('The Cluster Size')
+param clusterSize string = 'CostOptimised'
+
+@allowed([
+  'Internal'
+  'External'
+  'Both'
+])
+@description('The Cluster Ingress Mode')
+param clusterIngress string = 'Both'
+
+@description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
+param clusterAdminIds array = []
+
 
 
 /////////////////
@@ -102,6 +133,8 @@ param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
 @description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
 @secure()
 param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
+
+
 
 //*****************************************************************//
 //  Common Section                                                 //
@@ -1046,5 +1079,606 @@ module virtualMachine './modules/virtual_machine.bicep' = if (enableBastion) {
     logAnalytics
     bastionHost
     sshKey
+  ]
+}
+
+
+//*****************************************************************//
+//  Partition Section                                              //
+//*****************************************************************//
+
+/////////////////////////////////
+// Configuration 
+/////////////////////////////////
+var partitionLayerConfig = {
+  name: 'partition'
+  displayName: 'Data Partition Resources'
+  secrets: {
+    storageAccountName: 'storage'
+    storageAccountKey: 'key'
+    cosmosConnectionString: 'cosmos-connection'
+    cosmosEndpoint: 'cosmos-endpoint'
+    cosmosPrimaryKey: 'cosmos-primary-key'
+  }
+  storage: {
+    sku: 'Standard_LRS'
+    containers: [
+      'legal-service-azure-configuration'
+      'osdu-wks-mappings'
+      'wdms-osdu'
+      'file-staging-area'
+      'file-persistent-area'
+    ]
+  }
+  database: {
+    name: 'osdu-db'
+    CostOptimised : {
+      throughput: 2000
+    }
+    Standard: {
+      throughput: 4000
+    }
+    HighSpec: {
+      throughput: 12000
+    }
+    backup: 'Continuous'
+    containers: [
+      {
+        name: 'LegalTag'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'StorageRecord'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'StorageSchema'
+        kind: 'Hash'
+        paths: [
+          '/kind'
+        ]
+      }
+      {
+        name: 'TenantInfo'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'UserInfo'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'Authority'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'EntityType'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'SchemaInfo'
+        kind: 'Hash'
+        paths: [
+          '/partitionId'
+        ]
+      }
+      {
+        name: 'Source'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'RegisterAction'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterDdms'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterSubscription'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'IngestionStrategy'
+        kind: 'Hash'
+        paths: [
+          '/workflowType'
+        ]
+      }
+      {
+        name: 'RelationshipStatus'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'MappingInfo'
+        kind: 'Hash'
+        paths: [
+          '/sourceSchemaKind'
+        ]
+      }
+      {
+        name: 'FileLocationInfo'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'WorkflowCustomOperatorInfo'
+        kind: 'Hash'
+        paths: [
+          '/operatorId'
+        ]
+      }
+      {
+        name: 'WorkflowV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
+        name: 'WorkflowRunV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
+        name: 'WorkflowCustomOperatorV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
+        name: 'WorkflowTasksSharingInfoV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
+        name: 'Status'
+        kind: 'Hash'
+        paths: [
+          '/correlationId'
+        ]
+      }
+      {
+        name: 'DataSetDetails'
+        kind: 'Hash'
+        paths: [
+          '/correlationId'
+        ]
+      }
+    ]
+  }
+}
+
+
+/*
+.______      ___      .______     .___________. __  .___________. __    ______   .__   __.      _______.
+|   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  |     /       |
+|  |_)  |  /  ^  \    |  |_)  |   `---|  |----`|  | `---|  |----`|  | |  |  |  | |   \|  |    |   (----`
+|   ___/  /  /_\  \   |      /        |  |     |  |     |  |     |  | |  |  |  | |  . `  |     \   \    
+|  |     /  _____  \  |  |\  \----.   |  |     |  |     |  |     |  | |  `--'  | |  |\   | .----)   |   
+| _|    /__/     \__\ | _| `._____|   |__|     |__|     |__|     |__|  \______/  |__| \__| |_______/                                 
+*/
+
+module partitionStorage 'br:osdubicep.azurecr.io/public/storage-account:1.0.7' = [for (partition, index) in partitions:  {
+  name: '${partitionLayerConfig.name}-azure-storage-${index}'
+  params: {
+    #disable-next-line BCP335
+    resourceName: 'data${index}${uniqueString(partition.name)}'
+    location: location
+
+    // Assign Tags
+    tags: {
+      layer: partitionLayerConfig.displayName
+      partition: partition.name
+      purpose: 'data'
+    }
+
+    // Hook up Diagnostics
+    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
+    diagnosticLogsRetentionInDays: 0
+
+    // Configure Service
+    sku: partitionLayerConfig.storage.sku
+    containers: concat(partitionLayerConfig.storage.containers, [partition.name])
+
+    // Assign RBAC
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principals: [
+          {
+            id: stampIdentity.outputs.principalId
+            resourceId: stampIdentity.outputs.resourceId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Hookup Customer Managed Encryption Key
+    cmekConfiguration: cmekConfiguration
+
+    // Persist Secrets to Vault
+    keyVaultName: keyvault.outputs.name
+    storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
+    storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
+  }
+}]
+
+module partitionStorageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = [for (partition, index) in partitions: if (enablePrivateLink) {
+  name: '${partitionLayerConfig.name}-azure-storage-endpoint-${index}'
+  params: {
+    resourceName: partitionStorage[index].outputs.name
+    subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
+    serviceResourceId: partitionStorage[index].outputs.id
+    groupIds: [ 'blob']
+    privateDnsZoneGroup: {
+      privateDNSResourceIds: [storageDNSZone.id]
+    }
+  }
+  dependsOn: [
+    network
+    storageDNSZone
+  ]
+}]
+
+module partitionDb 'br:osdubicep.azurecr.io/public/cosmos-db:1.0.17' = [for (partition, index) in partitions: { 
+  name: '${partitionLayerConfig.name}-cosmos-db-${index}'
+  params: {
+    #disable-next-line BCP335
+    resourceName: 'data${index}${substring(uniqueString(partition.name), 0, 6)}'
+    resourceLocation: location
+
+    // Assign Tags
+    tags: {
+      layer: partitionLayerConfig.displayName
+      partition: partition.name
+      purpose: 'data'
+    }
+
+    // Hook up Diagnostics
+    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
+    diagnosticLogsRetentionInDays: 0
+
+    // Configure Service
+    sqlDatabases: [
+      {
+        name: partitionLayerConfig.database.name
+        containers: partitionLayerConfig.database.containers
+      }
+    ]
+    maxThroughput: partitionLayerConfig.database[clusterSize].throughput
+    backupPolicyType: partitionLayerConfig.database.backup
+
+    // Assign RBAC
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principals: [
+          {
+            id: stampIdentity.outputs.principalId
+            resourceId: stampIdentity.outputs.resourceId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Hookup Customer Managed Encryption Key
+    systemAssignedIdentity: false
+    userAssignedIdentities: !empty(cmekConfiguration.identityId) ? {
+      '${stampIdentity.outputs.resourceId}': {}
+      '${cmekConfiguration.identityId}': {}
+    } : {
+      '${stampIdentity.outputs.resourceId}': {}
+    }
+    defaultIdentity: !empty(cmekConfiguration.identityId) ? cmekConfiguration.identityId : ''
+    kvKeyUri: !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) ? '${cmekConfiguration.kvUrl}/keys/${cmekConfiguration.keyName}' : ''
+
+    // Persist Secrets to Vault
+    keyVaultName: keyvault.outputs.name
+    databaseEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosEndpoint}'
+    databasePrimaryKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosPrimaryKey}'
+    databaseConnectionStringSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosConnectionString}'
+  }
+}]
+
+module partitionDbEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = [for (partition, index) in partitions: if (enablePrivateLink) {
+  name: '${partitionLayerConfig.name}-cosmos-db-endpoint-${index}'
+  params: {
+    resourceName: partitionDb[index].outputs.name
+    subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
+    serviceResourceId: partitionDb[index].outputs.id
+    groupIds: [ 'sql']
+    privateDnsZoneGroup: {
+      privateDNSResourceIds: [cosmosDNSZone.id]
+    }
+  }
+  dependsOn: [
+    network
+    cosmosDNSZone
+  ]
+}]
+
+
+
+//*****************************************************************//
+//  Services Section                                               //
+//*****************************************************************//
+@description('Feature Flag to create software config map.')
+var enableConfigMap = true
+
+@description('Feature Flag to Load Software.')
+var enableSoftwareLoad = true
+
+
+
+/////////////////////////////////
+// Configuration 
+/////////////////////////////////
+
+var serviceLayerConfig = {
+  name: 'service'
+  displayName: 'Service Resources'
+  cluster: {
+    aksVersion: '1.28'
+    meshVersion: 'asm-1-18'
+    networkPlugin: 'kubenet'
+  }
+  gitops: {
+    name: 'flux-system'
+    url: 'https://github.com/azure/osdu-developer'
+    branch: 'aks_update'
+    components: './stamp/components'
+    applications: './stamp/applications'
+  }
+  imageList: {
+    None: []
+    M22: [
+      'community.opengroup.org:5555/osdu/platform/system/partition/partition-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-24:latest'
+      'community.opengroup.org:5555/osdu/platform/system/storage/storage-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/system/file/file-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-v0-24-0:latest'
+      'community.opengroup.org:5555/osdu/platform/system/search-service/search-service-v0-24-0:latest'
+    ]
+  }
+}
+
+
+/*  -
+ __  ___  __    __  .______    _______ .______      .__   __.  _______ .___________. _______     _______.
+|  |/  / |  |  |  | |   _  \  |   ____||   _  \     |  \ |  | |   ____||           ||   ____|   /       |
+|  '  /  |  |  |  | |  |_)  | |  |__   |  |_)  |    |   \|  | |  |__   `---|  |----`|  |__     |   (----`
+|    <   |  |  |  | |   _  <  |   __|  |      /     |  . `  | |   __|      |  |     |   __|     \   \    
+|  .  \  |  `--'  | |  |_)  | |  |____ |  |\  \----.|  |\   | |  |____     |  |     |  |____.----)   |   
+|__|\__\  \______/  |______/  |_______|| _| `._____||__| \__| |_______|    |__|     |_______|_______/    
+*/
+
+module cluster './modules/aks_cluster.bicep' = {
+  name: '${serviceLayerConfig.name}-cluster'
+  params: {
+    // Basic Details
+    resourceName: serviceLayerConfig.name
+    location: location
+    aksVersion: serviceLayerConfig.cluster.aksVersion
+    aad_tenant_id: subscription().tenantId
+    clusterSize: clusterSize
+    networkPlugin: serviceLayerConfig.cluster.networkPlugin
+
+    // Assign Tags
+    tags: {
+      layer: serviceLayerConfig.displayName
+    }
+
+    // Configure Linking Items
+    aksSubnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
+    aksPodSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : null
+    identityId: stampIdentity.outputs.resourceId
+    workspaceId: logAnalytics.outputs.resourceId
+
+    // Configure Istio
+    serviceMeshProfile: 'Istio'
+    istioRevision: serviceLayerConfig.cluster.meshVersion
+    istioIngressGatewayMode: clusterIngress
+
+    // Configure Add Ons
+    enable_aad: empty(clusterAdminIds) == true ? false : true
+    admin_ids: clusterAdminIds
+    workloadIdentityEnabled: true
+    oidcIssuer: true
+    keyvaultEnabled: true
+    fluxGitOpsAddon: true
+    enableImageCleaner: true
+    fileCSIDriver: true
+    blobCSIDriver: true
+    azurepolicy: 'audit'
+  }
+}
+
+
+/////////////////
+// Elastic Configuration 
+/////////////////
+@description('Elastic User Pool presets')
+var elasticPoolPresets = {
+  // 4 vCPU, 15 GiB RAM, 28 GiB SSD, (12800) IOPS, Ephemeral OS Disk
+  CostOptimised : {
+    vmSize: 'Standard_DS3_v2'
+  }
+  // 8 vCPU, 28 GiB RAM, 56 GiB SSD, (32000) IOPS, Ephemeral OS Disk
+  Standard : {
+    vmSize: 'Standard_DS4_v2'
+  }
+  // 16 vCPU, 56 GiB RAM, 112 GiB SSD, (64000) IOPS, Ephemeral OS Disk
+  HighSpec : {
+    vmSize: 'Standard_DS5_v2'
+  }
+}
+
+module espool1 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-espool1'
+  params: {
+    AksName: cluster.outputs.aksClusterName
+    PoolName: 'espoolz1'
+    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentCount: 2
+    agentCountMax: 4
+    availabilityZones: [
+      '1'
+    ]
+    subnetId: ''
+    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeLabels: {
+      app: 'elasticsearch'
+    }
+  }
+}
+
+module espool2 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-espool2'
+  params: {
+    AksName: cluster.outputs.aksClusterName
+    PoolName: 'espoolz2'
+    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentCount: 2
+    agentCountMax: 4
+    availabilityZones: [
+      '2'
+    ]
+    subnetId: ''
+    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeLabels: {
+      app: 'elasticsearch'
+    }
+  }
+}
+
+module espool3 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-espool3'
+  params: {
+    AksName: cluster.outputs.aksClusterName
+    PoolName: 'espoolz3'
+    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentCount: 2
+    agentCountMax: 4
+    availabilityZones: [
+      '3'
+    ]
+    subnetId: ''
+    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeLabels: {
+      app: 'elasticsearch'
+    }
+  }
+}
+
+
+//--------------Config Map---------------
+module configMap 'br/public:deployment-scripts/aks-run-command:1.0.1' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster-configmap'
+  params: {
+    aksName: cluster.outputs.aksClusterName
+    location: location
+    commands: [
+      format(
+        'kubectl create configmap app-config --from-literal=keyvault={0} -n default --save-config',  
+        keyvault.outputs.name
+        )
+    ]
+    cleanupPreference: 'Always'
+  }
+  dependsOn: [
+    cluster
+    keyvault
+  ]
+}
+
+
+//--------------Flux Config---------------
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {
+  name: '${serviceLayerConfig.name}-cluster-gitops'
+  params: {
+    name: serviceLayerConfig.gitops.name
+    location: location
+    namespace: cluster.outputs.fluxReleaseNamespace
+    clusterName: cluster.outputs.aksClusterName
+    scope: 'cluster'
+    sourceKind: 'GitRepository'
+    gitRepository: {
+      url: serviceLayerConfig.gitops.url
+      timeoutInSeconds: 180
+      syncIntervalInSeconds: 300
+      repositoryRef: {
+        branch: serviceLayerConfig.gitops.branch
+      }
+    }
+    kustomizations: {
+      components: {
+        path: serviceLayerConfig.gitops.components
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+      applications: {
+        path: serviceLayerConfig.gitops.applications
+        dependsOn: [
+          'components'
+        ]
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+    } 
+  }
+  dependsOn: [
+    cluster
+    espool1
+    espool2
+    espool3
+    configMap
   ]
 }

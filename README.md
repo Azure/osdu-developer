@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2FAzure%2Fosdu-developer%2Freleases%2Fdownload%2Fv0.1.0%2Fazuredeploy.json)
+
 
 [Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Azure Cloud Platform](https://azure.microsoft.com/).
 

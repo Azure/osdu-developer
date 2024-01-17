@@ -354,9 +354,8 @@ jobs:
             az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
             az deployment operation group list --resource-group $RESOURCE_GROUP --name $DEPNAME
 
-            #outputs
             AKS_NAME=$(az deployment group show -n $DEPNAME -g $RESOURCE_GROUP --query "properties.outputs.aksName.value" -o tsv)
-            echo "AKS_NAME=$AKS_NAME >> $GITHUB_OUTPUT
+            echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
 
   Verify:
     name: Verify

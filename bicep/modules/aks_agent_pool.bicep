@@ -44,7 +44,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2021-10-01' existing = 
   name: AksName
 }
 
-resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2021-10-01' = {
+resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-10-02-preview' = {
   parent: aks
   name: PoolName
   properties: {

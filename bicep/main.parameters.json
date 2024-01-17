@@ -4,6 +4,12 @@
     "parameters": {
       "applicationClientId": {
         "value": "${AZURE_CLIENT_ID}"
+      },
+      "enableVpnGateway": {
+        "value": "${ENABLE_VPN_GATEWAY}"
+      },
+      "enableBastion": {
+        "value": "${ENABLE_BASTION}"
       }
     }
   }

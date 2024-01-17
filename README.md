@@ -2,9 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
-
-
 [Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Azure Cloud Platform](https://azure.microsoft.com/).
 
 
@@ -51,6 +48,19 @@ Once registered, refresh the Microsoft.ContainerService resource provider:
 ```bash
 az provider register --namespace Microsoft.ContainerService
 ```
+
+
+## Templated Deployment
+
+The solution can be deployed directly with the ARM template but parameter options can be difficult to navigate.  However, this method works just fine when leveraging a fully default deployment.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
+
+
+
+## Azure Developer CLI - Workflow
+
+The recommended way for working with the solution is to leverage the Azure Developer CLI so that options can be better set, the solution modified or parameters changed in order to customize a deployment that has more flexability.
 
 ### Enabling Alpha Features for Azure Developer CLI
 
@@ -99,9 +109,7 @@ APP_NAME=   # <-- <your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
 ```
 
-
-
-## Workspace
+### Commands
 
 The solution template is provisioned using the azure developer cli.
 
@@ -111,7 +119,7 @@ The solution template is provisioned using the azure developer cli.
 | Stop   | `azd down --purge --force` |
 
 
-### Infrastructure
+## Infrastructure
 
 The following diagram repesents the infrastructure that is deployed by this solution.
 

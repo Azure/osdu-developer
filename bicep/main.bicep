@@ -12,14 +12,14 @@ param enableTelemetry bool = false
 @description('Feature Flag to Enable a Pod Subnet')
 param enablePodSubnet bool = false
 
-// @description('Boolean indicating whether the VNet is new or existing')
-// param virtualNetworkNewOrExisting string = 'new'
+@description('Boolean indicating whether the VNet is new or existing')
+param virtualNetworkNewOrExisting string = 'new'
 
-// @description('Name of the Virtual Network (Optional: If exiting Network is selected)')
-// param virtualNetworkName string = 'osdu-network'
+@description('Name of the Virtual Network (Optional: If exiting Network is selected)')
+param virtualNetworkName string = 'osdu-network'
 
-// @description('Resource group of the VNet (Optional: If exiting Network is selected)')
-// param virtualNetworkResourceGroup string = 'osdu-network'
+@description('Resource group of the VNet (Optional: If exiting Network is selected)')
+param virtualNetworkResourceGroup string = 'osdu-network'
 
 @description('VNet address prefix')
 param virtualNetworkAddressPrefix string = '10.1.0.0/16'
@@ -68,14 +68,25 @@ param remoteVpnPrefix string = ''
 param remoteNetworkPrefix string = '192.168.1.0/24'
 
 
+/////////////////
+// Security Blade 
+/////////////////
+@description('Feature Flag to Enable Private Link')
+param enablePrivateLink bool = false
+
+@description('Optional. Customer Managed Encryption Key.')
+param cmekConfiguration object = {
+  kvUrl: ''
+  keyName: ''
+  identityId: ''
+}
+
 
 /////////////////
 // Settings Blade 
 /////////////////
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
-
-output applicationClientId string = applicationClientId
 
 
 /////////////////
@@ -85,6 +96,12 @@ output applicationClientId string = applicationClientId
 @description('Feature Flag to Enable Bastion')
 param enableBastion bool = false
 
+@description('Specifies the name of the administrator account of the virtual machine.')
+param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
+
+@description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
+@secure()
+param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
 
 //*****************************************************************//
 //  Common Section                                                 //
@@ -209,10 +226,10 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
 |__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
 */
 
-// var vnetId = {
-//   new: virtualNetworkNewOrExisting == 'new' ? network.outputs.resourceId : null
-//   existing: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks', virtualNetworkName)
-// }
+var vnetId = {
+  new: virtualNetworkNewOrExisting == 'new' ? network.outputs.resourceId : null
+  existing: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks', virtualNetworkName)
+}
 
 var nsgRules = {
   ssh_outbound: {
@@ -618,4 +635,416 @@ module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnG
       }
     ]
   }
+}
+
+
+
+
+/*
+ __  ___  ___________    ____ ____    ____  ___      __    __   __      .___________.
+|  |/  / |   ____\   \  /   / \   \  /   / /   \    |  |  |  | |  |     |           |
+|  '  /  |  |__   \   \/   /   \   \/   / /  ^  \   |  |  |  | |  |     `---|  |----`
+|    <   |   __|   \_    _/     \      / /  /_\  \  |  |  |  | |  |         |  |     
+|  .  \  |  |____    |  |        \    / /  _____  \ |  `--'  | |  `----.    |  |     
+|__|\__\ |_______|   |__|         \__/ /__/     \__\ \______/  |_______|    |__|                                                                     
+*/
+
+var vaultDNSZoneName = 'privatelink.vaultcore.azure.net'
+
+module keyvault 'br:osdubicep.azurecr.io/public/azure-keyvault:1.0.7' = {
+  name: '${commonLayerConfig.name}-azure-keyvault'
+  params: {
+    resourceName: commonLayerConfig.name
+    location: location
+    
+    // Assign Tags
+    tags: {
+      layer: commonLayerConfig.displayName
+    }
+
+    // Hook up Diagnostics
+    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
+    diagnosticLogsRetentionInDays: 0
+
+    // Configure Access
+    accessPolicies: [
+      {
+        principalId: stampIdentity.outputs.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+            'set'
+          ]
+          certificates: [
+            'create'
+            'get'
+            'list'
+          ]
+        }
+      }
+    ]
+
+    // Configure Secrets
+    secretsObject: { secrets: [
+      // Misc Secrets
+      {
+        secretName: commonLayerConfig.secrets.tenantId
+        secretValue: subscription().tenantId
+      }
+      {
+        secretName: commonLayerConfig.secrets.subscriptionId
+        secretValue: subscription().subscriptionId
+      }
+      // Azure AD Secrets
+      {
+        secretName: commonLayerConfig.secrets.clientId
+        secretValue: applicationClientId
+      }
+      {
+        secretName: commonLayerConfig.secrets.applicationPrincipalId
+        secretValue: applicationClientId
+      }
+      // Managed Identity
+      {
+        secretName: commonLayerConfig.secrets.stampIdentity
+        secretValue: stampIdentity.outputs.principalId
+      }
+    ]}
+
+    // Assign RBAC
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Reader'
+        principals: [
+          {
+            id: stampIdentity.outputs.principalId
+            resourceId: stampIdentity.outputs.resourceId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+  }
+}
+
+module keyvaultSecrets './modules/keyvault_secrets.bicep' = {
+  name: '${commonLayerConfig.name}-log-analytics-secrets'
+  params: {
+    // Persist Secrets to Vault
+    keyVaultName: keyvault.outputs.name
+    workspaceName: logAnalytics.outputs.name
+    workspaceIdName: commonLayerConfig.secrets.logAnalyticsId
+    workspaceKeySecretName: commonLayerConfig.secrets.logAnalyticsKey
+  }
+}
+
+module sshKey 'br:osdubicep.azurecr.io/public/script-sshkeypair:1.0.3' = if (enableBastion) {
+  name: '${commonLayerConfig.name}-azure-keyvault-sshkey'
+  params: {
+    kvName: keyvault.outputs.name
+    location: location
+
+    useExistingManagedIdentity: true
+    managedIdentityName: stampIdentity.outputs.name
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+
+    sshKeyName: 'PrivateLinkSSHKey-'
+    
+    cleanupPreference: 'Always'
+  }
+}
+
+module certificates './modules/script-kv-certificate/main.bicep' = {
+  name: '${commonLayerConfig.name}-azure-keyvault-cert'
+  params: {
+    kvName: keyvault.outputs.name
+    location: location
+
+    useExistingManagedIdentity: true
+    managedIdentityName: stampIdentity.outputs.name
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName: resourceGroup().name
+
+    certificateNames: [
+      'https-certificate'
+    ]
+    initialScriptDelay: '0'
+    validity: 24
+  }
+}
+
+resource vaultDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
+  name: vaultDNSZoneName
+  location: 'global'
+  properties: {}
+}
+
+module vaultEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
+  name: '${commonLayerConfig.name}-azure-keyvault-endpoint'
+  params: {
+    resourceName: keyvault.outputs.name
+    subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
+
+    groupIds: [ 'vault']
+    privateDnsZoneGroup: {
+      privateDNSResourceIds: [vaultDNSZone.id]
+    }
+    serviceResourceId: keyvault.outputs.id
+  }
+  dependsOn: [
+    network
+    vaultDNSZone
+  ]
+}
+
+resource existingVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: keyvault.outputs.name
+}
+
+
+/*   _______.___________.  ______   .______          ___       _______  _______ 
+    /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
+   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
+    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|  
+.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____ 
+|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
+*/
+
+var storageDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
+var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
+
+module configStorage 'br:osdubicep.azurecr.io/public/storage-account:1.0.7' = {
+  name: '${commonLayerConfig.name}-azure-storage'
+  params: {
+    resourceName: commonLayerConfig.name
+    location: location
+
+    // Assign Tags
+    tags: {
+      layer: commonLayerConfig.displayName
+    }
+
+    // Hook up Diagnostics
+    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
+    diagnosticLogsRetentionInDays: 0
+
+    // Configure Service
+    sku: commonLayerConfig.storage.sku
+    tables: commonLayerConfig.storage.tables
+
+    // Assign RBAC
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principals: [
+          {
+            id: stampIdentity.outputs.principalId
+            resourceId: stampIdentity.outputs.resourceId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Hookup Customer Managed Encryption Key
+    cmekConfiguration: cmekConfiguration
+
+    // Persist Secrets to Vault
+    keyVaultName: keyvault.outputs.name
+    storageAccountSecretName: commonLayerConfig.secrets.storageAccountName
+    storageAccountKeySecretName: commonLayerConfig.secrets.storageAccountKey
+  }
+}
+
+resource storageDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
+  name: storageDnsZoneName
+  location: 'global'
+  properties: {}
+}
+
+module storageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
+  name: '${commonLayerConfig.name}-azure-storage-endpoint'
+  params: {
+    resourceName: configStorage.outputs.name
+    subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
+    serviceResourceId: configStorage.outputs.id
+    groupIds: [ 'blob']
+    privateDnsZoneGroup: {
+      privateDNSResourceIds: [storageDNSZone.id]
+    }
+  }
+  dependsOn: [
+    network
+    storageDNSZone
+  ]
+}
+
+
+/*
+  _______ .______          ___      .______    __    __  
+ /  _____||   _  \        /   \     |   _  \  |  |  |  | 
+|  |  __  |  |_)  |      /  ^  \    |  |_)  | |  |__|  | 
+|  | |_ | |      /      /  /_\  \   |   ___/  |   __   | 
+|  |__| | |  |\  \----./  _____  \  |  |      |  |  |  | 
+ \______| | _| `._____/__/     \__\ | _|      |__|  |__| 
+*/
+
+var cosmosDnsZoneName = 'privatelink.documents.azure.com'
+
+module database 'br:osdubicep.azurecr.io/public/cosmos-db:1.0.17' = {
+  name: '${commonLayerConfig.name}-cosmos-db'
+  params: {
+    resourceName: commonLayerConfig.name
+    resourceLocation: location
+
+    // Assign Tags
+    tags: {
+      layer: commonLayerConfig.displayName
+    }
+
+    // Hook up Diagnostics
+    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
+    diagnosticLogsRetentionInDays: 0
+
+    // Configure Service
+    capabilitiesToAdd: [
+      'EnableGremlin'
+    ]
+    gremlinDatabases: [
+      {
+        name: commonLayerConfig.database.name
+        graphs: commonLayerConfig.database.graphs
+      }
+    ]
+    throughput: commonLayerConfig.database.throughput
+    backupPolicyType: commonLayerConfig.database.backup
+
+    // Assign RBAC
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principals: [
+          {
+            id: stampIdentity.outputs.principalId
+            resourceId: stampIdentity.outputs.resourceId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Hookup Customer Managed Encryption Key
+    systemAssignedIdentity: false
+    userAssignedIdentities: !empty(cmekConfiguration.identityId) ? {
+      '${stampIdentity.outputs.resourceId}': {}
+      '${cmekConfiguration.identityId}': {}
+    } : {
+      '${stampIdentity.outputs.resourceId}': {}
+    }
+    defaultIdentity: !empty(cmekConfiguration.identityId) ? cmekConfiguration.identityId : ''
+    kvKeyUri: !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) ? '${cmekConfiguration.kvUrl}/keys/${cmekConfiguration.keyName}' : ''
+
+    // Persist Secrets to Vault
+    keyVaultName: keyvault.outputs.name
+    databaseEndpointSecretName: commonLayerConfig.secrets.cosmosEndpoint
+    databasePrimaryKeySecretName: commonLayerConfig.secrets.cosmosPrimaryKey
+    databaseConnectionStringSecretName: commonLayerConfig.secrets.cosmosConnectionString
+  }
+}
+
+resource cosmosDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
+  name: cosmosDnsZoneName
+  location: 'global'
+  properties: {}
+}
+module graphEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
+  name: '${commonLayerConfig.name}-cosmos-db-endpoint'
+  params: {
+    resourceName: database.outputs.name
+    subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
+    serviceResourceId: database.outputs.id
+    groupIds: [ 'sql']
+    privateDnsZoneGroup: {
+      privateDNSResourceIds: [cosmosDNSZone.id]
+    }
+  }
+  dependsOn: [
+    network
+    cosmosDNSZone
+  ]
+}
+
+
+
+//*****************************************************************//
+//  Manage Section                                                 //
+//*****************************************************************//
+
+/////////////////////////////////
+// Configuration 
+/////////////////////////////////
+var manageLayerConfig = {
+  name: 'manage'
+  displayName: 'Manage Resources'
+  machine: {
+    vmSize: 'Standard_DS3_v2'
+    imagePublisher: 'Canonical'
+    imageOffer: 'UbuntuServer'
+    imageSku: '18.04-LTS'
+    authenticationType: 'password'
+  }
+}
+
+/*.______        ___           _______.___________. __    ______   .__   __. 
+|   _  \      /   \         /       |           ||  |  /  __  \  |  \ |  | 
+|  |_)  |    /  ^  \       |   (----`---|  |----`|  | |  |  |  | |   \|  | 
+|   _  <    /  /_\  \       \   \       |  |     |  | |  |  |  | |  . `  | 
+|  |_)  |  /  _____  \  .----)   |      |  |     |  | |  `--'  | |  |\   | 
+|______/  /__/     \__\ |_______/       |__|     |__|  \______/  |__| \__| 
+*/
+
+module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBastion) {
+  name: '${manageLayerConfig.name}-bastion'
+  params: {
+    name: 'bh-${replace(manageLayerConfig.name, '-', '')}${uniqueString(deployment().name, manageLayerConfig.name)}'
+    vNetId: network.outputs.resourceId
+    location: location
+    enableTelemetry: enableTelemetry
+  }  
+}
+
+/*
+.___  ___.      ___       ______  __    __   __  .__   __.  _______ 
+|   \/   |     /   \     /      ||  |  |  | |  | |  \ |  | |   ____|
+|  \  /  |    /  ^  \   |  ,----'|  |__|  | |  | |   \|  | |  |__   
+|  |\/|  |   /  /_\  \  |  |     |   __   | |  | |  . `  | |   __|  
+|  |  |  |  /  _____  \ |  `----.|  |  |  | |  | |  |\   | |  |____ 
+|__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|
+                                                                    
+*/
+
+module virtualMachine './modules/virtual_machine.bicep' = if (enableBastion) {
+  name: 'virtualMachine'
+  params: {
+    vmName: '${manageLayerConfig.name}-vm'
+    vmSize: manageLayerConfig.machine.vmSize
+
+    // Assign Tags
+    tags: {
+      layer: manageLayerConfig.displayName
+    }
+
+    vmSubnetId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${vmSubnetName}'
+    vmAdminPasswordOrKey: empty(vmAdminPasswordOrKey) ? existingVault.getSecret('PrivateLinkSSHKey-public') : vmAdminPasswordOrKey
+    vmAdminUsername: vmAdminUsername
+    workspaceName: logAnalytics.outputs.name
+    authenticationType: empty(vmAdminPasswordOrKey) ? 'sshPublicKey' : 'password'
+  }
+  dependsOn: [
+    logAnalytics
+    bastionHost
+    sshKey
+  ]
 }

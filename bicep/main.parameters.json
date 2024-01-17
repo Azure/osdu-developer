@@ -13,6 +13,15 @@
       },
       "enableBastion": {
         "value": "${ENABLE_BASTION}"
+      },
+      "vpnSharedKey": {
+        "value": "${VPN_SHARED_KEY}"
+      },
+      "remoteVpnPrefix": {
+        "value": "${REMOTE_VPN_PREFIX}"
+      },
+      "remoteNetworkPrefix": {
+        "value": "${REMOTE_NETWORK_PREFIX}"
       }
     }
   }

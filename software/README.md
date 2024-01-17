@@ -1,1 +1,0 @@
-# Gitops Application Configuration

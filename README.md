@@ -2,64 +2,81 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project is intended to provide a simple way of providing a mechanism to develop for OSDU using the Azure Cloud.
 
-## Project Principals
+[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Azure Cloud Platform](https://azure.microsoft.com/).
 
-The guiding principal we have for this project is to focus on providing a solution to allow for an easy way to develop for OSDU using the Azure cloud. It is not intended to support any kind of a production scenario and no support for this solution is provided.  It is built with the following 2 pillars of the [Azure Well-Architected-Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework) kept in mind.
 
-1. Cost Optimization -- A cost optimized solution with cost in mind but accepting the tradeoff of security.
-2. Security -- The intent is to provide a feature enabled solution to increase levels of security as best as possible.
+## Project Principles
 
-Additionally, the solution is desired to be easy to use and to support that is built with support for [Github Codespaces](https://github.com/features/codespaces) along with the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/).
+The guiding principle of this project is to offer an accessible solution for facilitating direct engagement with the OSDU codebase on Azure in a minimal fashio. This solution is not intended for production use and does not come with official support. Our approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+
+1. Cost Optimization -- We aim to create a cost-effective solution, balancing cost with security considerations.
+2. Security -- Our goal is to enhance security levels within the constraints of a development-focused solution.
+
+To support ease of use, the project integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), facilitating seamless development and innovation on the OSDU platform.
 
 
 ## Setup
 
-__Features__
+### Registering Azure Features
 
-This solution makes use of features in Azure that are in Public Preview and might require some features to be registered for use.
+This solution utilizes Azure features that are currently in Public Preview. Certain features need to be registered before use.
 
-Register the _AzureServiceMeshPreview_ feature flag by using the az feature register command:
+**Step 1: Register the AzureServiceMeshPreview feature**
+Use the `az feature register` command to register the _AzureServiceMeshPreview_ feature flag:
 
 ```bash
 az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
 ```
 
-It takes a few minutes for the feature to register. Verify the registration status by using the az feature show command:
+It may take a few minutes for the feature to register.
+
+
+**Step 2: Verify the Registration Status**
+
+Confirm the registration status using the az feature show command:
 
 ```bash
 az feature show --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
 ```
 
-When the status reflects Registered, refresh the registration of the Microsoft.ContainerService resource provider by using the az provider register command:
+Look for a status that indicates Registered.
+
+**Step 3: Refresh the Resource Provider**
+
+Once registered, refresh the Microsoft.ContainerService resource provider:
 
 ```bash
 az provider register --namespace Microsoft.ContainerService
 ```
 
-This solution uses Resource Group Scoped Deployments which is an Alpha Feature for the Azure Developer CLI.
+### Enabling Alpha Features for Azure Developer CLI
+
+**Resource Group Scoped Deployments**
+
+This solution uses Resource Group Scoped Deployments, an Alpha Feature in the Azure Developer CLI.
+
+Enable this feature using the following command:
 
 ```bash
 azd config set alpha.resourceGroupDeployments on   # Enable Alpha Feature
 ```
 
-__Login__
+Note: Alpha features are experimental and might be subject to changes. Use them with this consideration.
 
-Log into the Azure CLI from a command line and set the subscription. 
-If running with windows ensure that Azure Powershell is connected as well.
+
+### Authentication
+
+The Azure Developer CLI requires authentication.  Log in using the following command:
 
 ```bash
 azd auth login
 ```
 
-__Environment Variables__
+### Environment Variables
 
-An environment must be created using the following environment variables.
+Set up the environment using the following variables. You can find these values in your Azure portal or by using appropriate Azure CLI commands.
 
-**Environment Variables**
-
-An environment must be created using the following environment variables.
 
 | Variable              | Purpose                                 |
 | :-------------------- | :-------------------------------------- |
@@ -67,16 +84,21 @@ An environment must be created using the following environment variables.
 | AZURE_LOCATION        | The Azure Region                        |
 | AZURE_CLIENT_ID       | Azure AD Application Client Id _(GUID)_ |
 
+Initialize the environment and set the Azure Client ID:
+
 ```bash
 azd init -e dev
 
-APP_NAME=                                          # <-- <your_ad_application_name>
+APP_NAME=   # <-- <your_ad_application_name>
+
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
 ```
 
-### Workspace
 
-The developer workspace is brought online using the azure developer cli
+
+## Workspace
+
+The solution template is provisioned using the azure developer cli.
 
 | Action | Command                    |
 | :----- | :------------------------- |
@@ -84,8 +106,13 @@ The developer workspace is brought online using the azure developer cli
 | Stop   | `azd down --purge --force` |
 
 
+### Infrastructure
+
+The following diagram repesents the infrastructure that is deployed by this solution.
+
 ![[0]][0]
 _Architecture Diagram_
+
 
 ## Contributing
 

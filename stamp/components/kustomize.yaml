@@ -1,0 +1,133 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-component-certificates
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/cert-manager
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: cert-manager
+      namespace: cert-manager
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-component-elastic
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: software-component-certificates
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/elastic-operator
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: StatefulSet
+      name: elastic-system
+      namespace: elastic-operator
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-configuration-elastic
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: software-component-elastic
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/configuration/elastic
+  prune: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-component-istio
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: software-component-certificates
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/istio-ingress
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Gateway
+      name: istio-external-gateway
+      namespace: aks-istio-ingress
+    - kind: Gateway
+      name: istio-internal-gateway
+      namespace: aks-istio-ingress
+###########
+#  The following will deploy Istio from OpenSource
+###########
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: software-component-istio
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: software-component-certificates
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/istio-operator
+#   prune: true
+#   wait: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: istio-system
+#       namespace: istio-operator
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: software-configuration-istio
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: software-component-istio
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/configuration/istio-profile
+#   prune: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: istiod
+#       namespace: istio-system
+#     - kind: Deployment
+#       name: istio-ingressgateway
+#       namespace: istio-system

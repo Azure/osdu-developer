@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+  namespace: ingress-nginx
+spec:
+  acme:
+    # Replace the email address with your own contact email
+    email: danielscholl@users.noreply.github.com
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-nginx
+    solvers:
+      - http01:
+          ingress:
+            class: nginx

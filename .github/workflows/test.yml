@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.doStandards == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Azure Login
         uses: Azure/login@v1
@@ -95,7 +95,7 @@ jobs:
       REGION: ${{ steps.params.outputs.REGION}}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Job parameter check
         if: github.event.inputs.doDebugSteps == 'true'
@@ -309,7 +309,7 @@ jobs:
 
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Job parameter check
         if: github.event.inputs.doDebugSteps == 'true'
@@ -364,7 +364,7 @@ jobs:
     env:
       RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Param check
         if: github.event.inputs.doDebugSteps == 'true'

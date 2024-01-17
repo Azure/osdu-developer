@@ -33,7 +33,7 @@ jobs:
           add: "."
 
       - name: Build ARM Template
-        uses: Azure/bicep-build-action@v1.0.0
+        uses: Azure/bicep-build-action@v1.0.1
         with:
           bicepFilePath: bicep/main.bicep
           outputFilePath: azuredeploy.json

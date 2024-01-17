@@ -4,6 +4,15 @@
     "parameters": {
       "applicationClientId": {
         "value": "${AZURE_CLIENT_ID}"
+      },
+      "enablePodSubnet": {
+        "value": "${ENABLE_POD_SUBNET}"
+      },
+      "enableVpnGateway": {
+        "value": "${ENABLE_VPN_GATEWAY}"
+      },
+      "enableBastion": {
+        "value": "${ENABLE_BASTION}"
       }
     }
   }

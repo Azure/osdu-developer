@@ -85,6 +85,9 @@ Set up the environment using the following variables. You can find these values 
 | AZURE_SUBSCRIPTION_ID | The Azure Subscription _(GUID)_         |
 | AZURE_LOCATION        | The Azure Region                        |
 | AZURE_CLIENT_ID       | Azure AD Application Client Id _(GUID)_ |
+| ENABLE_TELEMETRY      | Enable Telemetry Tracking               |
+| ENABLE_PRIVATE_ACCESS | Feature Flag - Private Access           |
+| ENABLE_POD_SUBNET     | Feature Flag - Pod Subnet               |
 
 Initialize the environment and set the Azure Client ID:
 

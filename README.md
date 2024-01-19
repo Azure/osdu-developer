@@ -7,7 +7,7 @@
 
 ## Guiding Principles
 
-The guiding principle of this developer mechanism is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure in a minimal fashion. This is not recomended for production use and is purely seen as a developer approach and does not come with official support. The approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+The guiding principle of this development approach is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure Cloud in a minimal fashion. This is not recomended for any production use and is purely seen as a method for development and does not come with any type of official support. The approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
 
 1. Cost Optimization -- We aim to create a cost-effective approach, balancing cost along with security considerations.
 2. Security -- Our goal is to enhance security levels within the constraints of working to allow for development in a secure manner, working to ensure a zero trust approach to development.

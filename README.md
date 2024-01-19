@@ -57,7 +57,7 @@ az provider register --namespace Microsoft.ContainerService
 With these steps, you have successfully registered the necessary Azure features. Next, you can proceed to the deployment phase.
 
 
-## Templated Deployment
+## ARM Template - Deployment
 
 Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
 

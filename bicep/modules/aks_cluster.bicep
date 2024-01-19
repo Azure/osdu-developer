@@ -331,7 +331,7 @@ param istioRevision string = 'asm-1-18'
 */
                                                                                                
 @description('The name of the AKS cluster.')
-var name = 'aks-${uniqueString(resourceGroup().id, resourceName)}'
+var name = 'aks-${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 var serviceMeshProfileObj = {
   istio: {

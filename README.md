@@ -143,7 +143,7 @@ The solution template is provisioned using the azure developer cli.
 
 | Action | Command                    |
 | :----- | :------------------------- |
-| Start  | `azd up`                   |
+| Start  | `azd provision`            |
 | Stop   | `azd down --purge --force` |
 
 

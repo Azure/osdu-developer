@@ -7,7 +7,7 @@
 
 ## Project Principles
 
-The guiding principle of this project is to offer an accessible solution for facilitating direct engagement with the OSDU codebase on Azure in a minimal fashio. This solution is not intended for production use and does not come with official support. Our approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+The guiding principle of this project is to offer an accessible solution for facilitating direct engagement with the OSDU codebase on Azure in a minimal fashion. This solution is not intended for production use and does not come with official support. Our approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
 
 1. Cost Optimization -- We aim to create a cost-effective solution, balancing cost with security considerations.
 2. Security -- Our goal is to enhance security levels within the constraints of a development-focused solution.

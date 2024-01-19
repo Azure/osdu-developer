@@ -95,9 +95,10 @@ Set up the environment using the following variables. You can find these values 
 | AZURE_SUBSCRIPTION_ID | The Azure Subscription _(GUID)_         |
 | AZURE_LOCATION        | The Azure Region                        |
 | AZURE_CLIENT_ID       | Azure AD Application Client Id _(GUID)_ |
-| ENABLE_TELEMETRY      | Enable Telemetry Tracking               |
-| ENABLE_PRIVATE_ACCESS | Feature Flag - Private Access           |
 | ENABLE_POD_SUBNET     | Feature Flag - Pod Subnet               |
+| ENABLE_BASTION        | Feature Flag - Bastion and Manage VM    |
+| ENABLE_VPN_GATEWAY    | Feature Flag - VPN Site to Site         |
+
 
 Initialize the environment and set the Azure Client ID:
 
@@ -107,7 +108,34 @@ azd init -e dev
 APP_NAME=   # <-- <your_ad_application_name>
 
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
+
+# Feature Flags (Optional)
+azd env set ENABLE_POD_SUBNET true
+azd env set ENABLE_BASTION true
+azd env set ENABLE_VPN_GATEWAY true
 ```
+
+
+_Feature: Pod Subnet_
+
+With kubenet, nodes get an IP address from the Azure virtual network subnet. With this feature enables the Pods receive an IP address from a logically different address space then the Azure virtual network subnet of the nodes.
+
+
+_Feature: Bastion_
+
+With internal ingress enabled it can be challenging to communicate.  The bastion feature if enabled will create a bastion host and a virtual machine that can be used to communicate to resources from the private network.
+
+
+_Feature: VPN Gateway_
+
+It is common to have site to site VPN connections and the ability to optionally configure a point to site vpn connction when using internal ingress.  Development in this scenario can be challenging. The vpn gateway feature if enabled assists in creating the required resources necessary to establish connections to the private network.
+
+Additional values are necessary with this feature.
+
+1. REMOTE_NETWORK_PREFIX - The CIDR of the remote network. (192.168.1.0/24)
+2. REMOTE_VPN_ADDRESS - The Remote VPN Gateway IP address.
+3. VPN_SHARED_KEY - The Shared Key for the VPN Connection.
+
 
 ### Commands
 
@@ -115,16 +143,16 @@ The solution template is provisioned using the azure developer cli.
 
 | Action | Command                    |
 | :----- | :------------------------- |
-| Start  | `azd up`                   |
+| Start  | `azd provision`            |
 | Stop   | `azd down --purge --force` |
 
 
 ## Infrastructure
 
-The following diagram repesents the infrastructure that is deployed by this solution.
+The following diagram helps to visualize the architecture of the resources.
 
 ![[0]][0]
-_Architecture Diagram_
+
 
 
 ## Contributing

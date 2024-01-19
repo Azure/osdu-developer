@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Azure Storage Module",
+  "summary": "This module deploys an Azure Storage Account.",
+  "owner": "azure-global-energy"
+}

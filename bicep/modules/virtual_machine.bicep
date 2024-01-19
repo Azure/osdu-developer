@@ -79,7 +79,7 @@ var linuxConfiguration = {
 }
 
 // Resources
-resource virtualMachineNic 'Microsoft.Network/networkInterfaces@2021-08-01' = {
+resource virtualMachineNic 'Microsoft.Network/networkInterfaces@2023-06-01' = {
   name: vmNicName
   location: location
   tags: tags
@@ -100,7 +100,7 @@ resource virtualMachineNic 'Microsoft.Network/networkInterfaces@2021-08-01' = {
 
 
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-11-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = {
   name: vmName
   location: location
   tags: tags
@@ -151,11 +151,11 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   }
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' existing = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: workspaceName
 }
 
-resource omsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+resource omsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = {
   parent: virtualMachine
   name: 'LogAnalytics'
   location: location

@@ -10,15 +10,22 @@ param workspaceIdName string
 @description('Required. The name of the secret.')
 param workspaceKeySecretName string
 
-resource logAnaltyics 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
+@description('Required. The name of the secret.')
+param stampIdName string
+
+@description('Required. The name of the secret.')
+@secure()
+param stampIdValue string
+
+resource logAnaltyics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: workspaceName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
 }
 
-resource keySecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: workspaceKeySecretName
   parent: keyVault
 
@@ -27,7 +34,7 @@ resource keySecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   }
 }
 
-resource idSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+resource idSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: workspaceIdName
   parent: keyVault
 
@@ -36,3 +43,11 @@ resource idSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   }
 }
 
+resource stampId 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: stampIdName
+  parent: keyVault
+
+  properties: {
+    value: stampIdValue
+  }
+}

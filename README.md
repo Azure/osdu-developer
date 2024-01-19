@@ -2,31 +2,31 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Microsoft Azure Cloud](https://azure.microsoft.com/).
+[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach to showcase a mechanism to develop and work directly with [OSDU](https://community.opengroup.org/osdu/platform) while using the [Microsoft Azure Cloud](https://azure.microsoft.com/).
 
 
-## Project Principles
+## Guiding Principles
 
-The guiding principle of this project is to offer an accessible solution for facilitating direct engagement with the OSDU codebase on Azure in a minimal fashion. This solution is not intended for production use and does not come with official support. Our approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+The guiding principle of this developer mechanism is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure in a minimal fashion. This is not recomended for production use and is purely seen as a developer approach and does not come with official support. The approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
 
-1. Cost Optimization -- We aim to create a cost-effective solution, balancing cost with security considerations.
-2. Security -- Our goal is to enhance security levels within the constraints of a development-focused solution.
+1. Cost Optimization -- We aim to create a cost-effective approach, balancing cost along with security considerations.
+2. Security -- Our goal is to enhance security levels within the constraints of working to allow for development in a secure manner, working to ensure a zero trust approach to development.
 
-To support ease of use, the project integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), facilitating seamless development and innovation on the OSDU platform.
+To support ease of use, this idea integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), working to facilitate seamless development and innovation on ideas.
 
 
 ## Setup
 
-This section guides you through setting up the necessary Azure features for the OSDU Developer project. Please note that this solution uses Azure features currently in Public Preview, which might not be fully stable and are subject to changes.
+This section guides you through setting up the necessary Azure features for this development workspace. Please note that this uses Azure features currently in Public Preview, which might not be fully stable and are subject to changes.
 
 ### Registering Azure Features
 
-Before you begin, you need to register specific features in Azure that the OSDU Developer solution relies on. Here's how to do it:
+Before you begin, you need to register specific features in Azure that this approach relies on. Here's how to do it:
 
 
 **Step 1: Register the AzureServiceMeshPreview feature**
 
-The AzureServiceMeshPreview feature enables [AKS service mesh addon for Istio](https://learn.microsoft.com/en-us/azure/aks/istio-about) essential for the OSDU Developer solution. To register this feature, use the Azure CLI command below:
+The AzureServiceMeshPreview feature enables [AKS service mesh addon for Istio](https://learn.microsoft.com/en-us/azure/aks/istio-about). To register this feature, use the Azure CLI command below:
 
 ```bash
 az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
@@ -54,12 +54,12 @@ Once the feature is registered, it's necessary to refresh the resource provider 
 az provider register --namespace Microsoft.ContainerService
 ```
 
-With these steps, you have successfully registered the necessary Azure features to work with the OSDU Developer project. Next, you can proceed to the deployment phase.
+With these steps, you have successfully registered the necessary Azure features. Next, you can proceed to the deployment phase.
 
 
 ## Templated Deployment
 
-Deploying the OSDU solution is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Workflow, detailed in the following section.
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Workflow, detailed in the following section.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 
@@ -67,8 +67,8 @@ __Important Parameter Requirement:__
 
 During the deployment process, there's one essential parameter you need to provide:
 
-`applicationClientId`: Fill this with the Application ClientId that you intend to use for the OSDU solution. This step is crucial for the proper functioning of the template.
-Upon completing the deployment, the infrastructure and software components of the OSDU solution will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
+`applicationClientId`: Fill this with the Application ClientId that you intend to use. This step is crucial for the proper functioning of the template.
+Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
 
 To begin, simply click the button below:
 
@@ -78,7 +78,7 @@ To begin, simply click the button below:
 
 ## Azure Developer CLI - Workflow
 
-The recommended approach for working with the OSDU solution is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
+The recommended approach for working with this is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
 
 
 ### Enabling Alpha Features for Azure Developer CLI
@@ -127,7 +127,7 @@ azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[
 
 ### Optional Feature Flags
 
-Customize your OSDU deployment by enabling these optional features based on your specific requirements:
+Customize your resources by enabling these optional features based on your specific requirements:
 
 
 #### Feature: Pod Subnet
@@ -180,11 +180,11 @@ azd env set _VPN_SHARED_KEY <your_shared_key>
 
 ### Deployment Commands
 
-Efficiently manage your OSDU solution with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
+Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
 
 __Starting the Deployment__
 
-To initiate the deployment of the OSDU solution, use the following command:
+To initiate the deployment, use the following command:
 
 ```bash
 azd provision
@@ -205,7 +205,7 @@ This command will stop all running services and remove resources that were creat
 
 ## Infrastructure
 
-The architecture diagram below provides a visual representation of the OSDU solution's infrastructure when deployed. It's designed to help you understand the various components and how they interact within the Azure environment.
+The architecture diagram below provides a visual representation of the infrastructure when deployed. It's designed to help you understand the various components and how they interact within the Azure environment.
 
 ![[0]][0]
 
@@ -220,7 +220,7 @@ The architecture diagram below provides a visual representation of the OSDU solu
 
 ## Software Management with a Gitops Approach
 
-In the OSDU solution, we utilize a GitOps approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within the infrastructure.
+In this workspace, we utilize a GitOps approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within the infrastructure.
 
 ### Understanding GitOps
 
@@ -241,7 +241,7 @@ Our GitOps configuration resides in this Git repository and uses a customized [r
 - __Rollbacks and Recovery__: Every change is recorded in Git, providing a clear audit trail.
 - __Enhanced Security__: Changes are reviewed through pull requests, increasing security and collaboration.
 
-Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update the OSDU solution, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load. 
+Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load. 
 
 ## Contributing
 

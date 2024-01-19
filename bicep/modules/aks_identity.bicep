@@ -9,15 +9,15 @@ param acrName string
 var acrPullRoleDefinitionId = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 // Resources
-resource aksCluster 'Microsoft.ContainerService/managedClusters@2022-03-02-preview' existing = {
+resource aksCluster 'Microsoft.ContainerService/managedClusters@2023-10-02-preview' existing = {
   name: aksClusterName
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' existing = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' existing = {
   name: acrName
 }
 
-resource acrPullRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource acrPullRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(aksCluster.name, containerRegistry.id, acrPullRoleDefinitionId)
   scope: containerRegistry
   properties: {

@@ -17,8 +17,8 @@
       "vpnSharedKey": {
         "value": "${VPN_SHARED_KEY}"
       },
-      "remoteVpnPrefix": {
-        "value": "${REMOTE_VPN_PREFIX}"
+      "remoteVpnAddress": {
+        "value": "${REMOTE_VPN_ADDRESS}"
       },
       "remoteNetworkPrefix": {
         "value": "${REMOTE_NETWORK_PREFIX}"

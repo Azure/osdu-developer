@@ -3,126 +3,11 @@ targetScope = 'resourceGroup'
 @description('Specify the Azure region to place the application definition.')
 param location string = resourceGroup().location
 
-@description('Feature Flag to Enable Telemetry')
-param enableTelemetry bool = false
-
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
-@allowed([
-  'Internal'
-  'External'
-  'Both'
-])
-@description('The Cluster Ingress Mode')
-param clusterIngress string = 'Both'
-
-@description('List of Data Partitions')
-param partitions array = [
-  {
-    name: 'opendes'
-  }
-]
-
-@allowed([
-  'CostOptimised'
-  'Standard'
-  'HighSpec'
-])
-@description('The Cluster Size')
-param clusterSize string = 'CostOptimised'
-
-/////////////////
-// Software Blade
-/////////////////
-
-@description('Software GIT Repository URL')
-param softwareRepository string = 'https://github.com/azure/osdu-developer'
-
-@description('Software GIT Repository Branch')
-param softwareBranch string = 'main'
-
-
-/////////////////
-// Bastion Blade
-/////////////////
-
-@description('Feature Flag to Enable Bastion')
-param enableBastion bool = false
-
-@description('Specifies the name of the administrator account of the virtual machine.')
-param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
-
-@description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
-@secure()
-param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
-
-@description('New or Existing subnet Name')
-param bastionSubnetName string = 'AzureBastionSubnet'
-
-@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
-param bastionSubnetAddressPrefix string = '10.1.16.0/24'
-
-@description('Specifies the name of the subnet which contains the virtual machine.')
-param vmSubnetName string = 'VmSubnet'
-
-@description('Specifies the address prefix of the subnet which contains the virtual machine.')
-param vmSubnetAddressPrefix string = '10.1.18.0/24'
-
-
-/////////////////
-// Network Blade 
-/////////////////
-@description('Feature Flag to Enable VPN Gateway Functionality')
-param enableVpnGateway bool = false
-
-@description('Shared Key for VPN Gateway')
-@secure()
-param vpnSharedKey string = ''
-
-@description('IP Address of the Remote VPN Gateway')
-param remoteVpnPrefix string = ''
-
-@description('IP Address Segment of the Remote Network')
-param remoteNetworkPrefix string = '192.168.1.0/24'
-
-@description('New or Existing subnet Name')
-param gatewaySubnetName string = 'GatewaySubnet'
-
-@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
-param gatewaySubnetAddressPrefix string = '10.1.17.0/24'
-
-// --
-
-@description('Feature Flag to Enable a Pod Subnet')
-param enablePodSubnet bool = false
-
-@description('New or Existing subnet Name')
-param podSubnetName string = 'PodSubnet'
-
-@description('Subnet address prefix')
-param podSubnetAddressPrefix string = '10.1.19.0/20'
-
-// --
-
-@description('Boolean indicating whether the VNet is new or existing')
-param virtualNetworkNewOrExisting string = 'new'
-
-@description('Name of the Virtual Network (Optional: If exiting Network is selected)')
-param virtualNetworkName string = 'osdu-network'
-
-@description('Resource group of the VNet (Optional: If exiting Network is selected)')
-param virtualNetworkResourceGroup string = 'osdu-network'
-
-@description('VNet address prefix')
-param virtualNetworkAddressPrefix string = '10.1.0.0/16'
-
-@description('New or Existing subnet Name')
-param aksSubnetName string = 'ClusterSubnet'
-
-@description('Subnet address prefix')
-param aksSubnetAddressPrefix string = '10.1.0.0/20'
-
+@description('Feature Flag to Enable Telemetry')
+param enableTelemetry bool = false
 
 /////////////////
 // Security Blade 
@@ -137,9 +22,8 @@ param cmekConfiguration object = {
   identityId: ''
 }
 
-@description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
-param clusterAdminIds array = []
-
+// @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
+// param clusterAdminIds array = []
 
 
 //*****************************************************************//
@@ -152,9 +36,9 @@ param clusterAdminIds array = []
 var commonLayerConfig = {
   name: 'common'
   displayName: 'Common Resources'
-  network: {
-    name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
-  }
+  // network: {
+  //   name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
+  // }
   secrets: {
     tenantId: 'tenant-id'
     subscriptionId: 'subscription-id'
@@ -227,6 +111,7 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
 }
 
 
+
 /*
 .___  ___.   ______   .__   __.  __  .___________.  ______   .______       __  .__   __.   _______ 
 |   \/   |  /  __  \  |  \ |  | |  | |           | /  __  \  |   _  \     |  | |  \ |  |  /  _____|
@@ -256,6 +141,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
 }
 
 
+
 /*
 .__   __.  _______ .___________.____    __    ____  ______   .______       __  ___ 
 |  \ |  | |   ____||           |\   \  /  \  /   / /  __  \  |   _  \     |  |/  / 
@@ -265,10 +151,81 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
 |__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
 */
 
-var vnetId = {
-  new: virtualNetworkNewOrExisting == 'new' ? network.outputs.resourceId : null
-  existing: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks', virtualNetworkName)
-}
+
+/////////////////
+// Network Blade 
+/////////////////
+@description('Feature Flag to Enable VPN Gateway Functionality')
+param enableVirtualWAN bool = false
+
+@description('VNet address prefix')
+param virtualNetworkAddressPrefix string = '10.1.0.0/16'
+
+@description('New or Existing subnet Name')
+param aksSubnetName string = 'ClusterSubnet'
+
+@description('Subnet address prefix')
+param aksSubnetAddressPrefix string = '10.1.0.0/20'
+
+// -
+
+@description('Feature Flag to Enable VPN Gateway Functionality')
+param enableVpnGateway bool = false
+
+@description('Shared Key for VPN Gateway')
+@secure()
+param vpnSharedKey string = ''
+
+@description('IP Address of the Remote VPN Gateway')
+param remoteVpnAddress string = ''
+
+@description('IP Address Segment of the Remote Network')
+param remoteNetworkPrefix string = '192.168.1.0/24'
+
+@description('New or Existing subnet Name')
+param gatewaySubnetName string = 'GatewaySubnet'
+
+@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
+param gatewaySubnetAddressPrefix string = '10.1.17.0/24'
+
+// --
+
+@description('Feature Flag to Enable Bastion')
+param enableBastion bool = false
+
+@description('New or Existing subnet Name')
+param bastionSubnetName string = 'AzureBastionSubnet'
+
+@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
+param bastionSubnetAddressPrefix string = '10.1.16.0/24'
+
+@description('Specifies the name of the subnet which contains the virtual machine.')
+param vmSubnetName string = 'VmSubnet'
+
+@description('Specifies the address prefix of the subnet which contains the virtual machine.')
+param vmSubnetAddressPrefix string = '10.1.18.0/24'
+
+// --
+
+@description('Feature Flag to Enable a Pod Subnet')
+param enablePodSubnet bool = false
+
+@description('New or Existing subnet Name')
+param podSubnetName string = 'PodSubnet'
+
+@description('Subnet address prefix')
+param podSubnetAddressPrefix string = '10.1.20.0/22'
+
+// --
+
+@description('Boolean indicating whether the VNet is new or existing')
+param virtualNetworkNewOrExisting string = 'new'
+
+@description('Name of the Virtual Network (Optional: If exiting Network is selected)')
+param virtualNetworkName string = 'osdu-network'
+
+@description('Resource group of the VNet (Optional: If exiting Network is selected)')
+param virtualNetworkResourceGroup string = 'osdu-network'
 
 var nsgRules = {
   ssh_outbound: {
@@ -492,7 +449,7 @@ var subnets = {
 module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = {
   name: '${commonLayerConfig.name}-network-security-group-cluster'
   params: {
-    name: '${commonLayerConfig.network.name}-nsg-cluster'
+    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-aks'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -512,7 +469,7 @@ module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
 module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (enableBastion) {
   name: '${commonLayerConfig.name}-network-security-group-bastion'
   params: {
-    name: '${commonLayerConfig.network.name}-nsg-bastion'
+    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-bastion'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -537,7 +494,7 @@ module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
 module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (enableBastion) {
   name: '${commonLayerConfig.name}-network-security-group-manage'
   params: {
-    name: '${commonLayerConfig.network.name}-nsg-machine'
+    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-vm'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -553,7 +510,7 @@ module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
 module network 'br/public:avm/res/network/virtual-network:0.1.0' = {
   name: '${commonLayerConfig.name}-virtual-network'
   params: {
-    name: commonLayerConfig.network.name
+    name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -591,10 +548,10 @@ module network 'br/public:avm/res/network/virtual-network:0.1.0' = {
     // Setup Subnets
     subnets: union(
       array(subnets.cluster),
-      enablePodSubnet ? array(subnets.pods) : [],
       enableBastion ? array(subnets.bastion) : [],
       enableBastion ? array(subnets.machine) : [],
-      enableVpnGateway ? array(subnets.gateway) : []
+      enableVpnGateway ? array(subnets.gateway) : [],
+      enablePodSubnet ? array(subnets.pods) : []
     )
   }
   dependsOn: [
@@ -605,13 +562,13 @@ module network 'br/public:avm/res/network/virtual-network:0.1.0' = {
   ]
 }
 
-resource virtualWan 'Microsoft.Network/virtualWans@2023-06-01' = {
-  name: '${commonLayerConfig.network.name}-wan'
+resource virtualWan 'Microsoft.Network/virtualWans@2023-06-01' = if (enableVirtualWAN || enableVpnGateway) {
+  name: 'wan-common${uniqueString(resourceGroup().id, 'common')}'
   location: location
 }
 
-resource virtualHub 'Microsoft.Network/virtualHubs@2023-06-01' = {
-  name: '${commonLayerConfig.network.name}-hub'
+resource virtualHub 'Microsoft.Network/virtualHubs@2023-06-01' = if (enableVirtualWAN || enableVpnGateway) {
+  name: 'hub-common${uniqueString(resourceGroup().id, 'common')}'
   location: location
   properties: {
     virtualWan: {
@@ -627,7 +584,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:0.1.0' = if (enableVpnGateway
   name: '${commonLayerConfig.name}-vpn-site'
   params: {
     // Required parameters
-    name: '${commonLayerConfig.network.name}-vpn-site'
+    name: 'vpn-site-common${uniqueString(resourceGroup().id, 'common')}'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -640,14 +597,13 @@ module vpnSite 'br/public:avm/res/network/vpn-site:0.1.0' = if (enableVpnGateway
     addressPrefixes: [
       remoteNetworkPrefix
     ]
-    ipAddress: remoteVpnPrefix    
+    ipAddress: remoteVpnAddress    
   }
 }
-
 module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnGateway) {
   name: '${commonLayerConfig.name}-vpn-gateway'
   params: {
-    name: '${commonLayerConfig.network.name}-vpn-gw'
+    name: 'vpn-gw-common${uniqueString(resourceGroup().id, 'common')}'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -660,7 +616,7 @@ module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnG
 
     vpnConnections: [
       {
-        name: '${commonLayerConfig.network.name}-vpn-connection'
+        name: 'vpn-connect-common${uniqueString(resourceGroup().id, 'common')}'
         connectionBandwidth: 100
         enableBgp: false
         enableInternetSecurity: true
@@ -676,6 +632,10 @@ module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnG
   }
 }
 
+var vnetId = {
+  new: virtualNetworkNewOrExisting == 'new' ? network.outputs.resourceId : null
+  existing: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks', virtualNetworkName)
+}
 
 
 
@@ -690,82 +650,56 @@ module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnG
 
 var vaultDNSZoneName = 'privatelink.vaultcore.azure.net'
 
-module keyvault 'br:osdubicep.azurecr.io/public/azure-keyvault:1.0.7' = {
+var vaultSecrets = [ 
+  {
+    secretName: commonLayerConfig.secrets.tenantId
+    secretValue: subscription().tenantId
+  }
+  {
+    secretName: commonLayerConfig.secrets.subscriptionId
+    secretValue: subscription().subscriptionId
+  }
+  // Azure AD Secrets
+  {
+    secretName: commonLayerConfig.secrets.clientId
+    secretValue: applicationClientId
+  }
+  {
+    secretName: commonLayerConfig.secrets.applicationPrincipalId
+    secretValue: applicationClientId
+  }
+]
+module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
   name: '${commonLayerConfig.name}-azure-keyvault'
   params: {
-    resourceName: commonLayerConfig.name
+    name: 'kv-${replace(commonLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, commonLayerConfig.name)}'
     location: location
+    enableTelemetry: enableTelemetry
     
     // Assign Tags
     tags: {
       layer: commonLayerConfig.displayName
     }
 
-    // Hook up Diagnostics
-    diagnosticWorkspaceId: logAnalytics.outputs.resourceId
-    diagnosticLogsRetentionInDays: 0
-
     enablePurgeProtection: false
-
-    // Configure Access
-    accessPolicies: [
+    
+    // Configure RBAC
+    enableRbacAuthorization: true
+    roleAssignments: [
       {
+        roleDefinitionIdOrName: 'Key Vault Reader'
         principalId: stampIdentity.outputs.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-            'set'
-          ]
-          certificates: [
-            'create'
-            'get'
-            'list'
-          ]
-        }
+        principalType: 'ServicePrincipal'
       }
     ]
 
     // Configure Secrets
-    secretsObject: { secrets: [
-      // Misc Secrets
-      {
-        secretName: commonLayerConfig.secrets.tenantId
-        secretValue: subscription().tenantId
-      }
-      {
-        secretName: commonLayerConfig.secrets.subscriptionId
-        secretValue: subscription().subscriptionId
-      }
-      // Azure AD Secrets
-      {
-        secretName: commonLayerConfig.secrets.clientId
-        secretValue: applicationClientId
-      }
-      {
-        secretName: commonLayerConfig.secrets.applicationPrincipalId
-        secretValue: applicationClientId
-      }
-      // Managed Identity
-      {
-        secretName: commonLayerConfig.secrets.stampIdentity
-        secretValue: stampIdentity.outputs.principalId
-      }
-    ]}
-
-    // Assign RBAC
-    roleAssignments: [
-      {
-        roleDefinitionIdOrName: 'Reader'
-        principals: [
-          {
-            id: stampIdentity.outputs.principalId
-            resourceId: stampIdentity.outputs.resourceId
-          }
-        ]
-        principalType: 'ServicePrincipal'
-      }
-    ]
+    secrets: {
+      secureList: [for secret in vaultSecrets: {
+        name: secret.secretName
+        value: secret.secretValue
+      }]
+    }
   }
 }
 
@@ -777,10 +711,14 @@ module keyvaultSecrets './modules/keyvault_secrets.bicep' = {
     workspaceName: logAnalytics.outputs.name
     workspaceIdName: commonLayerConfig.secrets.logAnalyticsId
     workspaceKeySecretName: commonLayerConfig.secrets.logAnalyticsKey
+    stampIdName: commonLayerConfig.secrets.stampIdentity
+    stampIdValue: stampIdentity.outputs.principalId
   }
 }
 
-module sshKey 'br:osdubicep.azurecr.io/public/script-sshkeypair:1.0.3' = if (enableBastion) {
+// Deployment Scripts are not enabled yet for Private Link
+// https://github.com/Azure/bicep/issues/6540
+module sshKey './modules/script-sshkeypair/main.bicep' = {
   name: '${commonLayerConfig.name}-azure-keyvault-sshkey'
   params: {
     kvName: keyvault.outputs.name
@@ -792,8 +730,6 @@ module sshKey 'br:osdubicep.azurecr.io/public/script-sshkeypair:1.0.3' = if (ena
     existingManagedIdentityResourceGroupName:resourceGroup().name
 
     sshKeyName: 'PrivateLinkSSHKey-'
-    
-    cleanupPreference: 'Always'
   }
 }
 
@@ -822,8 +758,8 @@ resource vaultDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enabl
   properties: {}
 }
 
-module vaultEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
-  name: '${commonLayerConfig.name}-azure-keyvault-endpoint'
+module vaultEndpoint './modules/private-endpoint/main.bicep' = if (enablePrivateLink) {
+  name: '${commonLayerConfig.name}-azure-keyvault-pep'
   params: {
     resourceName: keyvault.outputs.name
     subnetResourceId: '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}'
@@ -832,7 +768,7 @@ module vaultEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = i
     privateDnsZoneGroup: {
       privateDNSResourceIds: [vaultDNSZone.id]
     }
-    serviceResourceId: keyvault.outputs.id
+    serviceResourceId: keyvault.outputs.resourceId
   }
   dependsOn: [
     network
@@ -840,9 +776,6 @@ module vaultEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = i
   ]
 }
 
-resource existingVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
-  name: keyvault.outputs.name
-}
 
 
 /*   _______.___________.  ______   .______          ___       _______  _______ 
@@ -856,10 +789,10 @@ resource existingVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
 var storageDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
 var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
 
-module configStorage 'br:osdubicep.azurecr.io/public/storage-account:1.0.7' = {
+module configStorage './modules/storage-account/main.bicep' = {
   name: '${commonLayerConfig.name}-azure-storage'
   params: {
-    resourceName: commonLayerConfig.name
+    name: 'sa${replace(commonLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, commonLayerConfig.name)}'
     location: location
 
     // Assign Tags
@@ -905,7 +838,7 @@ resource storageDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (ena
   properties: {}
 }
 
-module storageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
+module storageEndpoint './modules/private-endpoint/main.bicep' = if (enablePrivateLink) {
   name: '${commonLayerConfig.name}-azure-storage-endpoint'
   params: {
     resourceName: configStorage.outputs.name
@@ -923,6 +856,7 @@ module storageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' =
 }
 
 
+
 /*
   _______ .______          ___      .______    __    __  
  /  _____||   _  \        /   \     |   _  \  |  |  |  | 
@@ -934,7 +868,7 @@ module storageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' =
 
 var cosmosDnsZoneName = 'privatelink.documents.azure.com'
 
-module database 'br:osdubicep.azurecr.io/public/cosmos-db:1.0.17' = {
+module database './modules/cosmos-db/main.bicep' = {
   name: '${commonLayerConfig.name}-cosmos-db'
   params: {
     resourceName: commonLayerConfig.name
@@ -1000,7 +934,8 @@ resource cosmosDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enab
   location: 'global'
   properties: {}
 }
-module graphEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = if (enablePrivateLink) {
+
+module graphEndpoint './modules/private-endpoint/main.bicep' = if (enablePrivateLink) {
   name: '${commonLayerConfig.name}-cosmos-db-endpoint'
   params: {
     resourceName: database.outputs.name
@@ -1038,6 +973,12 @@ var manageLayerConfig = {
   }
 }
 
+resource existingVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyvault.outputs.name
+}
+
+
+
 /*.______        ___           _______.___________. __    ______   .__   __. 
 |   _  \      /   \         /       |           ||  |  /  __  \  |  \ |  | 
 |  |_)  |    /  ^  \       |   (----`---|  |----`|  | |  |  |  | |   \|  | 
@@ -1049,12 +990,14 @@ var manageLayerConfig = {
 module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBastion) {
   name: '${manageLayerConfig.name}-bastion'
   params: {
-    name: 'bh-${replace(manageLayerConfig.name, '-', '')}${uniqueString(deployment().name, manageLayerConfig.name)}'
+    name: 'bh-${replace(manageLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, manageLayerConfig.name)}'
     vNetId: network.outputs.resourceId
     location: location
     enableTelemetry: enableTelemetry
   }  
 }
+
+
 
 /*
 .___  ___.      ___       ______  __    __   __  .__   __.  _______ 
@@ -1066,10 +1009,17 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBa
                                                                     
 */
 
+@description('Specifies the name of the administrator account of the virtual machine.')
+param vmAdminUsername string = enableBastion ? 'azureUser' : newGuid()
+
+@description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
+@secure()
+param vmAdminPasswordOrKey string = enableBastion ? '' : newGuid()
+
 module virtualMachine './modules/virtual_machine.bicep' = if (enableBastion) {
   name: 'virtualMachine'
   params: {
-    vmName: '${manageLayerConfig.name}-vm'
+    vmName: 'vm-${replace(manageLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, manageLayerConfig.name)}'
     vmSize: manageLayerConfig.machine.vmSize
 
     // Assign Tags
@@ -1091,9 +1041,25 @@ module virtualMachine './modules/virtual_machine.bicep' = if (enableBastion) {
 }
 
 
+
 //*****************************************************************//
 //  Partition Section                                              //
 //*****************************************************************//
+
+@allowed([
+  'CostOptimised'
+  'Standard'
+  'HighSpec'
+])
+@description('The Cluster Size')
+param clusterSize string = 'CostOptimised'
+
+@description('List of Data Partitions')
+param partitions array = [
+  {
+    name: 'opendes'
+  }
+]
 
 /////////////////////////////////
 // Configuration 
@@ -1306,11 +1272,11 @@ var partitionLayerConfig = {
 | _|    /__/     \__\ | _| `._____|   |__|     |__|     |__|     |__|  \______/  |__| \__| |_______/                                 
 */
 
-module partitionStorage 'br:osdubicep.azurecr.io/public/storage-account:1.0.7' = [for (partition, index) in partitions:  {
+module partitionStorage './modules/storage-account/main.bicep' = [for (partition, index) in partitions:  {
   name: '${partitionLayerConfig.name}-azure-storage-${index}'
   params: {
-    #disable-next-line BCP335
-    resourceName: 'data${index}${uniqueString(partition.name)}'
+    #disable-next-line BCP335 BCP332
+    name: 'sa${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
     location: location
 
     // Assign Tags
@@ -1352,7 +1318,7 @@ module partitionStorage 'br:osdubicep.azurecr.io/public/storage-account:1.0.7' =
   }
 }]
 
-module partitionStorageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = [for (partition, index) in partitions: if (enablePrivateLink) {
+module partitionStorageEndpoint './modules/private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
   name: '${partitionLayerConfig.name}-azure-storage-endpoint-${index}'
   params: {
     resourceName: partitionStorage[index].outputs.name
@@ -1369,7 +1335,7 @@ module partitionStorageEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint
   ]
 }]
 
-module partitionDb 'br:osdubicep.azurecr.io/public/cosmos-db:1.0.17' = [for (partition, index) in partitions: { 
+module partitionDb './modules/cosmos-db/main.bicep' = [for (partition, index) in partitions: { 
   name: '${partitionLayerConfig.name}-cosmos-db-${index}'
   params: {
     #disable-next-line BCP335
@@ -1430,7 +1396,7 @@ module partitionDb 'br:osdubicep.azurecr.io/public/cosmos-db:1.0.17' = [for (par
   }
 }]
 
-module partitionDbEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.1' = [for (partition, index) in partitions: if (enablePrivateLink) {
+module partitionDbEndpoint './modules/private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
   name: '${partitionLayerConfig.name}-cosmos-db-endpoint-${index}'
   params: {
     resourceName: partitionDb[index].outputs.name
@@ -1450,7 +1416,7 @@ module partitionDbEndpoint 'br:osdubicep.azurecr.io/public/private-endpoint:1.0.
 
 
 //*****************************************************************//
-//  Services Section                                               //
+//  Service Section                                               //
 //*****************************************************************//
 @description('Feature Flag to create software config map.')
 var enableConfigMap = true
@@ -1458,7 +1424,22 @@ var enableConfigMap = true
 @description('Feature Flag to Load Software.')
 var enableSoftwareLoad = true
 
+@description('Software GIT Repository URL')
+param softwareRepository string = 'https://github.com/azure/osdu-developer'
 
+@description('Software GIT Repository Branch')
+param softwareBranch string = 'main'
+
+@allowed([
+  'Internal'
+  'External'
+  'Both'
+])
+@description('The Cluster Ingress Mode')
+param clusterIngress string = 'Both'
+
+@description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
+param clusterAdminIds array = []
 
 /////////////////////////////////
 // Configuration 
@@ -1505,7 +1486,7 @@ var serviceLayerConfig = {
 */
 
 module cluster './modules/aks_cluster.bicep' = {
-  name: '${serviceLayerConfig.name}-cluster'
+  name: 'aks-${serviceLayerConfig.name}'
   params: {
     // Basic Details
     resourceName: serviceLayerConfig.name
@@ -1549,7 +1530,6 @@ module cluster './modules/aks_cluster.bicep' = {
 /////////////////
 // Elastic Configuration 
 /////////////////
-@description('Elastic User Pool presets')
 var elasticPoolPresets = {
   // 4 vCPU, 15 GiB RAM, 28 GiB SSD, (12800) IOPS, Ephemeral OS Disk
   CostOptimised : {
@@ -1622,9 +1602,8 @@ module espool3 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-
 //--------------Config Map---------------
-module configMap 'br/public:deployment-scripts/aks-run-command:1.0.1' = if (enableConfigMap) {
+module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
   name: '${serviceLayerConfig.name}-cluster-configmap'
   params: {
     aksName: cluster.outputs.aksClusterName
@@ -1642,7 +1621,6 @@ module configMap 'br/public:deployment-scripts/aks-run-command:1.0.1' = if (enab
     keyvault
   ]
 }
-
 
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {

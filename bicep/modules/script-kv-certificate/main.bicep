@@ -106,7 +106,7 @@ resource rbacKv 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (perfo
 }
 
 resource createImportCerts 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for (certificateName, index) in certificateNames: {
-  name: 'AKV-Cert-${akv.name}-${replace(replace(certificateName, ':', ''), '/', '-')}'
+  name: 'script-${akv.name}-${replace(replace(certificateName, ':', ''), '/', '-')}'
   location: location
   identity: {
     type: 'UserAssigned'

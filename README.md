@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Azure Cloud Platform](https://azure.microsoft.com/).
+[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach for developing and working directly with [OSDU](https://community.opengroup.org/osdu/platform) using the [Microsoft Azure Cloud](https://azure.microsoft.com/).
 
 
 ## Project Principles
@@ -17,42 +17,60 @@ To support ease of use, the project integrates closely with [Github Codespaces](
 
 ## Setup
 
+This section guides you through setting up the necessary Azure features for the OSDU Developer project. Please note that this solution uses Azure features currently in Public Preview, which might not be fully stable and are subject to changes.
+
 ### Registering Azure Features
 
-This solution utilizes Azure features that are currently in Public Preview. Certain features need to be registered before use.
+Before you begin, you need to register specific features in Azure that the OSDU Developer solution relies on. Here's how to do it:
+
 
 **Step 1: Register the AzureServiceMeshPreview feature**
-Use the `az feature register` command to register the _AzureServiceMeshPreview_ feature flag:
+
+The AzureServiceMeshPreview feature enables [AKS service mesh addon for Istio](https://learn.microsoft.com/en-us/azure/aks/istio-about) essential for the OSDU Developer solution. To register this feature, use the Azure CLI command below:
 
 ```bash
 az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
 ```
 
-It may take a few minutes for the feature to register.
+_* Please wait a few minutes for the feature to register. The process might take up to 10 minutes._
 
 
 **Step 2: Verify the Registration Status**
 
-Confirm the registration status using the az feature show command:
+After registering the feature, ensure that the registration was successful. Check the status using the following command:
 
 ```bash
 az feature show --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
 ```
 
-Look for a status that indicates Registered.
+Look for a status that indicates "Registered". If the status hasn't updated, you may need to wait a little longer and try again.
+
 
 **Step 3: Refresh the Resource Provider**
 
-Once registered, refresh the Microsoft.ContainerService resource provider:
+Once the feature is registered, it's necessary to refresh the resource provider to apply the changes. Use this command to refresh the Microsoft.ContainerService resource provider:
 
 ```bash
 az provider register --namespace Microsoft.ContainerService
 ```
 
+With these steps, you have successfully registered the necessary Azure features to work with the OSDU Developer project. Next, you can proceed to the deployment phase.
+
 
 ## Templated Deployment
 
-The solution can be deployed directly with the ARM template but parameter options can be difficult to navigate.  However, this method works just fine when leveraging a fully default deployment.
+Deploying the OSDU solution is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Workflow, detailed in the following section.
+
+To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
+
+__Important Parameter Requirement:__
+
+During the deployment process, there's one essential parameter you need to provide:
+
+`applicationClientId`: Fill this with the Application ClientId that you intend to use for the OSDU solution. This step is crucial for the proper functioning of the template.
+Upon completing the deployment, the infrastructure and software components of the OSDU solution will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
+
+To begin, simply click the button below:
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
@@ -60,100 +78,170 @@ The solution can be deployed directly with the ARM template but parameter option
 
 ## Azure Developer CLI - Workflow
 
-The recommended way for working with the solution is to leverage the Azure Developer CLI so that options can be better set, the solution modified or parameters changed in order to customize a deployment that has more flexability.
+The recommended approach for working with the OSDU solution is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
+
 
 ### Enabling Alpha Features for Azure Developer CLI
 
+This solution utilizes Alpha Features in the Azure Developer CLI for advanced functionalities.
+
 **Resource Group Scoped Deployments**
 
-This solution uses Resource Group Scoped Deployments, an Alpha Feature in the Azure Developer CLI.
+This allows more granular control over deployments at the resource group level.
 
 Enable this feature using the following command:
 
 ```bash
-azd config set alpha.resourceGroupDeployments on   # Enable Alpha Feature
+azd config set alpha.resourceGroupDeployments on
 ```
 
-Note: Alpha features are experimental and might be subject to changes. Use them with this consideration.
+Note: Alpha features are in experimental stages and may undergo changes.
 
 
 ### Authentication
 
-The Azure Developer CLI requires authentication.  Log in using the following command:
+Authenticate your session to interact with Azure resources:
 
 ```bash
 azd auth login
 ```
 
-### Environment Variables
+### Setting Up Environment Variables
 
-Set up the environment using the following variables. You can find these values in your Azure portal or by using appropriate Azure CLI commands.
+Define the necessary environment variables for your deployment:
 
-
-| Variable              | Purpose                                 |
-| :-------------------- | :-------------------------------------- |
-| AZURE_SUBSCRIPTION_ID | The Azure Subscription _(GUID)_         |
-| AZURE_LOCATION        | The Azure Region                        |
-| AZURE_CLIENT_ID       | Azure AD Application Client Id _(GUID)_ |
-| ENABLE_POD_SUBNET     | Feature Flag - Pod Subnet               |
-| ENABLE_BASTION        | Feature Flag - Bastion and Manage VM    |
-| ENABLE_VPN_GATEWAY    | Feature Flag - VPN Site to Site         |
-
-
-Initialize the environment and set the Azure Client ID:
+1. Initialize the environment and set the Azure Client ID:
 
 ```bash
 azd init -e dev
+```
 
-APP_NAME=   # <-- <your_ad_application_name>
+2. Set Azure Client ID:
 
+Replace <your_ad_application_name> with your actual Azure AD Application Name.
+
+```bash
+APP_NAME=<your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
+```
 
-# Feature Flags (Optional)
+### Optional Feature Flags
+
+Customize your OSDU deployment by enabling these optional features based on your specific requirements:
+
+
+#### Feature: Pod Subnet
+
+__Purpose:__ Enhances network configuration for Kubernetes Pods.
+
+__Details:__ Typically, with kubenet in Kubernetes, nodes are assigned IP addresses from the Azure virtual network subnet. Enabling the Pod Subnet feature allows Pods to receive IP addresses from a different address space, separate from the subnet of the nodes. This separation alters the network flows.
+
+__How To Enable:__
+
+```bash
 azd env set ENABLE_POD_SUBNET true
-azd env set ENABLE_BASTION true
-azd env set ENABLE_VPN_GATEWAY true
 ```
 
 
-_Feature: Pod Subnet_
+#### Feature: Bastion
 
-With kubenet, nodes get an IP address from the Azure virtual network subnet. With this feature enables the Pods receive an IP address from a logically different address space then the Azure virtual network subnet of the nodes.
+__Purpose:__ Facilitates secure access to internal network resources.
 
+__Details:__ Internal ingress configurations can sometimes make it challenging to access network resources. The Bastion feature addresses this by creating a bastion host and a virtual machine. These components act as a secure gateway, allowing you to communicate with and manage resources within the private network, even if they're not exposed to the public internet.
 
-_Feature: Bastion_
+__How To Enable:__
 
-With internal ingress enabled it can be challenging to communicate.  The bastion feature if enabled will create a bastion host and a virtual machine that can be used to communicate to resources from the private network.
-
-
-_Feature: VPN Gateway_
-
-It is common to have site to site VPN connections and the ability to optionally configure a point to site vpn connction when using internal ingress.  Development in this scenario can be challenging. The vpn gateway feature if enabled assists in creating the required resources necessary to establish connections to the private network.
-
-Additional values are necessary with this feature.
-
-1. REMOTE_NETWORK_PREFIX - The CIDR of the remote network. (192.168.1.0/24)
-2. REMOTE_VPN_ADDRESS - The Remote VPN Gateway IP address.
-3. VPN_SHARED_KEY - The Shared Key for the VPN Connection.
+```bash
+azd env set ENABLE_BASTION true
+```
 
 
-### Commands
+#### Feature: VPN Gateway
 
-The solution template is provisioned using the azure developer cli.
+__Purpose:__ Establishes secure VPN connections for remote access.
 
-| Action | Command                    |
-| :----- | :------------------------- |
-| Start  | `azd provision`            |
-| Stop   | `azd down --purge --force` |
+__Details:__ The VPN Gateway feature is essential for projects that require secure remote network access. It facilitates the creation of site-to-site and point-to-site VPN connections, enabling secure and flexible development environments, especially when dealing with internal ingress. This feature is crucial for maintaining robust network security and facilitating seamless remote access.
+
+__Additional Configuration Values:__
+
+- REMOTE_NETWORK_PREFIX: The CIDR notation for the remote network (e.g., '192.168.1.0/24').
+- REMOTE_VPN_ADDRESS: The IP address of the Remote VPN Gateway.
+- VPN_SHARED_KEY: The shared key for establishing the VPN connection.
+
+__How To Enable:__
+
+```bash
+azd env set ENABLE_VPN_GATEWAY true
+azd env set REMOTE_NETWORK_PREFIX <your_network_prefix>
+azd env set REMOTE_VPN_ADDRESS <your_vpn_ip>
+azd env set _VPN_SHARED_KEY <your_shared_key>
+```
+
+
+### Deployment Commands
+
+Efficiently manage your OSDU solution with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
+
+__Starting the Deployment__
+
+To initiate the deployment of the OSDU solution, use the following command:
+
+```bash
+azd provision
+```
+
+This command starts the provisioning process, setting up all necessary resources in Azure according to your configuration.
+
+__Removal and Cleaning up__
+
+When you need to remove your deployment and clean up resources, use this command:
+
+```bash
+azd down --purge --force
+```
+
+This command will stop all running services and remove resources that were created during the deployment. The --purge flag ensures that any keyvaults are completely removed, and the --force option bypasses any confirmation prompts, making the process faster.
 
 
 ## Infrastructure
 
-The following diagram helps to visualize the architecture of the resources.
+The architecture diagram below provides a visual representation of the OSDU solution's infrastructure when deployed. It's designed to help you understand the various components and how they interact within the Azure environment.
 
 ![[0]][0]
 
 
+### Key Components Illustrated in the Diagram:
+
+1. Azure Virtual Network: Illustrates the network and how feature enablement changes the network structure and subnets.
+2. Azure Kubernetes Service (AKS): Demonstrates the Kubernetes clusters and an example of how software is set up along with interactions to other Azure services.
+3. Storage Resources: Illustrates the use of services such as Azure Storage Accounts and Azure Cosmos Databases and how they connect to the network.
+4. Optional Features: If enabled, features like the VPN Gateway, Bastion Host, and Pod Subnet are represented, attempting to show their placement and role within the architecture.
+
+
+## Software Management with a Gitops Approach
+
+In the OSDU solution, we utilize a GitOps approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within the infrastructure.
+
+### Understanding GitOps
+
+GitOps is a modern approach to automate software deployment and infrastructure updates. It uses Git as a single source of truth for declarative infrastructure and applications. By applying GitOps, changes are made through pull requests, ensuring a transparent, reviewable, and auditable process.
+
+### GitOps Configuration
+
+Our GitOps configuration resides in this Git repository and uses a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) structure. This repository includes:
+
+- __Configuration Files__: YAML files defining the desired state of our components and applications.
+
+- __Charts__: Helm charts used for defining, installing, and upgrading Kubernetes applications.
+
+### Advantages of GitOps
+
+- __Consistency and Standardization__: Ensures consistent configurations across different environments.
+- __Audit Trails__: Every change is recorded in Git, providing a clear audit trail.
+- __Rollbacks and Recovery__: Every change is recorded in Git, providing a clear audit trail.
+- __Enhanced Security__: Changes are reviewed through pull requests, increasing security and collaboration.
+
+Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update the OSDU solution, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load. 
 
 ## Contributing
 

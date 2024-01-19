@@ -59,7 +59,7 @@ With these steps, you have successfully registered the necessary Azure features.
 
 ## Templated Deployment
 
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Workflow, detailed in the following section.
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 
@@ -76,7 +76,7 @@ To begin, simply click the button below:
 
 
 
-## Azure Developer CLI - Workflow
+## Azure Developer CLI - Deployment
 
 The recommended approach for working with this is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
 

@@ -10,6 +10,10 @@ service:
   port: 80
   targetPort: 8080
 
+serviceAccount:
+  create: true
+  name: "" #Leave empty and it'll default to the name of the app, thanks to the _helpers.tpl
+
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -19,8 +23,8 @@ autoscaling:
 ################################################################################
 # Specify the azure environment specific values
 #
-# azure:
-#   enabled: true
+azure:
+  enabled: false
 #   tenant: <tenant_id>
 #   subscription: <subscription_id>
 #   resourcegroup: <central_resource_group>
@@ -32,11 +36,11 @@ autoscaling:
 env:
 - name: MESSAGE
   value: Hello World!
-- name: AZURE_TENANT_ID
-  secret:
-    name: active-directory
-    key: tenantid
-- name: WORKSPACE_ID
-  secret:
-    name: central-logging
-    key: log-workspace-id
+# - name: AZURE_TENANT_ID
+#   secret:
+#     name: active-directory
+#     key: tenantid
+# - name: WORKSPACE_ID
+#   secret:
+#     name: central-logging
+#     key: log-workspace-id

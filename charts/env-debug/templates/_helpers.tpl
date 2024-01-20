@@ -51,3 +51,14 @@ app.kubernetes.io/name: {{ include "env-debug.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 aadpodidbinding: osdu-identity
 {{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "env-debug.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "env-debug.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}

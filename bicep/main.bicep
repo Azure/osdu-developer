@@ -1526,6 +1526,48 @@ module cluster './modules/aks_cluster.bicep' = {
   }
 }
 
+module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity'
+  params: {
+    // Required parameters
+    name: 'id-${replace(serviceLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, serviceLayerConfig.name)}'
+    location: location
+    enableTelemetry: enableTelemetry
+
+    federatedIdentityCredentials: [
+      {
+        audiences: [
+          'api://AzureADTokenExchange'
+        ]
+        issuer: cluster.outputs.aksOidcIssuerUrl
+        name: '${serviceLayerConfig.name}-user-managed-identity-fed1'
+        subject: 'system:serviceaccount:default:workload-identity-sa'
+      }
+    ]
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Managed Identity Operator'
+        principalId: stampIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Assign Tags
+    tags: {
+      layer: serviceLayerConfig.displayName
+    }
+  }
+}
+
+module stampOperator './modules/operator_rbac.bicep' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity-operator'
+  params: {
+    operatorIdentityName: stampIdentity.outputs.name
+    identityclientId: appIdentity.outputs.clientId
+  }
+}
+
 
 /////////////////
 // Elastic Configuration 
@@ -1603,6 +1645,7 @@ module espool3 './modules/aks_agent_pool.bicep' = {
 }
 
 //--------------Config Map---------------
+var configmapValues = '--from-literal=keyvault={1} --from-literal=clientId={2}'
 module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
   name: '${serviceLayerConfig.name}-cluster-configmap'
   params: {
@@ -1610,8 +1653,10 @@ module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
     location: location
     commands: [
       format(
-        'kubectl create configmap app-config --from-literal=keyvault={0} -n default --save-config',  
-        keyvault.outputs.name
+        'kubectl create configmap app-config {0} -n default --save-config',
+        configmapValues,  
+        keyvault.outputs.name,
+        appIdentity.outputs.clientId
         )
     ]
     cleanupPreference: 'Always'

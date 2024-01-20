@@ -1645,27 +1645,48 @@ module espool3 './modules/aks_agent_pool.bicep' = {
 }
 
 //--------------Config Map---------------
-var configmapValues = '--from-literal=keyvault={1} --from-literal=clientId={2}'
-module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-configmap'
+module configMap './modules/aks_configmap.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster'
   params: {
-    aksName: cluster.outputs.aksClusterName
+    cluster: cluster.outputs.aksClusterName
     location: location
-    commands: [
-      format(
-        'kubectl create configmap app-config {0} -n default --save-config',
-        configmapValues,  
-        keyvault.outputs.name,
-        appIdentity.outputs.clientId
-        )
+    name: 'app-config'
+    namespace: 'default'
+    dataMap: [
+      {
+        key: 'keyvault'
+        value: keyvault.outputs.name
+      }
+      {
+        key: 'clientId'
+        value: appIdentity.outputs.clientId
+      }
     ]
-    cleanupPreference: 'Always'
   }
   dependsOn: [
     cluster
     keyvault
   ]
 }
+// var configmapValues = '--from-literal=keyvault={1} --from-literal=clientId={2}'
+// module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
+//   name: '${serviceLayerConfig.name}-cluster-configmap'
+//   params: {
+//     aksName: cluster.outputs.aksClusterName
+//     location: location
+//     commands: [
+//       format(
+//         'kubectl create configmap app-config {0} -n default --save-config',
+//         format(configmapValues, keyvault.outputs.name, appIdentity.outputs.clientId)
+//         )
+//     ]
+//     cleanupPreference: 'Always'
+//   }
+//   dependsOn: [
+//     cluster
+//     keyvault
+//   ]
+// }
 
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {

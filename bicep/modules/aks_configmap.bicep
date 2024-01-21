@@ -18,7 +18,7 @@ param dataMap array = [
   }
 ]
 
-var configmapValues = [for (key, value) in dataMap: '--from-literal=${key}=${value}']
+var configmapValues = [for item in dataMap: '--from-literal=${item.key}=${item.value}']
 var configmapValuesString = join(configmapValues, ' ')
 
 module configMap './aks-run-command/main.bicep' = {

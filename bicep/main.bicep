@@ -1641,55 +1641,52 @@ module espool3 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-//--------------Config Map---------------
-module configMap './modules/aks_configmap.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster'
+//--------------Helm Install---------------
+module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
+  name: 'helmAppConfigProvider'
   params: {
-    cluster: cluster.outputs.aksClusterName
+    aksName: cluster.outputs.aksClusterName
     location: location
-    name: 'app-config'
-    namespace: 'default'
-    dataMap: [
-      {
-        key: 'tenant'
-        value: subscription().tenantId
-      }
-      {
-        key: 'subscription'
-        value: subscription().subscriptionId
-      }
-      {
-        key: 'clientId'
-        value: appIdentity.outputs.clientId
-      }
-      {
-        key: 'keyvault'
-        value: keyvault.outputs.name
-      }
+
+    newOrExistingManagedIdentity: 'existing'
+    managedIdentityName: stampIdentity.outputs.name
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+
+    commands: [
+      'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
     ]
   }
-  dependsOn: [
-    cluster
-    keyvault
-  ]
 }
 
-module workloadIdentityValues './modules/aks_configmap.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-configmap-dev-sample'
+//--------------Config Map---------------
+var configMaps = {
+  appConfigTemplate: '''
+values.yaml: |
+  auth:
+    workloadIdentity:
+      managedIdentityClientId: {0}
+'''
+  workloadIdentityTemplate: '''
+values.yaml: |
+  azureWorkloadIdentity:
+    tenantId: "{0}"
+    clientId: "{1}"
+  serviceAccount:
+    create: true
+    name: ""
+'''
+}
+
+module appConfigProviderMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster'
   params: {
-    cluster: cluster.outputs.aksClusterName
+    aksName: cluster.outputs.aksClusterName
     location: location
     name: 'workload-identity-values'
     namespace: 'default'
-    dataMap: [
-      {
-        key: 'values.yaml'
-        value: format('''
-azureWorkloadIdentity:
-  clientId: '{0}'
-  tenantId: '{1}'
-''', appIdentity.outputs.clientId, subscription().tenantId)
-      }
+    fileData: [
+      format(configMaps.appConfigTemplate, appIdentity.outputs.clientId)
     ]
   }
   dependsOn: [
@@ -1697,7 +1694,21 @@ azureWorkloadIdentity:
   ]
 }
 
-
+module workloadIdentityMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster'
+  params: {
+    aksName: cluster.outputs.aksClusterName
+    location: location
+    name: 'workload-identity-values'
+    namespace: 'default'
+    fileData: [
+      format(configMaps.workloadIdentityTemplate, subscription().tenantId,appIdentity.outputs.clientId)
+    ]
+  }
+  dependsOn: [
+    cluster
+  ]
+}
 
 
 //--------------Flux Config---------------
@@ -1743,6 +1754,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
     espool1
     espool2
     espool3
-    configMap
+    workloadIdentityMap
+    appConfigProviderMap
   ]
 }

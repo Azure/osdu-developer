@@ -63,8 +63,5 @@ Install the helm chart.
 ```bash
 # Create Namespace
 NAMESPACE=dev-sample
-kubectl create namespace $NAMESPACE
-
-# Install Charts
-helm install env-tool . -n $NAMESPACE -f custom_values.yaml
+helm install dev-sample . -n $NAMESPACE --create-namespace
 ```

@@ -22,9 +22,6 @@ param cmekConfiguration object = {
   identityId: ''
 }
 
-// @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
-// param clusterAdminIds array = []
-
 
 //*****************************************************************//
 //  Common Section                                                 //
@@ -1654,12 +1651,20 @@ module configMap './modules/aks_configmap.bicep' = if (enableConfigMap) {
     namespace: 'default'
     dataMap: [
       {
-        key: 'keyvault'
-        value: keyvault.outputs.name
+        key: 'tenant'
+        value: subscription().tenantId
+      }
+      {
+        key: 'subscription'
+        value: subscription().subscriptionId
       }
       {
         key: 'clientId'
         value: appIdentity.outputs.clientId
+      }
+      {
+        key: 'keyvault'
+        value: keyvault.outputs.name
       }
     ]
   }
@@ -1668,25 +1673,32 @@ module configMap './modules/aks_configmap.bicep' = if (enableConfigMap) {
     keyvault
   ]
 }
-// var configmapValues = '--from-literal=keyvault={1} --from-literal=clientId={2}'
-// module configMap './modules/aks-run-command/main.bicep' = if (enableConfigMap) {
-//   name: '${serviceLayerConfig.name}-cluster-configmap'
-//   params: {
-//     aksName: cluster.outputs.aksClusterName
-//     location: location
-//     commands: [
-//       format(
-//         'kubectl create configmap app-config {0} -n default --save-config',
-//         format(configmapValues, keyvault.outputs.name, appIdentity.outputs.clientId)
-//         )
-//     ]
-//     cleanupPreference: 'Always'
-//   }
-//   dependsOn: [
-//     cluster
-//     keyvault
-//   ]
-// }
+
+module workloadIdentityValues './modules/aks_configmap.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-configmap-dev-sample'
+  params: {
+    cluster: cluster.outputs.aksClusterName
+    location: location
+    name: 'workload-identity-values'
+    namespace: 'default'
+    dataMap: [
+      {
+        key: 'values.yaml'
+        value: format('''
+azureWorkloadIdentity:
+  clientId: '{0}'
+  tenantId: '{1}'
+''', appIdentity.outputs.clientId, subscription().tenantId)
+      }
+    ]
+  }
+  dependsOn: [
+    cluster
+  ]
+}
+
+
+
 
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {

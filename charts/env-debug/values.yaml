@@ -9,8 +9,8 @@ service:
   targetPort: 8080
 
 serviceAccount:
-  create: true
-  name: "" 
+  create: false
+  name: "workload-identity-sa" 
 
 azureWorkloadIdentity:
   clientId: ""

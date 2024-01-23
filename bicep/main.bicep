@@ -1523,6 +1523,16 @@ module cluster './modules/aks_cluster.bicep' = {
   }
 }
 
+
+/////////////////
+// Workload Identity Federated Credentials 
+/////////////////
+
+var fedederatedNamespaces = [
+  'default'
+  'dev-sample'
+]
+
 module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
   name: '${serviceLayerConfig.name}-user-managed-identity'
   params: {
@@ -1531,16 +1541,14 @@ module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.
     location: location
     enableTelemetry: enableTelemetry
 
-    federatedIdentityCredentials: [
-      {
-        audiences: [
-          'api://AzureADTokenExchange'
-        ]
-        issuer: cluster.outputs.aksOidcIssuerUrl
-        name: '${serviceLayerConfig.name}-user-managed-identity-fed1'
-        subject: 'system:serviceaccount:default:workload-identity-sa'
-      }
-    ]
+    federatedIdentityCredentials: [for cred in fedederatedNamespaces: {
+      audiences: [
+        'api://AzureADTokenExchange'
+      ]
+      issuer: cluster.outputs.aksOidcIssuerUrl
+      name: 'federatedCredential-${cred}'
+      subject: 'system:serviceaccount:${cred}:workload-identity-sa'
+    }]
 
     roleAssignments: [
       {

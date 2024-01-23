@@ -2,21 +2,27 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: env-tool
-  namespace: dev-sample
+  name: dev-sample
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
 spec:
   chart:
     spec:
       chart: ./charts/env-debug
       sourceRef:
         kind: GitRepository
-        name: osdu-developer
+        name: flux-system
         namespace: flux-system
   interval: 5m0s
   install:
     remediation:
       retries: 3
   targetNamespace: dev-sample
+  valuesFrom:
+    - kind: ConfigMap
+      name: workload-identity-values
+      valuesKey: values.yaml
   values:
     replicaCount: 1
     nameOverride: ""
@@ -24,21 +30,38 @@ spec:
     service:
       type: ClusterIP
       port: 80
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 80
     azure:
       enabled: false
     env:
     - name: MESSAGE
       value: Hello World!
-    # - name: AZURE_TENANT_ID
-    #   secret:
-    #     name: active-directory
-    #     key: tenantid
-    # - name: WORKSPACE_ID
-    #   secret:
-    #     name: central-logging
-    #     key: workspace-id
+    - name: FROM_CONFIG_MAP
+      valueFrom:
+        configMapKeyRef:
+          name: env-debug-config
+          key: MESSAGE
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: app-config
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  chart:
+    spec:
+      chart: ./charts/app-config
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: dev-sample
+  valuesFrom:
+    - kind: ConfigMap
+      name: app-config-values
+      valuesKey: values.yaml

@@ -22,6 +22,12 @@
       },
       "remoteNetworkPrefix": {
         "value": "${REMOTE_NETWORK_PREFIX}"
+      },
+      "softwareRepository": {
+        "value": "${SOFTWARE_REPOSITORY}"
+      },
+      "softwareBranch": {
+        "value": "${SOFTWARE_BRANCH}"
       }
     }
   }

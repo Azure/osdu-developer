@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "7201082717854836225"
+      "templateHash": "18430297187626944941"
     }
   },
   "parameters": {
@@ -23456,7 +23456,10 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('aks-{0}', variables('serviceLayerConfig').name))]"
+        "[resourceId('Microsoft.Resources/deployments', format('aks-{0}', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool1', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool2', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool3', variables('serviceLayerConfig').name))]"
       ]
     }
   ],

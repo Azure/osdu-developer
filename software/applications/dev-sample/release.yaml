@@ -40,28 +40,28 @@ spec:
         configMapKeyRef:
           name: env-debug-config
           key: MESSAGE
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: app-config
-  namespace: default
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  chart:
-    spec:
-      chart: ./charts/app-config
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  targetNamespace: dev-sample
-  valuesFrom:
-    - kind: ConfigMap
-      name: app-config-values
-      valuesKey: values.yaml
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: app-config
+#   namespace: default
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   chart:
+#     spec:
+#       chart: ./charts/app-config
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   targetNamespace: dev-sample
+#   valuesFrom:
+#     - kind: ConfigMap
+#       name: app-config-values
+#       valuesKey: values.yaml

@@ -1523,57 +1523,6 @@ module cluster './modules/aks_cluster.bicep' = {
   }
 }
 
-
-/////////////////
-// Workload Identity Federated Credentials 
-/////////////////
-
-var fedederatedNamespaces = [
-  'default'
-  'dev-sample'
-]
-
-module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
-  name: '${serviceLayerConfig.name}-user-managed-identity'
-  params: {
-    // Required parameters
-    name: 'id-${replace(serviceLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, serviceLayerConfig.name)}'
-    location: location
-    enableTelemetry: enableTelemetry
-
-    federatedIdentityCredentials: [for cred in fedederatedNamespaces: {
-      audiences: [
-        'api://AzureADTokenExchange'
-      ]
-      issuer: cluster.outputs.aksOidcIssuerUrl
-      name: 'federatedCredential-${cred}'
-      subject: 'system:serviceaccount:${cred}:workload-identity-sa'
-    }]
-
-    roleAssignments: [
-      {
-        roleDefinitionIdOrName: 'Managed Identity Operator'
-        principalId: stampIdentity.outputs.principalId
-        principalType: 'ServicePrincipal'
-      }
-    ]
-
-    // Assign Tags
-    tags: {
-      layer: serviceLayerConfig.displayName
-    }
-  }
-}
-
-module stampOperator './modules/operator_rbac.bicep' = {
-  name: '${serviceLayerConfig.name}-user-managed-identity-operator'
-  params: {
-    operatorIdentityName: stampIdentity.outputs.name
-    identityclientId: appIdentity.outputs.clientId
-  }
-}
-
-
 /////////////////
 // Elastic Configuration 
 /////////////////
@@ -1649,7 +1598,75 @@ module espool3 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-//--------------Helm Install---------------
+
+/////////////////
+// Workload Identity Federated Credentials 
+/////////////////
+module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity'
+  params: {
+    // Required parameters
+    name: 'id-${replace(serviceLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, serviceLayerConfig.name)}'
+    location: location
+    enableTelemetry: enableTelemetry
+
+    // Only support 1.  https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation-considerations#concurrent-updates-arent-supported-user-assigned-managed-identities
+    federatedIdentityCredentials: [{
+      audiences: [
+        'api://AzureADTokenExchange'
+      ]
+      issuer: cluster.outputs.aksOidcIssuerUrl
+      name: 'federated-ns_default'
+      subject: 'system:serviceaccount:default:workload-identity-sa'
+    }]
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Managed Identity Operator'
+        principalId: stampIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Assign Tags
+    tags: {
+      layer: serviceLayerConfig.displayName
+    }
+  }
+}
+
+// Federated Credentials have to be sequentially added.  Ensure depends on.
+module federatedCredentials1 './modules/federated_identity.bicep' = {
+  name: '${serviceLayerConfig.name}-federated-ident-ns_dev-sample'
+  params: {
+    name: 'federated-ns_dev-sample'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.outputs.name
+    subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
+  }
+  dependsOn: [
+    appIdentity
+  ]
+}
+
+module identityOperatorRole './modules/operator_rbac.bicep' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity-operator'
+  params: {
+    operatorIdentityName: stampIdentity.outputs.name
+    identityclientId: appIdentity.outputs.clientId
+  }
+  dependsOn: [
+    federatedCredentials1
+  ]
+}
+
+
+/////////////////
+// Helm Charts 
+/////////////////
 module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
   name: 'helmAppConfigProvider'
   params: {
@@ -1666,6 +1683,7 @@ module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
     ]
   }
 }
+
 
 
 /*
@@ -1715,6 +1733,9 @@ module app_config 'modules/app-configuration/main.bicep' = {
     // Add Configuration
     keyValues: concat(appSettings)
   }
+  dependsOn: [
+    identityOperatorRole
+  ]
 }
 
 @description('The name of the azure keyvault.')

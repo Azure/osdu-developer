@@ -125,6 +125,15 @@ APP_NAME=<your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
 ```
 
+3. Set Software Repository Location:
+
+Configure the location of where the software declaration is.
+
+```bash
+azd env set SOFTWARE_REPOSITORY https://github.com/azure/osdu-developer
+azd env set SOFTWARE_BRANCH main
+```
+
 ### Optional Feature Flags
 
 Customize your resources by enabling these optional features based on your specific requirements:

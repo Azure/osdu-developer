@@ -1661,12 +1661,6 @@ module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
 
 //--------------Config Map---------------
 var configMaps = {
-  appConfigTemplate: '''
-values.yaml: |
-  auth:
-    workloadIdentity:
-      managedIdentityClientId: {0}
-'''
   workloadIdentityTemplate: '''
 values.yaml: |
   azureWorkloadIdentity:
@@ -1676,33 +1670,24 @@ values.yaml: |
     create: true
     name: ""
 '''
-}
-
-module appConfigProviderMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    name: 'workload-identity-values'
-    namespace: 'default'
-    fileData: [
-      format(configMaps.appConfigTemplate, appIdentity.outputs.clientId)
-    ]
-  }
-  dependsOn: [
-    cluster
-  ]
+appConfigTemplate: '''
+values.yaml: |
+  azureWorkloadIdentity:
+    clientId: "{0}"
+  appConfiguration:
+    endpoint: "{1}"
+'''
 }
 
 module workloadIdentityMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster'
+  name: '${serviceLayerConfig.name}-cluster-workloadidentitymap'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
     name: 'workload-identity-values'
     namespace: 'default'
     fileData: [
-      format(configMaps.workloadIdentityTemplate, subscription().tenantId,appIdentity.outputs.clientId)
+      format(configMaps.workloadIdentityTemplate, subscription().tenantId, appIdentity.outputs.clientId)
     ]
   }
   dependsOn: [
@@ -1710,6 +1695,87 @@ module workloadIdentityMap './modules/aks-config-map/main.bicep' = if (enableCon
   ]
 }
 
+module appConfigProviderMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster-appconfigmap'
+  params: {
+    aksName: cluster.outputs.aksClusterName
+    location: location
+    name: 'app-config-values'
+    namespace: 'default'
+    fileData: [
+      format(configMaps.appConfigTemplate, appIdentity.outputs.clientId, app_config.outputs.endpoint)
+    ]
+  }
+  dependsOn: [
+    cluster
+    helmAppConfigProvider
+  ]
+}
+
+
+/*
+     ___      .______   .______     ______   ______   .__   __.  _______  __    _______
+    /   \     |   _  \  |   _  \   /      | /  __  \  |  \ |  | |   ____||  |  /  _____|
+   /  ^  \    |  |_)  | |  |_)  | |  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __
+  /  /_\  \   |   ___/  |   ___/  |  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ |
+ /  _____  \  |  |      |  |      |  `----.|  `--'  | |  |\   | |  |     |  | |  |__| |
+/__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______|
+*/
+
+var appSettings = [
+  {
+    name: 'Settings:FontColor'
+    value: 'Green'
+    contentType: 'text/plain'
+    label: 'ConfigMap-Sample'
+  }
+  {
+    name: 'Settings:Message'
+    value: 'Hello from App Configuration'
+    contentType: 'text/plain'
+    label: 'ConfigMap-Sample'
+  }
+]
+
+module app_config 'modules/app-configuration/main.bicep' = {
+  name: '${serviceLayerConfig.name}-appconfig'
+  params: {
+    resourceName: serviceLayerConfig.name
+    location: location
+    tags: {
+      layer: serviceLayerConfig.displayName
+    }
+
+    // Add Role Assignment
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'App Configuration Data Reader'
+        principalIds: [
+          appIdentity.outputs.principalId
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Add Configuration
+    keyValues: concat(appSettings)
+  }
+  dependsOn: [
+    cluster
+    helmAppConfigProvider
+  ]
+}
+
+@description('The name of the azure keyvault.')
+output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
+
+/* _______  __  .___________.  ______   .______     _______.
+ /  _____||  | |           | /  __  \  |   _  \   /       |
+|  |  __  |  | `---|  |----`|  |  |  | |  |_)  | |   (----`
+|  | |_ | |  |     |  |     |  |  |  | |   ___/   \   \    
+|  |__| | |  |     |  |     |  `--'  | |  |   .----)   |   
+ \______| |__|     |__|      \______/  | _|   |_______/                                                          
+*/
 
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {
@@ -1750,11 +1816,8 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
     } 
   }
   dependsOn: [
-    cluster
-    espool1
-    espool2
-    espool3
-    workloadIdentityMap
-    appConfigProviderMap
+    app_config
   ]
 }
+
+//ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

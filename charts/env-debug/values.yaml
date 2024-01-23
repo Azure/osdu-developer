@@ -28,3 +28,8 @@ azure:
 env:
 - name: MESSAGE
   value: Hello World!
+- name: FROM_CONFIG_MAP
+  valueFrom:
+    configMapKeyRef:
+      name: "{{ include \"env-debug.fullname\" . }}-config"
+      key: MESSAGE

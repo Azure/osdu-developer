@@ -1826,7 +1826,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   }
   dependsOn: [
     app_config
-    workloadIdentityMap
+    devSampleMap
     espool1
     espool2
     espool3

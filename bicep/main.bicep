@@ -1743,49 +1743,38 @@ output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
 
 //--------------Config Map---------------
 var configMaps = {
-  workloadIdentityTemplate: '''
+  devSampleTemplate: '''
 values.yaml: |
-  azureWorkloadIdentity:
-    tenantId: "{0}"
-    clientId: "{1}"
   serviceAccount:
-    create: true
-    name: ""
-'''
-appConfigTemplate: '''
-values.yaml: |
-  azureWorkloadIdentity:
-    clientId: "{0}"
-  appConfiguration:
-    endpoint: "{1}"
+    create: false
+    name: "workload-identity-sa"
+  azure:
+    enabled: true
+    tenantId: "{0}"
+    clientId: {1}
+    configEndpoint: {2}
+    keyvaultName: {3}
 '''
 }
 
-module workloadIdentityMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
   name: '${serviceLayerConfig.name}-cluster-workloadidentitymap'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
-    name: 'workload-identity-values'
+    name: 'dev-sample-values'
     namespace: 'default'
     fileData: [
-      format(configMaps.workloadIdentityTemplate, subscription().tenantId, appIdentity.outputs.clientId)
+      format(configMaps.devSampleTemplate, 
+             subscription().tenantId, 
+             appIdentity.outputs.clientId,
+             app_config.outputs.endpoint,
+             keyvault.outputs.name)
     ]
   }
 }
 
-module appConfigProviderMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-appconfigmap'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    name: 'app-config-values'
-    namespace: 'default'
-    fileData: [
-      format(configMaps.appConfigTemplate, appIdentity.outputs.clientId, app_config.outputs.endpoint)
-    ]
-  }
-}
+
 
 
 
@@ -1837,7 +1826,6 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   }
   dependsOn: [
     app_config
-    appConfigProviderMap
     workloadIdentityMap
     espool1
     espool2

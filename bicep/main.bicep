@@ -1669,7 +1669,7 @@ module appRoleAssignments './modules/app_assignments.bicep' = {
 // Helm Charts 
 /////////////////
 module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
-  name: '${serviceLayerConfig.name}-helm-AppConfigProvider'
+  name: '${serviceLayerConfig.name}-helm-appconfig-provider'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location

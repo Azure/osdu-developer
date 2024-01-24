@@ -83,6 +83,7 @@ var commonLayerConfig = {
 }
 
 
+
 /*
  __   _______   _______ .__   __. .___________. __  .___________.____    ____ 
 |  | |       \ |   ____||  \ |  | |           ||  | |           |\   \  /   / 
@@ -147,7 +148,6 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
 |  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  
 |__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
 */
-
 
 /////////////////
 // Network Blade 
@@ -597,6 +597,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:0.1.0' = if (enableVpnGateway
     ipAddress: remoteVpnAddress    
   }
 }
+
 module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnGateway) {
   name: '${commonLayerConfig.name}-vpn-gateway'
   params: {
@@ -1002,8 +1003,7 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBa
 |  \  /  |    /  ^  \   |  ,----'|  |__|  | |  | |   \|  | |  |__   
 |  |\/|  |   /  /_\  \  |  |     |   __   | |  | |  . `  | |   __|  
 |  |  |  |  /  _____  \ |  `----.|  |  |  | |  | |  |\   | |  |____ 
-|__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|
-                                                                    
+|__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|                                                                
 */
 
 @description('Specifies the name of the administrator account of the virtual machine.')
@@ -1260,6 +1260,7 @@ var partitionLayerConfig = {
 }
 
 
+
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __.      _______.
 |   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  |     /       |
@@ -1483,7 +1484,7 @@ var serviceLayerConfig = {
 */
 
 module cluster './modules/aks_cluster.bicep' = {
-  name: 'aks-${serviceLayerConfig.name}'
+  name: '${serviceLayerConfig.name}-aks-cluster'
   params: {
     // Basic Details
     resourceName: serviceLayerConfig.name
@@ -1636,8 +1637,8 @@ module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.
 }
 
 // Federated Credentials have to be sequentially added.  Ensure depends on.
-module federatedCredentials1 './modules/federated_identity.bicep' = {
-  name: '${serviceLayerConfig.name}-federated-ident-ns_dev-sample'
+module federatedCredsDevSample './modules/federated_identity.bicep' = {
+  name: '${serviceLayerConfig.name}-federated-cred-ns_dev-sample'
   params: {
     name: 'federated-ns_dev-sample'
     audiences: [
@@ -1660,16 +1661,15 @@ module appRoleAssignments './modules/app_assignments.bicep' = {
     kvName: keyvault.outputs.name
   }
   dependsOn: [
-    federatedCredentials1
+    federatedCredsDevSample
   ]
 }
-
 
 /////////////////
 // Helm Charts 
 /////////////////
 module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
-  name: 'helmAppConfigProvider'
+  name: '${serviceLayerConfig.name}-helm-AppConfigProvider'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
@@ -1774,8 +1774,6 @@ module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap)
     ]
   }
 }
-
-
 
 
 

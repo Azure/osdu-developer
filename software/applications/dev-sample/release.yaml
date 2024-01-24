@@ -30,8 +30,6 @@ spec:
     service:
       type: ClusterIP
       port: 80
-    azure:
-      enabled: false
     env:
     - name: MESSAGE
       value: Hello World!

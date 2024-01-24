@@ -1759,7 +1759,7 @@ values.yaml: |
 }
 
 module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-workloadidentitymap'
+  name: '${serviceLayerConfig.name}-cluster-devsample-configmap'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location

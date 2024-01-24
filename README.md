@@ -17,7 +17,7 @@ To support ease of use, this idea integrates closely with [Github Codespaces](ht
 
 ### Desired State
 
-To accomplish the goal of a `minimal` approach the use of a desired state approach is the key driver.
+To accomplish the goal of a `minimal` approach the use of a desired state approach is a key driver.
 
 __Bicep for Desired State Configuration__
 
@@ -27,13 +27,13 @@ When you deploy a Bicep file, Azure Resource Manager (ARM) processes the file an
 
 __GitOps for Desired State Management__
 
-GitOps extends the desired state management concept to application deployment and operations. It uses Git as a single source of truth for declarative infrastructure and applications. With GitOps, you store the entire state of your infrastructure and applications in Git repositories, and any changes to the state are made through Git commits.
+GitOps extends the desired state management concept to application deployment. It uses Git as a single source of truth for declarative components and applications. With GitOps, you store the entire state of your software components and applications in Git repositories, and any changes to the state are made through Git commits.
 
-Automated processes or operators continuously monitor the Git repository for changes. When a change is detected, these operators ensure that the actual state of the infrastructure or application (running in environments such as Kubernetes) is updated to match the desired state defined in the Git repository. This approach not only applies to infrastructure (where tools like Bicep define the infrastructure state) but also to application deployment and configuration.
+Automated processes or operators continuously monitor the Git repository for changes. When a change is detected, these operators ensure that the actual state of the components or application (running in environments such as Kubernetes) is updated to match the desired state defined in the Git repository.
 
 __Combination of Bicep and Gitops__
 
-The combination of Bicep and GitOps is a powerful strategy that allows for a single place where both the infrastructure and software are fully defined, enabling the system itself to work towards achieving the state that has been described. This integrated approach ensures alignment between infrastructure provisioning and application deployment, streamlining and automating the entire development and operational process.
+The combination of Bicep and GitOps is a powerful strategy that allows for a single place where both the infrastructure and software are fully defined, enabling the system itself to work towards achieving the state that has been described. This integrated approach ensures alignment between infrastructure provisioning and application deployment, streamlining and automating the entire provisioning and application deployment process.
 
 
 ## Setup
@@ -252,13 +252,9 @@ The architecture diagram below provides a visual representation of the infrastru
 
 In this workspace, we utilize a GitOps approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within the infrastructure.
 
-### Understanding GitOps
-
-GitOps is a modern approach to automate software deployment and infrastructure updates. It uses Git as a single source of truth for declarative infrastructure and applications. By applying GitOps, changes are made through pull requests, ensuring a transparent, reviewable, and auditable process.
-
 ### GitOps Configuration
 
-Our GitOps configuration resides in this Git repository and uses a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) structure. This repository includes:
+Our GitOps configuration resides in this Git repository and uses a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) pattern. This repository includes:
 
 - __Configuration Files__: YAML files defining the desired state of our components and applications.
 

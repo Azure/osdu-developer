@@ -83,6 +83,7 @@ var commonLayerConfig = {
 }
 
 
+
 /*
  __   _______   _______ .__   __. .___________. __  .___________.____    ____ 
 |  | |       \ |   ____||  \ |  | |           ||  | |           |\   \  /   / 
@@ -147,7 +148,6 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
 |  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  
 |__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
 */
-
 
 /////////////////
 // Network Blade 
@@ -597,6 +597,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:0.1.0' = if (enableVpnGateway
     ipAddress: remoteVpnAddress    
   }
 }
+
 module vpnGateway 'br/public:avm/res/network/vpn-gateway:0.1.0' = if (enableVpnGateway) {
   name: '${commonLayerConfig.name}-vpn-gateway'
   params: {
@@ -1002,8 +1003,7 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBa
 |  \  /  |    /  ^  \   |  ,----'|  |__|  | |  | |   \|  | |  |__   
 |  |\/|  |   /  /_\  \  |  |     |   __   | |  | |  . `  | |   __|  
 |  |  |  |  /  _____  \ |  `----.|  |  |  | |  | |  |\   | |  |____ 
-|__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|
-                                                                    
+|__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|                                                                
 */
 
 @description('Specifies the name of the administrator account of the virtual machine.')
@@ -1260,6 +1260,7 @@ var partitionLayerConfig = {
 }
 
 
+
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __.      _______.
 |   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  |     /       |
@@ -1483,7 +1484,7 @@ var serviceLayerConfig = {
 */
 
 module cluster './modules/aks_cluster.bicep' = {
-  name: 'aks-${serviceLayerConfig.name}'
+  name: '${serviceLayerConfig.name}-aks-cluster'
   params: {
     // Basic Details
     resourceName: serviceLayerConfig.name
@@ -1522,49 +1523,6 @@ module cluster './modules/aks_cluster.bicep' = {
     azurepolicy: 'audit'
   }
 }
-
-module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
-  name: '${serviceLayerConfig.name}-user-managed-identity'
-  params: {
-    // Required parameters
-    name: 'id-${replace(serviceLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, serviceLayerConfig.name)}'
-    location: location
-    enableTelemetry: enableTelemetry
-
-    federatedIdentityCredentials: [
-      {
-        audiences: [
-          'api://AzureADTokenExchange'
-        ]
-        issuer: cluster.outputs.aksOidcIssuerUrl
-        name: '${serviceLayerConfig.name}-user-managed-identity-fed1'
-        subject: 'system:serviceaccount:default:workload-identity-sa'
-      }
-    ]
-
-    roleAssignments: [
-      {
-        roleDefinitionIdOrName: 'Managed Identity Operator'
-        principalId: stampIdentity.outputs.principalId
-        principalType: 'ServicePrincipal'
-      }
-    ]
-
-    // Assign Tags
-    tags: {
-      layer: serviceLayerConfig.displayName
-    }
-  }
-}
-
-module stampOperator './modules/operator_rbac.bicep' = {
-  name: '${serviceLayerConfig.name}-user-managed-identity-operator'
-  params: {
-    operatorIdentityName: stampIdentity.outputs.name
-    identityclientId: appIdentity.outputs.clientId
-  }
-}
-
 
 /////////////////
 // Elastic Configuration 
@@ -1641,9 +1599,76 @@ module espool3 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-//--------------Helm Install---------------
+
+/////////////////
+// Workload Identity Federated Credentials 
+/////////////////
+module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity'
+  params: {
+    // Required parameters
+    name: 'id-${replace(serviceLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, serviceLayerConfig.name)}'
+    location: location
+    enableTelemetry: enableTelemetry
+
+    // Only support 1.  https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation-considerations#concurrent-updates-arent-supported-user-assigned-managed-identities
+    federatedIdentityCredentials: [{
+      audiences: [
+        'api://AzureADTokenExchange'
+      ]
+      issuer: cluster.outputs.aksOidcIssuerUrl
+      name: 'federated-ns_default'
+      subject: 'system:serviceaccount:default:workload-identity-sa'
+    }]
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Managed Identity Operator'
+        principalId: stampIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    // Assign Tags
+    tags: {
+      layer: serviceLayerConfig.displayName
+    }
+  }
+}
+
+// Federated Credentials have to be sequentially added.  Ensure depends on.
+module federatedCredsDevSample './modules/federated_identity.bicep' = {
+  name: '${serviceLayerConfig.name}-federated-cred-ns_dev-sample'
+  params: {
+    name: 'federated-ns_dev-sample'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.outputs.name
+    subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
+  }
+  dependsOn: [
+    appIdentity
+  ]
+}
+
+module appRoleAssignments './modules/app_assignments.bicep' = {
+  name: '${serviceLayerConfig.name}-user-managed-identity-rbac'
+  params: {
+    identityprincipalId: appIdentity.outputs.principalId
+    kvName: keyvault.outputs.name
+  }
+  dependsOn: [
+    federatedCredsDevSample
+  ]
+}
+
+/////////////////
+// Helm Charts 
+/////////////////
 module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
-  name: 'helmAppConfigProvider'
+  name: '${serviceLayerConfig.name}-helm-appconfig-provider'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
@@ -1658,6 +1683,7 @@ module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
     ]
   }
 }
+
 
 
 /*
@@ -1707,6 +1733,9 @@ module app_config 'modules/app-configuration/main.bicep' = {
     // Add Configuration
     keyValues: concat(appSettings)
   }
+  dependsOn: [
+    appRoleAssignments
+  ]
 }
 
 @description('The name of the azure keyvault.')
@@ -1714,46 +1743,33 @@ output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
 
 //--------------Config Map---------------
 var configMaps = {
-  workloadIdentityTemplate: '''
+  devSampleTemplate: '''
 values.yaml: |
-  azureWorkloadIdentity:
-    tenantId: "{0}"
-    clientId: "{1}"
   serviceAccount:
-    create: true
-    name: ""
-'''
-appConfigTemplate: '''
-values.yaml: |
-  azureWorkloadIdentity:
-    clientId: "{0}"
-  appConfiguration:
-    endpoint: "{1}"
+    create: false
+    name: "workload-identity-sa"
+  azure:
+    enabled: true
+    tenantId: "{0}"
+    clientId: {1}
+    configEndpoint: {2}
+    keyvaultName: {3}
 '''
 }
 
-module workloadIdentityMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-workloadidentitymap'
+module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster-devsample-configmap'
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
-    name: 'workload-identity-values'
+    name: 'dev-sample-values'
     namespace: 'default'
     fileData: [
-      format(configMaps.workloadIdentityTemplate, subscription().tenantId, appIdentity.outputs.clientId)
-    ]
-  }
-}
-
-module appConfigProviderMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-appconfigmap'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    name: 'app-config-values'
-    namespace: 'default'
-    fileData: [
-      format(configMaps.appConfigTemplate, appIdentity.outputs.clientId, app_config.outputs.endpoint)
+      format(configMaps.devSampleTemplate, 
+             subscription().tenantId, 
+             appIdentity.outputs.clientId,
+             app_config.outputs.endpoint,
+             keyvault.outputs.name)
     ]
   }
 }
@@ -1808,8 +1824,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   }
   dependsOn: [
     app_config
-    appConfigProviderMap
-    workloadIdentityMap
+    devSampleMap
     espool1
     espool2
     espool3

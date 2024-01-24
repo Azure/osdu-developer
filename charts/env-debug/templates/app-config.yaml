@@ -1,16 +1,18 @@
 {{- $namespace := .Release.Namespace }}
+{{- if .Values.azure.enabled }}
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
-  name: {{ include "app-config.fullname" . }}-config
+  name: {{ include "env-debug.fullname" . }}-config
   namespace: {{ $namespace }}
 spec:
-  endpoint: {{ .Values.appConfiguration.endpoint }}
+  endpoint: {{ .Values.azure.configEndpoint }}
   target:
-    configMapName: configmap-created-by-appconfig-provider
+    configMapName: configmap-by-appconfig
     configMapData: 
       type: json
       key: mysettings.json
   auth:
     workloadIdentity:
-      managedIdentityClientId: {{ .Values.azureWorkloadIdentity.clientId }}
+      managedIdentityClientId: {{ .Values.azure.clientId }}
+{{- end }}

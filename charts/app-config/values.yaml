@@ -1,6 +1,0 @@
-azureWorkloadIdentity:
-  clientId: ""
-
-appConfiguration:
-  endpoint: ""
-

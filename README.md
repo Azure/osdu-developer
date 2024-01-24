@@ -7,12 +7,33 @@
 
 ## Guiding Principles
 
-The guiding principle of this development approach is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure Cloud in a minimal fashion. This is not recomended for any production use and is purely seen as a method for development and does not come with any type of official support. The approach aligns with two key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+The guiding principle of this development approach is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure Cloud in a minimal fashion. This is not recomended for any production use and is purely seen as a method for development and does not come with any type of official support. The approach aligns with three key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
 
-1. Cost Optimization -- We aim to create a cost-effective approach, balancing cost along with security considerations.
-2. Security -- Our goal is to enhance security levels within the constraints of working to allow for development in a secure manner, working to ensure a zero trust approach to development.
+1. __Cost Optimization__ -- We aim to create a cost-effective approach, balancing cost along with security considerations.
+2. __Security__ -- Our goal is to enhance security levels within the constraints of working to allow for development in a secure manner, working to ensure a zero trust approach to development.
+3. __Operational Excellence__ -- A strong DevOps, Standards, and Automation approach is always thought of first.
 
 To support ease of use, this idea integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), working to facilitate seamless development and innovation on ideas.
+
+### Desired State
+
+To accomplish the goal of a `minimal` approach the use of a desired state approach is the key driver.
+
+__Bicep for Desired State Configuration__
+
+Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It is built on top of Azure Resource Manager (ARM) templates and simplifies the syntax and experience of authoring ARM templates. With Bicep, you define the desired state of your Azure infrastructure in code. This includes specifying the resources you want to deploy, their configurations, and the relationships between resources.
+
+When you deploy a Bicep file, Azure Resource Manager (ARM) processes the file and ensures that the Azure environment matches the defined desired state. If the actual state drifts from the desired state defined in the Bicep file, redeploying the Bicep template can correct this drift, realigning the actual state with the desired state.
+
+__GitOps for Desired State Management__
+
+GitOps extends the desired state management concept to application deployment and operations. It uses Git as a single source of truth for declarative infrastructure and applications. With GitOps, you store the entire state of your infrastructure and applications in Git repositories, and any changes to the state are made through Git commits.
+
+Automated processes or operators continuously monitor the Git repository for changes. When a change is detected, these operators ensure that the actual state of the infrastructure or application (running in environments such as Kubernetes) is updated to match the desired state defined in the Git repository. This approach not only applies to infrastructure (where tools like Bicep define the infrastructure state) but also to application deployment and configuration.
+
+__Combination of Bicep and Gitops__
+
+The combination of Bicep and GitOps is a powerful strategy that allows for a single place where both the infrastructure and software are fully defined, enabling the system itself to work towards achieving the state that has been described. This integrated approach ensures alignment between infrastructure provisioning and application deployment, streamlining and automating the entire development and operational process.
 
 
 ## Setup

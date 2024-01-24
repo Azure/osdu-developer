@@ -63,5 +63,5 @@ Install the helm chart.
 ```bash
 # Create Namespace
 NAMESPACE=dev-sample
-helm install dev-sample . -n $NAMESPACE --create-namespace
+helm upgrade --install dev-sample . -n $NAMESPACE --create-namespace
 ```

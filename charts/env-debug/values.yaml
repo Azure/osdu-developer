@@ -8,19 +8,8 @@ service:
   port: 80
   targetPort: 8080
 
-serviceAccount:
-  create: true
-  name: "" 
-
-azureWorkloadIdentity:
-  clientId: ""
-  tenantId: ""
-
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
 
 azure:
   enabled: false

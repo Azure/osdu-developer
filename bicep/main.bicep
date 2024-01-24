@@ -1654,10 +1654,10 @@ module federatedCredsDevSample './modules/federated_identity.bicep' = {
 }
 
 module appRoleAssignments './modules/app_assignments.bicep' = {
-  name: '${serviceLayerConfig.name}-user-managed-identity-operator'
+  name: '${serviceLayerConfig.name}-user-managed-identity-rbac'
   params: {
     operatorIdentityName: stampIdentity.outputs.name
-    identityclientId: appIdentity.outputs.clientId
+    identityprincipalId: appIdentity.outputs.principalId
     kvName: keyvault.outputs.name
   }
   dependsOn: [

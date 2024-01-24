@@ -57,13 +57,10 @@ var commonLayerConfig = {
     sku: 'PerGB2018'
     retention: 30
   }
-  registry: {
-    sku: 'Premium'
-  }
   storage: {
     sku: 'Standard_LRS'
     tables: [
-      'PartitionInfo'
+      'partitionInfo'
     ]
   }
   database: {
@@ -1080,6 +1077,11 @@ var partitionLayerConfig = {
       'file-staging-area'
       'file-persistent-area'
     ]
+    shares: [
+      'crs'
+      'crs-conversion'
+      'unit'
+    ]
   }
   database: {
     name: 'osdu-db'
@@ -1291,6 +1293,7 @@ module partitionStorage './modules/storage-account/main.bicep' = [for (partition
     // Configure Service
     sku: partitionLayerConfig.storage.sku
     containers: concat(partitionLayerConfig.storage.containers, [partition.name])
+    shares: concat(partitionLayerConfig.storage.shares, [partition.name])
 
     // Assign RBAC
     roleAssignments: [
@@ -1658,11 +1661,23 @@ module appRoleAssignments './modules/app_assignments.bicep' = {
   params: {
     identityprincipalId: appIdentity.outputs.principalId
     kvName: keyvault.outputs.name
+    storageName: configStorage.outputs.name
   }
   dependsOn: [
     federatedCredsDevSample
   ]
 }
+
+module appRoleAssignments2 './modules/app_assignments.bicep' = [for (partition, index) in partitions: {
+  name: '${serviceLayerConfig.name}-user-managed-identity-rbac-${partition.name}'
+  params: {
+    identityprincipalId: appIdentity.outputs.principalId
+    storageName: partitionStorage[index].outputs.name
+  }
+  dependsOn: [
+    federatedCredsDevSample
+  ]
+}]
 
 /////////////////
 // Helm Charts 
@@ -1735,6 +1750,7 @@ module app_config 'modules/app-configuration/main.bicep' = {
   }
   dependsOn: [
     appRoleAssignments
+    appRoleAssignments2
   ]
 }
 

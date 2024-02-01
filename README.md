@@ -208,6 +208,19 @@ azd env set _VPN_SHARED_KEY <your_shared_key>
 ```
 
 
+#### Feature: Public Blob Access
+
+__Purpose:__ Control public access to Blob Storage.
+
+__Details:__ The Storage accounts have public access points that can be enabled or disabled to enhance security.
+
+__How to Disable:__
+
+```bash
+azd env set ENABLE_BLOB_PUBLIC_ACCESS false
+```
+
+
 ### Deployment Commands
 
 Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.

@@ -14,6 +14,9 @@
     "enableBastion": {
       "value": "${ENABLE_BASTION}"
     },
+    "enableBlobPublicAccess": {
+      "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
+    },
     "vpnSharedKey": {
       "value": "${VPN_SHARED_KEY}"
     },

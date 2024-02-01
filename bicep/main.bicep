@@ -797,7 +797,7 @@ module vaultEndpoint './modules/private-endpoint/main.bicep' = if (enablePrivate
 */
 
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
-param allowBlobPublicAccess bool = false
+param enableBlobPublicAccess bool = true
 
 var storageDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
 var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
@@ -822,7 +822,7 @@ module configStorage './modules/storage-account/main.bicep' = {
     tables: commonLayerConfig.storage.tables
 
     // Apply Security
-    allowBlobPublicAccess: allowBlobPublicAccess
+    allowBlobPublicAccess: enableBlobPublicAccess
 
     // Assign RBAC
     roleAssignments: [
@@ -1310,6 +1310,9 @@ module partitionStorage './modules/storage-account/main.bicep' = [for (partition
     // Hook up Diagnostics
     diagnosticWorkspaceId: logAnalytics.outputs.resourceId
     diagnosticLogsRetentionInDays: 0
+
+    // Apply Security
+    allowBlobPublicAccess: enableBlobPublicAccess
 
     // Configure Service
     sku: partitionLayerConfig.storage.sku

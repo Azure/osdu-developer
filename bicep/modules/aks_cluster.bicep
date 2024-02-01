@@ -476,6 +476,7 @@ var userPoolProfile = {
   enableAutoScaling: true
   maxPods: userPoolPresets[clusterSize].maxPods
   vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+  podSubnetID: !empty(aksPodSubnetId) ? aksPodSubnetId : null
   upgradeSettings: {
     maxSurge: '33%'
   }

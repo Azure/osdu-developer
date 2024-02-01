@@ -33,6 +33,9 @@ param nodeLabels object = {}
 @description('The subnet the node pool will use')
 param subnetId string
 
+@description('The subnet the pods will use')
+param podSubnetId string
+
 @description('OS Type for the node pool')
 @allowed([
   'Linux'
@@ -61,6 +64,7 @@ resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-10
     maxPods: maxPods
     type: 'VirtualMachineScaleSets'
     vnetSubnetID: !empty(subnetId) ? subnetId : null
+    podSubnetID: !empty(podSubnetId) ? podSubnetId : null
     upgradeSettings: {
       maxSurge: '33%'
     }

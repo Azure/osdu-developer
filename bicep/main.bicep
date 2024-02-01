@@ -221,6 +221,21 @@ param virtualNetworkName string = 'osdu-network'
 @description('Resource group of the VNet (Optional: If exiting Network is selected)')
 param virtualNetworkResourceGroup string = 'osdu-network'
 
+@minLength(9)
+@maxLength(18)
+@description('The address range to use for services')
+param serviceCidr string = '172.16.0.0/16'
+
+@minLength(9)
+@maxLength(18)
+@description('The address range to use for the docker bridge')
+param dockerBridgeCidr string = '172.17.0.1/16'
+
+@minLength(7)
+@maxLength(15)
+@description('The IP address to reserve for DNS')
+param dnsServiceIP string = '172.16.0.10'
+
 var nsgRules = {
   ssh_outbound: {
     name: 'AllowSshOutbound'
@@ -390,7 +405,7 @@ var subnets = {
         service: 'Microsoft.ContainerRegistry'
       }
     ]
-    networkSecurityGroupResourceId: clusterNetworkSecurityGroup.outputs.resourceId
+    networkSecurityGroupResourceId: virtualNetworkNewOrExisting == 'new' ? clusterNetworkSecurityGroup.outputs.resourceId :null
     roleAssignments: [
       {
         roleDefinitionIdOrName: 'Network Contributor'
@@ -402,7 +417,7 @@ var subnets = {
   pods: {
     name: podSubnetName
     addressPrefix: podSubnetAddressPrefix
-    networkSecurityGroupResourceId: clusterNetworkSecurityGroup.outputs.resourceId
+    networkSecurityGroupResourceId: virtualNetworkNewOrExisting == 'new' ? clusterNetworkSecurityGroup.outputs.resourceId :null
     roleAssignments: [
       {
         roleDefinitionIdOrName: 'Network Contributor'
@@ -440,7 +455,7 @@ var subnets = {
   }
 }
 
-module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = {
+module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (virtualNetworkNewOrExisting == 'new') {
   name: '${commonLayerConfig.name}-network-security-group-cluster'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-aks'
@@ -460,7 +475,7 @@ module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (enableBastion) {
+module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (virtualNetworkNewOrExisting == 'new' && enableBastion) {
   name: '${commonLayerConfig.name}-network-security-group-bastion'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-bastion'
@@ -485,7 +500,7 @@ module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (enableBastion) {
+module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (virtualNetworkNewOrExisting == 'new' && enableBastion) {
   name: '${commonLayerConfig.name}-network-security-group-manage'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-vm'
@@ -501,7 +516,7 @@ module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module network 'br/public:avm/res/network/virtual-network:0.1.0' = {
+module network 'br/public:avm/res/network/virtual-network:0.1.0' = if (virtualNetworkNewOrExisting == 'new') {
   name: '${commonLayerConfig.name}-virtual-network'
   params: {
     name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
@@ -781,6 +796,9 @@ module vaultEndpoint './modules/private-endpoint/main.bicep' = if (enablePrivate
 |_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
 */
 
+@description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
+param allowBlobPublicAccess bool = false
+
 var storageDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
 var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
 
@@ -802,6 +820,9 @@ module configStorage './modules/storage-account/main.bicep' = {
     // Configure Service
     sku: commonLayerConfig.storage.sku
     tables: commonLayerConfig.storage.tables
+
+    // Apply Security
+    allowBlobPublicAccess: allowBlobPublicAccess
 
     // Assign RBAC
     roleAssignments: [
@@ -986,7 +1007,7 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.1.0' = if (enableBa
   name: '${manageLayerConfig.name}-bastion'
   params: {
     name: 'bh-${replace(manageLayerConfig.name, '-', '')}${uniqueString(resourceGroup().id, manageLayerConfig.name)}'
-    vNetId: network.outputs.resourceId
+    vNetId: vnetId[virtualNetworkNewOrExisting]
     location: location
     enableTelemetry: enableTelemetry
   }  
@@ -1452,7 +1473,7 @@ var serviceLayerConfig = {
   cluster: {
     aksVersion: '1.28'
     meshVersion: 'asm-1-18'
-    networkPlugin: 'kubenet'
+    networkPlugin: enablePodSubnet ? 'azure' : 'kubenet'
   }
   gitops: {
     name: 'flux-system'
@@ -1508,6 +1529,11 @@ module cluster './modules/aks_cluster.bicep' = {
     identityId: stampIdentity.outputs.resourceId
     workspaceId: logAnalytics.outputs.resourceId
 
+    // Configure VNET Injection
+    serviceCidr: serviceCidr
+    dnsServiceIP: dnsServiceIP
+    dockerBridgeCidr: dockerBridgeCidr
+
     // Configure Istio
     serviceMeshProfile: 'Istio'
     istioRevision: serviceLayerConfig.cluster.meshVersion
@@ -1556,7 +1582,8 @@ module espool1 './modules/aks_agent_pool.bicep' = {
     availabilityZones: [
       '1'
     ]
-    subnetId: ''
+    subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
+    podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
     nodeTaints: ['app=elasticsearch:NoSchedule']
     nodeLabels: {
       app: 'elasticsearch'
@@ -1575,7 +1602,8 @@ module espool2 './modules/aks_agent_pool.bicep' = {
     availabilityZones: [
       '2'
     ]
-    subnetId: ''
+    subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
+    podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
     nodeTaints: ['app=elasticsearch:NoSchedule']
     nodeLabels: {
       app: 'elasticsearch'
@@ -1594,7 +1622,8 @@ module espool3 './modules/aks_agent_pool.bicep' = {
     availabilityZones: [
       '3'
     ]
-    subnetId: ''
+    subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
+    podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
     nodeTaints: ['app=elasticsearch:NoSchedule']
     nodeLabels: {
       app: 'elasticsearch'

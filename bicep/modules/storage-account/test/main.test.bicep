@@ -13,7 +13,7 @@ param location string = resourceGroup().location
 module storage '../main.bicep' = {
   name: 'storage_account'
   params: {
-    resourceName: resourceName
+    name: 'sa${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
     location: location
     sku: 'Standard_LRS'
   }

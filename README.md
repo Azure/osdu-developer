@@ -269,6 +269,13 @@ Our GitOps configuration resides in this Git repository and uses a customized [r
 
 Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load. 
 
+## Customizations
+
+There are many things that can be done to customize the deployment.  One example of this might be virtual network injection.
+
+See [this tutorial](docs/vnet-injection.md) for how a customization like this might be performed.
+
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

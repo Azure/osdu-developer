@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "4063824788728670321"
+      "templateHash": "5166673085691231756"
     }
   },
   "parameters": {
@@ -221,9 +221,9 @@
         "description": "The IP address to reserve for DNS"
       }
     },
-    "allowBlobPublicAccess": {
+    "enableBlobPublicAccess": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false."
       }
@@ -11043,7 +11043,7 @@
             "value": "[variables('commonLayerConfig').storage.tables]"
           },
           "allowBlobPublicAccess": {
-            "value": "[parameters('allowBlobPublicAccess')]"
+            "value": "[parameters('enableBlobPublicAccess')]"
           },
           "roleAssignments": {
             "value": [
@@ -16111,6 +16111,9 @@
           },
           "diagnosticLogsRetentionInDays": {
             "value": 0
+          },
+          "allowBlobPublicAccess": {
+            "value": "[parameters('enableBlobPublicAccess')]"
           },
           "sku": {
             "value": "[variables('partitionLayerConfig').storage.sku]"

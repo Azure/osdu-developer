@@ -257,17 +257,3 @@ Initiate the deployment using the following command:
 azd provision
 ```
 
-
-
-
-param serviceCidr string = '172.16.0.0/16'
-
-
-param dockerBridgeCidr string = '172.17.0.1/16'
-
-
-param dnsServiceIP string = '172.16.0.10'
-
-https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/aks/network-topology-and-connectivity
-
-https://learn.microsoft.com/en-us/azure/aks/concepts-network#azure-cni-advanced-networking

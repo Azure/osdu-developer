@@ -8,35 +8,26 @@
     "enablePodSubnet": {
       "value": "${ENABLE_POD_SUBNET}"
     },
+    "enableVpnGateway": {
+      "value": "${ENABLE_VPN_GATEWAY}"
+    },
+    "enableBastion": {
+      "value": "${ENABLE_BASTION}"
+    },
+    "vpnSharedKey": {
+      "value": "${VPN_SHARED_KEY}"
+    },
+    "remoteVpnAddress": {
+      "value": "${REMOTE_VPN_ADDRESS}"
+    },
+    "remoteNetworkPrefix": {
+      "value": "${REMOTE_NETWORK_PREFIX}"
+    },
     "softwareRepository": {
       "value": "${SOFTWARE_REPOSITORY}"
     },
     "softwareBranch": {
       "value": "${SOFTWARE_BRANCH}"
-    },
-    "virtualNetworkNewOrExisting": {
-      "value": "existing"
-    },
-    "virtualNetworkName": {
-      "value": "${VIRTUAL_NETWORK_NAME}"
-    },
-    "virtualNetworkResourceGroup": {
-      "value": "${VIRTUAL_NETWORK_GROUP}"
-    },
-    "virtualNetworkAddressPrefix": {
-      "value": "${VIRTUAL_NETWORK_PREFIX}"
-    },
-    "aksSubnetName": {
-      "value": "${AKS_SUBNET_NAME}"
-    },
-    "aksSubnetAddressPrefix": {
-      "value": "${AKS_SUBNET_PREFIX}"
-    },
-    "podSubnetName": {
-      "value": "${POD_SUBNET_NAME}"
-    },
-    "podSubnetAddressPrefix": {
-      "value": "${POD_SUBNET_PREFIX}"
     }
   }
 }

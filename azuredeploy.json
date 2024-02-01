@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "3443129603583958142"
+      "templateHash": "5166673085691231756"
     }
   },
   "parameters": {
@@ -192,6 +192,40 @@
       "defaultValue": "osdu-network",
       "metadata": {
         "description": "Resource group of the VNet (Optional: If exiting Network is selected)"
+      }
+    },
+    "serviceCidr": {
+      "type": "string",
+      "defaultValue": "172.16.0.0/16",
+      "minLength": 9,
+      "maxLength": 18,
+      "metadata": {
+        "description": "The address range to use for services"
+      }
+    },
+    "dockerBridgeCidr": {
+      "type": "string",
+      "defaultValue": "172.17.0.1/16",
+      "minLength": 9,
+      "maxLength": 18,
+      "metadata": {
+        "description": "The address range to use for the docker bridge"
+      }
+    },
+    "dnsServiceIP": {
+      "type": "string",
+      "defaultValue": "172.16.0.10",
+      "minLength": 7,
+      "maxLength": 15,
+      "metadata": {
+        "description": "The IP address to reserve for DNS"
+      }
+    },
+    "enableBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false."
       }
     },
     "vmAdminUsername": {
@@ -698,7 +732,7 @@
       "cluster": {
         "aksVersion": "1.28",
         "meshVersion": "asm-1-18",
-        "networkPlugin": "kubenet"
+        "networkPlugin": "[if(parameters('enablePodSubnet'), 'azure', 'kubenet')]"
       },
       "gitops": {
         "name": "flux-system",
@@ -3029,6 +3063,7 @@
       ]
     },
     {
+      "condition": "[equals(parameters('virtualNetworkNewOrExisting'), 'new')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)]",
@@ -3715,7 +3750,7 @@
       }
     },
     {
-      "condition": "[parameters('enableBastion')]",
+      "condition": "[and(equals(parameters('virtualNetworkNewOrExisting'), 'new'), parameters('enableBastion'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)]",
@@ -4402,7 +4437,7 @@
       }
     },
     {
-      "condition": "[parameters('enableBastion')]",
+      "condition": "[and(equals(parameters('virtualNetworkNewOrExisting'), 'new'), parameters('enableBastion'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-network-security-group-manage', variables('commonLayerConfig').name)]",
@@ -5089,6 +5124,7 @@
       }
     },
     {
+      "condition": "[equals(parameters('virtualNetworkNewOrExisting'), 'new')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-virtual-network', variables('commonLayerConfig').name)]",
@@ -5140,7 +5176,7 @@
             ]
           },
           "subnets": {
-            "value": "[union(array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).cluster), if(parameters('enableBastion'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).bastion), createArray()), if(parameters('enableBastion'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).machine), createArray()), if(parameters('enableVpnGateway'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).gateway), createArray()), if(parameters('enablePodSubnet'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).pods), createArray()))]"
+            "value": "[union(array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).cluster), if(parameters('enableBastion'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).bastion), createArray()), if(parameters('enableBastion'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).machine), createArray()), if(parameters('enableVpnGateway'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).gateway), createArray()), if(parameters('enablePodSubnet'), array(createObject('cluster', createObject('name', parameters('aksSubnetName'), 'addressPrefix', parameters('aksSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'pods', createObject('name', parameters('podSubnetName'), 'addressPrefix', parameters('podSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-cluster', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'roleAssignments', createArray(createObject('roleDefinitionIdOrName', 'Network Contributor', 'principalId', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('commonLayerConfig').name)), '2022-09-01').outputs.principalId.value, 'principalType', 'ServicePrincipal'))), 'bastion', createObject('name', parameters('bastionSubnetName'), 'addressPrefix', parameters('bastionSubnetAddressPrefix'), 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-bastion', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null())), 'gateway', createObject('name', parameters('gatewaySubnetName'), 'addressPrefix', parameters('gatewaySubnetAddressPrefix')), 'machine', createObject('name', parameters('vmSubnetName'), 'addressPrefix', parameters('vmSubnetAddressPrefix'), 'serviceEndpoints', createArray(createObject('service', 'Microsoft.Storage'), createObject('service', 'Microsoft.KeyVault'), createObject('service', 'Microsoft.ContainerRegistry')), 'privateEndpointNetworkPolicies', 'Disabled', 'privateLinkServiceNetworkPolicies', 'Enabled', 'networkSecurityGroupResourceId', if(parameters('enableBastion'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-network-security-group-manage', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()))).pods), createArray()))]"
           }
         },
         "template": {
@@ -11006,6 +11042,9 @@
           "tables": {
             "value": "[variables('commonLayerConfig').storage.tables]"
           },
+          "allowBlobPublicAccess": {
+            "value": "[parameters('enableBlobPublicAccess')]"
+          },
           "roleAssignments": {
             "value": [
               {
@@ -11040,7 +11079,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "15771443307137808627"
+              "templateHash": "12218145875057312705"
             }
           },
           "parameters": {
@@ -11249,6 +11288,13 @@
                 "description": "Amount of days the soft deleted data is stored and available for recovery. 0 is off."
               }
             },
+            "allowBlobPublicAccess": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false."
+              }
+            },
             "privateLinkSettings": {
               "type": "object",
               "defaultValue": {
@@ -11365,6 +11411,7 @@
                 "accessTier": "[parameters('accessTier')]",
                 "minimumTlsVersion": "TLS1_2",
                 "encryption": "[if(variables('enableCMEK'), createObject('identity', createObject('userAssignedIdentity', parameters('cmekConfiguration').identityId), 'services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Keyvault', 'keyvaultproperties', createObject('keyname', parameters('cmekConfiguration').keyName, 'keyvaulturi', parameters('cmekConfiguration').kvUrl)), createObject('services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Storage'))]",
+                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
                 "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject())]"
               }
             },
@@ -14664,7 +14711,7 @@
             "value": "[format('bh-{0}{1}', replace(variables('manageLayerConfig').name, '-', ''), uniqueString(resourceGroup().id, variables('manageLayerConfig').name))]"
           },
           "vNetId": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value]"
+            "value": "[createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')]]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -16065,6 +16112,9 @@
           "diagnosticLogsRetentionInDays": {
             "value": 0
           },
+          "allowBlobPublicAccess": {
+            "value": "[parameters('enableBlobPublicAccess')]"
+          },
           "sku": {
             "value": "[variables('partitionLayerConfig').storage.sku]"
           },
@@ -16108,7 +16158,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "15771443307137808627"
+              "templateHash": "12218145875057312705"
             }
           },
           "parameters": {
@@ -16317,6 +16367,13 @@
                 "description": "Amount of days the soft deleted data is stored and available for recovery. 0 is off."
               }
             },
+            "allowBlobPublicAccess": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false."
+              }
+            },
             "privateLinkSettings": {
               "type": "object",
               "defaultValue": {
@@ -16433,6 +16490,7 @@
                 "accessTier": "[parameters('accessTier')]",
                 "minimumTlsVersion": "TLS1_2",
                 "encryption": "[if(variables('enableCMEK'), createObject('identity', createObject('userAssignedIdentity', parameters('cmekConfiguration').identityId), 'services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Keyvault', 'keyvaultproperties', createObject('keyname', parameters('cmekConfiguration').keyName, 'keyvaulturi', parameters('cmekConfiguration').kvUrl)), createObject('services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Storage'))]",
+                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
                 "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject())]"
               }
             },
@@ -19769,6 +19827,15 @@
           "workspaceId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value]"
           },
+          "serviceCidr": {
+            "value": "[parameters('serviceCidr')]"
+          },
+          "dnsServiceIP": {
+            "value": "[parameters('dnsServiceIP')]"
+          },
+          "dockerBridgeCidr": {
+            "value": "[parameters('dockerBridgeCidr')]"
+          },
           "serviceMeshProfile": {
             "value": "Istio"
           },
@@ -19814,7 +19881,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "125255005146302743"
+              "templateHash": "16374876761694977329"
             }
           },
           "parameters": {
@@ -20488,6 +20555,7 @@
               "enableAutoScaling": true,
               "maxPods": "[variables('userPoolPresets')[parameters('clusterSize')].maxPods]",
               "vnetSubnetID": "[if(not(empty(parameters('aksSubnetId'))), parameters('aksSubnetId'), null())]",
+              "podSubnetID": "[if(not(empty(parameters('aksPodSubnetId'))), parameters('aksPodSubnetId'), null())]",
               "upgradeSettings": {
                 "maxSurge": "33%"
               }
@@ -20747,9 +20815,8 @@
               "1"
             ]
           },
-          "subnetId": {
-            "value": ""
-          },
+          "subnetId": "[if(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))))]",
+          "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
               "app=elasticsearch:NoSchedule"
@@ -20768,7 +20835,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "2918991882660483195"
+              "templateHash": "1717696639715253483"
             }
           },
           "parameters": {
@@ -20847,6 +20914,12 @@
                 "description": "The subnet the node pool will use"
               }
             },
+            "podSubnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "The subnet the pods will use"
+              }
+            },
             "osType": {
               "type": "string",
               "defaultValue": "Linux",
@@ -20881,6 +20954,7 @@
                 "maxPods": "[parameters('maxPods')]",
                 "type": "VirtualMachineScaleSets",
                 "vnetSubnetID": "[if(not(empty(parameters('subnetId'))), parameters('subnetId'), null())]",
+                "podSubnetID": "[if(not(empty(parameters('podSubnetId'))), parameters('podSubnetId'), null())]",
                 "upgradeSettings": {
                   "maxSurge": "33%"
                 },
@@ -20892,7 +20966,8 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name))]"
       ]
     },
     {
@@ -20925,9 +21000,8 @@
               "2"
             ]
           },
-          "subnetId": {
-            "value": ""
-          },
+          "subnetId": "[if(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))))]",
+          "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
               "app=elasticsearch:NoSchedule"
@@ -20946,7 +21020,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "2918991882660483195"
+              "templateHash": "1717696639715253483"
             }
           },
           "parameters": {
@@ -21025,6 +21099,12 @@
                 "description": "The subnet the node pool will use"
               }
             },
+            "podSubnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "The subnet the pods will use"
+              }
+            },
             "osType": {
               "type": "string",
               "defaultValue": "Linux",
@@ -21059,6 +21139,7 @@
                 "maxPods": "[parameters('maxPods')]",
                 "type": "VirtualMachineScaleSets",
                 "vnetSubnetID": "[if(not(empty(parameters('subnetId'))), parameters('subnetId'), null())]",
+                "podSubnetID": "[if(not(empty(parameters('podSubnetId'))), parameters('podSubnetId'), null())]",
                 "upgradeSettings": {
                   "maxSurge": "33%"
                 },
@@ -21070,7 +21151,8 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name))]"
       ]
     },
     {
@@ -21103,9 +21185,8 @@
               "3"
             ]
           },
-          "subnetId": {
-            "value": ""
-          },
+          "subnetId": "[if(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('aksSubnetName'))))]",
+          "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
               "app=elasticsearch:NoSchedule"
@@ -21124,7 +21205,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "2918991882660483195"
+              "templateHash": "1717696639715253483"
             }
           },
           "parameters": {
@@ -21203,6 +21284,12 @@
                 "description": "The subnet the node pool will use"
               }
             },
+            "podSubnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "The subnet the pods will use"
+              }
+            },
             "osType": {
               "type": "string",
               "defaultValue": "Linux",
@@ -21237,6 +21324,7 @@
                 "maxPods": "[parameters('maxPods')]",
                 "type": "VirtualMachineScaleSets",
                 "vnetSubnetID": "[if(not(empty(parameters('subnetId'))), parameters('subnetId'), null())]",
+                "podSubnetID": "[if(not(empty(parameters('podSubnetId'))), parameters('podSubnetId'), null())]",
                 "upgradeSettings": {
                   "maxSurge": "33%"
                 },
@@ -21248,7 +21336,8 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name))]"
       ]
     },
     {

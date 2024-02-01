@@ -208,6 +208,19 @@ azd env set _VPN_SHARED_KEY <your_shared_key>
 ```
 
 
+#### Feature: Public Blob Access
+
+__Purpose:__ Control public access to Blob Storage.
+
+__Details:__ The Storage accounts have public access points that can be enabled or disabled to enhance security.
+
+__How to Disable:__
+
+```bash
+azd env set ENABLE_BLOB_PUBLIC_ACCESS false
+```
+
+
 ### Deployment Commands
 
 Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
@@ -268,6 +281,13 @@ Our GitOps configuration resides in this Git repository and uses a customized [r
 - __Enhanced Security__: Changes are reviewed through pull requests, increasing security and collaboration.
 
 Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load. 
+
+## Customizations
+
+There are many things that can be done to customize the deployment.  One example of this might be virtual network injection.
+
+See [this tutorial](docs/vnet-injection.md) for how a customization like this might be performed.
+
 
 ## Contributing
 

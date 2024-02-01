@@ -1,33 +1,36 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "applicationClientId": {
-        "value": "${AZURE_CLIENT_ID}"
-      },
-      "enablePodSubnet": {
-        "value": "${ENABLE_POD_SUBNET}"
-      },
-      "enableVpnGateway": {
-        "value": "${ENABLE_VPN_GATEWAY}"
-      },
-      "enableBastion": {
-        "value": "${ENABLE_BASTION}"
-      },
-      "vpnSharedKey": {
-        "value": "${VPN_SHARED_KEY}"
-      },
-      "remoteVpnAddress": {
-        "value": "${REMOTE_VPN_ADDRESS}"
-      },
-      "remoteNetworkPrefix": {
-        "value": "${REMOTE_NETWORK_PREFIX}"
-      },
-      "softwareRepository": {
-        "value": "${SOFTWARE_REPOSITORY}"
-      },
-      "softwareBranch": {
-        "value": "${SOFTWARE_BRANCH}"
-      }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "applicationClientId": {
+      "value": "${AZURE_CLIENT_ID}"
+    },
+    "enablePodSubnet": {
+      "value": "${ENABLE_POD_SUBNET}"
+    },
+    "enableVpnGateway": {
+      "value": "${ENABLE_VPN_GATEWAY}"
+    },
+    "enableBastion": {
+      "value": "${ENABLE_BASTION}"
+    },
+    "enableBlobPublicAccess": {
+      "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
+    },
+    "vpnSharedKey": {
+      "value": "${VPN_SHARED_KEY}"
+    },
+    "remoteVpnAddress": {
+      "value": "${REMOTE_VPN_ADDRESS}"
+    },
+    "remoteNetworkPrefix": {
+      "value": "${REMOTE_NETWORK_PREFIX}"
+    },
+    "softwareRepository": {
+      "value": "${SOFTWARE_REPOSITORY}"
+    },
+    "softwareBranch": {
+      "value": "${SOFTWARE_BRANCH}"
     }
   }
+}

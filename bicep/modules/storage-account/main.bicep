@@ -143,6 +143,9 @@ param cmekConfiguration object = {
 @maxValue(365)
 param deleteRetention int = 0
 
+@description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
+param allowBlobPublicAccess bool = false
+
 var enableCMEK = !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) && !empty(cmekConfiguration.identityId) ? true : false
 
 var diagnosticsLogs = [for log in logsToEnable: {
@@ -221,6 +224,8 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
       }
       keySource: 'Microsoft.Storage'
     }
+
+    allowBlobPublicAccess: allowBlobPublicAccess
 
     networkAcls: enablePrivateLink ? {
       bypass: 'AzureServices'

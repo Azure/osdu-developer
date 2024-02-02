@@ -1,0 +1,23 @@
+apiVersion: azconfig.io/v1
+kind: AzureAppConfigurationProvider
+metadata:
+  name: config-sample
+spec:
+  endpoint: {{ .Values.azure.configEndpoint }}
+  valueFrom:
+    configMapKeyRef:
+      name: dev-sample-values # This should match the generated ConfigMap's name
+      key: endpoint
+  target:
+    configMapName: configmap-sample
+    configMapData:
+      type: yaml
+      key: value.yaml
+      separator: "."
+  auth:
+    workloadIdentity:
+      managedIdentityClientId: {{ .Values.azure.clientId }}
+  configuration:
+     selectors:
+        - keyFilter: "*"
+          labelFilter: "ConfigMap-Sample"

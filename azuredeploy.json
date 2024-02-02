@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "5166673085691231756"
+      "templateHash": "17352047769355619499"
     }
   },
   "parameters": {
@@ -766,22 +766,18 @@
         "vmSize": "Standard_DS5_v2"
       }
     },
-    "appSettings": [
+    "secretText": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8",
+    "appSecrets": [
       {
-        "name": "Settings:FontColor",
-        "value": "Green",
-        "contentType": "text/plain",
-        "label": "ConfigMap-Sample"
-      },
-      {
-        "name": "Settings:Message",
-        "value": "Hello from App Configuration",
-        "contentType": "text/plain",
-        "label": "ConfigMap-Sample"
+        "name": "[variables('commonLayerConfig').secrets.storageAccountName]",
+        "value": "[string(createObject('uri', format('https://{0}.vault.azure.net/secrets/{1}', format('{0}-azure-keyvault', variables('commonLayerConfig').name), variables('commonLayerConfig').secrets.storageAccountName)))]",
+        "contentType": "[variables('secretText')]",
+        "label": "configmap-sample"
       }
     ],
     "configMaps": {
-      "devSampleTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    enabled: true\n    tenantId: \"{0}\"\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n"
+      "appConfigTemplate": "values.yaml: |\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n  ",
+      "devSampleTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: \"{0}\"\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n"
     }
   },
   "resources": [
@@ -21902,6 +21898,122 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
+      "name": "[format('{0}-federated-cred-ns_config-maps', variables('serviceLayerConfig').name)]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "federated-ns_azappconfig-system"
+          },
+          "audiences": {
+            "value": [
+              "api://AzureADTokenExchange"
+            ]
+          },
+          "issuer": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name)), '2022-09-01').outputs.aksOidcIssuerUrl.value]"
+          },
+          "userAssignedIdentityName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name)), '2022-09-01').outputs.name.value]"
+          },
+          "subject": {
+            "value": "system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.24.24.22086",
+              "templateHash": "13076033972616288645"
+            },
+            "name": "User Assigned Identity Federated Identity Credential",
+            "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
+            "owner": "Azure/module-maintainers"
+          },
+          "parameters": {
+            "userAssignedIdentityName": {
+              "type": "string",
+              "metadata": {
+                "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
+              }
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Required. The name of the secret."
+              }
+            },
+            "audiences": {
+              "type": "array",
+              "metadata": {
+                "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
+              }
+            },
+            "issuer": {
+              "type": "string",
+              "metadata": {
+                "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
+              }
+            },
+            "subject": {
+              "type": "string",
+              "metadata": {
+                "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+              "apiVersion": "2023-01-31",
+              "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
+              "properties": {
+                "audiences": "[parameters('audiences')]",
+                "issuer": "[parameters('issuer')]",
+                "subject": "[parameters('subject')]"
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the federated identity credential."
+              },
+              "value": "[parameters('name')]"
+            },
+            "resourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the federated identity credential."
+              },
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
+            },
+            "resourceGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the resource group the federated identity credential was created in."
+              },
+              "value": "[resourceGroup().name]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-federated-cred-ns_dev-sample', variables('serviceLayerConfig').name))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
       "name": "[format('{0}-user-managed-identity-rbac', variables('serviceLayerConfig').name)]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -22009,7 +22121,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-azure-storage', variables('commonLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-federated-cred-ns_dev-sample', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-federated-cred-ns_config-maps', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name))]"
       ]
     },
@@ -22411,7 +22523,7 @@
             ]
           },
           "keyValues": {
-            "value": "[concat(variables('appSettings'))]"
+            "value": "[concat(createArray(createObject('name', 'Settings:StorageAccountName', 'value', reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-storage-{1}', variables('partitionLayerConfig').name, 0)), '2022-09-01').outputs.name.value, 'contentType', 'text/plain', 'label', 'configmap-sample'), createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-sample')), variables('appSecrets'))]"
           }
         },
         "template": {
@@ -23060,7 +23172,277 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity-rbac', variables('serviceLayerConfig').name))]",
-        "appRoleAssignments2"
+        "appRoleAssignments2",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-azure-storage-{1}', variables('partitionLayerConfig').name, 0))]"
+      ]
+    },
+    {
+      "condition": "[variables('enableConfigMap')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-cluster-appconfig-configmap', variables('serviceLayerConfig').name)]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "aksName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name)), '2022-09-01').outputs.aksClusterName.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "name": {
+            "value": "config-map-values"
+          },
+          "namespace": {
+            "value": "default"
+          },
+          "fileData": {
+            "value": [
+              "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name)), '2022-09-01').outputs.clientId.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name)), '2022-09-01').outputs.endpoint.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name)), '2022-09-01').outputs.name.value)]"
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.24.24.22086",
+              "templateHash": "4801579897722142587"
+            },
+            "name": "AKS Config Map",
+            "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",
+            "owner": "Daniel Scholl"
+          },
+          "parameters": {
+            "aksName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the Azure Kubernetes Service"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location to deploy the resources to"
+              }
+            },
+            "forceUpdateTag": {
+              "type": "string",
+              "defaultValue": "[utcNow()]",
+              "metadata": {
+                "description": "How the deployment script should be forced to execute"
+              }
+            },
+            "rbacRolesNeeded": {
+              "type": "array",
+              "defaultValue": [
+                "b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "7f6c6a51-bcf8-42ba-9220-52d62157d7db"
+              ],
+              "metadata": {
+                "description": "An array of Azure RoleIds that are required for the DeploymentScript resource"
+              }
+            },
+            "newOrExistingManagedIdentity": {
+              "type": "string",
+              "defaultValue": "new",
+              "allowedValues": [
+                "new",
+                "existing"
+              ],
+              "metadata": {
+                "description": "Create \"new\" or use \"existing\" Managed Identity. Default: new"
+              }
+            },
+            "managedIdentityName": {
+              "type": "string",
+              "defaultValue": "[format('id-AksConfigMap-{0}', parameters('location'))]",
+              "metadata": {
+                "description": "Name of the Managed Identity resource"
+              }
+            },
+            "existingManagedIdentitySubId": {
+              "type": "string",
+              "defaultValue": "[subscription().subscriptionId]",
+              "metadata": {
+                "description": "For an existing Managed Identity, the Subscription Id it is located in"
+              }
+            },
+            "existingManagedIdentityResourceGroupName": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().name]",
+              "metadata": {
+                "description": "For an existing Managed Identity, the Resource Group it is located in"
+              }
+            },
+            "name": {
+              "type": "string",
+              "defaultValue": "configuration",
+              "metadata": {
+                "description": "Specify the config map name."
+              }
+            },
+            "namespace": {
+              "type": "string",
+              "defaultValue": "default",
+              "metadata": {
+                "description": "Specify the namespace for the config mapl"
+              }
+            },
+            "propertyData": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specify the config map single property data. (e.g. \"player_initial_lives=3\")"
+              }
+            },
+            "fileData": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specify the config map file data. (e.g. \"game.properties: |enemy.types=aliens,monsters\nplayer.maximum-lives=5\")"
+              }
+            },
+            "initialScriptDelay": {
+              "type": "string",
+              "defaultValue": "120s",
+              "metadata": {
+                "description": "A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate"
+              }
+            },
+            "cleanupPreference": {
+              "type": "string",
+              "defaultValue": "OnSuccess",
+              "allowedValues": [
+                "OnSuccess",
+                "OnExpiration",
+                "Always"
+              ],
+              "metadata": {
+                "description": "When the script resource is cleaned up"
+              }
+            },
+            "isCrossTenant": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Set to true when deploying template across tenants"
+              }
+            }
+          },
+          "variables": {
+            "$fxv#0": "\nset -e +H\n# -e to exit on error\n# +H to prevent history expansion\n\n# This script is used to apply a ConfigMap to an AKS cluster using the az aks command invoke command.\n\nif [ \"$initialDelay\" != \"0\" ]\nthen\n    echo \"Waiting on RBAC replication ($initialDelay)\"\n    sleep $initialDelay\n\n    #Force RBAC refresh\n    az logout\n    az login --identity\nfi\n\n# Function to convert semi-colon-separated key-value pairs in $dataPropertyLike to YAML format\nconvert_properties_to_yaml() {\n    local IFS=\";\"\n    for pair in $dataPropertyLike; do\n        IFS='=' read -r key value <<< \"$pair\"\n        echo \"  $key: \\\"$value\\\"\"\n    done\n    echo \"\" # Add an empty line for separation\n}\n\n# Function to append file-like data in $dataFileLike to YAML format, converting \\t to spaces\nappend_files_to_yaml() {\n    local IFS=\";\"\n    for file in $dataFileLike; do\n        local name=\"${file%%: *}\"\n        local content=\"${file#*: |}\"\n        # Process content to ensure correct new line handling and indentation\n        content=$(echo \"$content\" | sed 's/\\\\n/\\n/g' | sed 's/^/    /') # Adjust for actual new lines and indent\n        echo \"  $name: |\"\n        echo \"$content\"\n    done\n}\n\n\necho \"Checking and updating configmap $configMap in AKS Cluster $aksName in $RG\"\n\n\n# Combining property-like and file-like data into the ConfigMap\ncombinedYaml=$(cat <<EOF\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: ${configMap}\n  namespace: ${namespace}\ndata:\n$(convert_properties_to_yaml)\n$(append_files_to_yaml)\nEOF\n)\n\necho \"Applying ConfigMap $configMap in AKS Cluster $aksName in $RG\"\ncmdOut=$(az aks command invoke -g $RG -n $aksName -o json --command \"echo '$combinedYaml' | kubectl apply -f -\")\necho $cmdOut\n\n\njsonOutputString=$cmdOut\necho $jsonOutputString > $AZ_SCRIPTS_OUTPUT_PATH\n",
+            "useExistingManagedIdentity": "[equals(parameters('newOrExistingManagedIdentity'), 'existing')]",
+            "delegatedManagedIdentityResourceId": "[if(variables('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))]"
+          },
+          "resources": [
+            {
+              "condition": "[not(variables('useExistingManagedIdentity'))]",
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[parameters('managedIdentityName')]",
+              "location": "[parameters('location')]"
+            },
+            {
+              "copy": {
+                "name": "rbac",
+                "count": "[length(parameters('rbacRolesNeeded'))]"
+              },
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('aksName'))]",
+              "name": "[guid(resourceId('Microsoft.ContainerService/managedClusters', parameters('aksName')), parameters('rbacRolesNeeded')[copyIndex()], if(variables('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRolesNeeded')[copyIndex()])]",
+                "principalId": "[if(variables('useExistingManagedIdentity'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId, reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId)]",
+                "principalType": "ServicePrincipal",
+                "delegatedManagedIdentityResourceId": "[if(parameters('isCrossTenant'), variables('delegatedManagedIdentityResourceId'), null())]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2020-10-01",
+              "name": "[format('script-{0}-{1}', parameters('aksName'), deployment().name)]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', if(variables('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]": {}
+                }
+              },
+              "kind": "AzureCLI",
+              "properties": {
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "azCliVersion": "2.54.0",
+                "timeout": "PT10M",
+                "retentionInterval": "P1D",
+                "environmentVariables": [
+                  {
+                    "name": "RG",
+                    "value": "[resourceGroup().name]"
+                  },
+                  {
+                    "name": "aksName",
+                    "value": "[parameters('aksName')]"
+                  },
+                  {
+                    "name": "configMap",
+                    "value": "[parameters('name')]"
+                  },
+                  {
+                    "name": "namespace",
+                    "value": "[parameters('namespace')]"
+                  },
+                  {
+                    "name": "dataPropertyLike",
+                    "value": "[join(parameters('propertyData'), ';')]"
+                  },
+                  {
+                    "name": "dataFileLike",
+                    "value": "[join(parameters('fileData'), ';')]"
+                  },
+                  {
+                    "name": "initialDelay",
+                    "value": "[parameters('initialScriptDelay')]"
+                  }
+                ],
+                "scriptContent": "[variables('$fxv#0')]",
+                "cleanupPreference": "[parameters('cleanupPreference')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+                "rbac"
+              ]
+            }
+          ],
+          "outputs": {
+            "commandOutput": {
+              "type": "object",
+              "metadata": {
+                "description": "Array of command output from each Deployment Script AKS run command"
+              },
+              "value": {
+                "Name": "[format('script-{0}-{1}', parameters('aksName'), deployment().name)]",
+                "CommandOutput": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('aksName'), deployment().name)), '2020-10-01').outputs]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name))]"
       ]
     },
     {
@@ -23568,8 +23950,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-cluster-appconfig-configmap', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-cluster-devsample-configmap', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-espool1', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-espool2', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-espool3', variables('serviceLayerConfig').name))]"

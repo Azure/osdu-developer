@@ -1688,6 +1688,22 @@ module federatedCredsDevSample './modules/federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsConfigMaps './modules/federated_identity.bicep' = {
+  name: '${serviceLayerConfig.name}-federated-cred-ns_config-maps'
+  params: {
+    name: 'federated-ns_azappconfig-system'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.outputs.name
+    subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
+  }
+  dependsOn: [
+    federatedCredsDevSample
+  ]
+}
+
 module appRoleAssignments './modules/app_assignments.bicep' = {
   name: '${serviceLayerConfig.name}-user-managed-identity-rbac'
   params: {
@@ -1696,7 +1712,7 @@ module appRoleAssignments './modules/app_assignments.bicep' = {
     storageName: configStorage.outputs.name
   }
   dependsOn: [
-    federatedCredsDevSample
+    federatedCredsConfigMaps
   ]
 }
 
@@ -1744,16 +1760,29 @@ module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
 
 var appSettings = [
   {
-    name: 'Settings:FontColor'
-    value: 'Green'
+    name: 'Settings:StorageAccountName'
+    value: partitionStorage[0].outputs.name
     contentType: 'text/plain'
-    label: 'ConfigMap-Sample'
+    label: 'configmap-sample'
   }
   {
     name: 'Settings:Message'
     value: 'Hello from App Configuration'
     contentType: 'text/plain'
-    label: 'ConfigMap-Sample'
+    label: 'configmap-sample'
+  }
+]
+
+var secretText = 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+
+var appSecrets = [
+  {
+    name: commonLayerConfig.secrets.storageAccountName
+    value: string({
+      uri: 'https://${keyvault.name}.vault.azure.net/secrets/${commonLayerConfig.secrets.storageAccountName}'
+    })
+    contentType: secretText
+    label: 'configmap-sample'
   }
 ]
 
@@ -1778,7 +1807,7 @@ module app_config 'modules/app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(appSettings)
+    keyValues: concat(appSettings, appSecrets)
   }
   dependsOn: [
     appRoleAssignments
@@ -1791,18 +1820,42 @@ output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
 
 //--------------Config Map---------------
 var configMaps = {
+  appConfigTemplate: '''
+values.yaml: |
+  azure:
+    tenantId: {0}
+    clientId: {1}
+    configEndpoint: {2}
+    keyvaultName: {3}
+  '''
   devSampleTemplate: '''
 values.yaml: |
   serviceAccount:
     create: false
     name: "workload-identity-sa"
   azure:
-    enabled: true
     tenantId: "{0}"
     clientId: {1}
     configEndpoint: {2}
     keyvaultName: {3}
 '''
+}
+
+module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+  name: '${serviceLayerConfig.name}-cluster-appconfig-configmap'
+  params: {
+    aksName: cluster.outputs.aksClusterName
+    location: location
+    name: 'config-map-values'
+    namespace: 'default'
+    fileData: [
+      format(configMaps.appConfigTemplate, 
+             subscription().tenantId, 
+             appIdentity.outputs.clientId,
+             app_config.outputs.endpoint,
+             keyvault.outputs.name)
+    ]
+  }
 }
 
 module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
@@ -1872,7 +1925,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   }
   dependsOn: [
     app_config
-    devSampleMap
+    appConfigMap
     espool1
     espool2
     espool3

@@ -2,14 +2,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: dev-sample
+  name: config-maps
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   chart:
     spec:
-      chart: ./charts/env-debug
+      chart: ./charts/config-maps
       sourceRef:
         kind: GitRepository
         name: flux-system
@@ -18,25 +18,9 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: dev-sample
+  targetNamespace: default
   valuesFrom:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
-  values:
-    replicaCount: 1
-    nameOverride: ""
-    fullnameOverride: env-debug
-    azure:
-      enabled: true
-    service:
-      type: ClusterIP
-      port: 80
-    env:
-    - name: MESSAGE
-      value: Hello World!
-    - name: FROM_CONFIG_MAP
-      valueFrom:
-        configMapKeyRef:
-          name: env-debug-config
-          key: MESSAGE
+

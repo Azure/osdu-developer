@@ -1779,7 +1779,7 @@ var appSecrets = [
   {
     name: commonLayerConfig.secrets.storageAccountName
     value: string({
-      uri: 'https://${keyvault.name}.vault.azure.net/secrets/${commonLayerConfig.secrets.storageAccountName}'
+      uri: 'https://${keyvault.outputs.name}.vault.azure.net/secrets/${commonLayerConfig.secrets.storageAccountName}'
     })
     contentType: secretText
     label: 'configmap-sample'

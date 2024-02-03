@@ -16,6 +16,7 @@ fullnameOverride: ""
 azure:
   configEndpoint: $(az appconfig list --resource-group $GROUP --query '[].endpoint' -otsv)
   clientId: $(az identity list --resource-group $GROUP --query "[?contains(name, 'service')].clientId" -otsv)
+  keyvaultUri: $(az keyvault list --resource-group rg-basic --query '[].properties.vaultUri' -otsv)
 EOF
 
 
@@ -26,5 +27,5 @@ Install the helm chart.
 ```bash
 # Create Namespace
 NAMESPACE=default
-helm upgrade --install config-maps . -n $NAMESPACE
+helm upgrade --install config-maps . -n $NAMESPACE -f custom_values.yaml
 ```

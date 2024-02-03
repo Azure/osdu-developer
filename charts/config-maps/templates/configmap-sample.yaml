@@ -6,7 +6,7 @@ spec:
   endpoint: {{ .Values.azure.configEndpoint }}
   valueFrom:
     configMapKeyRef:
-      name: dev-sample-values # This should match the generated ConfigMap's name
+      name: configmap-sample # This should match the generated ConfigMap's name
       key: endpoint
   target:
     configMapName: configmap-sample
@@ -21,3 +21,11 @@ spec:
      selectors:
         - keyFilter: "*"
           labelFilter: "configmap-sample"
+  secret:
+    target:
+      secretName: secret-appconfig-provider
+    auth:
+      managedIdentityClientId: {{ .Values.azure.clientId }}
+    refresh:
+      enabled: true
+      interval: 1h

@@ -1827,6 +1827,7 @@ values.yaml: |
     clientId: {1}
     configEndpoint: {2}
     keyvaultName: {3}
+    keyvaultUri: {4}
   '''
   devSampleTemplate: '''
 values.yaml: |
@@ -1853,7 +1854,8 @@ module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap)
              subscription().tenantId, 
              appIdentity.outputs.clientId,
              app_config.outputs.endpoint,
-             keyvault.outputs.name)
+             keyvault.outputs.name,
+             keyvault.outputs.uri)
     ]
   }
 }

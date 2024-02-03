@@ -20,4 +20,4 @@ spec:
   configuration:
      selectors:
         - keyFilter: "*"
-          labelFilter: "ConfigMap-Sample"
+          labelFilter: "configmap-sample"

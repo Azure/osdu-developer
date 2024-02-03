@@ -26,6 +26,8 @@ spec:
       secretName: secret-appconfig-provider
     auth:
       managedIdentityClientId: {{ .Values.azure.clientId }}
+      keyVaults:
+        - uri: {{ .Values.azure.keyvaultUri }}
     refresh:
       enabled: true
       interval: 1h

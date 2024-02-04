@@ -1806,6 +1806,9 @@ module app_config 'modules/app-configuration/main.bicep' = {
 output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
 
 //--------------Config Map---------------
+// SecretProviderClass --> tenantId, clientId, keyvaultName
+// ServiceAccount --> tenantId, clientId
+// AzureAppConfigurationProvider --> tenantId, clientId, configEndpoint, keyvaultUri
 var configMaps = {
   appConfigTemplate: '''
 values.yaml: |
@@ -1817,6 +1820,7 @@ values.yaml: |
     clientId: {1}
     configEndpoint: {2}
     keyvaultUri: {3}
+    keyvaultName: {4}
   '''
 //   devSampleTemplate: '''
 // values.yaml: |
@@ -1843,7 +1847,8 @@ module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap)
              subscription().tenantId, 
              appIdentity.outputs.clientId,
              app_config.outputs.endpoint,
-             keyvault.outputs.uri)
+             keyvault.outputs.uri,
+             keyvault.outputs.name)
     ]
   }
 }

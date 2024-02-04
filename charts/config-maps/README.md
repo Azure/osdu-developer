@@ -16,7 +16,8 @@ azure:
   tenantId: $(az account show --query tenantId -otsv)
   configEndpoint: $(az appconfig list --resource-group $GROUP --query '[].endpoint' -otsv)
   clientId: $(az identity list --resource-group $GROUP --query "[?contains(name, 'service')].clientId" -otsv)
-  keyvaultUri: $(az keyvault list --resource-group rg-basic --query '[].properties.vaultUri' -otsv)
+  keyvaultUri: $(az keyvault list --resource-group $GROUP --query '[].properties.vaultUri' -otsv)
+  keyvaultName: $(az keyvault list --resource-group $GROUP --query '[].name' -otsv)
 EOF
 
 

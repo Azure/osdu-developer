@@ -40,3 +40,17 @@ spec:
         configMapKeyRef:
           name: env-debug-config
           key: MESSAGE
+    - name: WORKSPACE_KEY
+      secret:
+        name: common-secrets
+        key: workspace-key
+    - name: STORAGE_KEY
+      secret:
+        name: common-secrets
+        key: storage-key
+    - name: DATABASE_CONNECTION
+      secret:
+        name: common-secrets
+        key: database-connection
+    
+    

@@ -62,6 +62,12 @@ var commonLayerConfig = {
     tables: [
       'partitionInfo'
     ]
+    shares: [
+      'crs'
+      'crs-conversion'
+      'unit'
+      'sample-share'
+    ]
   }
   database: {
     name: 'graph-db'
@@ -820,6 +826,7 @@ module configStorage './modules/storage-account/main.bicep' = {
     // Configure Service
     sku: commonLayerConfig.storage.sku
     tables: commonLayerConfig.storage.tables
+    shares: commonLayerConfig.storage.shares
 
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
@@ -1098,11 +1105,6 @@ var partitionLayerConfig = {
       'file-staging-area'
       'file-persistent-area'
     ]
-    shares: [
-      'crs'
-      'crs-conversion'
-      'unit'
-    ]
   }
   database: {
     name: 'osdu-db'
@@ -1317,7 +1319,6 @@ module partitionStorage './modules/storage-account/main.bicep' = [for (partition
     // Configure Service
     sku: partitionLayerConfig.storage.sku
     containers: concat(partitionLayerConfig.storage.containers, [partition.name])
-    shares: concat(partitionLayerConfig.storage.shares, [partition.name])
 
     // Assign RBAC
     roleAssignments: [
@@ -1822,17 +1823,6 @@ values.yaml: |
     keyvaultUri: {3}
     keyvaultName: {4}
   '''
-//   devSampleTemplate: '''
-// values.yaml: |
-//   serviceAccount:
-//     create: false
-//     name: "workload-identity-sa"
-//   azure:
-//     tenantId: "{0}"
-//     clientId: {1}
-//     configEndpoint: {2}
-//     keyvaultName: {3}
-// '''
 }
 
 module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
@@ -1852,23 +1842,6 @@ module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap)
     ]
   }
 }
-
-// module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-//   name: '${serviceLayerConfig.name}-cluster-devsample-configmap'
-//   params: {
-//     aksName: cluster.outputs.aksClusterName
-//     location: location
-//     name: 'dev-sample-values'
-//     namespace: 'default'
-//     fileData: [
-//       format(configMaps.devSampleTemplate, 
-//              subscription().tenantId, 
-//              appIdentity.outputs.clientId,
-//              app_config.outputs.endpoint,
-//              keyvault.outputs.name)
-//     ]
-//   }
-// }
 
 
 

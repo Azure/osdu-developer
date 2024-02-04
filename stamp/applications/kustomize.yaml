@@ -53,3 +53,7 @@ spec:
   path: ./software/applications/dev-sample
   prune: true
   wait: true
+  healthChecks:
+    - kind: Deployment
+      name: env-debug
+      namespace: dev-sample

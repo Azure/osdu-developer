@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "17352047769355619499"
+      "templateHash": "16942964199009827262"
     }
   },
   "parameters": {
@@ -767,16 +767,8 @@
       }
     },
     "secretText": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8",
-    "appSecrets": [
-      {
-        "name": "[variables('commonLayerConfig').secrets.storageAccountName]",
-        "value": "[string(createObject('uri', format('https://{0}.vault.azure.net/secrets/{1}', format('{0}-azure-keyvault', variables('commonLayerConfig').name), variables('commonLayerConfig').secrets.storageAccountName)))]",
-        "contentType": "[variables('secretText')]",
-        "label": "configmap-sample"
-      }
-    ],
     "configMaps": {
-      "appConfigTemplate": "values.yaml: |\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n  ",
+      "appConfigTemplate": "values.yaml: |\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n    keyvaultUri: {4}\n  ",
       "devSampleTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: \"{0}\"\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultName: {3}\n"
     }
   },
@@ -22523,7 +22515,7 @@
             ]
           },
           "keyValues": {
-            "value": "[concat(createArray(createObject('name', 'Settings:StorageAccountName', 'value', reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-storage-{1}', variables('partitionLayerConfig').name, 0)), '2022-09-01').outputs.name.value, 'contentType', 'text/plain', 'label', 'configmap-sample'), createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-sample')), variables('appSecrets'))]"
+            "value": "[concat(createArray(createObject('name', 'Settings:StorageAccountName', 'value', reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-storage-{1}', variables('partitionLayerConfig').name, 0)), '2022-09-01').outputs.name.value, 'contentType', 'text/plain', 'label', 'configmap-sample'), createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-sample')), createArray(createObject('name', variables('commonLayerConfig').secrets.storageAccountName, 'value', string(createObject('uri', format('https://{0}.vault.azure.net/secrets/{1}', reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name)), '2022-09-01').outputs.name.value, variables('commonLayerConfig').secrets.storageAccountName))), 'contentType', variables('secretText'), 'label', 'configmap-sample')))]"
           }
         },
         "template": {
@@ -23202,7 +23194,7 @@
           },
           "fileData": {
             "value": [
-              "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name)), '2022-09-01').outputs.clientId.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name)), '2022-09-01').outputs.endpoint.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name)), '2022-09-01').outputs.name.value)]"
+              "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('serviceLayerConfig').name)), '2022-09-01').outputs.clientId.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name)), '2022-09-01').outputs.endpoint.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name)), '2022-09-01').outputs.name.value, reference(resourceId('Microsoft.Resources/deployments', format('{0}-azure-keyvault', variables('commonLayerConfig').name)), '2022-09-01').outputs.uri.value)]"
             ]
           }
         },

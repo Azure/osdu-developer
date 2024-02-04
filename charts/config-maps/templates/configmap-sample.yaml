@@ -4,10 +4,10 @@ metadata:
   name: config-sample
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
-  valueFrom:
-    configMapKeyRef:
-      name: configmap-sample # This should match the generated ConfigMap's name
-      key: endpoint
+  # valueFrom:
+  #   configMapKeyRef:
+  #     name: configmap-sample # This should match the generated ConfigMap's name
+  #     key: endpoint
   target:
     configMapName: configmap-sample
     configMapData:
@@ -21,11 +21,11 @@ spec:
      selectors:
         - keyFilter: "*"
           labelFilter: "configmap-sample"
-  secret:
-    target:
-      secretName: secret-appconfig-provider
-    auth:
-      managedIdentityClientId: {{ .Values.azure.clientId }}
+  # secret:
+  #   target:
+  #     secretName: secret-appconfig-provider
+  #   auth:
+  #     managedIdentityClientId: {{ .Values.azure.clientId }}
   #   auth:
   #     keyVaults:
   #       - uri: {{ .Values.azure.keyvaultUri }}

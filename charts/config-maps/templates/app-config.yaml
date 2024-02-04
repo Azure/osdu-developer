@@ -3,7 +3,7 @@
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
-  name: {{ include "env-debug.fullname" . }}-config
+  name: {{ include "config-maps.fullname" . }}-config
   namespace: {{ $namespace }}
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}

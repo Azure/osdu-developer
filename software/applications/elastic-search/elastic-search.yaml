@@ -27,9 +27,9 @@ spec:
                       - key: agentpool
                         operator: In
                         values:
-                          - espoolz1
-                          - espoolz2
-                          - espoolz3
+                          - poolz1
+                          - poolz2
+                          - poolz3
                   - matchExpressions:
                       - key: topology.kubernetes.io/zone
                         operator: In
@@ -61,9 +61,9 @@ spec:
                       - key: agentpool
                         operator: In
                         values:
-                          - espoolz1
-                          - espoolz2
-                          - espoolz3
+                          - poolz1
+                          - poolz2
+                          - poolz3
                   - matchExpressions:
                       - key: topology.kubernetes.io/zone
                         operator: In
@@ -102,9 +102,9 @@ spec:
                       - key: agentpool
                         operator: In
                         values:
-                          - espoolz1
-                          - espoolz2
-                          - espoolz3
+                          - poolz1
+                          - poolz2
+                          - poolz3
                   - matchExpressions:
                       - key: topology.kubernetes.io/zone
                         operator: In

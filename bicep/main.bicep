@@ -1572,11 +1572,11 @@ var elasticPoolPresets = {
   }
 }
 
-module espool1 './modules/aks_agent_pool.bicep' = {
-  name: '${serviceLayerConfig.name}-espool1'
+module pool1 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-pool1'
   params: {
     AksName: cluster.outputs.aksClusterName
-    PoolName: 'espoolz1'
+    PoolName: 'poolz1'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
     agentCount: 2
     agentCountMax: 4
@@ -1592,11 +1592,11 @@ module espool1 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-module espool2 './modules/aks_agent_pool.bicep' = {
-  name: '${serviceLayerConfig.name}-espool2'
+module pool2 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-pool2'
   params: {
     AksName: cluster.outputs.aksClusterName
-    PoolName: 'espoolz2'
+    PoolName: 'poolz2'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
     agentCount: 2
     agentCountMax: 4
@@ -1612,11 +1612,11 @@ module espool2 './modules/aks_agent_pool.bicep' = {
   }
 }
 
-module espool3 './modules/aks_agent_pool.bicep' = {
-  name: '${serviceLayerConfig.name}-espool3'
+module pool3 './modules/aks_agent_pool.bicep' = {
+  name: '${serviceLayerConfig.name}-pool3'
   params: {
     AksName: cluster.outputs.aksClusterName
-    PoolName: 'espoolz3'
+    PoolName: 'poolz3'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
     agentCount: 2
     agentCountMax: 4
@@ -1891,9 +1891,9 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   dependsOn: [
     app_config
     appConfigMap
-    espool1
-    espool2
-    espool3
+    pool1
+    pool2
+    pool3
   ]
 }
 

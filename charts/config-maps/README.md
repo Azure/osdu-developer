@@ -10,8 +10,11 @@ GROUP=$<your_resource_group>
 # Translate Values File
 cat > custom_values.yaml << EOF
 nameOverride: ""
-fullnameOverride: "config-map"
+fullnameOverride: "config-map-ac"
 
+serviceAccount:
+  create: false
+  name: "workload-identity-sa"
 azure:
   tenantId: $(az account show --query tenantId -otsv)
   configEndpoint: $(az appconfig list --resource-group $GROUP --query '[].endpoint' -otsv)

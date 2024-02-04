@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "2581687596207508288"
+      "templateHash": "11985431207437518731"
     }
   },
   "parameters": {
@@ -20775,7 +20775,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('{0}-espool1', variables('serviceLayerConfig').name)]",
+      "name": "[format('{0}-pool1', variables('serviceLayerConfig').name)]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -20786,7 +20786,7 @@
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name)), '2022-09-01').outputs.aksClusterName.value]"
           },
           "PoolName": {
-            "value": "espoolz1"
+            "value": "poolz1"
           },
           "agentVMSize": {
             "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
@@ -20960,7 +20960,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('{0}-espool2', variables('serviceLayerConfig').name)]",
+      "name": "[format('{0}-pool2', variables('serviceLayerConfig').name)]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -20971,7 +20971,7 @@
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name)), '2022-09-01').outputs.aksClusterName.value]"
           },
           "PoolName": {
-            "value": "espoolz2"
+            "value": "poolz2"
           },
           "agentVMSize": {
             "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
@@ -21145,7 +21145,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('{0}-espool3', variables('serviceLayerConfig').name)]",
+      "name": "[format('{0}-pool3', variables('serviceLayerConfig').name)]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -21156,7 +21156,7 @@
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name)), '2022-09-01').outputs.aksClusterName.value]"
           },
           "PoolName": {
-            "value": "espoolz3"
+            "value": "poolz3"
           },
           "agentVMSize": {
             "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
@@ -23674,9 +23674,9 @@
         "[resourceId('Microsoft.Resources/deployments', format('{0}-appconfig', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-cluster-appconfig-configmap', variables('serviceLayerConfig').name))]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-aks-cluster', variables('serviceLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool1', variables('serviceLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool2', variables('serviceLayerConfig').name))]",
-        "[resourceId('Microsoft.Resources/deployments', format('{0}-espool3', variables('serviceLayerConfig').name))]"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-pool1', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-pool2', variables('serviceLayerConfig').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-pool3', variables('serviceLayerConfig').name))]"
       ]
     }
   ],

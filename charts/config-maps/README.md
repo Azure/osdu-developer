@@ -6,14 +6,14 @@ _The following commands can help generate a prepopulated custom_values file._
 ```bash
 # Setup Variables
 GROUP=$<your_resource_group>
-ENDPOINT=$(az appconfig list --resource-group $GROUP --query '[].endpoint' -otsv)
 
 # Translate Values File
 cat > custom_values.yaml << EOF
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "config-map"
 
 azure:
+  tenantId: $(az account show --query tenantId -otsv)
   configEndpoint: $(az appconfig list --resource-group $GROUP --query '[].endpoint' -otsv)
   clientId: $(az identity list --resource-group $GROUP --query "[?contains(name, 'service')].clientId" -otsv)
   keyvaultUri: $(az keyvault list --resource-group rg-basic --query '[].properties.vaultUri' -otsv)

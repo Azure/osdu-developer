@@ -97,3 +97,4 @@ spec:
     name: flux-system
   path: ./software/configuration/config-maps
   prune: true
+  wait: true

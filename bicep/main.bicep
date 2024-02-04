@@ -1760,29 +1760,16 @@ module helmAppConfigProvider './modules/aks-run-command/main.bicep' = {
 
 var appSettings = [
   {
-    name: 'Settings:StorageAccountName'
-    value: partitionStorage[0].outputs.name
-    contentType: 'text/plain'
-    label: 'configmap-sample'
-  }
-  {
     name: 'Settings:Message'
     value: 'Hello from App Configuration'
     contentType: 'text/plain'
-    label: 'configmap-sample'
+    label: 'configmap-devsample'
   }
-]
-
-var secretText = 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
-
-var appSecrets = [
   {
-    name: commonLayerConfig.secrets.storageAccountName
-    value: string({
-      uri: 'https://${keyvault.outputs.name}.vault.azure.net/secrets/${commonLayerConfig.secrets.storageAccountName}'
-    })
-    contentType: secretText
-    label: 'configmap-sample'
+    name: 'Settings:StorageAccountName'
+    value: partitionStorage[0].outputs.name
+    contentType: 'text/plain'
+    label: 'configmap-devsample'
   }
 ]
 
@@ -1807,7 +1794,7 @@ module app_config 'modules/app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(appSettings, appSecrets)
+    keyValues: concat(appSettings)
   }
   dependsOn: [
     appRoleAssignments
@@ -1822,24 +1809,26 @@ output ENV_CONFIG_ENDPOINT string = app_config.outputs.endpoint
 var configMaps = {
   appConfigTemplate: '''
 values.yaml: |
-  azure:
-    tenantId: {0}
-    clientId: {1}
-    configEndpoint: {2}
-    keyvaultName: {3}
-    keyvaultUri: {4}
-  '''
-  devSampleTemplate: '''
-values.yaml: |
   serviceAccount:
     create: false
     name: "workload-identity-sa"
   azure:
-    tenantId: "{0}"
+    tenantId: {0}
     clientId: {1}
     configEndpoint: {2}
-    keyvaultName: {3}
-'''
+    keyvaultUri: {3}
+  '''
+//   devSampleTemplate: '''
+// values.yaml: |
+//   serviceAccount:
+//     create: false
+//     name: "workload-identity-sa"
+//   azure:
+//     tenantId: "{0}"
+//     clientId: {1}
+//     configEndpoint: {2}
+//     keyvaultName: {3}
+// '''
 }
 
 module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
@@ -1854,28 +1843,27 @@ module appConfigMap './modules/aks-config-map/main.bicep' = if (enableConfigMap)
              subscription().tenantId, 
              appIdentity.outputs.clientId,
              app_config.outputs.endpoint,
-             keyvault.outputs.name,
              keyvault.outputs.uri)
     ]
   }
 }
 
-module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
-  name: '${serviceLayerConfig.name}-cluster-devsample-configmap'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    name: 'dev-sample-values'
-    namespace: 'default'
-    fileData: [
-      format(configMaps.devSampleTemplate, 
-             subscription().tenantId, 
-             appIdentity.outputs.clientId,
-             app_config.outputs.endpoint,
-             keyvault.outputs.name)
-    ]
-  }
-}
+// module devSampleMap './modules/aks-config-map/main.bicep' = if (enableConfigMap) {
+//   name: '${serviceLayerConfig.name}-cluster-devsample-configmap'
+//   params: {
+//     aksName: cluster.outputs.aksClusterName
+//     location: location
+//     name: 'dev-sample-values'
+//     namespace: 'default'
+//     fileData: [
+//       format(configMaps.devSampleTemplate, 
+//              subscription().tenantId, 
+//              appIdentity.outputs.clientId,
+//              app_config.outputs.endpoint,
+//              keyvault.outputs.name)
+//     ]
+//   }
+// }
 
 
 

@@ -1,14 +1,14 @@
 {{- $namespace := .Release.Namespace }}
+{{- if .Values.azure.enabled }}
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
-  name: config-sample
-  name: {{ include "config-maps.fullname" . }}-config
+  name: {{ include "env-debug.fullname" . }}-config
   namespace: {{ $namespace }}
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
   target:
-    configMapName: configmap-sample
+    configMapName: configmap-by-appconfig
     configMapData:
       type: yaml
       key: value.yaml
@@ -25,6 +25,4 @@ spec:
       secretName: secret-appconfig-provider
     auth:
       managedIdentityClientId: {{ .Values.azure.clientId }}
-    refresh:
-      enabled: true
-      interval: 1h
+{{- end }}

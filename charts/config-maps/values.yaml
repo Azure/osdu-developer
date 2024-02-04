@@ -2,5 +2,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 azure:
-  configEndpoint: https://<your_appconfig>.azconfig.io
+  configEndpoint: https://<app_config_name>.azconfig.io
   clientId: <managed_identity_clientid>
+  keyvaultUri: https://<vault_name>.vault.azure.net/

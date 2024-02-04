@@ -23,4 +23,6 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+  values:
+    fullnameOverride: configmap-ac
 

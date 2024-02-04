@@ -1,13 +1,12 @@
+{{- $namespace := .Release.Namespace }}
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
   name: config-sample
+  name: {{ include "config-maps.fullname" . }}-config
+  namespace: {{ $namespace }}
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
-  # valueFrom:
-  #   configMapKeyRef:
-  #     name: configmap-sample # This should match the generated ConfigMap's name
-  #     key: endpoint
   target:
     configMapName: configmap-sample
     configMapData:
@@ -21,16 +20,11 @@ spec:
      selectors:
         - keyFilter: "*"
           labelFilter: "configmap-sample"
-  # secret:
-  #   target:
-  #     secretName: secret-appconfig-provider
-  #   auth:
-  #     managedIdentityClientId: {{ .Values.azure.clientId }}
-  #   auth:
-  #     keyVaults:
-  #       - uri: {{ .Values.azure.keyvaultUri }}
-  #         workloadIdentity:
-  #           managedIdentityClientId: {{ .Values.azure.clientId }}
-  #   refresh:
-  #     enabled: true
-  #     interval: 1h
+  secret:
+    target:
+      secretName: secret-appconfig-provider
+    auth:
+      managedIdentityClientId: {{ .Values.azure.clientId }}
+    refresh:
+      enabled: true
+      interval: 1h

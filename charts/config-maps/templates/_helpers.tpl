@@ -51,13 +51,13 @@ app.kubernetes.io/name: {{ include "config-map.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-# {{/*
-# Create the name of the service account to use
-# */}}
-# {{- define "config-map.serviceAccountName" -}}
-# {{- if .Values.serviceAccount.create }}
-# {{- default (include "config-map.fullname" .) .Values.serviceAccount.name }}
-# {{- else }}
-# {{- default "default" .Values.serviceAccount.name }}
-# {{- end }}
-# {{- end }}
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "config-map.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "config-map.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}

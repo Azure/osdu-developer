@@ -33,9 +33,6 @@ param cmekConfiguration object = {
 var commonLayerConfig = {
   name: 'common'
   displayName: 'Common Resources'
-  // network: {
-  //   name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
-  // }
   secrets: {
     tenantId: 'tenant-id'
     subscriptionId: 'subscription-id'
@@ -45,8 +42,8 @@ var commonLayerConfig = {
     clientSecret: 'app-dev-sp-password'
     applicationPrincipalId: 'app-dev-sp-id'
     stampIdentity: 'osdu-identity-id'
-    storageAccountName: 'tbl-storage'
-    storageAccountKey: 'tbl-storage-key'
+    storageAccountName: 'common-storage'
+    storageAccountKey: 'common-storage-key'
     cosmosConnectionString: 'graph-db-connection'
     cosmosEndpoint: 'graph-db-endpoint'
     cosmosPrimaryKey: 'graph-db-primary-key'

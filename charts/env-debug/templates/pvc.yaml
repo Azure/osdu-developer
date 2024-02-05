@@ -29,11 +29,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "env-debug.fullname" . }}-pvc
   namespace: {{ $namespace }}
-  # Set this annotation to NOT let Kubernetes automatically create
-  # a persistent volume for this volume claim.
-  annotations:
-    volume.beta.kubernetes.io/storage-class: ""
 spec:
+  storageClassName: "" 
   accessModes:
     - ReadOnlyMany
   resources:

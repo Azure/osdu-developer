@@ -66,9 +66,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: azure-keyvault
-        # - name: azure-share
-        #   persistentVolumeClaim:
-        #     claimName: {{ include "env-debug.fullname" . }}-pvc
+        - name: azure-share
+          persistentVolumeClaim:
+            claimName: {{ include "env-debug.fullname" . }}-pvc
     {{- end }}
       serviceAccountName: workload-identity-sa
       containers:
@@ -83,9 +83,9 @@ spec:
             - name: azure-keyvault
               mountPath: "/mnt/azure-keyvault"
               readOnly: true
-            # - name: azure-share
-            #   mountPath: "/mnt/azure-share"
-            #   readOnly: true
+            - name: azure-share
+              mountPath: "/mnt/azure-share"
+              readOnly: true
           {{- end }}
           env:
             - name: STATIC_ENV_VALUE

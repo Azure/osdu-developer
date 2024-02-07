@@ -1,0 +1,47 @@
+{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
+{{- range .Values.configuration }}
+{{- if .pvc }}
+{{- range .pvc }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .name }}-pv
+  labels: {{ $labels }}
+    usage: {{ .name }}-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadOnlyMany
+  azureFile:
+    secretName: airflow
+    shareName: {{ .name }}
+  volumeMode: Filesystem
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  - mfsymlinks
+  - nobrl
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}-pvc
+  labels: {{ $labels }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      usage: {{ .name }}-pv
+{{- end }}
+{{- end }}
+{{- end }}

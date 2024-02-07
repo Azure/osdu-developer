@@ -1,0 +1,13 @@
+{{- range .Values.configuration }}
+{{- if .map }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .map }}
+data:
+  {{- range .data }}
+  {{ .name }}: {{ .value | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}

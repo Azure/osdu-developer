@@ -1,0 +1,24 @@
+{{- $serviceType := .Values.service.type }}
+{{- $servicePort := .Values.service.port }}
+{{- $targetPort := .Values.service.target }}
+{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
+{{- $selectorLabels := include "self-managed-service.selectorLabels" . | nindent 4 }}
+{{- range .Values.configuration }}
+{{- if .service }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .service }}
+  labels: {{ $labels }}
+    app: {{ .service }}
+spec:
+  type: {{ $serviceType }}
+  ports:
+    - port: {{ $servicePort }}
+      targetPort: {{ $targetPort | default "http"}}
+      protocol: TCP
+      name: http
+  selector: {{ $selectorLabels }}
+{{- end }}
+{{- end }}

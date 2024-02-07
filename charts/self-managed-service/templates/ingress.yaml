@@ -1,0 +1,41 @@
+
+{{- $svcPort := .Values.service.port -}}
+{{- if .Values.ingress }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  labels:
+    {{- include "self-managed-service.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/request-timeout: "300"
+    appgw.ingress.kubernetes.io/connection-draining: "true"
+    appgw.ingress.kubernetes.io/connection-draining-timeout: "30"
+    {{- if .Values.ingress.enableKeyvaultCert }}
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: "appgw-ssl-cert"
+    {{- else }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.issuer }}
+    cert-manager.io/acme-challenge-type: http01
+    {{- end }}
+spec:
+  {{- if not .Values.ingress.enableKeyvaultCert }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.dns }}
+    secretName: osdu-certificate
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.dns }}
+      http:
+        paths:
+        {{- range .Values.configuration }}
+        {{- if or .service .scaledObject }}
+        - path: {{ .path }}
+          backend:
+            serviceName: {{ .service }}
+            servicePort: {{ $svcPort }}
+        {{- end }}
+        {{- end }}
+---
+{{- end }}

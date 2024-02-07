@@ -18,7 +18,7 @@ spec:
           tolerations:
             - effect: NoSchedule
               key: app
-              value: "elasticsearch"
+              value: "cluster"
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -52,7 +52,7 @@ spec:
           tolerations:
             - effect: NoSchedule
               key: app
-              value: "elasticsearch"
+              value: "cluster"
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -93,7 +93,7 @@ spec:
           tolerations:
             - effect: NoSchedule
               key: app
-              value: "elasticsearch"
+              value: "cluster"
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:

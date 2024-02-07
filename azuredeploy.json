@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "11985431207437518731"
+      "templateHash": "10551897021646849986"
     }
   },
   "parameters": {
@@ -20806,12 +20806,12 @@
           "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
-              "app=elasticsearch:NoSchedule"
+              "app=cluster:NoSchedule"
             ]
           },
           "nodeLabels": {
             "value": {
-              "app": "elasticsearch"
+              "app": "cluster"
             }
           }
         },
@@ -20991,12 +20991,12 @@
           "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
-              "app=elasticsearch:NoSchedule"
+              "app=cluster:NoSchedule"
             ]
           },
           "nodeLabels": {
             "value": {
-              "app": "elasticsearch"
+              "app": "cluster"
             }
           }
         },
@@ -21176,12 +21176,12 @@
           "podSubnetId": "[if(and(not(equals(parameters('virtualNetworkNewOrExisting'), 'new')), parameters('enablePodSubnet')), createObject('value', format('{0}/subnets/{1}', createObject('new', if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), reference(resourceId('Microsoft.Resources/deployments', format('{0}-virtual-network', variables('commonLayerConfig').name)), '2022-09-01').outputs.resourceId.value, null()), 'existing', resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))[parameters('virtualNetworkNewOrExisting')], parameters('podSubnetName'))), createObject('value', ''))]",
           "nodeTaints": {
             "value": [
-              "app=elasticsearch:NoSchedule"
+              "app=cluster:NoSchedule"
             ]
           },
           "nodeLabels": {
             "value": {
-              "app": "elasticsearch"
+              "app": "cluster"
             }
           }
         },

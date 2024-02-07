@@ -1585,9 +1585,9 @@ module pool1 './modules/aks_agent_pool.bicep' = {
     ]
     subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
     podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
-    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeTaints: ['app=cluster:NoSchedule']
     nodeLabels: {
-      app: 'elasticsearch'
+      app: 'cluster'
     }
   }
 }
@@ -1605,9 +1605,9 @@ module pool2 './modules/aks_agent_pool.bicep' = {
     ]
     subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
     podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
-    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeTaints: ['app=cluster:NoSchedule']
     nodeLabels: {
-      app: 'elasticsearch'
+      app: 'cluster'
     }
   }
 }
@@ -1625,9 +1625,9 @@ module pool3 './modules/aks_agent_pool.bicep' = {
     ]
     subnetId: virtualNetworkNewOrExisting != 'new' ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' : '${vnetId[virtualNetworkNewOrExisting]}/subnets/${aksSubnetName}' 
     podSubnetId: virtualNetworkNewOrExisting != 'new' && enablePodSubnet ? '${vnetId[virtualNetworkNewOrExisting]}/subnets/${podSubnetName}' : ''
-    nodeTaints: ['app=elasticsearch:NoSchedule']
+    nodeTaints: ['app=cluster:NoSchedule']
     nodeLabels: {
-      app: 'elasticsearch'
+      app: 'cluster'
     }
   }
 }

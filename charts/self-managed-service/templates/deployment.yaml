@@ -1,0 +1,168 @@
+{{- $namespace := .Release.Namespace }}
+{{- $pullPolicy := .Values.pullPolicy -}}
+{{- $servicePort := .Values.service.port -}}
+{{- $replicaCount := .Values.replicaCount -}}
+{{- $nodePool := .Values.nodePool}}
+{{- $toleration := .Values.toleration}}
+{{- $affinity := .Values.affinity}}
+{{- $podIdentity := .Values.podIdentity}}
+{{- $podAnnotations := .Values.podAnnotations}}
+{{- $configMap := .Values.configMap -}}
+{{- $version := .Chart.AppVersion -}}
+{{- $selectorLabels := include "self-managed-service.selectorLabels" . | nindent 8 }}
+{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
+{{- range .Values.configuration }}
+{{- if or .service .scaledObject }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ or .service .scaledObject }}
+  labels: {{ $labels }}
+    app: {{ or .service .scaledObject }}
+spec:
+{{- if not .autoscale }}
+  replicas: {{ .replicaCount | default $replicaCount }}
+  selector:
+    matchLabels: {{ $selectorLabels }}
+{{- end }}
+  template:
+    metadata:
+    {{- with $podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels: {{ $selectorLabels }}
+        {{- if $podIdentity }}
+        aadpodidbinding: {{ $podIdentity }}
+        {{- end }}
+    spec:
+      {{- if $nodePool }}
+      nodeSelector:
+        nodepool: {{ $nodePool }}
+      {{- end }}
+      {{- if $affinity }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if $affinity.zones }}
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                {{- range $affinity.zones }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+              {{- if $affinity.pools }}
+              - key: agentpool
+                operator: In
+                values:
+                {{- range $affinity.pools }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+      {{- end }}
+      {{- if $toleration }}
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: {{ $toleration }}
+        effect: "NoSchedule"
+      {{- end }}
+      volumes:
+      {{- if .keyvault }}
+        - name: azure-keyvault
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: azure-keyvault
+      {{- end }}
+      {{- range .pvc }}
+        - name: {{ .volume }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}-pvc
+      {{- end }}
+      containers:
+        - name: {{ or .service .scaledObject }}
+          image: {{ .repository }}:{{ .tag | default $version }}
+          imagePullPolicy: {{ $pullPolicy | default "Always" }}
+          ports:
+            - name: http
+              containerPort: {{ $servicePort }}
+              protocol: TCP
+          {{- if .probe }}
+          readinessProbe:
+            httpGet:
+              path: {{ .probe.path }}
+              port: {{ .probe.port }}
+            initialDelaySeconds: 60
+          {{- if .probe.liveness }}
+          livenessProbe:
+            httpGet:
+              path: {{ .probe.path }}
+              port: {{ .probe.port }}
+            initialDelaySeconds: {{ .probe.liveness.delay }}
+            periodSeconds: {{ .probe.liveness.seconds }}
+          {{- end }}
+          {{- end }}
+          resources:
+          {{- if .request }}
+            requests:
+              {{- if .request.cpu }}
+              cpu: {{ .request.cpu | quote }}
+              {{- end }}
+              {{- if .request.memory }}
+              memory: {{ .request.memory | quote }}
+              {{- end }}
+          {{- end }}
+          {{- if .limit }}
+            limits:
+              {{- if .limit.cpu }}
+              cpu: {{ .limit.cpu | quote }}
+              {{- end }}
+              {{- if .limit.memory }}
+              memory: {{ .limit.memory | quote }}
+              {{- end }}
+          {{- end }}
+          volumeMounts:
+          {{- if .keyvault }}
+          - name: azure-keyvault
+            mountPath: "/mnt/azure-keyvault"
+            readOnly: true
+          {{- end }}
+          {{- range .mount }}
+          - name: {{ .name }}
+            mountPath: {{ .path }}
+          {{- end }}
+          {{- if $configMap }}
+          envFrom:
+          - configMapRef:
+              name: {{ $configMap }}
+          {{- end }}
+          {{- if .env }}
+          env:
+            {{- range .env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              {{- $v := .value }}
+              value: {{ tpl ($v | quote) $ }}
+              {{- end }}
+              {{- if .config }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .config.name }}
+                  key: {{ .config.key | quote }}
+              {{- end }}
+              {{- if .secret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secret.name | quote }}
+                  key: {{ .secret.key | quote }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+{{- end }}
+{{- end }}

@@ -16,7 +16,7 @@ Several resources exist that can help on planning networks for AKS and to unders
 
 __Default Solution__
 
-The default implementation uses a simple Virtual Network with a Kubenet plugin.  One subnet which is provided to the AKS cluster is required, and additional subnets can be enabled for Bastion, VPN Gateway etc.
+The default implementation uses a simple Virtual Network with a Kubenet plugin.  One subnet which is provided to the AKS cluster is required, and additional subnets can be enabled for Bastion.
 
 - Virtual Network CIDR: `10.1.0.0/16`
 
@@ -105,14 +105,14 @@ az network nsg create --name $NSG_NAME \
 az network nsg rule create --name AllowHttpInbound \
 --nsg-name $NSG_NAME --resource-group $NETWORK_GROUP \
 --priority 200 --access Allow --direction Inbound \
---protocol 'Tcp' --source-address-prefixes 'Internet' --source-port-ranges '*' \
+--protocol 'Tcp' --source-address-prefixes 'VirtualNetwork' --source-port-ranges '*' \
 --destination-address-prefixes '*' --destination-port-ranges '80'
 
 # https_inbound_rule
 az network nsg rule create --name AllowHttpsInbound \
 --nsg-name $NSG_NAME --resource-group $NETWORK_GROUP \
 --priority 210 --access Allow --direction Inbound \
---protocol 'Tcp' --source-address-prefixes 'Internet' --source-port-ranges '*' \
+--protocol 'Tcp' --source-address-prefixes 'VirtualNetwork' --source-port-ranges '*' \
 --destination-address-prefixes '*' --destination-port-ranges '443'
 ```
 
@@ -127,10 +127,10 @@ Use the following commands set up the network with a required subnet for the clu
 NETWORK_NAME='custom-vnet'
 VNET_PREFIX='172.18.0.0/22'
 
-CLUSTER_SUBNET_NAME='subnet1'
+CLUSTER_SUBNET_NAME='cluster'
 CLUSTER_SUBNET_PREFIX='172.18.0.0/24'
 
-POD_SUBNET_NAME='subnet2'
+POD_SUBNET_NAME='pods'
 POD_SUBNET_PREFIX='172.18.1.0/24'
 
 # virtual_network

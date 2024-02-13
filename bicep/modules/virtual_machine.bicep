@@ -63,6 +63,7 @@ param location string = resourceGroup().location
 @description('Specifies the resource tags.')
 param tags object
 
+
 // Variables
 var vmNicName = '${vmName}Nic'
 var linuxConfiguration = {
@@ -77,6 +78,7 @@ var linuxConfiguration = {
   }
   provisionVMAgent: true
 }
+
 
 // Resources
 resource virtualMachineNic 'Microsoft.Network/networkInterfaces@2023-06-01' = {

@@ -53,6 +53,18 @@
           "name": "${AKS_SUBNET_NAME}",
           "prefix": "${AKS_SUBNET_PREFIX}"
         },
+        "podSubnet": {
+          "name": "${POD_SUBNET_NAME}",
+          "prefix": "${POD_SUBNET_PREFIX}"
+        },
+        "vmSubnet": {
+          "name": "${VM_SUBNET_NAME}",
+          "prefix": "${VM_SUBNET_PREFIX}"
+        },
+        "bastionSubnet": {
+          "name": "${BASTION_SUBNET_NAME}",
+          "prefix": "${BASTION_SUBNET_PREFIX}"
+        },
         "identityId": "${VIRTUAL_NETWORK_IDENTITY}"
       }
     }

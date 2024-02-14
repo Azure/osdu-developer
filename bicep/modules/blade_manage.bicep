@@ -2,11 +2,14 @@
 //  Manage Section                                                 //
 //*****************************************************************//
 
-type manageSettings = {
+type bladeSettings = {
   @description('The name of the section name')
   sectionName: string
   @description('The display name of the section')
   displayName: string
+}
+
+type manageSettings = {
   @description('The settings for the virtual machine')
   machine: machineSettings
   @description('The settings for the bastion')
@@ -33,6 +36,9 @@ type bastionSettings = {
   skuName: bastionSkuType
 }
 
+
+@description('The configuration for the blade section.')
+param bladeConfig bladeSettings
 
 @description('The location of resources to deploy')
 param location string
@@ -76,9 +82,9 @@ param manageLayerConfig manageSettings
 */
 
 module bastionHost 'br/public:avm/res/network/bastion-host:0.1.1' = if (enableBastion) {
-  name: '${manageLayerConfig.sectionName}-bastion'
+  name: '${bladeConfig.sectionName}-bastion'
   params: {
-    name: 'bh-${replace(manageLayerConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, manageLayerConfig.sectionName)}'
+    name: 'bh-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     skuName: manageLayerConfig.bastion.skuName
     vNetId: vnetId
     location: location
@@ -96,19 +102,19 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.1.1' = if (enableBa
 |__|  |__| /__/     \__\ \______||__|  |__| |__| |__| \__| |_______|                                                                
 */
 
-resource existingVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+resource existingVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (enableBastion) {
   name: kvName
 }
 
 module virtualMachine './virtual_machine.bicep' = if (enableBastion) {
-  name: '${manageLayerConfig.sectionName}-machine'
+  name: '${bladeConfig.sectionName}-machine'
   params: {
-    vmName: 'vm-${replace(manageLayerConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, manageLayerConfig.sectionName)}'
+    vmName: 'vm-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     vmSize: manageLayerConfig.machine.vmSize
 
     // Assign Tags
     tags: {
-      layer: manageLayerConfig.displayName
+      layer: bladeConfig.displayName
     }
 
     vmSubnetId: vmSubnetId

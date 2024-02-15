@@ -130,7 +130,28 @@ param enablePodSubnet bool = false
 param enableVnetInjection bool = false
 
 @description('Optional. Bring your own Virtual Network.')
-param vnetConfiguration vnetSettings
+param vnetConfiguration vnetSettings = {
+  group: ''
+  name: ''
+  prefix: ''
+  identityId: ''
+  aksSubnet: {
+    name: ''
+    prefix: ''
+  }
+  podSubnet: {
+    name: ''
+    prefix: ''
+  }
+  vmSubnet: {
+    name: ''
+    prefix: ''
+  }
+  bastionSubnet: {
+    name: ''
+    prefix: ''
+  }
+}
 
 module networkBlade 'modules/blade_network.bicep' = {
   name: 'network-blade'

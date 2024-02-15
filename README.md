@@ -160,6 +160,19 @@ azd env set SOFTWARE_BRANCH main
 Customize your resources by enabling these optional features based on your specific requirements:
 
 
+#### Feature: Vnet Injection
+
+__Purpose:__ Enables a bring your own network capability.
+
+__Details:__ Typically, internal solutions require a preconfigured network due to possible S2S vpn configurations or a Hub Spoke Network design.
+
+__How To Enable:__
+
+```bash
+azd env set ENABLE_VNET_INJECTION true
+```
+
+
 #### Feature: Pod Subnet
 
 __Purpose:__ Enhances network configuration for Kubernetes Pods.
@@ -184,29 +197,6 @@ __How To Enable:__
 ```bash
 azd env set ENABLE_BASTION true
 ```
-
-
-#### Feature: VPN Gateway
-
-__Purpose:__ Establishes secure VPN connections for remote access.
-
-__Details:__ The VPN Gateway feature is essential for projects that require secure remote network access. It facilitates the creation of site-to-site and point-to-site VPN connections, enabling secure and flexible development environments, especially when dealing with internal ingress. This feature is crucial for maintaining robust network security and facilitating seamless remote access.
-
-__Additional Configuration Values:__
-
-- REMOTE_NETWORK_PREFIX: The CIDR notation for the remote network (e.g., '192.168.1.0/24').
-- REMOTE_VPN_ADDRESS: The IP address of the Remote VPN Gateway.
-- VPN_SHARED_KEY: The shared key for establishing the VPN connection.
-
-__How To Enable:__
-
-```bash
-azd env set ENABLE_VPN_GATEWAY true
-azd env set REMOTE_NETWORK_PREFIX <your_network_prefix>
-azd env set REMOTE_VPN_ADDRESS <your_vpn_ip>
-azd env set _VPN_SHARED_KEY <your_shared_key>
-```
-
 
 #### Feature: Public Blob Access
 
@@ -258,7 +248,7 @@ The architecture diagram below provides a visual representation of the infrastru
 1. Azure Virtual Network: Illustrates the network and how feature enablement changes the network structure and subnets.
 2. Azure Kubernetes Service (AKS): Demonstrates the Kubernetes clusters and an example of how software is set up along with interactions to other Azure services.
 3. Storage Resources: Illustrates the use of services such as Azure Storage Accounts and Azure Cosmos Databases and how they connect to the network.
-4. Optional Features: If enabled, features like the VPN Gateway, Bastion Host, and Pod Subnet are represented, attempting to show their placement and role within the architecture.
+4. Optional Features: If enabled, features like the Bastion Host, Public Blob Access and Pod Subnet are represented, attempting to show their placement and role within the architecture.
 
 
 ## Software Management with a Gitops Approach
@@ -288,20 +278,6 @@ There are many things that can be done to customize the deployment.  One example
 
 See [this tutorial](docs/vnet-injection.md) for how a customization like this might be performed.
 
-
-## Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Trademarks
 

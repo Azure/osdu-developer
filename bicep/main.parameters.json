@@ -5,32 +5,68 @@
     "applicationClientId": {
       "value": "${AZURE_CLIENT_ID}"
     },
-    "enablePodSubnet": {
-      "value": "${ENABLE_POD_SUBNET}"
-    },
-    "enableVpnGateway": {
-      "value": "${ENABLE_VPN_GATEWAY}"
-    },
+    "enableVnetInjection": {
+      "value": "${ENABLE_VNET_INJECTION}"
+    }, 
     "enableBastion": {
       "value": "${ENABLE_BASTION}"
     },
+    "enablePodSubnet": {
+      "value": "${ENABLE_POD_SUBNET}"
+    },
     "enableBlobPublicAccess": {
       "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
-    },
-    "vpnSharedKey": {
-      "value": "${VPN_SHARED_KEY}"
-    },
-    "remoteVpnAddress": {
-      "value": "${REMOTE_VPN_ADDRESS}"
-    },
-    "remoteNetworkPrefix": {
-      "value": "${REMOTE_NETWORK_PREFIX}"
     },
     "softwareRepository": {
       "value": "${SOFTWARE_REPOSITORY}"
     },
     "softwareBranch": {
       "value": "${SOFTWARE_BRANCH}"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "${VIRTUAL_NETWORK_GROUP}"
+    },
+    "virtualNetworkName": {
+      "value": "${VIRTUAL_NETWORK_NAME}"
+    },
+    "virtualNetworkAddressPrefix": {
+      "value": "${VIRTUAL_NETWORK_PREFIX}"
+    },
+    "aksSubnetName": {
+      "value": "${AKS_SUBNET_NAME}"
+    },
+    "aksSubnetAddressPrefix": {
+      "value": "${AKS_SUBNET_PREFIX}"
+    },
+    "podSubnetName": {
+      "value": "${POD_SUBNET_NAME}"
+    },
+    "podSubnetAddressPrefix": {
+      "value": "${POD_SUBNET_PREFIX}"
+    },
+    "vnetConfiguration": {
+      "value": {
+        "group": "${VIRTUAL_NETWORK_GROUP}",
+        "name": "${VIRTUAL_NETWORK_NAME}",
+        "prefix": "${VIRTUAL_NETWORK_PREFIX}",
+        "aksSubnet": {
+          "name": "${AKS_SUBNET_NAME}",
+          "prefix": "${AKS_SUBNET_PREFIX}"
+        },
+        "podSubnet": {
+          "name": "${POD_SUBNET_NAME}",
+          "prefix": "${POD_SUBNET_PREFIX}"
+        },
+        "vmSubnet": {
+          "name": "${VM_SUBNET_NAME}",
+          "prefix": "${VM_SUBNET_PREFIX}"
+        },
+        "bastionSubnet": {
+          "name": "${BASTION_SUBNET_NAME}",
+          "prefix": "${BASTION_SUBNET_PREFIX}"
+        },
+        "identityId": "${VIRTUAL_NETWORK_IDENTITY}"
+      }
     }
   }
 }

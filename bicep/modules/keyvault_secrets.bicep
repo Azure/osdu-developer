@@ -10,13 +10,6 @@ param workspaceIdName string
 @description('Required. The name of the secret.')
 param workspaceKeySecretName string
 
-@description('Required. The name of the secret.')
-param stampIdName string
-
-@description('Required. The name of the secret.')
-@secure()
-param stampIdValue string
-
 resource logAnaltyics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: workspaceName
 }
@@ -43,11 +36,4 @@ resource idSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource stampId 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: stampIdName
-  parent: keyVault
-
-  properties: {
-    value: stampIdValue
-  }
-}
+output name string = keyVault.name

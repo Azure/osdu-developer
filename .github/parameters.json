@@ -4,18 +4,6 @@
     "parameters": {
       "applicationClientId": {
         "value": "00000000-0000-0000-0000-000000000000"
-      },
-      "enableTelemetry": {
-        "value": false
-      },
-      "enablePodSubnet": {
-        "value": false
-      },
-      "enableVpnGateway": {
-        "value": false
-      },
-      "enableBastion": {
-        "value": false
       }
     }
   }

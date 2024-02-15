@@ -155,9 +155,25 @@ azd env set SOFTWARE_REPOSITORY https://github.com/azure/osdu-developer
 azd env set SOFTWARE_BRANCH main
 ```
 
-### Optional Feature Flags
+
+
+### Optional Features
 
 Customize your resources by enabling these optional features based on your specific requirements:
+
+
+#### Feature: Pod Subnet
+
+__Purpose:__ Enhances network configuration for Kubernetes Pods.
+
+__Details:__ Typically, with kubenet in Kubernetes, nodes are assigned IP addresses from the Azure virtual network subnet. Enabling the Pod Subnet feature allows Pods to receive IP addresses from a different address space, separate from the subnet of the nodes. This separation alters the network flows.
+
+
+__How To Enable:__
+
+```bash
+azd env set ENABLE_POD_SUBNET true
+```
 
 
 #### Feature: Vnet Injection
@@ -170,23 +186,20 @@ __How To Enable:__
 
 ```bash
 azd env set ENABLE_VNET_INJECTION true
+azd env set VIRTUAL_NETWORK_GROUP <your_network_group>
+azd env set VIRTUAL_NETWORK_NAME <your_network_name>
+azd env set VIRTUAL_NETWORK_PREFIX <your_network_prefix>
+azd env set VIRTUAL_NETWORK_IDENTITY <your_network_managed_identity>
+
+azd env set AKS_SUBNET_NAME <your_subnet_name>
+azd env set AKS_SUBNET_PREFIX <your_subnet_prefix>
+
+azd env set POD_SUBNET_NAME <your_subnet_name>
+azd env set POD_SUBNET_PREFIX <your_subnet_prefix>
 ```
 
 
-#### Feature: Pod Subnet
-
-__Purpose:__ Enhances network configuration for Kubernetes Pods.
-
-__Details:__ Typically, with kubenet in Kubernetes, nodes are assigned IP addresses from the Azure virtual network subnet. Enabling the Pod Subnet feature allows Pods to receive IP addresses from a different address space, separate from the subnet of the nodes. This separation alters the network flows.
-
-__How To Enable:__
-
-```bash
-azd env set ENABLE_POD_SUBNET true
-```
-
-
-#### Feature: Bastion
+#### Feature: Manage
 
 __Purpose:__ Facilitates secure access to internal network resources.
 

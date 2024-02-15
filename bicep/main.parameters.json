@@ -5,44 +5,14 @@
     "applicationClientId": {
       "value": "${AZURE_CLIENT_ID}"
     },
-    "enableVnetInjection": {
-      "value": "${ENABLE_VNET_INJECTION}"
-    }, 
-    "enableBastion": {
-      "value": "${ENABLE_BASTION}"
+    "enableManage": {
+      "value": "${ENABLE_MANAGE}"
     },
     "enablePodSubnet": {
       "value": "${ENABLE_POD_SUBNET}"
     },
     "enableBlobPublicAccess": {
       "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
-    },
-    "softwareRepository": {
-      "value": "${SOFTWARE_REPOSITORY}"
-    },
-    "softwareBranch": {
-      "value": "${SOFTWARE_BRANCH}"
-    },
-    "virtualNetworkResourceGroup": {
-      "value": "${VIRTUAL_NETWORK_GROUP}"
-    },
-    "virtualNetworkName": {
-      "value": "${VIRTUAL_NETWORK_NAME}"
-    },
-    "virtualNetworkAddressPrefix": {
-      "value": "${VIRTUAL_NETWORK_PREFIX}"
-    },
-    "aksSubnetName": {
-      "value": "${AKS_SUBNET_NAME}"
-    },
-    "aksSubnetAddressPrefix": {
-      "value": "${AKS_SUBNET_PREFIX}"
-    },
-    "podSubnetName": {
-      "value": "${POD_SUBNET_NAME}"
-    },
-    "podSubnetAddressPrefix": {
-      "value": "${POD_SUBNET_PREFIX}"
     },
     "vnetConfiguration": {
       "value": {
@@ -66,6 +36,12 @@
           "prefix": "${BASTION_SUBNET_PREFIX}"
         },
         "identityId": "${VIRTUAL_NETWORK_IDENTITY}"
+      }
+    },
+    "clusterSoftware": {
+      "value": {
+        "repository": "${SOFTWARE_REPOSITORY}",
+        "branch": "${SOFTWARE_BRANCH}"
       }
     }
   }

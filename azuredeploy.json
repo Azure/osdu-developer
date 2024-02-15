@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "13539979797828843058"
+      "templateHash": "2807170886321959755"
     }
   },
   "parameters": {
@@ -115,7 +115,7 @@
     },
     "clusterNetworkPlugin": {
       "type": "string",
-      "defaultValue": "kubenet",
+      "defaultValue": "azure",
       "allowedValues": [
         "kubenet",
         "azure"
@@ -134,6 +134,13 @@
   },
   "variables": {
     "enableTelemetry": false,
+    "enableVnetInjection": "[and(and(not(equals(parameters('vnetConfiguration').group, '')), not(equals(parameters('vnetConfiguration').name, ''))), not(equals(parameters('vnetConfiguration').prefix, '')))]",
+    "enablePrivateLink": false,
+    "cmekConfiguration": {
+      "kvUrl": "",
+      "keyName": "",
+      "identityId": ""
+    },
     "configuration": {
       "name": "main",
       "displayName": "Main Resources",
@@ -157,20 +164,13 @@
       "logs": {
         "sku": "PerGB2018",
         "retention": 30
-      }
-    },
-    "enableVnetInjection": "[and(and(not(equals(parameters('vnetConfiguration').group, '')), not(equals(parameters('vnetConfiguration').name, ''))), not(equals(parameters('vnetConfiguration').prefix, '')))]",
-    "enablePrivateLink": false,
-    "cmekConfiguration": {
-      "kvUrl": "",
-      "keyName": "",
-      "identityId": ""
-    },
-    "partitions": [
-      {
-        "name": "opendes"
-      }
-    ]
+      },
+      "partitions": [
+        {
+          "name": "opendes"
+        }
+      ]
+    }
   },
   "resources": [
     {
@@ -15253,7 +15253,7 @@
             "value": "[parameters('tier')]"
           },
           "partitions": {
-            "value": "[variables('partitions')]"
+            "value": "[variables('configuration').partitions]"
           }
         },
         "template": {

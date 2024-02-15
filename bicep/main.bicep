@@ -73,7 +73,7 @@ param clusterNetwork object = {
   'azure'
 ])
 @description('The network plugin to use for the Kubernetes cluster.')
-param clusterNetworkPlugin string = 'kubenet'
+param clusterNetworkPlugin string = 'azure'
 
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array = []

@@ -40,6 +40,7 @@
     },
     "clusterSoftware": {
       "value": {
+        "enable": true,
         "repository": "${SOFTWARE_REPOSITORY}",
         "branch": "${SOFTWARE_BRANCH}"
       }

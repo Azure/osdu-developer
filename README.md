@@ -78,7 +78,7 @@ az provider register --namespace Microsoft.ContainerService
 With these steps, you have successfully registered the necessary Azure features. Next, you can proceed to the deployment phase.
 
 
-## ARM Template - Deployment
+# ARM Template - Deployment
 
 Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
 
@@ -97,12 +97,12 @@ To begin, simply click the button below:
 
 
 
-## Azure Developer CLI - Deployment
+# Azure Developer CLI - Deployment
 
 The recommended approach for working with this is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
 
 
-### Enabling Alpha Features for Azure Developer CLI
+## Enabling Alpha Features for Azure Developer CLI
 
 This solution utilizes Alpha Features in the Azure Developer CLI for advanced functionalities.
 
@@ -119,7 +119,7 @@ azd config set alpha.resourceGroupDeployments on
 Note: Alpha features are in experimental stages and may undergo changes.
 
 
-### Authentication
+## Authentication
 
 Authenticate your session to interact with Azure resources:
 
@@ -127,7 +127,7 @@ Authenticate your session to interact with Azure resources:
 azd auth login
 ```
 
-### Setting Up Environment Variables
+## Setting Up Environment Variables
 
 Define the necessary environment variables for your deployment:
 
@@ -157,12 +157,12 @@ azd env set SOFTWARE_BRANCH main
 
 
 
-### Optional Features
+## Optional Features
 
 Customize your resources by enabling these optional features based on your specific requirements:
 
 
-#### Feature: Pod Subnet
+### Feature: Pod Subnet
 
 __Purpose:__ Enhances network configuration for Kubernetes Pods.
 
@@ -176,7 +176,7 @@ azd env set ENABLE_POD_SUBNET true
 ```
 
 
-#### Feature: Vnet Injection
+### Feature: Vnet Injection
 
 __Purpose:__ Enables a bring your own network capability.
 
@@ -199,7 +199,7 @@ azd env set POD_SUBNET_PREFIX <your_subnet_prefix>
 ```
 
 
-#### Feature: Manage
+### Feature: Manage
 
 __Purpose:__ Facilitates secure access to internal network resources.
 
@@ -211,7 +211,7 @@ __How To Enable:__
 azd env set ENABLE_BASTION true
 ```
 
-#### Feature: Public Blob Access
+### Feature: Public Blob Access
 
 __Purpose:__ Control public access to Blob Storage.
 
@@ -224,7 +224,7 @@ azd env set ENABLE_BLOB_PUBLIC_ACCESS false
 ```
 
 
-### Deployment Commands
+## Deployment Commands
 
 Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
 
@@ -249,14 +249,14 @@ azd down --purge --force
 This command will stop all running services and remove resources that were created during the deployment. The --purge flag ensures that any keyvaults are completely removed, and the --force option bypasses any confirmation prompts, making the process faster.
 
 
-## Infrastructure
+# Infrastructure
 
 The architecture diagram below provides a visual representation of the infrastructure when deployed. It's designed to help you understand the various components and how they interact within the Azure environment.
 
 ![[0]][0]
 
 
-### Key Components Illustrated in the Diagram:
+## Key Components Illustrated in the Diagram:
 
 1. Azure Virtual Network: Illustrates the network and how feature enablement changes the network structure and subnets.
 2. Azure Kubernetes Service (AKS): Demonstrates the Kubernetes clusters and an example of how software is set up along with interactions to other Azure services.

@@ -52,7 +52,7 @@ param vmAdminUsername string
 
 @description('Specifies the SSH Key or password for the virtual machine. SSH key is recommended.')
 @secure()
-param vmAdminPasswordOrKey string
+param vmAdminPasswordOrKey string = ''
 
 @description('Feature Flag to Enable Bastion')
 param enableBastion bool

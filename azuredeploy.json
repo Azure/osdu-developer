@@ -1,180 +1,11 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "4658233491102570459"
-    }
-  },
-  "definitions": {
-    "bladeSettings": {
-      "type": "object",
-      "properties": {
-        "sectionName": {
-          "type": "string",
-          "metadata": {
-            "description": "The name of the section name"
-          }
-        },
-        "displayName": {
-          "type": "string",
-          "metadata": {
-            "description": "The display name of the section"
-          }
-        }
-      }
-    },
-    "subnetSettings": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "metadata": {
-            "description": "The name of the subnet"
-          }
-        },
-        "prefix": {
-          "type": "string",
-          "metadata": {
-            "description": "The address range to use for the subnet"
-          }
-        }
-      }
-    },
-    "vnetSettings": {
-      "type": "object",
-      "properties": {
-        "group": {
-          "type": "string",
-          "metadata": {
-            "description": "The name of the resource group that contains the Virtual Network"
-          }
-        },
-        "name": {
-          "type": "string",
-          "metadata": {
-            "description": "The name of the Virtual Network"
-          }
-        },
-        "prefix": {
-          "type": "string",
-          "metadata": {
-            "description": "The address range to use for the Virtual Network"
-          }
-        },
-        "identityId": {
-          "type": "string",
-          "metadata": {
-            "description": "The Managed Identity "
-          }
-        },
-        "aksSubnet": {
-          "$ref": "#/definitions/subnetSettings",
-          "metadata": {
-            "description": "The cluster subnet"
-          }
-        },
-        "podSubnet": {
-          "$ref": "#/definitions/subnetSettings",
-          "metadata": {
-            "description": "The pod subnet"
-          }
-        },
-        "vmSubnet": {
-          "$ref": "#/definitions/subnetSettings",
-          "metadata": {
-            "description": "The machine subnet"
-          }
-        },
-        "bastionSubnet": {
-          "$ref": "#/definitions/subnetSettings",
-          "metadata": {
-            "description": "The bastion subnet"
-          }
-        }
-      }
-    },
-    "ingressType": {
-      "type": "string",
-      "allowedValues": [
-        "Both",
-        "External",
-        "Internal"
-      ]
-    },
-    "networkPluginType": {
-      "type": "string",
-      "allowedValues": [
-        "azure",
-        "kubenet"
-      ]
-    },
-    "clusterNetworkType": {
-      "type": "object",
-      "properties": {
-        "networkPlugin": {
-          "$ref": "#/definitions/networkPluginType",
-          "metadata": {
-            "description": "The type of network plugin to use for the cluster"
-          }
-        },
-        "ingress": {
-          "$ref": "#/definitions/ingressType",
-          "metadata": {
-            "description": "The type of ingress to use for the cluster"
-          }
-        },
-        "serviceCidr": {
-          "type": "string",
-          "minLength": 9,
-          "maxLength": 18,
-          "metadata": {
-            "description": "The address range to use for services"
-          }
-        },
-        "dockerBridgeCidr": {
-          "type": "string",
-          "minLength": 9,
-          "maxLength": 18,
-          "metadata": {
-            "description": "The address range to use for the docker bridge"
-          }
-        },
-        "dnsServiceIP": {
-          "type": "string",
-          "minLength": 7,
-          "maxLength": 15,
-          "metadata": {
-            "description": "The IP address to reserve for DNS"
-          }
-        }
-      }
-    },
-    "softwareType": {
-      "type": "object",
-      "properties": {
-        "enable": {
-          "type": "bool",
-          "metadata": {
-            "description": "Feature Flag to Load Software."
-          }
-        },
-        "repository": {
-          "type": "string",
-          "metadata": {
-            "description": "The URL of the software repository"
-          }
-        },
-        "branch": {
-          "type": "string",
-          "metadata": {
-            "description": "The branch of the software repository"
-          }
-        }
-      }
+      "templateHash": "13539979797828843058"
     }
   },
   "parameters": {
@@ -191,36 +22,48 @@
         "description": "Specify the AD Application Client Id."
       }
     },
-    "enableTelemetry": {
-      "type": "bool",
-      "defaultValue": false,
+    "tier": {
+      "type": "string",
+      "defaultValue": "CostOptimised",
+      "allowedValues": [
+        "CostOptimised",
+        "Standard",
+        "HighSpec"
+      ],
       "metadata": {
-        "description": "Feature Flag to Enable Telemetry"
+        "description": "The size of the solution"
       }
     },
-    "enableBastion": {
+    "enableBlobPublicAccess": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Feature Flag to Enable Bastion"
+        "description": "Feature Flag: Enable Storage accounts public access."
+      }
+    },
+    "enableManage": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Feature Flag: Enable management with a virtual machine and bastion host."
+      }
+    },
+    "vmAdminUsername": {
+      "type": "string",
+      "defaultValue": "azureUser",
+      "metadata": {
+        "description": "(Optional) If manage then the ssh user name for the virtual machine."
       }
     },
     "enablePodSubnet": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Feature Flag to Enable a Pod Subnet"
-      }
-    },
-    "enableVnetInjection": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Feature Flag to Enable a Pod Subnet"
+        "description": "Feature Flag: Enable AKS Enhanced Subnet Support (Azure CNI)"
       }
     },
     "vnetConfiguration": {
-      "$ref": "#/definitions/vnetSettings",
+      "type": "object",
       "defaultValue": {
         "group": "",
         "name": "",
@@ -247,90 +90,38 @@
         "description": "Optional. Bring your own Virtual Network."
       }
     },
-    "enableBlobPublicAccess": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Optional. Indicates whether public access is enabled for all blobs or containers in the storage account."
-      }
-    },
-    "enablePrivateLink": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Feature Flag to Enable Private Link"
-      }
-    },
-    "cmekConfiguration": {
+    "clusterSoftware": {
       "type": "object",
-      "defaultValue": {
-        "kvUrl": "",
-        "keyName": "",
-        "identityId": ""
-      },
-      "metadata": {
-        "description": "Optional. Customer Managed Encryption Key."
-      }
-    },
-    "vmAdminUsername": {
-      "type": "string",
-      "defaultValue": "[if(parameters('enableBastion'), 'azureUser', newGuid())]",
-      "metadata": {
-        "description": "Specifies the name of the administrator account of the virtual machine."
-      }
-    },
-    "vmAdminPasswordOrKey": {
-      "type": "securestring",
-      "defaultValue": "[if(parameters('enableBastion'), '', newGuid())]",
-      "metadata": {
-        "description": "Specifies the SSH Key or password for the virtual machine. SSH key is recommended."
-      }
-    },
-    "solutionTier": {
-      "type": "string",
-      "defaultValue": "CostOptimised",
-      "allowedValues": [
-        "CostOptimised",
-        "Standard",
-        "HighSpec"
-      ],
-      "metadata": {
-        "description": "The size of the solution"
-      }
-    },
-    "partitions": {
-      "type": "array",
-      "defaultValue": [
-        {
-          "name": "opendes"
-        }
-      ],
-      "metadata": {
-        "description": "List of Data Partitions"
-      }
-    },
-    "clusterNetworkProperties": {
-      "$ref": "#/definitions/clusterNetworkType",
-      "defaultValue": {
-        "networkPlugin": "[if(parameters('enablePodSubnet'), 'azure', 'kubenet')]",
-        "ingress": "Both",
-        "serviceCidr": "172.16.0.0/16",
-        "dockerBridgeCidr": "172.17.0.1/16",
-        "dnsServiceIP": "172.16.0.10"
-      },
-      "metadata": {
-        "description": "Cluster Network Properties"
-      }
-    },
-    "clusterSoftwareProperties": {
-      "$ref": "#/definitions/softwareType",
       "defaultValue": {
         "enable": true,
         "repository": "",
         "branch": ""
       },
       "metadata": {
-        "description": "Cluster Software Properties"
+        "description": "(Optional) Software Load Override - {enable} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main"
+      }
+    },
+    "clusterNetwork": {
+      "type": "object",
+      "defaultValue": {
+        "ingress": "",
+        "serviceCidr": "",
+        "dockerBridgeCidr": "",
+        "dnsServiceIP": ""
+      },
+      "metadata": {
+        "description": "Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dockerBridgeCidr}, {dnsServiceIP}"
+      }
+    },
+    "clusterNetworkPlugin": {
+      "type": "string",
+      "defaultValue": "kubenet",
+      "allowedValues": [
+        "kubenet",
+        "azure"
+      ],
+      "metadata": {
+        "description": "The network plugin to use for the Kubernetes cluster."
       }
     },
     "clusterAdminIds": {
@@ -342,6 +133,7 @@
     }
   },
   "variables": {
+    "enableTelemetry": false,
     "configuration": {
       "name": "main",
       "displayName": "Main Resources",
@@ -366,10 +158,22 @@
         "sku": "PerGB2018",
         "retention": 30
       }
-    }
+    },
+    "enableVnetInjection": "[and(and(not(equals(parameters('vnetConfiguration').group, '')), not(equals(parameters('vnetConfiguration').name, ''))), not(equals(parameters('vnetConfiguration').prefix, '')))]",
+    "enablePrivateLink": false,
+    "cmekConfiguration": {
+      "kvUrl": "",
+      "keyName": "",
+      "identityId": ""
+    },
+    "partitions": [
+      {
+        "name": "opendes"
+      }
+    ]
   },
-  "resources": {
-    "stampIdentity": {
+  "resources": [
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-user-managed-identity', variables('configuration').name)]",
@@ -386,7 +190,7 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "tags": {
             "value": {
@@ -788,7 +592,7 @@
         }
       }
     },
-    "logAnalytics": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-log-analytics', variables('configuration').name)]",
@@ -805,7 +609,7 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "tags": {
             "value": {
@@ -2596,7 +2400,7 @@
         }
       }
     },
-    "networkBlade": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "network-blade",
@@ -2616,22 +2420,22 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "workspaceResourceId": {
-            "value": "[reference('logAnalytics').outputs.resourceId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.resourceId.value]"
           },
           "identityId": {
-            "value": "[reference('stampIdentity').outputs.principalId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.principalId.value]"
           },
           "enableBastion": {
-            "value": "[parameters('enableBastion')]"
+            "value": "[parameters('enableManage')]"
           },
           "enablePodSubnet": {
             "value": "[parameters('enablePodSubnet')]"
           },
           "enableVnetInjection": {
-            "value": "[parameters('enableVnetInjection')]"
+            "value": "[variables('enableVnetInjection')]"
           },
           "vnetConfiguration": {
             "value": "[parameters('vnetConfiguration')]"
@@ -6210,11 +6014,11 @@
         }
       },
       "dependsOn": [
-        "logAnalytics",
-        "stampIdentity"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name))]"
       ]
     },
-    "commonBlade": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "common-blade",
@@ -6234,25 +6038,25 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "deploymentScriptIdentity": {
-            "value": "[reference('stampIdentity').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.name.value]"
           },
           "workspaceResourceId": {
-            "value": "[reference('logAnalytics').outputs.resourceId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.resourceId.value]"
           },
           "workspaceName": {
-            "value": "[reference('logAnalytics').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.name.value]"
           },
           "subnetId": {
-            "value": "[reference('networkBlade').outputs.aksSubnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.aksSubnetId.value]"
           },
           "cmekConfiguration": {
-            "value": "[parameters('cmekConfiguration')]"
+            "value": "[variables('cmekConfiguration')]"
           },
           "enablePrivateLink": {
-            "value": "[parameters('enablePrivateLink')]"
+            "value": "[variables('enablePrivateLink')]"
           },
           "enableBlobPublicAccess": {
             "value": "[parameters('enableBlobPublicAccess')]"
@@ -6292,7 +6096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "13842981590527036962"
+              "templateHash": "1117817877841270679"
             }
           },
           "definitions": {
@@ -10156,7 +9960,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "10199713575446331736"
+                      "templateHash": "10555672903859641097"
                     }
                   },
                   "parameters": {
@@ -10360,7 +10164,7 @@
                       "type": "int",
                       "defaultValue": 0,
                       "minValue": 0,
-                      "maxValue": 365,
+                      "maxValue": 7,
                       "metadata": {
                         "description": "Amount of days the soft deleted data is stored and available for recovery. 0 is off."
                       }
@@ -10475,7 +10279,7 @@
                   "resources": [
                     {
                       "type": "Microsoft.Storage/storageAccounts",
-                      "apiVersion": "2022-05-01",
+                      "apiVersion": "2023-01-01",
                       "name": "[if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
@@ -10489,14 +10293,14 @@
                         "minimumTlsVersion": "TLS1_2",
                         "encryption": "[if(variables('enableCMEK'), createObject('identity', createObject('userAssignedIdentity', parameters('cmekConfiguration').identityId), 'services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Keyvault', 'keyvaultproperties', createObject('keyname', parameters('cmekConfiguration').keyName, 'keyvaulturi', parameters('cmekConfiguration').kvUrl)), createObject('services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Storage'))]",
                         "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
-                        "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject())]"
+                        "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject('bypass', 'AzureServices', 'defaultAction', 'Allow'))]"
                       }
                     },
                     {
                       "type": "Microsoft.Storage/storageAccounts/blobServices",
-                      "apiVersion": "2022-05-01",
+                      "apiVersion": "2023-01-01",
                       "name": "[format('{0}/{1}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), 'default')]",
-                      "properties": "[if(greater(parameters('deleteRetention'), 0), createObject('changeFeed', createObject('enabled', true()), 'restorePolicy', createObject('enabled', true(), 'days', 6), 'isVersioningEnabled', true(), 'deleteRetentionPolicy', createObject('enabled', true(), 'days', parameters('deleteRetention'))), createObject('deleteRetentionPolicy', createObject('enabled', false(), 'allowPermanentDelete', false())))]",
+                      "properties": "[if(greater(parameters('deleteRetention'), 0), createObject('changeFeed', createObject('enabled', true()), 'restorePolicy', createObject('enabled', true(), 'days', 7), 'isVersioningEnabled', true(), 'deleteRetentionPolicy', createObject('enabled', true(), 'days', max(parameters('deleteRetention'), 1))), createObject('deleteRetentionPolicy', createObject('enabled', false(), 'allowPermanentDelete', false())))]",
                       "dependsOn": [
                         "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
                       ]
@@ -10912,7 +10716,7 @@
                             "value": "[parameters('storageAccountKeySecretName')]"
                           },
                           "value": {
-                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2022-05-01').keys[0].value]"
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value]"
                           }
                         },
                         "template": {
@@ -11002,7 +10806,7 @@
                             "value": "[parameters('storageAccountConnectionString')]"
                           },
                           "value": {
-                            "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2022-05-01').keys[0].value, environment().suffixes.storage)]"
+                            "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value, environment().suffixes.storage)]"
                           }
                         },
                         "template": {
@@ -13779,12 +13583,12 @@
         }
       },
       "dependsOn": [
-        "logAnalytics",
-        "networkBlade",
-        "stampIdentity"
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
+        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name))]"
       ]
     },
-    "manageBlade": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "manage-blade",
@@ -13818,28 +13622,25 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "workspaceName": {
-            "value": "[reference('logAnalytics').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.name.value]"
           },
           "kvName": {
-            "value": "[reference('commonBlade').outputs.keyvaultName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultName.value]"
           },
           "enableBastion": {
-            "value": "[parameters('enableBastion')]"
+            "value": "[parameters('enableManage')]"
           },
           "vmAdminUsername": {
             "value": "[parameters('vmAdminUsername')]"
           },
-          "vmAdminPasswordOrKey": {
-            "value": "[parameters('vmAdminPasswordOrKey')]"
-          },
           "vnetId": {
-            "value": "[reference('networkBlade').outputs.vnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.vnetId.value]"
           },
           "vmSubnetId": {
-            "value": "[reference('networkBlade').outputs.vmSubnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.vmSubnetId.value]"
           }
         },
         "template": {
@@ -13850,7 +13651,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "7144332081955097752"
+              "templateHash": "15861017442167209003"
             }
           },
           "definitions": {
@@ -13970,6 +13771,7 @@
             },
             "vmAdminPasswordOrKey": {
               "type": "securestring",
+              "defaultValue": "",
               "metadata": {
                 "description": "Specifies the SSH Key or password for the virtual machine. SSH key is recommended."
               }
@@ -15402,12 +15204,12 @@
         }
       },
       "dependsOn": [
-        "commonBlade",
-        "logAnalytics",
-        "networkBlade"
+        "[resourceId('Microsoft.Resources/deployments', 'common-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
+        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]"
       ]
     },
-    "partitionBlade": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "partition-blade",
@@ -15427,31 +15229,31 @@
             "value": "[parameters('location')]"
           },
           "workspaceResourceId": {
-            "value": "[reference('logAnalytics').outputs.resourceId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.resourceId.value]"
           },
           "kvName": {
-            "value": "[reference('commonBlade').outputs.keyvaultName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultName.value]"
           },
           "subnetId": {
-            "value": "[reference('networkBlade').outputs.aksSubnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.aksSubnetId.value]"
           },
           "enableBlobPublicAccess": {
             "value": "[parameters('enableBlobPublicAccess')]"
           },
           "enablePrivateLink": {
-            "value": "[parameters('enablePrivateLink')]"
+            "value": "[variables('enablePrivateLink')]"
           },
           "storageDNSZoneId": {
-            "value": "[reference('commonBlade').outputs.storageDNSZoneId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.storageDNSZoneId.value]"
           },
           "cosmosDNSZoneId": {
-            "value": "[reference('commonBlade').outputs.cosmosDNSZoneId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.cosmosDNSZoneId.value]"
           },
           "partitionSize": {
-            "value": "[parameters('solutionTier')]"
+            "value": "[parameters('tier')]"
           },
           "partitions": {
-            "value": "[parameters('partitions')]"
+            "value": "[variables('partitions')]"
           }
         },
         "template": {
@@ -15462,7 +15264,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "10141203071399513918"
+              "templateHash": "6588206891228197365"
             }
           },
           "definitions": {
@@ -15834,7 +15636,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "10199713575446331736"
+                      "templateHash": "10555672903859641097"
                     }
                   },
                   "parameters": {
@@ -16038,7 +15840,7 @@
                       "type": "int",
                       "defaultValue": 0,
                       "minValue": 0,
-                      "maxValue": 365,
+                      "maxValue": 7,
                       "metadata": {
                         "description": "Amount of days the soft deleted data is stored and available for recovery. 0 is off."
                       }
@@ -16153,7 +15955,7 @@
                   "resources": [
                     {
                       "type": "Microsoft.Storage/storageAccounts",
-                      "apiVersion": "2022-05-01",
+                      "apiVersion": "2023-01-01",
                       "name": "[if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
@@ -16167,14 +15969,14 @@
                         "minimumTlsVersion": "TLS1_2",
                         "encryption": "[if(variables('enableCMEK'), createObject('identity', createObject('userAssignedIdentity', parameters('cmekConfiguration').identityId), 'services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Keyvault', 'keyvaultproperties', createObject('keyname', parameters('cmekConfiguration').keyName, 'keyvaulturi', parameters('cmekConfiguration').kvUrl)), createObject('services', createObject('blob', createObject('enabled', true()), 'table', createObject('enabled', true()), 'file', createObject('enabled', true())), 'keySource', 'Microsoft.Storage'))]",
                         "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
-                        "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject())]"
+                        "networkAcls": "[if(variables('enablePrivateLink'), createObject('bypass', 'AzureServices', 'defaultAction', 'Deny'), createObject('bypass', 'AzureServices', 'defaultAction', 'Allow'))]"
                       }
                     },
                     {
                       "type": "Microsoft.Storage/storageAccounts/blobServices",
-                      "apiVersion": "2022-05-01",
+                      "apiVersion": "2023-01-01",
                       "name": "[format('{0}/{1}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), 'default')]",
-                      "properties": "[if(greater(parameters('deleteRetention'), 0), createObject('changeFeed', createObject('enabled', true()), 'restorePolicy', createObject('enabled', true(), 'days', 6), 'isVersioningEnabled', true(), 'deleteRetentionPolicy', createObject('enabled', true(), 'days', parameters('deleteRetention'))), createObject('deleteRetentionPolicy', createObject('enabled', false(), 'allowPermanentDelete', false())))]",
+                      "properties": "[if(greater(parameters('deleteRetention'), 0), createObject('changeFeed', createObject('enabled', true()), 'restorePolicy', createObject('enabled', true(), 'days', 7), 'isVersioningEnabled', true(), 'deleteRetentionPolicy', createObject('enabled', true(), 'days', max(parameters('deleteRetention'), 1))), createObject('deleteRetentionPolicy', createObject('enabled', false(), 'allowPermanentDelete', false())))]",
                       "dependsOn": [
                         "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
                       ]
@@ -16590,7 +16392,7 @@
                             "value": "[parameters('storageAccountKeySecretName')]"
                           },
                           "value": {
-                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2022-05-01').keys[0].value]"
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value]"
                           }
                         },
                         "template": {
@@ -16680,7 +16482,7 @@
                             "value": "[parameters('storageAccountConnectionString')]"
                           },
                           "value": {
-                            "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2022-05-01').keys[0].value, environment().suffixes.storage)]"
+                            "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')), listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value, environment().suffixes.storage)]"
                           }
                         },
                         "template": {
@@ -19450,12 +19252,12 @@
         }
       },
       "dependsOn": [
-        "commonBlade",
-        "logAnalytics",
-        "networkBlade"
+        "[resourceId('Microsoft.Resources/deployments', 'common-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
+        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]"
       ]
     },
-    "serviceBlade": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "service-blade",
@@ -19475,60 +19277,50 @@
             "value": "[parameters('location')]"
           },
           "enableTelemetry": {
-            "value": "[parameters('enableTelemetry')]"
+            "value": "[variables('enableTelemetry')]"
           },
           "enableSoftwareLoad": {
-            "value": "[parameters('clusterSoftwareProperties').enable]"
+            "value": "[parameters('clusterSoftware').enable]"
           },
           "workspaceResourceId": {
-            "value": "[reference('logAnalytics').outputs.resourceId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.resourceId.value]"
           },
-          "identityId": "[if(parameters('enableVnetInjection'), createObject('value', reference('networkBlade').outputs.networkConfiguration.value.identityId), createObject('value', reference('stampIdentity').outputs.resourceId.value))]",
+          "identityId": "[if(variables('enableVnetInjection'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.networkConfiguration.value.identityId), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.resourceId.value))]",
           "managedIdentityName": {
-            "value": "[reference('stampIdentity').outputs.name.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.name.value]"
           },
           "kvName": {
-            "value": "[reference('commonBlade').outputs.keyvaultName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultName.value]"
           },
           "kvUri": {
-            "value": "[reference('commonBlade').outputs.keyvaultUri.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultUri.value]"
           },
           "storageName": {
-            "value": "[reference('commonBlade').outputs.storageAccountName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.storageAccountName.value]"
           },
           "partitionStorageNames": {
-            "value": "[reference('partitionBlade').outputs.partitionStorageNames.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'partition-blade'), '2022-09-01').outputs.partitionStorageNames.value]"
           },
           "aksSubnetId": {
-            "value": "[reference('networkBlade').outputs.aksSubnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.aksSubnetId.value]"
           },
-          "podSubnetId": "[if(parameters('enablePodSubnet'), createObject('value', reference('networkBlade').outputs.podSubnetId.value), createObject('value', ''))]",
+          "podSubnetId": "[if(parameters('enablePodSubnet'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.podSubnetId.value), createObject('value', ''))]",
           "clusterSize": {
-            "value": "[parameters('solutionTier')]"
-          },
-          "clusterIngress": {
-            "value": "[parameters('clusterNetworkProperties').ingress]"
+            "value": "[parameters('tier')]"
           },
           "clusterAdminIds": {
             "value": "[parameters('clusterAdminIds')]"
           },
-          "serviceCidr": {
-            "value": "[parameters('clusterNetworkProperties').serviceCidr]"
-          },
-          "dnsServiceIP": {
-            "value": "[parameters('clusterNetworkProperties').dnsServiceIP]"
-          },
-          "dockerBridgeCidr": {
-            "value": "[parameters('clusterNetworkProperties').dockerBridgeCidr]"
-          },
-          "networkPlugin": {
-            "value": "[parameters('clusterNetworkProperties').networkPlugin]"
-          },
+          "clusterIngress": "[if(equals(parameters('clusterNetwork').ingress, ''), createObject('value', 'Both'), createObject('value', parameters('clusterNetwork').ingress))]",
+          "serviceCidr": "[if(equals(parameters('clusterNetwork').serviceCidr, ''), createObject('value', '172.16.0.0/16'), createObject('value', parameters('clusterNetwork').serviceCidr))]",
+          "dnsServiceIP": "[if(equals(parameters('clusterNetwork').dnsServiceIP, ''), createObject('value', '172.16.0.10'), createObject('value', parameters('clusterNetwork').v))]",
+          "dockerBridgeCidr": "[if(equals(parameters('clusterNetwork').dockerBridgeCidr, ''), createObject('value', '172.17.0.1/16'), createObject('value', parameters('clusterNetwork').dockerBridgeCidr))]",
+          "networkPlugin": "[if(parameters('enablePodSubnet'), createObject('value', 'azure'), createObject('value', parameters('clusterNetworkPlugin')))]",
           "softwareBranch": {
-            "value": "[parameters('clusterSoftwareProperties').branch]"
+            "value": "[parameters('clusterSoftware').branch]"
           },
           "softwareRepository": {
-            "value": "[parameters('clusterSoftwareProperties').repository]"
+            "value": "[parameters('clusterSoftware').repository]"
           }
         },
         "template": {
@@ -23664,12 +23456,12 @@
         }
       },
       "dependsOn": [
-        "commonBlade",
-        "logAnalytics",
-        "networkBlade",
-        "partitionBlade",
-        "stampIdentity"
+        "[resourceId('Microsoft.Resources/deployments', 'common-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
+        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', 'partition-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name))]"
       ]
     }
-  }
+  ]
 }

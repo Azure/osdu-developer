@@ -140,7 +140,7 @@ param cmekConfiguration object = {
 
 @description('Amount of days the soft deleted data is stored and available for recovery. 0 is off.')
 @minValue(0)
-@maxValue(365)
+@maxValue(7)
 param deleteRetention int = 0
 
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
@@ -170,7 +170,7 @@ var diagnosticsMetrics = [for metric in metricsToEnable: {
 
 
 // Create Storage Account
-resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: length(name) > 24 ? substring(name, 0, 24) : name
   location: location
   tags: tags
@@ -230,11 +230,14 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
     networkAcls: enablePrivateLink ? {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
-    } : {}
+    } : {
+      bypass: 'AzureServices'
+      defaultAction: 'Allow'
+    }
   }
 }
 
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
   parent: storage
   name: 'default'
   properties: deleteRetention > 0 ? {
@@ -243,12 +246,12 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01
     }
     restorePolicy: {
       enabled: true
-      days: 6
+      days: 7
     }
     isVersioningEnabled: true
     deleteRetentionPolicy: {
       enabled: true
-      days: deleteRetention
+      days: max(deleteRetention, 1)
     }
   } : {
     deleteRetentionPolicy: {

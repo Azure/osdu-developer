@@ -387,11 +387,8 @@ param clusterSoftwareProperties softwareType = {
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array = []
 
-
-
-
 module serviceBlade 'modules/blade_service.bicep' = {
-  name: 'service'
+  name: 'service-blade'
   params: {
     bladeConfig: {
       sectionName: 'serviceblade'
@@ -424,6 +421,11 @@ module serviceBlade 'modules/blade_service.bicep' = {
     softwareBranch: clusterSoftwareProperties.branch
     softwareRepository: clusterSoftwareProperties.repository
   }
+  dependsOn: [
+    networkBlade
+    commonBlade
+    partitionBlade
+  ]
 }
 
 // //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

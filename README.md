@@ -160,6 +160,19 @@ azd env set SOFTWARE_BRANCH main
 Customize your resources by enabling these optional features based on your specific requirements:
 
 
+#### Feature: Vnet Injection
+
+__Purpose:__ Enables a bring your own network capability.
+
+__Details:__ Typically, internal solutions require a preconfigured network due to possible S2S vpn configurations or a Hub Spoke Network design.
+
+__How To Enable:__
+
+```bash
+azd env set ENABLE_VNET_INJECTION true
+```
+
+
 #### Feature: Pod Subnet
 
 __Purpose:__ Enhances network configuration for Kubernetes Pods.

@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "16780572494206616947"
+      "templateHash": "6679581905780127100"
     }
   },
   "definitions": {
@@ -19436,7 +19436,7 @@
     "serviceBlade": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "service",
+      "name": "service-blade",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"

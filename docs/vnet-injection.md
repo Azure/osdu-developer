@@ -1,12 +1,13 @@
 # Virtual Network Injection
 
-The provided custom deployment solution is a sample of how to enable and use virtual network (VNet) injection, allowing the creation of a network prior to deploying the solution. This is particularly beneficial in organizations with specific network security policies. Below is a tutorial that shows an example of a simple deployment leveraging network injection.
+The provided custom deployment solution is a sample of how to leverage the virtual network (VNet) injection feature. This allows for the integration of the solution into a prexisting network design and ensuring the solution is on an internal network.
+
 
 ## Planning
 
-Network planning is crucial when working with AKS and a workload for AKS.  This is an advanced topic and the assumption when bringing your own network is that it has been planned properly.
+Network planning is crucial when working with AKS on a prexexisting network solution.  This is an advanced topic and the assumption when bringing your own network is that it has been planned properly in advance.
 
-Several resources exist that can help on planning networks for AKS and to understand the networking concepts of AKS.
+Several resources exist that can help on planning networks for AKS and to understand the networking concepts for AKS.
 
 - [AKS Network Topology and Connectivity](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/aks/network-topology-and-connectivity)
 
@@ -36,7 +37,7 @@ The default implementation uses a simple Virtual Network with a Kubenet plugin. 
 
 __Custom Solution__
 
-This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the `Azure CNI` network plugin.
+This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the [Azure CNI for dynamic IP alocation](https://learn.microsoft.com/en-us/azure/aks/configure-azure-cni-dynamic-ip-allocation) network configuration.
 
 Things to considered when planning.
 
@@ -172,56 +173,6 @@ azd auth login
 azd init -e custom
 ```
 
-__Create Parameters__
-
-```json
-cat <<EOF > bicep/main.parameters.json
-{
-  "\$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "applicationClientId": {
-      "value": "\${AZURE_CLIENT_ID}"
-    },
-    "enablePodSubnet": {
-      "value": "\${ENABLE_POD_SUBNET}"
-    },
-    "softwareRepository": {
-      "value": "\${SOFTWARE_REPOSITORY}"
-    },
-    "softwareBranch": {
-      "value": "\${SOFTWARE_BRANCH}"
-    },
-    "virtualNetworkNewOrExisting": {
-      "value": "Existing"
-    },
-    "virtualNetworkResourceGroup": {
-      "value": "\${VIRTUAL_NETWORK_GROUP}"
-    },
-    "virtualNetworkName": {
-      "value": "\${VIRTUAL_NETWORK_NAME}"
-    },
-    "virtualNetworkAddressPrefix": {
-      "value": "\${VIRTUAL_NETWORK_PREFIX}"
-    },
-    "aksSubnetName": {
-      "value": "\${AKS_SUBNET_NAME}"
-    },
-    "aksSubnetAddressPrefix": {
-      "value": "\${AKS_SUBNET_PREFIX}"
-    },
-    "podSubnetName": {
-      "value": "\${POD_SUBNET_NAME}"
-    },
-    "podSubnetAddressPrefix": {
-      "value": "\${POD_SUBNET_PREFIX}"
-    }
-  }
-}
-EOF
-
-```
-
 __Configure Environment Variables__
 
 Set the necessary environment variables for your deployment:
@@ -235,8 +186,9 @@ azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[
 azd env set SOFTWARE_REPOSITORY https://github.com/azure/osdu-developer
 azd env set SOFTWARE_BRANCH main
 
-# enable_pod_subnet
+# enable_feature_toggles
 azd env set ENABLE_POD_SUBNET true
+azd env set ENABLE_VNET_INJECTION true
 
 # define_network_configuration
 azd env set VIRTUAL_NETWORK_GROUP $NETWORK_GROUP
@@ -256,4 +208,3 @@ Initiate the deployment using the following command:
 # provision_solution
 azd provision
 ```
-

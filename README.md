@@ -208,7 +208,7 @@ __Details:__ Internal ingress configurations can sometimes make it challenging t
 __How To Enable:__
 
 ```bash
-azd env set ENABLE_BASTION true
+azd env set ENABLE_MANAGE true
 ```
 
 ### Feature: Public Blob Access

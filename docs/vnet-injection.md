@@ -1,6 +1,6 @@
 # Virtual Network Injection
 
-The provided custom deployment solution is a sample of how to leverage the virtual network (VNet) injection feature. This allows for the integration of the solution into a prexisting network design and ensuring the solution is on an internal network.
+The provided custom deployment solution is a sample of how to leverage the virtual network (VNet) injection feature. This allows for the integration of the solution into a preexisting network design and ensuring the solution is on an internal network.
 
 
 ## Planning
@@ -37,7 +37,7 @@ The default implementation uses a simple Virtual Network with a Kubenet plugin. 
 
 __Custom Solution__
 
-This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the [Azure CNI for dynamic IP alocation](https://learn.microsoft.com/en-us/azure/aks/configure-azure-cni-dynamic-ip-allocation) network configuration.
+This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the [Azure CNI for dynamic IP allocation](https://learn.microsoft.com/en-us/azure/aks/configure-azure-cni-dynamic-ip-allocation) network configuration.
 
 Things to considered when planning.
 

@@ -7,15 +7,6 @@
       },
       "enableTelemetry": {
         "value": false
-      },
-      "enablePodSubnet": {
-        "value": false
-      },
-      "enableVpnGateway": {
-        "value": false
-      },
-      "enableBastion": {
-        "value": false
       }
     }
   }

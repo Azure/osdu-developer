@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "6679581905780127100"
+      "templateHash": "4658233491102570459"
     }
   },
   "definitions": {
@@ -221,6 +221,28 @@
     },
     "vnetConfiguration": {
       "$ref": "#/definitions/vnetSettings",
+      "defaultValue": {
+        "group": "",
+        "name": "",
+        "prefix": "",
+        "identityId": "",
+        "aksSubnet": {
+          "name": "",
+          "prefix": ""
+        },
+        "podSubnet": {
+          "name": "",
+          "prefix": ""
+        },
+        "vmSubnet": {
+          "name": "",
+          "prefix": ""
+        },
+        "bastionSubnet": {
+          "name": "",
+          "prefix": ""
+        }
+      },
       "metadata": {
         "description": "Optional. Bring your own Virtual Network."
       }

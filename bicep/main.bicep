@@ -198,7 +198,28 @@ module networkBlade 'modules/blade_network.bicep' = {
     enablePodSubnet: enablePodSubnet
     enableVnetInjection: enableVnetInjection
     
-    vnetConfiguration: vnetConfiguration
+    vnetConfiguration: {
+      group: vnetConfiguration.group
+      name: vnetConfiguration.name
+      prefix: vnetConfiguration.prefix
+      identityId: vnetConfiguration.identityId
+      aksSubnet: {
+        name: vnetConfiguration.aksSubnet.name
+        prefix: vnetConfiguration.aksSubnet.prefix
+      }
+      podSubnet: {
+        name: vnetConfiguration.podSubnet.name
+        prefix: vnetConfiguration.podSubnet.prefix
+      }
+      bastionSubnet: {
+        name: vnetConfiguration.bastionSubnet.name
+        prefix: vnetConfiguration.bastionSubnet.prefix
+      }
+      vmSubnet: {
+        name: vnetConfiguration.vmSubnet.name
+        prefix: vnetConfiguration.vmSubnet.prefix
+      }
+    }
   }
   dependsOn: [
     stampIdentity

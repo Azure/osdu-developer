@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "13539979797828843058"
+      "templateHash": "3026879615332679589"
     }
   },
   "parameters": {
@@ -134,6 +134,13 @@
   },
   "variables": {
     "enableTelemetry": false,
+    "enableVnetInjection": "[and(and(not(equals(parameters('vnetConfiguration').group, '')), not(equals(parameters('vnetConfiguration').name, ''))), not(equals(parameters('vnetConfiguration').prefix, '')))]",
+    "enablePrivateLink": false,
+    "cmekConfiguration": {
+      "kvUrl": "",
+      "keyName": "",
+      "identityId": ""
+    },
     "configuration": {
       "name": "main",
       "displayName": "Main Resources",
@@ -157,20 +164,13 @@
       "logs": {
         "sku": "PerGB2018",
         "retention": 30
-      }
-    },
-    "enableVnetInjection": "[and(and(not(equals(parameters('vnetConfiguration').group, '')), not(equals(parameters('vnetConfiguration').name, ''))), not(equals(parameters('vnetConfiguration').prefix, '')))]",
-    "enablePrivateLink": false,
-    "cmekConfiguration": {
-      "kvUrl": "",
-      "keyName": "",
-      "identityId": ""
-    },
-    "partitions": [
-      {
-        "name": "opendes"
-      }
-    ]
+      },
+      "partitions": [
+        {
+          "name": "opendes"
+        }
+      ]
+    }
   },
   "resources": [
     {
@@ -2438,7 +2438,28 @@
             "value": "[variables('enableVnetInjection')]"
           },
           "vnetConfiguration": {
-            "value": "[parameters('vnetConfiguration')]"
+            "value": {
+              "group": "[parameters('vnetConfiguration').group]",
+              "name": "[parameters('vnetConfiguration').name]",
+              "prefix": "[parameters('vnetConfiguration').prefix]",
+              "identityId": "[parameters('vnetConfiguration').identityId]",
+              "aksSubnet": {
+                "name": "[parameters('vnetConfiguration').aksSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').aksSubnet.prefix]"
+              },
+              "podSubnet": {
+                "name": "[parameters('vnetConfiguration').podSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').podSubnet.prefix]"
+              },
+              "bastionSubnet": {
+                "name": "[parameters('vnetConfiguration').bastionSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').bastionSubnet.prefix]"
+              },
+              "vmSubnet": {
+                "name": "[parameters('vnetConfiguration').vmSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').vmSubnet.prefix]"
+              }
+            }
           }
         },
         "template": {
@@ -15253,7 +15274,7 @@
             "value": "[parameters('tier')]"
           },
           "partitions": {
-            "value": "[variables('partitions')]"
+            "value": "[variables('configuration').partitions]"
           }
         },
         "template": {

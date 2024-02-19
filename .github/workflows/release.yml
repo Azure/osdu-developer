@@ -35,28 +35,27 @@ jobs:
       - name: Bicep build
         shell: pwsh
         run: |
-          #write-output $pwd
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
-      # - name: Github Checkin
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     message: "Initialize Software Install"
-      #     add: "."
+      - name: Github Checkin
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Initialize Software Install"
+          add: "."
 
-      # - name: Bump version and push tag
-      #   uses: anothrNick/github-tag-action@1.67.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     WITH_V: true
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
 
-      # - name: Find Latest Tag
-      #   uses: oprypin/find-latest-tag@v1.1.1
-      #   id: latest
-      #   with:
-      #     repository: ${{ github.repository }}
+      - name: Find Latest Tag
+        uses: oprypin/find-latest-tag@v1.1.1
+        id: latest
+        with:
+          repository: ${{ github.repository }}
 
-      # - uses: ncipollo/release-action@v1
-      #   with:
-      #     tag: ${{ steps.latest.outputs.tag }}
-      #     artifacts: "azuredeploy.json"
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.latest.outputs.tag }}
+          artifacts: "azuredeploy.json"

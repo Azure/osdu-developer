@@ -32,11 +32,11 @@ jobs:
           az config set bicep.use_binary_from_path=False
           az bicep install   
 
-      # - name: Bicep build
-      #   shell: pwsh
-      #   run: |
-      #     #write-output $pwd
-      #     /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
+      - name: Bicep build
+        shell: pwsh
+        run: |
+          #write-output $pwd
+          /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
       # - name: Github Checkin
       #   uses: EndBug/add-and-commit@v9

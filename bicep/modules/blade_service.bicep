@@ -83,7 +83,6 @@ param identityId string
 @description('The name of the partition storage accounts')
 param partitionStorageNames string[]
 
-
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool
 

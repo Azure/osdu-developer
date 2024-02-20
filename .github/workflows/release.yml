@@ -26,17 +26,22 @@ jobs:
           environment: azurecloud
           allow-no-subscriptions: false
 
+      - name: Install Bicep
+        shell: pwsh
+        run: |
+          az config set bicep.use_binary_from_path=False
+          az bicep install   
+
+      - name: Bicep build
+        shell: pwsh
+        run: |
+          /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
+
       - name: Github Checkin
         uses: EndBug/add-and-commit@v9
         with:
           message: "Initialize Software Install"
           add: "."
-
-      - name: Build ARM Template
-        uses: Azure/bicep-build-action@v1.0.1
-        with:
-          bicepFilePath: bicep/main.bicep
-          outputFilePath: azuredeploy.json
 
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.67.0

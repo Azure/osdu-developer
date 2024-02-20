@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "2807170886321959755"
+      "templateHash": "3026879615332679589"
     }
   },
   "parameters": {
@@ -2438,7 +2438,28 @@
             "value": "[variables('enableVnetInjection')]"
           },
           "vnetConfiguration": {
-            "value": "[parameters('vnetConfiguration')]"
+            "value": {
+              "group": "[parameters('vnetConfiguration').group]",
+              "name": "[parameters('vnetConfiguration').name]",
+              "prefix": "[parameters('vnetConfiguration').prefix]",
+              "identityId": "[parameters('vnetConfiguration').identityId]",
+              "aksSubnet": {
+                "name": "[parameters('vnetConfiguration').aksSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').aksSubnet.prefix]"
+              },
+              "podSubnet": {
+                "name": "[parameters('vnetConfiguration').podSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').podSubnet.prefix]"
+              },
+              "bastionSubnet": {
+                "name": "[parameters('vnetConfiguration').bastionSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').bastionSubnet.prefix]"
+              },
+              "vmSubnet": {
+                "name": "[parameters('vnetConfiguration').vmSubnet.name]",
+                "prefix": "[parameters('vnetConfiguration').vmSubnet.prefix]"
+              }
+            }
           }
         },
         "template": {

@@ -115,7 +115,7 @@
     },
     "clusterNetworkPlugin": {
       "type": "string",
-      "defaultValue": "kubenet",
+      "defaultValue": "azure",
       "allowedValues": [
         "kubenet",
         "azure"

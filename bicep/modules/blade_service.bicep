@@ -299,6 +299,19 @@ module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.
   }
 }
 
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: kvName
+}
+
+resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'app-dev-sp-username'
+  parent: keyVault
+
+  properties: {
+    value: appIdentity.outputs.clientId
+  }
+}
+
 module federatedCredsOsduAzure './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-azure'
   params: {
@@ -462,10 +475,10 @@ module appConfigMap './aks-config-map/main.bicep' = {
     name: 'config-map-values'
     namespace: 'default'
     
-    newOrExistingManagedIdentity: 'existing'
-    managedIdentityName: managedIdentityName
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
+    // newOrExistingManagedIdentity: 'existing'
+    // managedIdentityName: managedIdentityName
+    // existingManagedIdentitySubId: subscription().subscriptionId
+    // existingManagedIdentityResourceGroupName:resourceGroup().name
 
     // Order of items matters here.
     fileData: [

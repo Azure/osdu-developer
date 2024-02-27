@@ -5,6 +5,12 @@
     "applicationClientId": {
       "value": "${AZURE_CLIENT_ID}"
     },
+    "applicationClientSecret": {
+      "value": "${AZURE_CLIENT_SECRET}"
+    },
+    "applicationClientPrincipal": {
+      "value": "${AZURE_CLIENT_PRINCIPAL}"
+    },
     "enableManage": {
       "value": "${ENABLE_MANAGE}"
     },

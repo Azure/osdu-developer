@@ -25,9 +25,6 @@ param bladeConfig bladeSettings
 @description('Feature Flag to Enable Private Link')
 param enablePrivateLink bool
 
-@description('The list of secrets to persist to the Key Vault')
-param vaultSecrets array
-
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
 
@@ -53,24 +50,18 @@ param cmekConfiguration object = {
   identityId: ''
 }
 
+@description('Specify the AD Application Client Id.')
+param applicationClientId string
+
+@description('Specify the AD Application Client Secret.')
+@secure()
+param applicationClientSecret string
+
+@description('Specify the AD Application Principal Id.')
+param applicationClientPrincipal string = ''
+
+
 var commonLayerConfig = {
-  secrets: {
-    tenantId: 'tenant-id'
-    subscriptionId: 'subscription-id'
-    registryName: 'container-registry'
-    applicationId: 'aad-client-id'
-    clientId: 'app-dev-sp-username'
-    clientSecret: 'app-dev-sp-password'
-    applicationPrincipalId: 'app-dev-sp-id'
-    stampIdentity: 'osdu-identity-id'
-    storageAccountName: 'common-storage'
-    storageAccountKey: 'common-storage-key'
-    cosmosConnectionString: 'graph-db-connection'
-    cosmosEndpoint: 'graph-db-endpoint'
-    cosmosPrimaryKey: 'graph-db-primary-key'
-    logAnalyticsId: 'log-workspace-id'
-    logAnalyticsKey: 'log-workspace-key'
-  }
   storage: {
     sku: 'Standard_LRS'
     tables: [
@@ -110,6 +101,37 @@ var commonLayerConfig = {
 
 var name = 'kv-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
 
+@description('The list of secrets to persist to the Key Vault')
+var vaultSecrets = [ 
+  {
+    secretName: 'tenant-id'
+    secretValue: subscription().tenantId
+  }
+  {
+    secretName: 'app-dev-sp-tenant-id'
+    secretValue: subscription().tenantId
+  }
+  {
+    secretName: 'subscription-id'
+    secretValue: subscription().subscriptionId
+  }
+  // Azure AD Secrets
+  {
+    secretName: 'app-dev-sp-password'
+    secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
+  }
+  {
+    secretName: 'app-dev-sp-id'
+    secretValue: applicationClientId
+  }
+]
+
+var roleAssignment = {
+  roleDefinitionIdOrName: 'Key Vault Secrets User'
+  principalId: applicationClientPrincipal
+  principalType: 'ServicePrincipal'
+}
+
 module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
   name: '${bladeConfig.sectionName}-keyvault'
   params: {
@@ -126,6 +148,10 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
     
     // Configure RBAC
     enableRbacAuthorization: true
+    roleAssignments: union(
+      applicationClientPrincipal != '' ? array(roleAssignment) : [],
+      []
+    )
 
     // Configure Secrets
     secrets: {
@@ -248,8 +274,9 @@ module configStorage './storage-account/main.bicep' = {
 
     // Persist Secrets to Vault
     keyVaultName: keyvault.outputs.name
-    storageAccountSecretName: commonLayerConfig.secrets.storageAccountName
-    storageAccountKeySecretName: commonLayerConfig.secrets.storageAccountKey
+    storageAccountSecretName: 'tbl-storage'
+    storageAccountKeySecretName: 'tbl-storage-key'
+    storageAccountEndpointSecretName: 'tbl-storage-endpoint'
   }
 }
 
@@ -325,9 +352,9 @@ module database './cosmos-db/main.bicep' = {
 
     // Persist Secrets to Vault
     keyVaultName: keyvault.outputs.name
-    databaseEndpointSecretName: commonLayerConfig.secrets.cosmosEndpoint
-    databasePrimaryKeySecretName: commonLayerConfig.secrets.cosmosPrimaryKey
-    databaseConnectionStringSecretName: commonLayerConfig.secrets.cosmosConnectionString
+    databaseEndpointSecretName: 'graph-db-endpoint'
+    databasePrimaryKeySecretName: 'graph-db-primary-key'
+    databaseConnectionStringSecretName: 'graph-db-connection'
   }
 }
 

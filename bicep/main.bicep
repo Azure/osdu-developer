@@ -395,6 +395,45 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     softwareBranch: clusterSoftware.branch
     softwareRepository: clusterSoftware.repository
+
+    appSettings: [
+      {
+        name: 'Settings:Message'
+        value: 'Hello from App Configuration'
+        contentType: 'text/plain'
+        label: 'configmap-devsample'
+      }
+      {
+        name: 'Settings:StorageAccountName'
+        value: partitionBlade.outputs.partitionStorageNames[0]
+        contentType: 'text/plain'
+        label: 'configmap-devsample'
+      }
+      {
+        name: 'aad_client_id'
+        value: applicationClientId
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
+      {
+        name: 'tenant_id'
+        value: subscription().tenantId
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
+      {
+        name: 'azure_activedirectory_AppIdUri'
+        value: applicationClientId
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
+      {
+        name: 'keyvault_uri'
+        value: commonBlade.outputs.keyvaultUri
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
+    ]
   }
   dependsOn: [
     networkBlade

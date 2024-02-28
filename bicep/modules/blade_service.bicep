@@ -117,8 +117,8 @@ var serviceLayerConfig = {
   gitops: {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
-    branch: softwareBranch == '' ? 'main' : softwareBranch
-    tag: softwareTag == '' ? null : softwareTag
+    branch: softwareBranch == '' ? '' : softwareBranch
+    tag: softwareTag == '' && softwareBranch == '' ? 'v0.4.0' : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
   }

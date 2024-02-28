@@ -351,7 +351,7 @@ jobs:
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }}"
-            az stack group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
+            az stack group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --verbose
             az deployment operation group list --resource-group $RESOURCE_GROUP --name $DEPNAME
 
             AKS_NAME=$(az stack group show -n $DEPNAME -g $RESOURCE_GROUP --query "properties.outputs.aksName.value" -o tsv)

@@ -54,6 +54,9 @@ param softwareRepository string
 @description('Software GIT Repository Branch')
 param softwareBranch string
 
+@description('Software GIT Repository Tag')
+param softwareTag string = ''
+
 @allowed([
   'Internal'
   'External'
@@ -115,6 +118,7 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? 'main' : softwareBranch
+    tag: softwareTag == '' ? null : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
   }
@@ -544,6 +548,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
       syncIntervalInSeconds: 300
       repositoryRef: {
         branch: serviceLayerConfig.gitops.branch
+        tag: serviceLayerConfig.gitops.tag
       }
     }
     kustomizations: {

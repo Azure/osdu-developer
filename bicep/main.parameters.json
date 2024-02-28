@@ -48,7 +48,8 @@
       "value": {
         "enable": true,
         "repository": "${SOFTWARE_REPOSITORY}",
-        "branch": "${SOFTWARE_BRANCH}"
+        "branch": "${SOFTWARE_BRANCH}",
+        "tag": "${SOFTWARE_TAG}"
       }
     }
   }

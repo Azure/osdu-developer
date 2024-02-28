@@ -64,6 +64,7 @@ param clusterSoftware object = {
   enable: true
   repository: ''
   branch: ''
+  tag: ''
 }
 
 // This would be a type but bugs exist for ARM Templates so is object instead.
@@ -386,6 +387,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     softwareBranch: clusterSoftware.branch
     softwareRepository: clusterSoftware.repository
+    softwareTag: clusterSoftware.tag
 
     appSettings: [
       {

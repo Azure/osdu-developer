@@ -7,6 +7,13 @@ param location string = resourceGroup().location
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
+@description('Specify the AD Service Principal Object Id.')
+param applicationClientPrincipalOid string = ''
+
+@description('Specify the AD Application Client Secret.')
+@secure()
+param applicationClientSecret string = ''
+
 @allowed([
   'CostOptimised'
   'Standard'
@@ -254,26 +261,10 @@ module commonBlade 'modules/blade_common.bicep' = {
     
     workspaceIdName: configuration.secrets.logAnalyticsId
     workspaceKeySecretName: configuration.secrets.logAnalyticsKey
-    
-    vaultSecrets: [ 
-      {
-        secretName: configuration.secrets.tenantId
-        secretValue: subscription().tenantId
-      }
-      {
-        secretName: configuration.secrets.subscriptionId
-        secretValue: subscription().subscriptionId
-      }
-      // Azure AD Secrets
-      {
-        secretName: configuration.secrets.clientId
-        secretValue: applicationClientId
-      }
-      {
-        secretName: configuration.secrets.applicationPrincipalId
-        secretValue: applicationClientId
-      }
-    ]
+
+    applicationClientId: applicationClientId
+    applicationClientSecret: applicationClientSecret
+    applicationClientPrincipalOid: applicationClientPrincipalOid
   }
   dependsOn: [
     networkBlade
@@ -395,6 +386,21 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     softwareBranch: clusterSoftware.branch
     softwareRepository: clusterSoftware.repository
+
+    appSettings: [
+      {
+        name: 'Settings:StorageAccountName'
+        value: partitionBlade.outputs.partitionStorageNames[0]
+        contentType: 'text/plain'
+        label: 'configmap-devsample'
+      }
+      {
+        name: 'client_id'
+        value: applicationClientId
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
+    ]
   }
   dependsOn: [
     networkBlade

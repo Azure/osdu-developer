@@ -6,7 +6,7 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
   labels:
-    {{- include "self-managed-service.labels" . | nindent 4 }}
+    {{- include "osdu-developer-service.labels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
     appgw.ingress.kubernetes.io/request-timeout: "300"

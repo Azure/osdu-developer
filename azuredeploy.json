@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "2779646941850871122"
+      "templateHash": "17914856235831198426"
     }
   },
   "parameters": {
@@ -20,6 +20,20 @@
       "type": "string",
       "metadata": {
         "description": "Specify the AD Application Client Id."
+      }
+    },
+    "applicationClientPrincipalOid": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the AD Service Principal Object Id."
+      }
+    },
+    "applicationClientSecret": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the AD Application Client Secret."
       }
     },
     "tier": {
@@ -6088,25 +6102,14 @@
           "workspaceKeySecretName": {
             "value": "[variables('configuration').secrets.logAnalyticsKey]"
           },
-          "vaultSecrets": {
-            "value": [
-              {
-                "secretName": "[variables('configuration').secrets.tenantId]",
-                "secretValue": "[subscription().tenantId]"
-              },
-              {
-                "secretName": "[variables('configuration').secrets.subscriptionId]",
-                "secretValue": "[subscription().subscriptionId]"
-              },
-              {
-                "secretName": "[variables('configuration').secrets.clientId]",
-                "secretValue": "[parameters('applicationClientId')]"
-              },
-              {
-                "secretName": "[variables('configuration').secrets.applicationPrincipalId]",
-                "secretValue": "[parameters('applicationClientId')]"
-              }
-            ]
+          "applicationClientId": {
+            "value": "[parameters('applicationClientId')]"
+          },
+          "applicationClientSecret": {
+            "value": "[parameters('applicationClientSecret')]"
+          },
+          "applicationClientPrincipalOid": {
+            "value": "[parameters('applicationClientPrincipalOid')]"
           }
         },
         "template": {
@@ -6117,7 +6120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "1117817877841270679"
+              "templateHash": "12818154003126443483"
             }
           },
           "definitions": {
@@ -6170,12 +6173,6 @@
                 "description": "Feature Flag to Enable Private Link"
               }
             },
-            "vaultSecrets": {
-              "type": "array",
-              "metadata": {
-                "description": "The list of secrets to persist to the Key Vault"
-              }
-            },
             "workspaceResourceId": {
               "type": "string",
               "metadata": {
@@ -6222,27 +6219,29 @@
               "metadata": {
                 "description": "Optional. Customer Managed Encryption Key."
               }
+            },
+            "applicationClientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the AD Application Client Id."
+              }
+            },
+            "applicationClientSecret": {
+              "type": "securestring",
+              "metadata": {
+                "description": "Specify the AD Application Client Secret."
+              }
+            },
+            "applicationClientPrincipalOid": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the AD Application Principal Id."
+              }
             }
           },
           "variables": {
             "commonLayerConfig": {
-              "secrets": {
-                "tenantId": "tenant-id",
-                "subscriptionId": "subscription-id",
-                "registryName": "container-registry",
-                "applicationId": "aad-client-id",
-                "clientId": "app-dev-sp-username",
-                "clientSecret": "app-dev-sp-password",
-                "applicationPrincipalId": "app-dev-sp-id",
-                "stampIdentity": "osdu-identity-id",
-                "storageAccountName": "common-storage",
-                "storageAccountKey": "common-storage-key",
-                "cosmosConnectionString": "graph-db-connection",
-                "cosmosEndpoint": "graph-db-endpoint",
-                "cosmosPrimaryKey": "graph-db-primary-key",
-                "logAnalyticsId": "log-workspace-id",
-                "logAnalyticsKey": "log-workspace-key"
-              },
               "storage": {
                 "sku": "Standard_LRS",
                 "tables": [
@@ -6271,6 +6270,33 @@
               }
             },
             "name": "[format('kv-{0}{1}', replace(parameters('bladeConfig').sectionName, '-', ''), uniqueString(resourceGroup().id, parameters('bladeConfig').sectionName))]",
+            "vaultSecrets": [
+              {
+                "secretName": "tenant-id",
+                "secretValue": "[subscription().tenantId]"
+              },
+              {
+                "secretName": "app-dev-sp-tenant-id",
+                "secretValue": "[subscription().tenantId]"
+              },
+              {
+                "secretName": "subscription-id",
+                "secretValue": "[subscription().subscriptionId]"
+              },
+              {
+                "secretName": "app-dev-sp-password",
+                "secretValue": "[if(equals(parameters('applicationClientSecret'), ''), 'dummy', parameters('applicationClientSecret'))]"
+              },
+              {
+                "secretName": "app-dev-sp-id",
+                "secretValue": "[parameters('applicationClientId')]"
+              }
+            ],
+            "roleAssignment": {
+              "roleDefinitionIdOrName": "Key Vault Secrets User",
+              "principalId": "[parameters('applicationClientPrincipalOid')]",
+              "principalType": "ServicePrincipal"
+            },
             "storageDNSZoneForwarder": "[format('blob.{0}', environment().suffixes.storage)]",
             "storageDnsZoneName": "[format('privatelink.{0}', variables('storageDNSZoneForwarder'))]",
             "cosmosDnsZoneName": "privatelink.documents.azure.com"
@@ -6328,15 +6354,18 @@
                   "enableRbacAuthorization": {
                     "value": true
                   },
+                  "roleAssignments": {
+                    "value": "[union(if(not(equals(parameters('applicationClientPrincipalOid'), '')), array(variables('roleAssignment')), createArray()), createArray())]"
+                  },
                   "secrets": {
                     "value": {
                       "copy": [
                         {
                           "name": "secureList",
-                          "count": "[length(parameters('vaultSecrets'))]",
+                          "count": "[length(variables('vaultSecrets'))]",
                           "input": {
-                            "name": "[parameters('vaultSecrets')[copyIndex('secureList')].secretName]",
-                            "value": "[parameters('vaultSecrets')[copyIndex('secureList')].secretValue]"
+                            "name": "[variables('vaultSecrets')[copyIndex('secureList')].secretName]",
+                            "value": "[variables('vaultSecrets')[copyIndex('secureList')].secretValue]"
                           }
                         }
                       ]
@@ -8761,7 +8790,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "5125843450726619793"
+                      "templateHash": "5527288363528929761"
                     }
                   },
                   "parameters": {
@@ -8791,6 +8820,14 @@
                     }
                   },
                   "resources": [
+                    {
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2023-07-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), 'keyvault-uri')]",
+                      "properties": {
+                        "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2023-07-01').vaultUri]"
+                      }
+                    },
                     {
                       "type": "Microsoft.KeyVault/vaults/secrets",
                       "apiVersion": "2023-07-01",
@@ -9968,10 +10005,13 @@
                     "value": "[reference('keyvault').outputs.name.value]"
                   },
                   "storageAccountSecretName": {
-                    "value": "[variables('commonLayerConfig').secrets.storageAccountName]"
+                    "value": "tbl-storage"
                   },
                   "storageAccountKeySecretName": {
-                    "value": "[variables('commonLayerConfig').secrets.storageAccountKey]"
+                    "value": "tbl-storage-key"
+                  },
+                  "storageAccountEndpointSecretName": {
+                    "value": "tbl-storage-endpoint"
                   }
                 },
                 "template": {
@@ -9981,7 +10021,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "10555672903859641097"
+                      "templateHash": "5878302758470221123"
                     }
                   },
                   "parameters": {
@@ -10226,6 +10266,13 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Optional: To save storage account key into vault set the secret name."
+                      }
+                    },
+                    "storageAccountEndpointSecretName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional: To save storage account endpoint into vault set the secret name."
                       }
                     },
                     "storageAccountConnectionString": {
@@ -10738,6 +10785,96 @@
                           },
                           "value": {
                             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
+                            }
+                          },
+                          "parameters": {
+                            "keyVaultName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment."
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. The name of the secret."
+                              }
+                            },
+                            "value": {
+                              "type": "securestring",
+                              "metadata": {
+                                "description": "Required. The value of the secret. NOTE: \"value\" will never be returned from the service, as APIs using this model are is intended for internal use in ARM deployments. Users should use the data-plane REST service for interaction with vault secrets."
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.KeyVault/vaults/secrets",
+                              "apiVersion": "2022-07-01",
+                              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
+                              "properties": {
+                                "value": "[parameters('value')]"
+                              }
+                            }
+                          ],
+                          "outputs": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the secret."
+                              },
+                              "value": "[parameters('name')]"
+                            },
+                            "resourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource ID of the secret."
+                              },
+                              "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]"
+                            },
+                            "resourceGroupName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the resource group the secret was created in."
+                              },
+                              "value": "[resourceGroup().name]"
+                            }
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountEndpointSecretName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-secret-endpoint', deployment().name)]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "keyVaultName": {
+                            "value": "[parameters('keyVaultName')]"
+                          },
+                          "name": {
+                            "value": "[parameters('storageAccountEndpointSecretName')]"
+                          },
+                          "value": {
+                            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.table]"
                           }
                         },
                         "template": {
@@ -11545,13 +11682,13 @@
                     "value": "[reference('keyvault').outputs.name.value]"
                   },
                   "databaseEndpointSecretName": {
-                    "value": "[variables('commonLayerConfig').secrets.cosmosEndpoint]"
+                    "value": "graph-db-endpoint"
                   },
                   "databasePrimaryKeySecretName": {
-                    "value": "[variables('commonLayerConfig').secrets.cosmosPrimaryKey]"
+                    "value": "graph-db-primary-key"
                   },
                   "databaseConnectionStringSecretName": {
-                    "value": "[variables('commonLayerConfig').secrets.cosmosConnectionString]"
+                    "value": "graph-db-connection"
                   }
                 },
                 "template": {
@@ -15285,7 +15422,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "6588206891228197365"
+              "templateHash": "14020725259856422371"
             }
           },
           "definitions": {
@@ -15657,7 +15794,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "10555672903859641097"
+                      "templateHash": "5878302758470221123"
                     }
                   },
                   "parameters": {
@@ -15902,6 +16039,13 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Optional: To save storage account key into vault set the secret name."
+                      }
+                    },
+                    "storageAccountEndpointSecretName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional: To save storage account endpoint into vault set the secret name."
                       }
                     },
                     "storageAccountConnectionString": {
@@ -16414,6 +16558,96 @@
                           },
                           "value": {
                             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').keys[0].value]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
+                            }
+                          },
+                          "parameters": {
+                            "keyVaultName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment."
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. The name of the secret."
+                              }
+                            },
+                            "value": {
+                              "type": "securestring",
+                              "metadata": {
+                                "description": "Required. The value of the secret. NOTE: \"value\" will never be returned from the service, as APIs using this model are is intended for internal use in ARM deployments. Users should use the data-plane REST service for interaction with vault secrets."
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.KeyVault/vaults/secrets",
+                              "apiVersion": "2022-07-01",
+                              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
+                              "properties": {
+                                "value": "[parameters('value')]"
+                              }
+                            }
+                          ],
+                          "outputs": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the secret."
+                              },
+                              "value": "[parameters('name')]"
+                            },
+                            "resourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource ID of the secret."
+                              },
+                              "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]"
+                            },
+                            "resourceGroupName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the resource group the secret was created in."
+                              },
+                              "value": "[resourceGroup().name]"
+                            }
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountEndpointSecretName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-secret-endpoint', deployment().name)]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "keyVaultName": {
+                            "value": "[parameters('keyVaultName')]"
+                          },
+                          "name": {
+                            "value": "[parameters('storageAccountEndpointSecretName')]"
+                          },
+                          "value": {
+                            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.table]"
                           }
                         },
                         "template": {
@@ -19342,6 +19576,22 @@
           },
           "softwareRepository": {
             "value": "[parameters('clusterSoftware').repository]"
+          },
+          "appSettings": {
+            "value": [
+              {
+                "name": "Settings:StorageAccountName",
+                "value": "[reference(resourceId('Microsoft.Resources/deployments', 'partition-blade'), '2022-09-01').outputs.partitionStorageNames.value[0]]",
+                "contentType": "text/plain",
+                "label": "configmap-devsample"
+              },
+              {
+                "name": "client_id",
+                "value": "[parameters('applicationClientId')]",
+                "contentType": "text/plain",
+                "label": "configmap-services"
+              }
+            ]
           }
         },
         "template": {
@@ -19352,7 +19602,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "8495879675301869583"
+              "templateHash": "15582664924482987612"
             }
           },
           "definitions": {
@@ -19369,6 +19619,35 @@
                   "type": "string",
                   "metadata": {
                     "description": "The display name of the section"
+                  }
+                }
+              }
+            },
+            "appConfigItem": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The App Configuration Key"
+                  }
+                },
+                "value": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The App Configuration Value"
+                  }
+                },
+                "contentType": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The App Configuration Content Type"
+                  }
+                },
+                "label": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The App Configuration Label"
                   }
                 }
               }
@@ -19509,6 +19788,12 @@
               "metadata": {
                 "description": "Feature Flag to Load Software."
               }
+            },
+            "appSettings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/appConfigItem"
+              }
             }
           },
           "variables": {
@@ -19550,25 +19835,29 @@
                 "vmSize": "Standard_DS5_v2"
               }
             },
-            "appSettings": [
-              {
-                "name": "Settings:Message",
-                "value": "Hello from App Configuration",
-                "contentType": "text/plain",
-                "label": "configmap-devsample"
-              },
-              {
-                "name": "Settings:StorageAccountName",
-                "value": "[parameters('partitionStorageNames')[0]]",
-                "contentType": "text/plain",
-                "label": "configmap-devsample"
-              }
-            ],
             "configMaps": {
               "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n  "
             }
           },
           "resources": {
+            "keyVault": {
+              "existing": true,
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2023-07-01",
+              "name": "[parameters('kvName')]"
+            },
+            "keySecret": {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2023-07-01",
+              "name": "[format('{0}/{1}', parameters('kvName'), 'app-dev-sp-username')]",
+              "properties": {
+                "value": "[reference('appIdentity').outputs.clientId.value]"
+              },
+              "dependsOn": [
+                "appIdentity",
+                "keyVault"
+              ]
+            },
             "cluster": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
@@ -19666,7 +19955,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "13760300592188278271"
+                      "templateHash": "12762173878639307288"
                     }
                   },
                   "parameters": {
@@ -20291,8 +20580,8 @@
                     "userPoolPresets": {
                       "CostOptimised": {
                         "vmSize": "Standard_B4ms",
-                        "minCount": 1,
-                        "maxCount": 3,
+                        "minCount": 3,
+                        "maxCount": 5,
                         "availabilityZones": [],
                         "osDiskType": "Managed",
                         "osDiskSize": 128,
@@ -21563,6 +21852,121 @@
                 "cluster"
               ]
             },
+            "federatedCredsOsduAzure": {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-federated-cred-ns_osdu-azure', parameters('bladeConfig').sectionName)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": {
+                    "value": "federated-ns_osdu-azure"
+                  },
+                  "audiences": {
+                    "value": [
+                      "api://AzureADTokenExchange"
+                    ]
+                  },
+                  "issuer": {
+                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
+                  },
+                  "userAssignedIdentityName": {
+                    "value": "[reference('appIdentity').outputs.name.value]"
+                  },
+                  "subject": {
+                    "value": "system:serviceaccount:osdu-azure:workload-identity-sa"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826270550299120709"
+                    },
+                    "name": "User Assigned Identity Federated Identity Credential",
+                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
+                    "owner": "Azure/module-maintainers"
+                  },
+                  "parameters": {
+                    "userAssignedIdentityName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Required. The name of the secret."
+                      }
+                    },
+                    "audiences": {
+                      "type": "array",
+                      "metadata": {
+                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
+                      }
+                    },
+                    "issuer": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
+                      }
+                    },
+                    "subject": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+                      "apiVersion": "2023-01-31",
+                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
+                      "properties": {
+                        "audiences": "[parameters('audiences')]",
+                        "issuer": "[parameters('issuer')]",
+                        "subject": "[parameters('subject')]"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "name": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "The name of the federated identity credential."
+                      },
+                      "value": "[parameters('name')]"
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "The resource ID of the federated identity credential."
+                      },
+                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
+                    },
+                    "resourceGroupName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "The name of the resource group the federated identity credential was created in."
+                      },
+                      "value": "[resourceGroup().name]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "appIdentity",
+                "cluster"
+              ]
+            },
             "federatedCredsDevSample": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
@@ -21675,7 +22079,8 @@
               },
               "dependsOn": [
                 "appIdentity",
-                "cluster"
+                "cluster",
+                "federatedCredsOsduAzure"
               ]
             },
             "federatedCredsConfigMaps": {
@@ -22302,7 +22707,7 @@
                     ]
                   },
                   "keyValues": {
-                    "value": "[concat(variables('appSettings'))]"
+                    "value": "[concat(union(parameters('appSettings'), createArray(createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-devsample'), createObject('name', 'tenant_id', 'value', subscription().tenantId, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'azure_msi_client_id', 'value', reference('appIdentity').outputs.clientId.value, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'keyvault_uri', 'value', reference('keyVault').vaultUri, 'contentType', 'text/plain', 'label', 'configmap-services'))))]"
                   }
                 },
                 "template": {
@@ -22951,7 +23356,8 @@
               "dependsOn": [
                 "appIdentity",
                 "appRoleAssignments",
-                "appRoleAssignments2"
+                "appRoleAssignments2",
+                "keyVault"
               ]
             },
             "appConfigMap": {

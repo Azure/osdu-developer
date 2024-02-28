@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "osdu-developer.fullname" . }}-config
+data:
+  ENV_KEYVAULT: https://{{ .Values.azure.keyvaultName }}.vault.azure.net/
+  REDIS_DB_AIRFLOW: "1"
+  REDIS_DB_PARTITION: "2"
+  REDIS_DB_ENTITLEMENTS: "3"
+  REDIS_DB_LEGAL: "4"
+  REDIS_DB_STORAGE: "5"
+  REDIS_DB_INDEXER: "6"
+  REDIS_DB_SEARCH: "7"
+  REDIS_DB_DELIVERY: "8"
+  REDIS_DB_FILE: "9"
+  REDIS_DB_SDMS: "10"

@@ -15,8 +15,8 @@ cat > custom_values.yaml << EOF
 EOF
 
 NAMESPACE=osdu-azure
-helm template self-managed-osdu-service . -n $NAMESPACE --create-namespace
+helm template osdu-developer-service -f custom_values.yaml .
 
-helm upgrade --install self-managed-osdu-service . -n $NAMESPACE --create-namespace
+helm upgrade --install osdu-developer-service -f custom_values.yaml . -n $NAMESPACE
 ```
 

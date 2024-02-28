@@ -13,11 +13,11 @@
 #  limitations under the License.
 
 apiVersion: v2
-name: self-managed-service
+name: osdu-developer-base
 type: application
-description: Installs self managed OSDU Services
-version: 0.11.0
-appVersion: 0.11.0
+description: Installs the OSDU developer Base Components
+version: 0.0.1
+appVersion: 0.0.1
 maintainers:
   - name: danielscholl
     url: https://github.com/danielscholl

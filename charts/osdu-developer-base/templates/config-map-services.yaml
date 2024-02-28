@@ -2,20 +2,16 @@
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
-  name: {{ include "config-maps.fullname" . }}-sample
+  name: {{ include "osdu-developer.fullname" . }}-services
   namespace: {{ $namespace }}
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
   target:
-    configMapName: configmap-devsample
-    configMapData:
-      type: yaml
-      key: value.yaml
-      separator: "."
+    configMapName: configmap-services
   auth:
     workloadIdentity:
       managedIdentityClientId: {{ .Values.azure.clientId }}
   configuration:
      selectors:
         - keyFilter: "*"
-          labelFilter: "configmap-devsample"
+          labelFilter: "configmap-services"

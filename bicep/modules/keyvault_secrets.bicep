@@ -18,6 +18,15 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
 }
 
+resource vaultUrlSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'keyvault-uri'
+  parent: keyVault
+
+  properties: {
+    value: keyVault.properties.vaultUri
+  }
+}
+
 resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: workspaceKeySecretName
   parent: keyVault

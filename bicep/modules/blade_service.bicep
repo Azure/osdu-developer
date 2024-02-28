@@ -10,6 +10,17 @@ type bladeSettings = {
   displayName: string
 }
 
+type appConfigItem = {
+  @description('The App Configuration Key')
+  name: string
+  @description('The App Configuration Value')
+  value: string
+  @description('The App Configuration Content Type')
+  contentType: string
+  @description('The App Configuration Label')
+  label: string
+}
+
 @description('The configuration for the blade section.')
 param bladeConfig bladeSettings
 
@@ -85,6 +96,8 @@ param partitionStorageNames string[]
 
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool
+
+param appSettings appConfigItem[]
 
 /////////////////////////////////
 // Configuration 
@@ -286,6 +299,35 @@ module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.
   }
 }
 
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: kvName
+}
+
+resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'app-dev-sp-username'
+  parent: keyVault
+
+  properties: {
+    value: appIdentity.outputs.clientId
+  }
+}
+
+module federatedCredsOsduAzure './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-azure'
+  params: {
+    name: 'federated-ns_osdu-azure'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.outputs.name
+    subject: 'system:serviceaccount:osdu-azure:workload-identity-sa'
+  }
+  dependsOn: [
+    appIdentity
+  ]
+}
+
 // Federated Credentials have to be sequentially added.  Ensure depends on.
 module federatedCredsDevSample './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
@@ -299,7 +341,7 @@ module federatedCredsDevSample './federated_identity.bicep' = {
     subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
   }
   dependsOn: [
-    appIdentity
+    federatedCredsOsduAzure
   ]
 }
 
@@ -373,7 +415,7 @@ module helmAppConfigProvider './aks-run-command/main.bicep' = {
 /__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______|
 */
 
-var appSettings = [
+var settings = [
   {
     name: 'Settings:Message'
     value: 'Hello from App Configuration'
@@ -381,10 +423,22 @@ var appSettings = [
     label: 'configmap-devsample'
   }
   {
-    name: 'Settings:StorageAccountName'
-    value: partitionStorageNames[0]
+    name: 'tenant_id'
+    value: subscription().tenantId
     contentType: 'text/plain'
-    label: 'configmap-devsample'
+    label: 'configmap-services'
+  }
+  {
+    name: 'azure_msi_client_id'
+    value: appIdentity.outputs.clientId
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
+    name: 'keyvault_uri'
+    value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-services'
   }
 ]
 
@@ -409,7 +463,7 @@ module app_config './app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(appSettings)
+    keyValues: concat(union(appSettings, settings))
   }
   dependsOn: [
     appRoleAssignments
@@ -446,6 +500,12 @@ module appConfigMap './aks-config-map/main.bicep' = {
     location: location
     name: 'config-map-values'
     namespace: 'default'
+    
+    // newOrExistingManagedIdentity: 'existing'
+    // managedIdentityName: managedIdentityName
+    // existingManagedIdentitySubId: subscription().subscriptionId
+    // existingManagedIdentityResourceGroupName:resourceGroup().name
+
     // Order of items matters here.
     fileData: [
       format(configMaps.appConfigTemplate, 
@@ -514,4 +574,3 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
     pool3
   ]
 }
-

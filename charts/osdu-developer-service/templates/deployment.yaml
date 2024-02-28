@@ -9,8 +9,8 @@
 {{- $podAnnotations := .Values.podAnnotations}}
 {{- $configMap := .Values.configMap -}}
 {{- $version := .Chart.AppVersion -}}
-{{- $selectorLabels := include "self-managed-service.selectorLabels" . | nindent 8 }}
-{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
+{{- $selectorLabels := include "osdu-developer-service.selectorLabels" . | nindent 8 }}
+{{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
 {{- if or .service .scaledObject }}
 ---
@@ -85,6 +85,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .name }}-pvc
       {{- end }}
+      serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
           image: {{ .repository }}:{{ .tag | default $version }}

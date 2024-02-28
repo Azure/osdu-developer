@@ -1,4 +1,4 @@
-{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
+{{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 
 {{- if .Values.autoscale }}
 {{- $minReplicas := .Values.autoscale.minReplicas -}}

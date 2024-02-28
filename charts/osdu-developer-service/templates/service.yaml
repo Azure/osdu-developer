@@ -1,8 +1,8 @@
 {{- $serviceType := .Values.service.type }}
 {{- $servicePort := .Values.service.port }}
 {{- $targetPort := .Values.service.target }}
-{{- $labels := include "self-managed-service.labels" . | nindent 4 }}
-{{- $selectorLabels := include "self-managed-service.selectorLabels" . | nindent 4 }}
+{{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
+{{- $selectorLabels := include "osdu-developer-service.selectorLabels" . | nindent 4 }}
 {{- range .Values.configuration }}
 {{- if .service }}
 ---

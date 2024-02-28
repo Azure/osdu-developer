@@ -144,6 +144,8 @@ Replace <your_ad_application_name> with your actual Azure AD Application Name.
 ```bash
 APP_NAME=<your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
+azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp list --display-name $APP_NAME --query "[].id" -otsv)
+azd env set AZURE_CLIENT_SECRET $(az ad sp credential reset --id myServicePrincipalID --query "password" -otsv)
 ```
 
 3. Set Software Repository Location:

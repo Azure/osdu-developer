@@ -415,6 +415,32 @@ module helmAppConfigProvider './aks-run-command/main.bicep' = {
 /__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______|
 */
 
+var settings = [
+  {
+    name: 'Settings:Message'
+    value: 'Hello from App Configuration'
+    contentType: 'text/plain'
+    label: 'configmap-devsample'
+  }
+  {
+    name: 'tenant_id'
+    value: subscription().tenantId
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
+    name: 'azure_msi_client_id'
+    value: appIdentity.outputs.clientId
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
+    name: 'keyvault_uri'
+    value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+]
 
 module app_config './app-configuration/main.bicep' = {
   name: '${bladeConfig.sectionName}-appconfig'
@@ -437,7 +463,7 @@ module app_config './app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(appSettings)
+    keyValues: concat(union(appSettings, settings))
   }
   dependsOn: [
     appRoleAssignments

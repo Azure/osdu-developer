@@ -58,7 +58,7 @@ param applicationClientId string
 param applicationClientSecret string
 
 @description('Specify the AD Application Principal Id.')
-param applicationClientPrincipal string = ''
+param applicationClientPrincipalOid string = ''
 
 
 var commonLayerConfig = {
@@ -128,7 +128,7 @@ var vaultSecrets = [
 
 var roleAssignment = {
   roleDefinitionIdOrName: 'Key Vault Secrets User'
-  principalId: applicationClientPrincipal
+  principalId: applicationClientPrincipalOid
   principalType: 'ServicePrincipal'
 }
 
@@ -149,7 +149,7 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
     // Configure RBAC
     enableRbacAuthorization: true
     roleAssignments: union(
-      applicationClientPrincipal != '' ? array(roleAssignment) : [],
+      applicationClientPrincipalOid != '' ? array(roleAssignment) : [],
       []
     )
 

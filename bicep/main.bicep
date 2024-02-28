@@ -7,8 +7,8 @@ param location string = resourceGroup().location
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
-@description('Specify the AD Application Principal Id.')
-param applicationClientPrincipal string = ''
+@description('Specify the AD Service Principal Object Id.')
+param applicationClientPrincipalOid string = ''
 
 @description('Specify the AD Application Client Secret.')
 @secure()
@@ -264,7 +264,7 @@ module commonBlade 'modules/blade_common.bicep' = {
 
     applicationClientId: applicationClientId
     applicationClientSecret: applicationClientSecret
-    applicationClientPrincipal: applicationClientPrincipal
+    applicationClientPrincipalOid: applicationClientPrincipalOid
   }
   dependsOn: [
     networkBlade
@@ -389,12 +389,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     appSettings: [
       {
-        name: 'Settings:Message'
-        value: 'Hello from App Configuration'
-        contentType: 'text/plain'
-        label: 'configmap-devsample'
-      }
-      {
         name: 'Settings:StorageAccountName'
         value: partitionBlade.outputs.partitionStorageNames[0]
         contentType: 'text/plain'
@@ -403,24 +397,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
       {
         name: 'client_id'
         value: applicationClientId
-        contentType: 'text/plain'
-        label: 'configmap-services'
-      }
-      {
-        name: 'tenant_id'
-        value: subscription().tenantId
-        contentType: 'text/plain'
-        label: 'configmap-services'
-      }
-      {
-        name: 'appid_uri'
-        value: 'api://${applicationClientId}'
-        contentType: 'text/plain'
-        label: 'configmap-services'
-      }
-      {
-        name: 'keyvault_uri'
-        value: commonBlade.outputs.keyvaultUri
         contentType: 'text/plain'
         label: 'configmap-services'
       }

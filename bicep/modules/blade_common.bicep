@@ -124,6 +124,14 @@ var vaultSecrets = [
     secretName: 'app-dev-sp-id'
     secretValue: applicationClientId
   }
+  {
+    secretName: 'redis-hostname'
+    secretValue: 'redis-master-0.redis-master.redis-cache.svc.cluster.local'
+  }
+  {
+    secretName: 'redis-password'
+    secretValue: ''
+  }
 ]
 
 var roleAssignment = {

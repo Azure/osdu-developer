@@ -16,7 +16,7 @@ apiVersion: v2
 name: osdu-developer-service
 type: application
 description: Installs self managed OSDU Services
-version: 0.0.3
+version: 0.0.1
 appVersion: 0.0.1
 maintainers:
   - name: danielscholl

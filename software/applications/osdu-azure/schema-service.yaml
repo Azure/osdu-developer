@@ -77,7 +77,7 @@ spec:
       - name: event_grid_topic
         value: "schemachangedtopic"
       - name: azure_paas_podIdentity_isEnabled
-        value: "false"
+        value: "true"
       - name: aad_client_id
         value: "api://"
       - name: servicebus_topic_name

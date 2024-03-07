@@ -73,7 +73,7 @@ spec:
       - name: azure_activedirectory_AppIdUri
         value: "api://"
       - name: azure_paas_podIdentity_isEnabled
-        value: "false"
+        value: "true"
       - name: azure_msi_client_id
         secret:
           name: active-directory

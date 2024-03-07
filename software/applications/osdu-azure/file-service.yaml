@@ -116,7 +116,7 @@ spec:
         secret:
           name: active-directory
           key: principal-clientpassword
-      - name: KEYVAULT_URI
+      - name: KEYVAULT_URL
         secret:
           name: azure-resources
           key: keyvault-uri

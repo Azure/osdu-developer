@@ -84,7 +84,7 @@ spec:
       - name: SEARCH_QUERY_LIMIT
         value: "1000"
       - name: azure_paas_podIdentity_isEnabled
-        value: "{{ .Values.global.azure.podIdentityAuthEnabled }}"
+        value: "true"
       - name: authorizeAPI
         value: http://entitlements/api/entitlements/v2
       - name: SPRING_CONFIG_NAME

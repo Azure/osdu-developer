@@ -35,7 +35,7 @@ spec:
       path: /api/schema-service/v1/*
       probe:
         path: /actuator/health
-        port: http
+        port: 8081
       keyvault: true
       auth:
         disable:

@@ -68,7 +68,7 @@ spec:
       - name: osdu_entitlements_app_key
         value: OBSOLETE
       - name: APPLICATION_PORT
-        value: $(server_port)
+        value: 80
       - name: SEARCH_HOST
         value: http://search/api/search/v2
       - name: osdu_storage_url

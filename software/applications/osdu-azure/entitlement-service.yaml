@@ -1,3 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: entitlement
+  namespace: osdu-azure
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - aks-istio-ingress/istio-external-gateway
+    - aks-istio-ingress/istio-internal-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/api/entitlements/v2/"
+      route:
+        - destination:
+            host: "entitlement.osdu-azure.svc.cluster.local"
+            port:
+              number: 80
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

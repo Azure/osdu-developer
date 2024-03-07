@@ -1,96 +1,96 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: entitlement-service
-#   namespace: osdu-azure
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#   - name: osdu-developer-base
-#     namespace: default
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   targetNamespace: osdu-azure
-#   values:
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: entitlements
-#       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-azure-m18-master
-#       tag: latest
-#       path: /api/entitlements/v2/*
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#       keyvault: true
-#       auth:
-#         disable:
-#           - "/"
-#           - "*/index.html"
-#           - "*/v2/api-docs"
-#           - "*/swagger-resources"
-#           - "*/swagger-ui.html"
-#           - "*/actuator/health"
-#           - "*/health"
-#           - "*/configuration/ui"
-#           - "*/configuration/security"
-#           - "/api/entitlements/v2/info"
-#           - "/api/entitlements/v2/swagger-resources/*"
-#           - "/api/entitlements/v2/webjars/*"
-#       env:
-#       - name: spring_application_name
-#         value: "entitlements"
-#       - name: server.servlet.contextPath
-#         value: "/api/entitlements/v2/"
-#       - name: LOGGING_LEVEL
-#         value: "INFO"
-#       - name: server_port
-#         value: "80"
-#       - name: service_domain_name
-#         value: "contoso.com"
-#       - name: root_data_group_quota
-#         value: "5000"
-#       - name: redis_ttl_seconds
-#         value: "1"
-#       - name: partition_service_endpoint
-#         value: "http://partition/api/partition/v1"
-#       - name: azure_istioauth_enabled
-#         value: "true"
-#       - name: azure_activedirectory_AppIdUri
-#         value: "api://"
-#       - name: azure_paas_podIdentity_isEnabled
-#         value: "false"
-#       - name: azure_msi_client_id
-#         secret:
-#           name: active-directory
-#           key: msi-clientid
-#       - name: AZURE_TENANT_ID
-#         secret:
-#           name: active-directory
-#           key: tenant-id
-#       - name: AZURE_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AZURE_CLIENT_SECRET
-#         secret:
-#           name: active-directory
-#           key: principal-clientpassword
-#       - name: KEYVAULT_URI
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: entitlement-service
+  namespace: osdu-azure
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+  - name: osdu-developer-base
+    namespace: default
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: osdu-azure
+  values:
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: entitlements
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-azure-m18-master
+      tag: latest
+      path: /api/entitlements/v2/*
+      probe:
+        path: /api/entitlements/v2/_ah/readiness_check
+        port: http
+      keyvault: true
+      auth:
+        disable:
+          - "/"
+          - "*/index.html"
+          - "*/v2/api-docs"
+          - "*/swagger-resources"
+          - "*/swagger-ui.html"
+          - "*/actuator/health"
+          - "*/health"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/entitlements/v2/info"
+          - "/api/entitlements/v2/swagger-resources/*"
+          - "/api/entitlements/v2/webjars/*"
+      env:
+      - name: spring_application_name
+        value: "entitlements"
+      - name: server.servlet.contextPath
+        value: "/api/entitlements/v2/"
+      - name: LOGGING_LEVEL
+        value: "INFO"
+      - name: server_port
+        value: "80"
+      - name: service_domain_name
+        value: "contoso.com"
+      - name: root_data_group_quota
+        value: "5000"
+      - name: redis_ttl_seconds
+        value: "1"
+      - name: partition_service_endpoint
+        value: "http://partition/api/partition/v1"
+      - name: azure_istioauth_enabled
+        value: "true"
+      - name: azure_activedirectory_AppIdUri
+        value: "api://"
+      - name: azure_paas_podIdentity_isEnabled
+        value: "false"
+      - name: azure_msi_client_id
+        secret:
+          name: active-directory
+          key: msi-clientid
+      - name: AZURE_TENANT_ID
+        secret:
+          name: active-directory
+          key: tenant-id
+      - name: AZURE_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri

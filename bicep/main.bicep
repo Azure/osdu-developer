@@ -8,11 +8,11 @@ param location string = resourceGroup().location
 param applicationClientId string
 
 @description('Specify the AD Service Principal Object Id.')
-param applicationClientPrincipalOid string = ''
+param applicationClientPrincipalOid string
 
 @description('Specify the AD Application Client Secret.')
 @secure()
-param applicationClientSecret string = ''
+param applicationClientSecret string
 
 @allowed([
   'CostOptimised'

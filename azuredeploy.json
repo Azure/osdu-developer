@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "1694986310679689876"
+      "templateHash": "11141007507361541086"
     }
   },
   "parameters": {
@@ -24,14 +24,12 @@
     },
     "applicationClientPrincipalOid": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Specify the AD Service Principal Object Id."
       }
     },
     "applicationClientSecret": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
         "description": "Specify the AD Application Client Secret."
       }
@@ -6121,7 +6119,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "12818154003126443483"
+              "templateHash": "13657502246692833385"
             }
           },
           "definitions": {
@@ -6291,6 +6289,14 @@
               {
                 "secretName": "app-dev-sp-id",
                 "secretValue": "[parameters('applicationClientId')]"
+              },
+              {
+                "secretName": "redis-hostname",
+                "secretValue": "redis-master-0.redis-master.redis-cache.svc.cluster.local"
+              },
+              {
+                "secretName": "redis-password",
+                "secretValue": ""
               }
             ],
             "roleAssignment": {
@@ -19606,7 +19612,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "6898937586733678630"
+              "templateHash": "18131497019165989"
             }
           },
           "definitions": {
@@ -19811,7 +19817,7 @@
             "serviceLayerConfig": {
               "cluster": {
                 "aksVersion": "1.28",
-                "meshVersion": "asm-1-18",
+                "meshVersion": "asm-1-20",
                 "networkPlugin": "[parameters('networkPlugin')]"
               },
               "gitops": {

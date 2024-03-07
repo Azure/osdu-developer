@@ -1,0 +1,135 @@
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: storage-service
+#   namespace: osdu-azure
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   dependsOn:
+#   - name: osdu-developer-base
+#     namespace: default
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-service
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   timeout: 6m
+#   install:
+#     remediation:
+#       retries: 3
+#   targetNamespace: osdu-azure
+#   values:
+#     replicaCount: 1
+#     service:
+#       type: ClusterIP
+#       port: 80
+#     configuration:
+#     - service: storage
+#       repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-azure-m18-master
+#       tag: latest
+#       path: /api/storage/v2/*
+#       probe:
+#         path: /actuator/health
+#         port: 8081
+#         liveness:
+#           delay: 250
+#           seconds: 10
+#       keyvault: true
+#       request:
+#         cpu: 500m
+#         memory: 1Gi
+#       limit:
+#         cpu: 1000m
+#         memory: 4Gi
+#       auth:
+#         disable:
+#           - "/"
+#           - "*/index.html"
+#           - "*/v2/api-docs"
+#           - "*/swagger-resources"
+#           - "*/swagger-ui.html"
+#           - "*/configuration/ui"
+#           - "*/configuration/security"
+#           - "/api/storage/v2/swagger-resources/*"
+#           - "/api/storage/v2/webjars/*"
+#           - "*/actuator/health"
+#           - "*/health"
+#       env:
+#       - name: spring_application_name
+#         value: storage
+#       - name: server.servlet.contextPath
+#         value: /api/storage/v2/
+#       - name: server_port
+#         value: 80
+#       - name: ACCEPT_HTTP
+#         value: true
+#       - name: cosmosdb_database
+#         value: osdu-db
+#       - name: servicebus_topic_name
+#         value: recordstopic
+#       - name: servicebus_v2_topic_name
+#         value: recordstopic-v2
+#       - name: legal_servicebus_topic_name
+#         value: legaltagschangedtopiceg
+#       - name: legal_servicebus_topic_subscription
+#         value: eg_sb_legaltagchangedsubscription
+#       - name: entitlements_service_endpoint
+#         value: http://entitlements/api/entitlements/v2
+#       - name: crs_conversion_service_endpoint
+#         value: http://crs-conversion/api/crs/converter/v2
+#       - name: entitlements_service_api_key
+#         value: "OBSOLETE"
+#       - name: legal_service_endpoint
+#         value: http://legal/api/legal/v1
+#       - name: legal_service_region
+#         value: southcentralus
+#       - name: partition_service_endpoint
+#         value: http://partition/api/partition/v1
+#       - name: policy_service_endpoint
+#         value: http://policy/api/policy/v1
+#       - name: opa_enabled
+#         value: "false"
+#       - name: opa_endpoint
+#         value: http://opa:8181
+#       - name: azure_istioauth_enabled
+#         value: "true"
+#       - name: azure_istio_corsEnabled
+#         value: "false"
+#       - name: azure_activedirectory_AppIdUri
+#         value: "api://"
+#       - name: "SERVER_TOMCAT_MAXTHREADS"
+#         value: "400"
+#       - name: "SERVER_TOMCAT_MINSPARETHREADS"
+#         value: "200"
+#       - name: azure_paas_podIdentity_isEnabled
+#         value: "true"
+#       - name: REDIS_DATABASE
+#         value: "4"
+#       - name: appinsights_key
+#         value: ""
+#       - name: aad_client_id
+#         secret:
+#           name: active-directory
+#           key: principal-clientid
+#       - name: KEYVAULT_URI
+#         secret:
+#           name: azure-resources
+#           key: keyvault-uri
+#       - name: AZURE_CLIENT_ID
+#         secret:
+#           name: active-directory
+#           key: principal-clientid
+#       - name: AZURE_CLIENT_SECRET
+#         secret:
+#           name: active-directory
+#           key: principal-clientpassword
+#       - name: AZURE_TENANT_ID
+#         secret:
+#           name: active-directory
+#           key: tenant-id
+ 

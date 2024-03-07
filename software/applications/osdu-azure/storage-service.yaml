@@ -110,6 +110,10 @@ spec:
         value: "3"
       - name: aad_client_id
         value: "api://"
+      - name: azure_msi_client_id
+        secret:
+          name: active-directory
+          key: msi-clientid
       - name: AZURE_TENANT_ID
         secret:
           name: active-directory

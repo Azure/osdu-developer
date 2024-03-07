@@ -55,6 +55,8 @@ spec:
         value: file
       - name: server.servlet.contextPath
         value: /api/file/
+      - name: appinsights_key
+        value: ""
       - name: server_port
         value: 80
       - name: ACCEPT_HTTP

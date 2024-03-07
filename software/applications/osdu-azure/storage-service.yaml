@@ -106,20 +106,18 @@ spec:
         value: "400"
       - name: "SERVER_TOMCAT_MINSPARETHREADS"
         value: "200"
+      - name: azure_paas_podIdentity_isEnabled
+        value: "true"
       - name: REDIS_DATABASE
-        value: "3"
+        value: "4"
       - name: aad_client_id
+        value: "https://management.azure.com/"
+      - name: appinsights_key
+        value: ""
+      - name: KEYVAULT_URI
         secret:
-          name: active-directory
-          key: principal-clientid
-      - name: azure_msi_client_id
-        secret:
-          name: active-directory
-          key: msi-clientid
-      - name: AZURE_TENANT_ID
-        secret:
-          name: active-directory
-          key: tenant-id
+          name: azure-resources
+          key: keyvault-uri
       - name: AZURE_CLIENT_ID
         secret:
           name: active-directory
@@ -128,7 +126,8 @@ spec:
         secret:
           name: active-directory
           key: principal-clientpassword
-      - name: KEYVAULT_URI
+      - name: AZURE_TENANT_ID
         secret:
-          name: azure-resources
-          key: keyvault-uri
+          name: active-directory
+          key: tenant-id
+ 

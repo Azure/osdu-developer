@@ -28,6 +28,6 @@ spec:
       enabled: true
     resourceLimits:
       defaultCpuRequests: "0.5"
-      defaultMemoryRequests: "2Gi"
+      defaultMemoryRequests: "4Gi"
       defaultCpuLimits: "1"
-      defaultMemoryLimits: "2Gi"
+      defaultMemoryLimits: "4Gi"

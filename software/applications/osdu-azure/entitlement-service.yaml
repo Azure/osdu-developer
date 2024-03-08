@@ -44,7 +44,7 @@ spec:
       retries: 3
   targetNamespace: osdu-azure
   values:
-    replicaCount: 2
+    replicaCount: 1
     service:
       type: ClusterIP
       port: 80

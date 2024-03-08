@@ -255,7 +255,8 @@ jobs:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} '
+            
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} '
             echo $PARAMS
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
@@ -270,7 +271,7 @@ jobs:
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} '
             az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
             if [[ -f $WHATIFPATH ]]
             then

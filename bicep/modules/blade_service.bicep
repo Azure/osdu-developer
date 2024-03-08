@@ -111,7 +111,7 @@ var serviceLayerConfig = {
   // displayName: 'Service Resources'
   cluster: {
     aksVersion: '1.28'
-    meshVersion: 'asm-1-20'
+    meshVersion: 'asm-1-19'
     networkPlugin: networkPlugin
   }
   gitops: {

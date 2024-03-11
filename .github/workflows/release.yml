@@ -50,7 +50,7 @@ jobs:
           WITH_V: true
 
       - name: Find Latest Tag
-        uses: oprypin/find-latest-tag@v1.1.1
+        uses: oprypin/find-latest-tag@v1.1.2
         id: latest
         with:
           repository: ${{ github.repository }}

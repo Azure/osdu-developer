@@ -84,6 +84,67 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
+  name: software-component-airflow
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/airflow
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-configuration-maps
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/configuration/config-maps
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: software-component-monitoring
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/monitoring
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: prometheus-operator-grafana
+      namespace: monitoring
+    - kind: Deployment
+      name: prometheus-operator-kube-p-operator
+      namespace: monitoring
+    - kind: Deployment
+      name: prometheus-operator-kube-p-operator
+      namespace: monitoring
+    - kind: Deployment
+      name: kiali-operator
+      namespace: monitoring
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
   name: software-component-istio
   namespace: flux-system
 spec:
@@ -105,19 +166,3 @@ spec:
     - kind: Gateway
       name: istio-internal-gateway
       namespace: aks-istio-ingress
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-configuration-config-maps
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/configuration/config-maps
-  prune: true
-  wait: true

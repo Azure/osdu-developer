@@ -50,7 +50,7 @@ spec:
       port: 80
     configuration:
     - service: partition
-      repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-azure-m18-master
+      repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-22
       tag: latest
       path: /api/partition/v1/*
       probe:

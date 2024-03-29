@@ -50,7 +50,7 @@ spec:
       port: 80
     configuration:
     - service: entitlements
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-azure-m18-master
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-22
       tag: latest
       path: /api/entitlements/v2/*
       probe:

@@ -31,6 +31,7 @@
 #     configuration:
 #     - service: storage
 #       repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-azure-m18-master
+#       repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-release-0-22
 #       tag: latest
 #       path: /api/storage/v2/*
 #       probe:

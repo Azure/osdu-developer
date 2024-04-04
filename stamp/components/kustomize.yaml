@@ -166,6 +166,25 @@ spec:
     - kind: Deployment
       name: istiod
       namespace: istio-system
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-mesh-ingress
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/service-mesh-ingress
+  prune: true
+  wait: true
+  healthChecks:
+
     - kind: Deployment
       name: istio-ingress-internal
       namespace: istio-system
@@ -182,6 +201,7 @@ metadata:
 spec:
   dependsOn:
     - name: component-mesh
+    - name: component-mesh-ingress
   interval: 1h
   retryInterval: 1m
   timeout: 5m

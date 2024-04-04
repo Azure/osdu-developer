@@ -35,7 +35,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/redis-cluster
+  path: ./software/components/cache
   prune: true
   wait: true
   healthChecks:
@@ -63,7 +63,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/cert-manager
+  path: ./software/components/certs
   prune: true
   wait: true
   healthChecks:
@@ -94,7 +94,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/config-maps
+  path: ./software/components/configmap
   prune: true
   wait: true
 
@@ -159,7 +159,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/service-mesh
+  path: ./software/components/mesh
   prune: true
   wait: true
   healthChecks:
@@ -181,7 +181,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/service-mesh-ingress
+  path: ./software/components/mesh-ingress
   prune: true
   wait: true
   healthChecks:

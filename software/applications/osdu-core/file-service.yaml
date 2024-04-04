@@ -24,6 +24,8 @@ spec:
     remediation:
       retries: 3
   values:
+    labels:
+      version: v2
     replicaCount: 1
     service:
       type: ClusterIP

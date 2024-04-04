@@ -126,7 +126,7 @@ var vaultSecrets = [
   }
   {
     secretName: 'redis-hostname'
-    secretValue: 'redis-master-0.redis-master.redis-cache.svc.cluster.local'
+    secretValue: 'redis-master.redis-cluster.svc.cluster.local'
   }
   {
     secretName: 'redis-password'

@@ -1,8 +1,124 @@
+######################
+## Airflow Component
+######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: software-component-certificates
+  name: component-airflow
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/airflow
+  prune: true
+  wait: true
+
+
+######################
+## Cache Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-cache
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/redis-cluster
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: StatefulSet
+      name: redis-master
+      namespace: redis-cluster
+    - kind: StatefulSet
+      name: redis-replicas
+      namespace: redis-cluster
+
+
+######################
+## Config Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-configmap
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/config-maps
+  prune: true
+  wait: true
+
+
+######################
+## Elastic Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-elastic
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/elastic
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: StatefulSet
+      name: elastic-system
+      namespace: elastic-operator
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-elastic-storage
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: component-elastic
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/elastic-storage
+  prune: true
+
+
+
+######################
+## Cert Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-certs
   namespace: flux-system
 spec:
   interval: 1h
@@ -18,11 +134,23 @@ spec:
     - kind: Deployment
       name: cert-manager
       namespace: cert-manager
+    - kind: Deployment
+      name: cert-manager-cainjector
+      namespace: cert-manager
+    - kind: Deployment
+      name: cert-manager-webhook
+      namespace: cert-manager
+
+
+
+######################
+## Mesh Component
+######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: software-component-redis
+  name: component-mesh
   namespace: flux-system
 spec:
   interval: 1h
@@ -31,138 +159,49 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/redis-cache
+  path: ./software/components/service-mesh
   prune: true
   wait: true
   healthChecks:
-    - kind: StatefulSet
-      name: redis-master
-      namespace: redis-cache
-    - kind: StatefulSet
-      name: redis-replicas
-      namespace: redis-cache
+    - kind: Deployment
+      name: istiod
+      namespace: istio-system
+    - kind: Deployment
+      name: istio-ingress-internal
+      namespace: istio-system
+    - kind: Deployment
+      name: istio-ingress-external
+      namespace: istio-system
+
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: software-component-elastic
+  name: component-observability
   namespace: flux-system
 spec:
   dependsOn:
-    - name: software-component-certificates
+    - name: component-mesh
   interval: 1h
   retryInterval: 1m
   timeout: 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/elastic-operator
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: StatefulSet
-      name: elastic-system
-      namespace: elastic-operator
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-configuration-elastic
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: software-component-elastic
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/configuration/elastic
-  prune: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-component-airflow
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/airflow
-  prune: true
-  wait: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-configuration-maps
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/configuration/config-maps
-  prune: true
-  wait: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-component-monitoring
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/monitoring
+  path: ./software/components/observability
   prune: true
   wait: true
   healthChecks:
     - kind: Deployment
-      name: prometheus-operator-grafana
-      namespace: monitoring
+      name: prometheus
+      namespace: istio-system
     - kind: Deployment
-      name: prometheus-operator-kube-p-operator
-      namespace: monitoring
+      name: grafana
+      namespace: istio-system
     - kind: Deployment
-      name: prometheus-operator-kube-p-operator
-      namespace: monitoring
-    - kind: Deployment
-      name: kiali-operator
-      namespace: monitoring
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: software-component-istio
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: software-component-certificates
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/istio-ingress
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: Gateway
-      name: istio-external-gateway
-      namespace: aks-istio-ingress
-    - kind: Gateway
-      name: istio-internal-gateway
-      namespace: aks-istio-ingress
+      name: jaeger
+      namespace: istio-system
+    - kind: Service
+      name: loki
+      namespace: istio-system
+

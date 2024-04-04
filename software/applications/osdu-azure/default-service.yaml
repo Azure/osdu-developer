@@ -3,11 +3,12 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: default-service
-  namespace: osdu-azure
+  namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   releaseName: default-service
+  targetNamespace: osdu-core
   dependsOn:
   - name: osdu-developer-base
     namespace: default
@@ -23,7 +24,6 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-azure
   values:
     replicaCount: 1
     service:

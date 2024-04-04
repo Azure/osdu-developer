@@ -4,4 +4,5 @@ kind: Namespace
 metadata:
   name: airflow
   labels:
-    toolkit.fluxcd.io/tenant: sre-team
+    istio-injection: disabled
+    toolkit.fluxcd.io/tenant: component

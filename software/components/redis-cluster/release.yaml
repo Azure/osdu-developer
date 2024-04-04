@@ -3,8 +3,9 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: redis
-  namespace: redis-cache
+  namespace: flux-system
 spec:
+  targetNamespace: redis-cluster
   chart:
     spec:
       chart: redis

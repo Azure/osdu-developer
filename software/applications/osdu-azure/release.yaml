@@ -7,6 +7,7 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  targetNamespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-base
@@ -18,7 +19,6 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-azure
   valuesFrom:
     - kind: ConfigMap
       name: config-map-values

@@ -379,7 +379,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterSize: tier
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress
+    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress 
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     dockerBridgeCidr: clusterNetwork.dockerBridgeCidr == '' ? '172.17.0.1/16' : clusterNetwork.dockerBridgeCidr

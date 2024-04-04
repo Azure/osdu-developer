@@ -32,5 +32,3 @@ spec:
     ingress:
       enabled: true
       className: nginx
-    serviceMonitor:
-      enabled: true

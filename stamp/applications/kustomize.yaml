@@ -92,7 +92,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/applications/osdu-azure
+  path: ./software/applications/osdu-core
   prune: true
   wait: true
   healthChecks:

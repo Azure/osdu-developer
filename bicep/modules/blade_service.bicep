@@ -124,19 +124,6 @@ var serviceLayerConfig = {
     components: './stamp/components'
     applications: './stamp/applications'
   }
-  imageList: {
-    None: []
-    M22: [
-      'community.opengroup.org:5555/osdu/platform/system/partition/partition-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-24:latest'
-      'community.opengroup.org:5555/osdu/platform/system/storage/storage-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/file/file-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/search-service/search-service-v0-24-0:latest'
-    ]
-  }
 }
 
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "18142174226833726384"
+      "templateHash": "6268218726513853630"
     }
   },
   "parameters": {
@@ -19612,7 +19612,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "14241961904578323552"
+              "templateHash": "3839311526838790038"
             }
           },
           "definitions": {
@@ -19834,19 +19834,6 @@
                 "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.7.0', parameters('softwareTag'))]",
                 "components": "./stamp/components",
                 "applications": "./stamp/applications"
-              },
-              "imageList": {
-                "None": [],
-                "M22": [
-                  "community.opengroup.org:5555/osdu/platform/system/partition/partition-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-24:latest",
-                  "community.opengroup.org:5555/osdu/platform/system/storage/storage-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/system/file/file-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-v0-24-0:latest",
-                  "community.opengroup.org:5555/osdu/platform/system/search-service/search-service-v0-24-0:latest"
-                ]
               }
             },
             "elasticPoolPresets": {

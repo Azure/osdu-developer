@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "1508695546485717780"
+      "version": "0.25.53.49325",
+      "templateHash": "18142174226833726384"
     }
   },
   "parameters": {
@@ -2482,8 +2482,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "10960042976991378351"
+              "version": "0.25.53.49325",
+              "templateHash": "12025126694801882509"
             }
           },
           "definitions": {
@@ -6118,8 +6118,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8048123392399284311"
+              "version": "0.25.53.49325",
+              "templateHash": "13613187142204439009"
             }
           },
           "definitions": {
@@ -6292,7 +6292,7 @@
               },
               {
                 "secretName": "redis-hostname",
-                "secretValue": "redis-master-0.redis-master.redis-cache.svc.cluster.local"
+                "secretValue": "redis-master.redis-cluster.svc.cluster.local"
               },
               {
                 "secretName": "redis-password",
@@ -8796,8 +8796,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "9384828386736374347"
+                      "version": "0.25.53.49325",
+                      "templateHash": "5527288363528929761"
                     }
                   },
                   "parameters": {
@@ -8902,8 +8902,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "16903949932772415492"
+                      "version": "0.25.53.49325",
+                      "templateHash": "6068416468572067048"
                     },
                     "name": "SSH Key Pair",
                     "description": "This module creates a SSH Key Pair and stores it in an Azure Key Vault",
@@ -9145,8 +9145,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17147035930479036114"
+                      "version": "0.25.53.49325",
+                      "templateHash": "6320470553017221975"
                     },
                     "name": "Key Vault Certificate",
                     "description": "This module creates a Key Vault Certificate and stores it in an Azure Key Vault",
@@ -9528,8 +9528,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17823120164900631978"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826512194130576768"
                     }
                   },
                   "parameters": {
@@ -9708,8 +9708,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "17295956508677393454"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4839297301131483167"
                             }
                           },
                           "parameters": {
@@ -9824,8 +9824,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12715927052653103478"
+                              "version": "0.25.53.49325",
+                              "templateHash": "10763501692852746164"
                             }
                           },
                           "parameters": {
@@ -10027,8 +10027,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13204250333965268749"
+                      "version": "0.25.53.49325",
+                      "templateHash": "5878302758470221123"
                     }
                   },
                   "parameters": {
@@ -10588,8 +10588,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "9721479273314652977"
+                              "version": "0.25.53.49325",
+                              "templateHash": "18405904741015745823"
                             }
                           },
                           "parameters": {
@@ -10710,8 +10710,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -10800,8 +10800,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -10890,8 +10890,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -10980,8 +10980,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -11070,8 +11070,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -11195,8 +11195,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17823120164900631978"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826512194130576768"
                     }
                   },
                   "parameters": {
@@ -11375,8 +11375,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "17295956508677393454"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4839297301131483167"
                             }
                           },
                           "parameters": {
@@ -11491,8 +11491,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12715927052653103478"
+                              "version": "0.25.53.49325",
+                              "templateHash": "10763501692852746164"
                             }
                           },
                           "parameters": {
@@ -11704,8 +11704,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "2871610128853868724"
+                      "version": "0.25.53.49325",
+                      "templateHash": "11940381066264844853"
                     }
                   },
                   "parameters": {
@@ -12293,8 +12293,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "4363045328158791803"
+                              "version": "0.25.53.49325",
+                              "templateHash": "6008495898597068380"
                             }
                           },
                           "parameters": {
@@ -12388,8 +12388,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "7942475878482836174"
+                                      "version": "0.25.53.49325",
+                                      "templateHash": "8440494403171406302"
                                     }
                                   },
                                   "parameters": {
@@ -12564,8 +12564,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "4439313860747618222"
+                              "version": "0.25.53.49325",
+                              "templateHash": "7475748416791876520"
                             }
                           },
                           "parameters": {
@@ -12655,8 +12655,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "8484220687196122351"
+                                      "version": "0.25.53.49325",
+                                      "templateHash": "6501375544323548839"
                                     }
                                   },
                                   "parameters": {
@@ -12813,8 +12813,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12923792544269206277"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4583229135454794215"
                             }
                           },
                           "parameters": {
@@ -12958,8 +12958,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -13048,8 +13048,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -13138,8 +13138,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -13284,8 +13284,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17823120164900631978"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826512194130576768"
                     }
                   },
                   "parameters": {
@@ -13464,8 +13464,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "17295956508677393454"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4839297301131483167"
                             }
                           },
                           "parameters": {
@@ -13580,8 +13580,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12715927052653103478"
+                              "version": "0.25.53.49325",
+                              "templateHash": "10763501692852746164"
                             }
                           },
                           "parameters": {
@@ -13815,8 +13815,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "11492304600047088826"
+              "version": "0.25.53.49325",
+              "templateHash": "15861017442167209003"
             }
           },
           "definitions": {
@@ -15108,8 +15108,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13669585171806927084"
+                      "version": "0.25.53.49325",
+                      "templateHash": "17291104921277876011"
                     }
                   },
                   "parameters": {
@@ -15428,8 +15428,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "6435678233655736049"
+              "version": "0.25.53.49325",
+              "templateHash": "14020725259856422371"
             }
           },
           "definitions": {
@@ -15800,8 +15800,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13204250333965268749"
+                      "version": "0.25.53.49325",
+                      "templateHash": "5878302758470221123"
                     }
                   },
                   "parameters": {
@@ -16361,8 +16361,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "9721479273314652977"
+                              "version": "0.25.53.49325",
+                              "templateHash": "18405904741015745823"
                             }
                           },
                           "parameters": {
@@ -16483,8 +16483,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -16573,8 +16573,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -16663,8 +16663,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -16753,8 +16753,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -16843,8 +16843,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -16969,8 +16969,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17823120164900631978"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826512194130576768"
                     }
                   },
                   "parameters": {
@@ -17149,8 +17149,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "17295956508677393454"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4839297301131483167"
                             }
                           },
                           "parameters": {
@@ -17265,8 +17265,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12715927052653103478"
+                              "version": "0.25.53.49325",
+                              "templateHash": "10763501692852746164"
                             }
                           },
                           "parameters": {
@@ -17479,8 +17479,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "2871610128853868724"
+                      "version": "0.25.53.49325",
+                      "templateHash": "11940381066264844853"
                     }
                   },
                   "parameters": {
@@ -18068,8 +18068,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "4363045328158791803"
+                              "version": "0.25.53.49325",
+                              "templateHash": "6008495898597068380"
                             }
                           },
                           "parameters": {
@@ -18163,8 +18163,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "7942475878482836174"
+                                      "version": "0.25.53.49325",
+                                      "templateHash": "8440494403171406302"
                                     }
                                   },
                                   "parameters": {
@@ -18339,8 +18339,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "4439313860747618222"
+                              "version": "0.25.53.49325",
+                              "templateHash": "7475748416791876520"
                             }
                           },
                           "parameters": {
@@ -18430,8 +18430,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "8484220687196122351"
+                                      "version": "0.25.53.49325",
+                                      "templateHash": "6501375544323548839"
                                     }
                                   },
                                   "parameters": {
@@ -18588,8 +18588,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12923792544269206277"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4583229135454794215"
                             }
                           },
                           "parameters": {
@@ -18733,8 +18733,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -18823,8 +18823,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -18913,8 +18913,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "14601630434836986060"
+                              "version": "0.25.53.49325",
+                              "templateHash": "45035995711227405"
                             }
                           },
                           "parameters": {
@@ -19060,8 +19060,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "17823120164900631978"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826512194130576768"
                     }
                   },
                   "parameters": {
@@ -19240,8 +19240,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "17295956508677393454"
+                              "version": "0.25.53.49325",
+                              "templateHash": "4839297301131483167"
                             }
                           },
                           "parameters": {
@@ -19356,8 +19356,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "12715927052653103478"
+                              "version": "0.25.53.49325",
+                              "templateHash": "10763501692852746164"
                             }
                           },
                           "parameters": {
@@ -19611,8 +19611,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "16911344908835293070"
+              "version": "0.25.53.49325",
+              "templateHash": "14241961904578323552"
             }
           },
           "definitions": {
@@ -19806,6 +19806,13 @@
                 "description": "Feature Flag to Load Software."
               }
             },
+            "enableMonitoring": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Feature Flag to Enable Managed Observability."
+              }
+            },
             "appSettings": {
               "type": "array",
               "items": {
@@ -19824,7 +19831,7 @@
                 "name": "flux-system",
                 "url": "[if(equals(parameters('softwareRepository'), ''), 'https://github.com/azure/osdu-developer', parameters('softwareRepository'))]",
                 "branch": "[if(equals(parameters('softwareBranch'), ''), '', parameters('softwareBranch'))]",
-                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.6.0', parameters('softwareTag'))]",
+                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.7.0', parameters('softwareTag'))]",
                 "components": "./stamp/components",
                 "applications": "./stamp/applications"
               },
@@ -19855,7 +19862,8 @@
             },
             "configMaps": {
               "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n  "
-            }
+            },
+            "name": "[format('amw{0}{1}', replace(parameters('bladeConfig').sectionName, '-', ''), uniqueString(resourceGroup().id, parameters('bladeConfig').sectionName))]"
           },
           "resources": {
             "keyVault": {
@@ -19928,15 +19936,9 @@
                   "dockerBridgeCidr": {
                     "value": "[parameters('dockerBridgeCidr')]"
                   },
-                  "serviceMeshProfile": {
-                    "value": "Istio"
-                  },
-                  "istioRevision": {
-                    "value": "[variables('serviceLayerConfig').cluster.meshVersion]"
-                  },
-                  "istioIngressGatewayMode": {
-                    "value": "[parameters('clusterIngress')]"
-                  },
+                  "serviceMeshProfile": "[if(parameters('enableMonitoring'), createObject('value', 'Istio'), createObject('value', null()))]",
+                  "istioRevision": "[if(parameters('enableMonitoring'), createObject('value', variables('serviceLayerConfig').cluster.meshVersion), createObject('value', null()))]",
+                  "istioIngressGatewayMode": "[if(parameters('enableMonitoring'), createObject('value', parameters('clusterIngress')), createObject('value', null()))]",
                   "enable_aad": "[if(equals(empty(parameters('clusterAdminIds')), true()), createObject('value', false()), createObject('value', true()))]",
                   "admin_ids": {
                     "value": "[parameters('clusterAdminIds')]"
@@ -19972,8 +19974,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13069819827787950027"
+                      "version": "0.25.53.49325",
+                      "templateHash": "12762173878639307288"
                     }
                   },
                   "parameters": {
@@ -20925,8 +20927,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13610180023669360178"
+                      "version": "0.25.53.49325",
+                      "templateHash": "4785881005530943280"
                     }
                   },
                   "parameters": {
@@ -21113,8 +21115,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13610180023669360178"
+                      "version": "0.25.53.49325",
+                      "templateHash": "4785881005530943280"
                     }
                   },
                   "parameters": {
@@ -21301,8 +21303,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13610180023669360178"
+                      "version": "0.25.53.49325",
+                      "templateHash": "4785881005530943280"
                     }
                   },
                   "parameters": {
@@ -21873,7 +21875,7 @@
             "federatedCredsOsduAzure": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-azure', parameters('bladeConfig').sectionName)]",
+              "name": "[format('{0}-federated-cred-ns_osdu-core', parameters('bladeConfig').sectionName)]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -21881,7 +21883,7 @@
                 "mode": "Incremental",
                 "parameters": {
                   "name": {
-                    "value": "federated-ns_osdu-azure"
+                    "value": "federated-ns_osdu-core"
                   },
                   "audiences": {
                     "value": [
@@ -21895,7 +21897,7 @@
                     "value": "[reference('appIdentity').outputs.name.value]"
                   },
                   "subject": {
-                    "value": "system:serviceaccount:osdu-azure:workload-identity-sa"
+                    "value": "system:serviceaccount:osdu-core:workload-identity-sa"
                   }
                 },
                 "template": {
@@ -21904,8 +21906,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "4317497001099502136"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826270550299120709"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -22019,8 +22021,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "4317497001099502136"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826270550299120709"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -22135,8 +22137,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "4317497001099502136"
+                      "version": "0.25.53.49325",
+                      "templateHash": "15826270550299120709"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -22243,8 +22245,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13638133015979952932"
+                      "version": "0.25.53.49325",
+                      "templateHash": "12432504803735547534"
                     }
                   },
                   "parameters": {
@@ -22356,8 +22358,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "13638133015979952932"
+                      "version": "0.25.53.49325",
+                      "templateHash": "12432504803735547534"
                     }
                   },
                   "parameters": {
@@ -22482,8 +22484,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "10364512630402461908"
+                      "version": "0.25.53.49325",
+                      "templateHash": "7942012009836685921"
                     },
                     "name": "AKS Run Command Script",
                     "description": "An Azure CLI Deployment Script that allows you to run a command on a Kubernetes cluster.",
@@ -22734,8 +22736,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "4518320533758613721"
+                      "version": "0.25.53.49325",
+                      "templateHash": "190777283559966254"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -23106,8 +23108,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "328752282495621375"
+                              "version": "0.25.53.49325",
+                              "templateHash": "7152117939574789610"
                             }
                           },
                           "parameters": {
@@ -23227,8 +23229,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "1984542942327907118"
+                              "version": "0.25.53.49325",
+                              "templateHash": "17986507676367706960"
                             }
                           },
                           "parameters": {
@@ -23412,8 +23414,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "11455057111626299783"
+                      "version": "0.25.53.49325",
+                      "templateHash": "17662393944340422767"
                     },
                     "name": "AKS Config Map",
                     "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",
@@ -23887,6 +23889,773 @@
                 "pool1",
                 "pool2",
                 "pool3"
+              ]
+            },
+            "prometheus": {
+              "condition": "[parameters('enableMonitoring')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-managed-prometheus', parameters('bladeConfig').sectionName)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": "[if(greater(length(variables('name')), 23), createObject('value', substring(variables('name'), 0, 23)), createObject('value', variables('name')))]",
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": {
+                      "layer": "[parameters('bladeConfig').displayName]"
+                    }
+                  },
+                  "publicNetworkAccess": {
+                    "value": "Enabled"
+                  },
+                  "clusterName": {
+                    "value": "[reference('cluster').outputs.aksClusterName.value]"
+                  },
+                  "actionGroupId": {
+                    "value": ""
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.25.53.49325",
+                      "templateHash": "507528578796511747"
+                    }
+                  },
+                  "parameters": {
+                    "name": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Specifies the name of the Azure Monitor managed service for Prometheus resource."
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]",
+                      "metadata": {
+                        "description": "Specifies the location of the Azure Monitor managed service for Prometheus resource."
+                      }
+                    },
+                    "clusterName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Specifies the name of the AKS cluster."
+                      }
+                    },
+                    "publicNetworkAccess": {
+                      "type": "string",
+                      "defaultValue": "Enabled",
+                      "allowedValues": [
+                        "Enabled",
+                        "Disabled"
+                      ],
+                      "metadata": {
+                        "description": "Specifies whether or not public endpoint access is allowed for the Azure Monitor managed service for Prometheus resource."
+                      }
+                    },
+                    "actionGroupId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Specifies the resource id of an Action Group resource. If empty, no action is specifies for metric alerts."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Specifies the resource tags for the Azure Monitor managed service for Prometheus resource."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "nodeRecordingRuleGroupPrefix": "NodeRecordingRulesRuleGroup-",
+                    "nodeRecordingRuleGroupName": "[format('{0}{1}', variables('nodeRecordingRuleGroupPrefix'), parameters('clusterName'))]",
+                    "nodeRecordingRuleGroupDescription": "Node Recording Rules RuleGroup",
+                    "version": " - 0.1"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Monitor/accounts",
+                      "apiVersion": "2023-04-03",
+                      "name": "[parameters('name')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]"
+                    },
+                    {
+                      "type": "Microsoft.Insights/dataCollectionEndpoints",
+                      "apiVersion": "2022-06-01",
+                      "name": "[format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName'))]",
+                      "location": "[parameters('location')]",
+                      "kind": "Linux",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "networkAcls": {
+                          "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Insights/dataCollectionRules",
+                      "apiVersion": "2022-06-01",
+                      "name": "[format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName')))]",
+                        "dataSources": {
+                          "prometheusForwarder": [
+                            {
+                              "name": "PrometheusDataSource",
+                              "streams": [
+                                "Microsoft-PrometheusMetrics"
+                              ],
+                              "labelIncludeFilter": {}
+                            }
+                          ]
+                        },
+                        "destinations": {
+                          "monitoringAccounts": [
+                            {
+                              "accountResourceId": "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]",
+                              "name": "MonitoringAccount1"
+                            }
+                          ]
+                        },
+                        "dataFlows": [
+                          {
+                            "streams": [
+                              "Microsoft-PrometheusMetrics"
+                            ],
+                            "destinations": [
+                              "MonitoringAccount1"
+                            ]
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]",
+                        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName')))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+                      "apiVersion": "2022-06-01",
+                      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('clusterName'))]",
+                      "name": "[format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName'))]",
+                      "properties": {
+                        "dataCollectionRuleId": "[resourceId('Microsoft.Insights/dataCollectionRules', format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName')))]",
+                        "description": "Association of data collection rule. Deleting this association will break the data collection for this AKS Cluster."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Insights/dataCollectionRules', format('MSProm-{0}-{1}', parameters('location'), parameters('clusterName')))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.AlertsManagement/prometheusRuleGroups",
+                      "apiVersion": "2023-03-01",
+                      "name": "[variables('nodeRecordingRuleGroupName')]",
+                      "location": "[parameters('location')]",
+                      "properties": {
+                        "description": "[format('{0}{1}', variables('nodeRecordingRuleGroupDescription'), variables('version'))]",
+                        "scopes": [
+                          "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]"
+                        ],
+                        "enabled": true,
+                        "clusterName": "[parameters('clusterName')]",
+                        "interval": "PT1M",
+                        "rules": [
+                          {
+                            "record": "instance:node_num_cpu:sum",
+                            "expression": "count without (cpu, mode) (  node_cpu_seconds_total{job=\"node\",mode=\"idle\"})"
+                          },
+                          {
+                            "record": "instance:node_cpu_utilisation:rate5m",
+                            "expression": "1 - avg without (cpu) (  sum without (mode) (rate(node_cpu_seconds_total{job=\"node\", mode=~\"idle|iowait|steal\"}[5m])))"
+                          },
+                          {
+                            "record": "instance:node_load1_per_cpu:ratio",
+                            "expression": "(  node_load1{job=\"node\"}/  instance:node_num_cpu:sum{job=\"node\"})"
+                          },
+                          {
+                            "record": "instance:node_memory_utilisation:ratio",
+                            "expression": "1 - (  (    node_memory_MemAvailable_bytes{job=\"node\"}    or    (      node_memory_Buffers_bytes{job=\"node\"}      +      node_memory_Cached_bytes{job=\"node\"}      +      node_memory_MemFree_bytes{job=\"node\"}      +      node_memory_Slab_bytes{job=\"node\"}    )  )/  node_memory_MemTotal_bytes{job=\"node\"})"
+                          },
+                          {
+                            "record": "instance:node_vmstat_pgmajfault:rate5m",
+                            "expression": "rate(node_vmstat_pgmajfault{job=\"node\"}[5m])"
+                          },
+                          {
+                            "record": "instance_device:node_disk_io_time_seconds:rate5m",
+                            "expression": "rate(node_disk_io_time_seconds_total{job=\"node\", device!=\"\"}[5m])"
+                          },
+                          {
+                            "record": "instance_device:node_disk_io_time_weighted_seconds:rate5m",
+                            "expression": "rate(node_disk_io_time_weighted_seconds_total{job=\"node\", device!=\"\"}[5m])"
+                          },
+                          {
+                            "record": "instance:node_network_receive_bytes_excluding_lo:rate5m",
+                            "expression": "sum without (device) (  rate(node_network_receive_bytes_total{job=\"node\", device!=\"lo\"}[5m]))"
+                          },
+                          {
+                            "record": "instance:node_network_transmit_bytes_excluding_lo:rate5m",
+                            "expression": "sum without (device) (  rate(node_network_transmit_bytes_total{job=\"node\", device!=\"lo\"}[5m]))"
+                          },
+                          {
+                            "record": "instance:node_network_receive_drop_excluding_lo:rate5m",
+                            "expression": "sum without (device) (  rate(node_network_receive_drop_total{job=\"node\", device!=\"lo\"}[5m]))"
+                          },
+                          {
+                            "record": "instance:node_network_transmit_drop_excluding_lo:rate5m",
+                            "expression": "sum without (device) (  rate(node_network_transmit_drop_total{job=\"node\", device!=\"lo\"}[5m]))"
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.AlertsManagement/prometheusRuleGroups",
+                      "apiVersion": "2021-07-22-preview",
+                      "name": "[format('CommunityCIAlerts-{0}', parameters('clusterName'))]",
+                      "location": "[parameters('location')]",
+                      "properties": {
+                        "description": "Kubernetes Alert RuleGroup-communityCIAlerts - 0.1",
+                        "scopes": [
+                          "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]"
+                        ],
+                        "clusterName": "[parameters('clusterName')]",
+                        "enabled": true,
+                        "interval": "PT1M",
+                        "rules": [
+                          {
+                            "alert": "KubePodCrashLooping",
+                            "expression": "max_over_time(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\", job=\"kube-state-metrics\"}[5m]) >= 1",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubePodNotReady",
+                            "expression": "sum by (namespace, pod, cluster) (  max by(namespace, pod, cluster) (    kube_pod_status_phase{job=\"kube-state-metrics\", phase=~\"Pending|Unknown\"}  ) * on(namespace, pod, cluster) group_left(owner_kind) topk by(namespace, pod, cluster) (    1, max by(namespace, pod, owner_kind, cluster) (kube_pod_owner{owner_kind!=\"Job\"})  )) > 0",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeDeploymentReplicasMismatch",
+                            "expression": "(  kube_deployment_spec_replicas{job=\"kube-state-metrics\"}    >  kube_deployment_status_replicas_available{job=\"kube-state-metrics\"}) and (  changes(kube_deployment_status_replicas_updated{job=\"kube-state-metrics\"}[10m])    ==  0)",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeStatefulSetReplicasMismatch",
+                            "expression": "(  kube_statefulset_status_replicas_ready{job=\"kube-state-metrics\"}    !=  kube_statefulset_status_replicas{job=\"kube-state-metrics\"}) and (  changes(kube_statefulset_status_replicas_updated{job=\"kube-state-metrics\"}[10m])    ==  0)",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeJobNotCompleted",
+                            "expression": "time() - max by(namespace, job_name, cluster) (kube_job_status_start_time{job=\"kube-state-metrics\"}  and kube_job_status_active{job=\"kube-state-metrics\"} > 0) > 43200",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeJobFailed",
+                            "expression": "kube_job_failed{job=\"kube-state-metrics\"}  > 0",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeHpaReplicasMismatch",
+                            "expression": "(kube_horizontalpodautoscaler_status_desired_replicas{job=\"kube-state-metrics\"}  !=kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\"})  and(kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\"}  >kube_horizontalpodautoscaler_spec_min_replicas{job=\"kube-state-metrics\"})  and(kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\"}  <kube_horizontalpodautoscaler_spec_max_replicas{job=\"kube-state-metrics\"})  and changes(kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\"}[15m]) == 0",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeHpaMaxedOut",
+                            "expression": "kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\"}  ==kube_horizontalpodautoscaler_spec_max_replicas{job=\"kube-state-metrics\"}",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeCPUQuotaOvercommit",
+                            "expression": "sum(min without(resource) (kube_resourcequota{job=\"kube-state-metrics\", type=\"hard\", resource=~\"(cpu|requests.cpu)\"}))  /sum(kube_node_status_allocatable{resource=\"cpu\", job=\"kube-state-metrics\"})  > 1.5",
+                            "for": "PT5M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeMemoryQuotaOvercommit",
+                            "expression": "sum(min without(resource) (kube_resourcequota{job=\"kube-state-metrics\", type=\"hard\", resource=~\"(memory|requests.memory)\"}))  /sum(kube_node_status_allocatable{resource=\"memory\", job=\"kube-state-metrics\"})  > 1.5",
+                            "for": "PT5M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeQuotaAlmostFull",
+                            "expression": "kube_resourcequota{job=\"kube-state-metrics\", type=\"used\"}  / ignoring(instance, job, type)(kube_resourcequota{job=\"kube-state-metrics\", type=\"hard\"} > 0)  > 0.9 < 1",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "info"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeVersionMismatch",
+                            "expression": "count by (cluster) (count by (git_version, cluster) (label_replace(kubernetes_build_info{job!~\"kube-dns|coredns\"},\"git_version\",\"$1\",\"git_version\",\"(v[0-9]*.[0-9]*).*\"))) > 1",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeNodeNotReady",
+                            "expression": "kube_node_status_condition{job=\"kube-state-metrics\",condition=\"Ready\",status=\"true\"} == 0",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeNodeUnreachable",
+                            "expression": "(kube_node_spec_taint{job=\"kube-state-metrics\",key=\"node.kubernetes.io/unreachable\",effect=\"NoSchedule\"} unless ignoring(key,value) kube_node_spec_taint{job=\"kube-state-metrics\",key=~\"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn\"}) == 1",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeletTooManyPods",
+                            "expression": "count by(cluster, node) (  (kube_pod_status_phase{job=\"kube-state-metrics\",phase=\"Running\"} == 1) * on(instance,pod,namespace,cluster) group_left(node) topk by(instance,pod,namespace,cluster) (1, kube_pod_info{job=\"kube-state-metrics\"}))/max by(cluster, node) (  kube_node_status_capacity{job=\"kube-state-metrics\",resource=\"pods\"} != 1) > 0.95",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "info"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          },
+                          {
+                            "alert": "KubeNodeReadinessFlapping",
+                            "expression": "sum(changes(kube_node_status_condition{status=\"true\",condition=\"Ready\"}[15m])) by (cluster, node) > 2",
+                            "for": "PT15M",
+                            "labels": {
+                              "severity": "warning"
+                            },
+                            "severity": 3,
+                            "enabled": true,
+                            "resolveConfiguration": {
+                              "autoResolved": true,
+                              "timeToResolve": "PT10M"
+                            },
+                            "actions": "[if(equals(parameters('actionGroupId'), ''), createArray(), createArray(createObject('actionGroupId', parameters('actionGroupId'))))]"
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "id": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.Monitor/accounts', parameters('name'))]"
+                    },
+                    "name": {
+                      "type": "string",
+                      "value": "[parameters('name')]"
+                    },
+                    "location": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Monitor/accounts', parameters('name')), '2023-04-03', 'full').location]"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Monitor/accounts', parameters('name')), '2023-04-03').accountId]"
+                    },
+                    "prometheusQueryEndpoint": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Monitor/accounts', parameters('name')), '2023-04-03').metrics.prometheusQueryEndpoint]"
+                    },
+                    "internalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Monitor/accounts', parameters('name')), '2023-04-03').metrics.internalId]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "cluster"
+              ]
+            },
+            "grafana": {
+              "condition": "[parameters('enableMonitoring')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-managed-grafana', parameters('bladeConfig').sectionName)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": "[if(greater(length(variables('name')), 23), createObject('value', substring(variables('name'), 0, 23)), createObject('value', variables('name')))]",
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": {
+                      "layer": "[parameters('bladeConfig').displayName]"
+                    }
+                  },
+                  "skuName": {
+                    "value": "Standard"
+                  },
+                  "apiKey": {
+                    "value": "Enabled"
+                  },
+                  "autoGeneratedDomainNameLabelScope": {
+                    "value": "TenantReuse"
+                  },
+                  "deterministicOutboundIP": {
+                    "value": "Disabled"
+                  },
+                  "publicNetworkAccess": {
+                    "value": "Enabled"
+                  },
+                  "zoneRedundancy": {
+                    "value": "Disabled"
+                  },
+                  "prometheusName": {
+                    "value": "[reference('prometheus').outputs.name.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.25.53.49325",
+                      "templateHash": "17320186840333321459"
+                    }
+                  },
+                  "parameters": {
+                    "name": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Specifies the name of the Azure Monitor managed service for Grafana resource."
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]",
+                      "metadata": {
+                        "description": "Specifies the location of the Azure Managed Grafana resource."
+                      }
+                    },
+                    "prometheusName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Specifies the name of the Azure Monitor managed service for Prometheus resource."
+                      }
+                    },
+                    "skuName": {
+                      "type": "string",
+                      "defaultValue": "Standard",
+                      "metadata": {
+                        "description": "Specifies the sku of the Azure Managed Grafana resource."
+                      }
+                    },
+                    "apiKey": {
+                      "type": "string",
+                      "defaultValue": "Enabled",
+                      "allowedValues": [
+                        "Disabled",
+                        "Enabled"
+                      ],
+                      "metadata": {
+                        "description": "Specifies the api key setting of the Azure Managed Grafana resource."
+                      }
+                    },
+                    "autoGeneratedDomainNameLabelScope": {
+                      "type": "string",
+                      "defaultValue": "TenantReuse",
+                      "allowedValues": [
+                        "TenantReuse"
+                      ],
+                      "metadata": {
+                        "description": "Specifies the scope for dns deterministic name hash calculation."
+                      }
+                    },
+                    "deterministicOutboundIP": {
+                      "type": "string",
+                      "defaultValue": "Disabled",
+                      "allowedValues": [
+                        "Disabled",
+                        "Enabled"
+                      ],
+                      "metadata": {
+                        "description": "Specifies whether the Azure Managed Grafana resource uses deterministic outbound IPs."
+                      }
+                    },
+                    "publicNetworkAccess": {
+                      "type": "string",
+                      "defaultValue": "Enabled",
+                      "allowedValues": [
+                        "Disabled",
+                        "Enabled"
+                      ],
+                      "metadata": {
+                        "description": "Specifies the the state for enable or disable traffic over the public interface for the the Azure Managed Grafana resource."
+                      }
+                    },
+                    "zoneRedundancy": {
+                      "type": "string",
+                      "defaultValue": "Disabled",
+                      "allowedValues": [
+                        "Disabled",
+                        "Enabled"
+                      ],
+                      "metadata": {
+                        "description": "The zone redundancy setting of the Azure Managed Grafana resource."
+                      }
+                    },
+                    "userId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Specifies the object id of an Azure Active Directory user. In general, this the object id of the system administrator who deploys the Azure resources."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Specifies the resource tags for the Azure Monitor managed service for Prometheus resource."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Dashboard/grafana",
+                      "apiVersion": "2022-08-01",
+                      "name": "[parameters('name')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "sku": {
+                        "name": "[parameters('skuName')]"
+                      },
+                      "identity": {
+                        "type": "SystemAssigned"
+                      },
+                      "properties": {
+                        "apiKey": "[parameters('apiKey')]",
+                        "autoGeneratedDomainNameLabelScope": "[parameters('autoGeneratedDomainNameLabelScope')]",
+                        "deterministicOutboundIP": "[parameters('deterministicOutboundIP')]",
+                        "grafanaIntegrations": {
+                          "azureMonitorWorkspaceIntegrations": [
+                            {
+                              "azureMonitorWorkspaceResourceId": "[resourceId('Microsoft.Monitor/accounts', parameters('prometheusName'))]"
+                            }
+                          ]
+                        },
+                        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                        "zoneRedundancy": "[parameters('zoneRedundancy')]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Monitor/accounts/{0}', parameters('prometheusName'))]",
+                      "name": "[guid(parameters('name'), parameters('prometheusName'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '43d0d8ad-25c7-4714-9337-8ba259a9fe05'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '43d0d8ad-25c7-4714-9337-8ba259a9fe05')]",
+                        "principalId": "[reference(resourceId('Microsoft.Dashboard/grafana', parameters('name')), '2022-08-01', 'full').identity.principalId]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Dashboard/grafana', parameters('name'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Monitor/accounts/{0}', parameters('prometheusName'))]",
+                      "name": "[guid(parameters('name'), parameters('prometheusName'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b0d8363b-8ddd-447d-831f-62ca05bff136'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b0d8363b-8ddd-447d-831f-62ca05bff136')]",
+                        "principalId": "[reference(resourceId('Microsoft.Dashboard/grafana', parameters('name')), '2022-08-01', 'full').identity.principalId]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Dashboard/grafana', parameters('name'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('userId')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Dashboard/grafana/{0}', parameters('name'))]",
+                      "name": "[guid(parameters('name'), parameters('userId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '22926164-76b3-42b3-bc55-97df8dab3e41'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '22926164-76b3-42b3-bc55-97df8dab3e41')]",
+                        "principalId": "[parameters('userId')]",
+                        "principalType": "User"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Dashboard/grafana', parameters('name'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "id": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.Dashboard/grafana', parameters('name'))]"
+                    },
+                    "name": {
+                      "type": "string",
+                      "value": "[parameters('name')]"
+                    },
+                    "location": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Dashboard/grafana', parameters('name')), '2022-08-01', 'full').location]"
+                    },
+                    "principalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Dashboard/grafana', parameters('name')), '2022-08-01', 'full').identity.principalId]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "prometheus"
               ]
             }
           },

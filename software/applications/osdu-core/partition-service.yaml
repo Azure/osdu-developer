@@ -25,11 +25,11 @@ spec:
   http:
   - match:
     - uri:
-      prefix: /api/partition/v1
+        prefix: /api/partition/v1
     route:
     - destination:
-      host: partition.osdu-core.svc.cluster.local
-      subset: v1
+        host: partition.osdu-core.svc.cluster.local
+        subset: v1
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

@@ -29,7 +29,7 @@ spec:
     route:
     - destination:
         host: partition.osdu-core.svc.cluster.local
-        subset: 0.0.1
+        subset: "0.0.1"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

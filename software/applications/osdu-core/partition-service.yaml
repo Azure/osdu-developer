@@ -56,9 +56,8 @@ spec:
     remediation:
       retries: 3
   values:
-    labels: {
+    labels:
       version: v1
-    }
     replicaCount: 1
     service:
       type: ClusterIP

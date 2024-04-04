@@ -1,5 +1,17 @@
 ---
 apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: partition
+  namespace: osdu-core
+spec:
+  host: partition.osdu-core.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: partition
@@ -13,10 +25,11 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /api/partition/v1
+      prefix: /api/partition/v1
     route:
     - destination:
-        host: partition.osdu-core.svc.cluster.local
+      host: partition.osdu-core.svc.cluster.local
+      subset: v1
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -43,6 +56,9 @@ spec:
     remediation:
       retries: 3
   values:
+    labels: {
+      version: v1
+    }
     replicaCount: 1
     service:
       type: ClusterIP

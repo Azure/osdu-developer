@@ -153,6 +153,8 @@ metadata:
   name: component-mesh
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: component-certs
   interval: 1h
   retryInterval: 1m
   timeout: 5m
@@ -166,7 +168,6 @@ spec:
     - kind: Deployment
       name: istiod
       namespace: istio-system
-
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
@@ -174,6 +175,8 @@ metadata:
   name: component-mesh-ingress
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: component-mesh
   interval: 1h
   retryInterval: 1m
   timeout: 5m

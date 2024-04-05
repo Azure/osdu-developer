@@ -34,7 +34,7 @@ spec:
     {{- end }}
       labels: {{ $selectorLabels }}
         {{- if $subset }}
-        subset: {{ $subset }}
+        version: {{ $subset }}
         {{- end }}
     spec:
       {{- if $nodePool }}

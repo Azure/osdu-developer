@@ -87,7 +87,6 @@ spec:
           - "/api/partition/v1/webjars/*"
           - "*/actuator/health"
           - "*/health"
-          - "/api/partition/v1"
       env:
       - name: spring_application_name
         value: "partition"
@@ -107,8 +106,8 @@ spec:
         value: "true"
       - name: azure_istio_corsEnabled
         value: "false"
-      - name: aad_client_id
-        value: "api://"
+      # - name: aad_client_id
+      #   value: "api://"
       - name: REDIS_DATABASE
         value: "2"
       - name: azure_msi_client_id
@@ -131,3 +130,7 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
+      - name: aad_client_id
+        secret:
+          name: active-directory
+          key: principal-clientid

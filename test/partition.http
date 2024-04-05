@@ -29,7 +29,7 @@ grant_type=client_credentials
 # -----------------------
 ###
 @access_token = {{login.response.body.access_token}}
-@ENDPOINT = http://{{HOST}}
+@ENDPOINT = https://{{HOST}}
 @PARTITION_HOST = {{ENDPOINT}}/api/partition/v1
 
 

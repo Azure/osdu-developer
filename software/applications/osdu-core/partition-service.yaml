@@ -87,6 +87,7 @@ spec:
           - "/api/partition/v1/webjars/*"
           - "*/actuator/health"
           - "*/health"
+          - "/api/partition/v1"
       env:
       - name: spring_application_name
         value: "partition"

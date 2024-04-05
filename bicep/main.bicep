@@ -133,6 +133,7 @@ var configuration = {
     cosmosPrimaryKey: 'graph-db-primary-key'
     logAnalyticsId: 'log-workspace-id'
     logAnalyticsKey: 'log-workspace-key'
+    insightsKey: 'insights-key'
   }
   logs: {
     sku: 'PerGB2018'

@@ -48,32 +48,32 @@ spec:
       namespace: dev-sample
 
 
-# ######################
-# ## Elastic Search App
-# ######################
-# ---
-# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-# kind: Kustomization
-# metadata:
-#   name: application-elastic
-#   namespace: flux-system
-# spec:
-#   interval: 1h
-#   retryInterval: 1m
-#   timeout: 5m
-#   sourceRef:
-#     kind: GitRepository
-#     name: flux-system
-#   path: ./software/applications/elastic-search
-#   prune: true
-#   wait: true
-#   healthChecks:
-#     - kind: StatefulSet
-#       name: elasticsearch-ha-es-master
-#       namespace: elastic-search
-#     - kind: StatefulSet
-#       name: elasticsearch-ha-es-coordinating
-#       namespace: elastic-search
+######################
+## Elastic Search App
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-elastic
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/elastic-search
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: StatefulSet
+      name: elasticsearch-ha-es-master
+      namespace: elastic-search
+    - kind: StatefulSet
+      name: elasticsearch-ha-es-coordinating
+      namespace: elastic-search
 
 
 # ######################

@@ -97,7 +97,7 @@ spec:
       - name: ACCEPT_HTTP
         value: "true"
       - name: partition_spring_logging_level
-        value: "INFO"
+        value: "DEBUG"
       - name: appinsights_key
         value: ""
       - name: azure_paas_podIdentity_isEnabled
@@ -105,6 +105,8 @@ spec:
       - name: azure_istioauth_enabled
         value: "true"
       - name: azure_istio_corsEnabled
+        value: "false"
+      - name: enable_crud_based_authorization
         value: "false"
       # - name: aad_client_id
       #   value: "api://"

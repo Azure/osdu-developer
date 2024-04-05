@@ -67,7 +67,7 @@ spec:
       tag: latest
       path: /api/entitlements/v2/*
       probe:
-        path: /actuator/health
+        path: /api/entitlements/v2/actuator/health
         port: 80
         liveness:
           delay: 250

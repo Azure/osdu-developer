@@ -88,34 +88,6 @@ spec:
           - "*/actuator/health"
           - "*/health"
       env:
-      - name: spring_application_name
-        value: "partition"
-      - name: server.servlet.contextPath
-        value: "/api/partition/v1/"
-      - name: server_port
-        value: "80"
-      - name: ACCEPT_HTTP
-        value: "true"
-      - name: partition_spring_logging_level
-        value: "DEBUG"
-      - name: appinsights_key
-        value: ""
-      - name: azure_paas_podIdentity_isEnabled
-        value: "true"
-      - name: azure_istioauth_enabled
-        value: "true"
-      - name: azure_istio_corsEnabled
-        value: "false"
-      - name: enable_crud_based_authorization
-        value: "false"
-      # - name: aad_client_id
-      #   value: "api://"
-      - name: REDIS_DATABASE
-        value: "2"
-      - name: azure_msi_client_id
-        secret:
-          name: active-directory
-          key: msi-clientid
       - name: AZURE_TENANT_ID
         secret:
           name: active-directory
@@ -132,7 +104,48 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
-      - name: aad_client_id
-        secret:
-          name: active-directory
-          key: principal-clientid
+
+      - name: SPRING_APPLICATION_NAME
+        value: "partition"
+      - name: AAD_CLIENT_ID
+        value: ${AZURE_CLIENT_ID}
+      - name: APPINSIGHTS_KEY
+        value: 00000000-0000-0000-0000-000000000000
+      - name: REDIS_DATABASE
+        value: "1"
+      - name: PARTITION_SPRING_LOGGING_LEVEL
+        value: "DEBUG"
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      ## AAD Authentication instead of Istio
+      - name: AZURE_ACTIVEDIRECTORY_APP_ID_URI
+        value: "api://${AZURE_CLIENT_ID}"
+      - name: AZURE_ACTIVEDIRECTORY_SESSION_STATELESS
+        value: "true"
+
+      # - name: server.servlet.contextPath
+      #   value: "/api/partition/v1/"
+      # - name: server_port
+      #   value: "80"
+      # - name: ACCEPT_HTTP
+      #   value: "true"
+      
+      # - name: appinsights_key
+      #   value: ""
+      # - name: azure_paas_podIdentity_isEnabled
+      #   value: "true"
+      
+      # - name: azure_istio_corsEnabled
+      #   value: "false"
+      # - name: enable_crud_based_authorization
+      #   value: "false"
+      # - name: aad_client_id
+      #   value: "api://"
+      
+      # - name: azure_msi_client_id
+      #   secret:
+      #     name: active-directory
+      #     key: msi-clientid
+      
+      
+      

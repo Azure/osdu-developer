@@ -1,5 +1,5 @@
 {{- $tenantId := .Values.azure.tenantId -}}
-{{- $clientId := .Values.azure.clientId -}}
+{{- $appId := .Values.azure.appId -}}
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
@@ -10,7 +10,7 @@ spec:
   - issuer: "https://sts.windows.net/{{ $tenantId }}/"
     jwksUri: "https://login.microsoftonline.com:443/common/discovery/v2.0/keys"
     audiences:
-      - "{{ $clientId }}"
+      - "{{ $appId }}"
     outputPayloadToHeader: "x-payload"
     forwardOriginalToken: true
     fromHeaders:
@@ -19,7 +19,7 @@ spec:
   - issuer: "https://login.microsoftonline.com/{{ $tenantId }}/v2.0"
     jwksUri: "https://login.microsoftonline.com/common/discovery/v2.0/keys"
     audiences:
-      - "{{ $clientId }}"
+      - "{{ $appId }}"
     outputPayloadToHeader: "x-payload"
     forwardOriginalToken: true
     fromHeaders:

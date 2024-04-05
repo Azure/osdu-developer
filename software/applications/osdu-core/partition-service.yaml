@@ -104,12 +104,14 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
       - name: SPRING_APPLICATION_NAME
         value: "partition"
       - name: AAD_CLIENT_ID
         value: ${AZURE_CLIENT_ID}
-      - name: APPINSIGHTS_KEY
-        value: 00000000-0000-0000-0000-000000000000
       - name: REDIS_DATABASE
         value: "1"
       - name: PARTITION_SPRING_LOGGING_LEVEL

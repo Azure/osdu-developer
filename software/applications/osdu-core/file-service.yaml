@@ -127,3 +127,7 @@ spec:
         secret:
           name: active-directory
           key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key

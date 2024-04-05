@@ -199,7 +199,6 @@ data-partition-id: {{data_partition_id}}
 }
 
 
-
 ###
 # @name getPartitions
 GET {{PARTITION_HOST}}/partitions/

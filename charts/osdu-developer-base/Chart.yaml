@@ -16,7 +16,7 @@ apiVersion: v2
 name: osdu-developer-base
 type: application
 description: Installs the OSDU developer Base Components
-version: 0.0.3
+version: 0.0.1
 appVersion: 0.0.1
 maintainers:
   - name: danielscholl

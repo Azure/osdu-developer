@@ -104,7 +104,6 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
-
       - name: SPRING_APPLICATION_NAME
         value: "partition"
       - name: AAD_CLIENT_ID
@@ -117,37 +116,9 @@ spec:
         value: "DEBUG"
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      ## Configure HTTP Setings
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/partition/v1/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
-      ## AAD Authentication instead of Istio
-      - name: AZURE_ACTIVEDIRECTORY_APP_ID_URI
-        value: "api://${AZURE_CLIENT_ID}"
-      - name: AZURE_ACTIVEDIRECTORY_SESSION_STATELESS
-        value: "true"
-
-
-      
-      # - name: appinsights_key
-      #   value: ""
-      # - name: azure_paas_podIdentity_isEnabled
-      #   value: "true"
-      
-      # - name: azure_istio_corsEnabled
-      #   value: "false"
-      # - name: enable_crud_based_authorization
-      #   value: "false"
-      # - name: aad_client_id
-      #   value: "api://"
-      
-      # - name: azure_msi_client_id
-      #   secret:
-      #     name: active-directory
-      #     key: msi-clientid
-      
-      
-      

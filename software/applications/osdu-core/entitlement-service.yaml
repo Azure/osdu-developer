@@ -96,7 +96,7 @@ spec:
       - name: server.servlet.contextPath
         value: "/api/entitlements/v2/"
       - name: LOGGING_LEVEL
-        value: "INFO"
+        value: "DEBUG"
       - name: server_port
         value: "80"
       - name: service_domain_name

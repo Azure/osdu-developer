@@ -56,7 +56,7 @@ spec:
     remediation:
       retries: 3
   values:
-    version: v1
+    subset: v1
     replicaCount: 1
     service:
       type: ClusterIP

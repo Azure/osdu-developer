@@ -2,9 +2,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: podinfo
-  namespace: podinfo
+  namespace: flux-system
 spec:
   releaseName: podinfo
+  targetNamespace: podinfo
   chart:
     spec:
       chart: podinfo

@@ -117,18 +117,20 @@ spec:
         value: "DEBUG"
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
+      ## Configure HTTP Setings
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/partition/v1/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
       ## AAD Authentication instead of Istio
       - name: AZURE_ACTIVEDIRECTORY_APP_ID_URI
         value: "api://${AZURE_CLIENT_ID}"
       - name: AZURE_ACTIVEDIRECTORY_SESSION_STATELESS
         value: "true"
 
-      # - name: server.servlet.contextPath
-      #   value: "/api/partition/v1/"
-      # - name: server_port
-      #   value: "80"
-      # - name: ACCEPT_HTTP
-      #   value: "true"
+
       
       # - name: appinsights_key
       #   value: ""

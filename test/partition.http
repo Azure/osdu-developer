@@ -29,9 +29,10 @@ grant_type=client_credentials
 # -----------------------
 ###
 @access_token = {{login.response.body.access_token}}
-# @ENDPOINT = https://{{HOST}}
-@ENDPOINT = http://localhost:8080
+@ENDPOINT = https://{{HOST}}
+# @ENDPOINT = http://localhost:8080
 @PARTITION_HOST = {{ENDPOINT}}/api/partition/v1
+@data_partition_id = opendes
 
 
 # -----------------------
@@ -48,12 +49,162 @@ Accept: application/json
 # API: Partition
 # -----------------------
 
+@sb_namespace = mybus
+
+###
+# @name createPartition
+POST {{PARTITION_HOST}}/partitions/{{data_partition_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+data-partition-id: {{data_partition_id}}
+
+{
+    "properties": {
+        "compliance-ruleset": {
+            "value": "shared"
+        },
+        "elastic-endpoint": {
+            "sensitive": true,
+            "value": "elastic-endpoint"
+        },
+        "elastic-username": {
+            "sensitive": true,
+            "value": "elastic-username"
+        },
+        "elastic-password": {
+            "sensitive": true,
+            "value": "elastic-password"
+        },
+        "cosmos-connection": {
+            "sensitive": true,
+            "value": "cosmos-connection"
+        },
+        "cosmos-endpoint": {
+            "sensitive": true,
+            "value": "cosmos-endpoint"
+        },
+        "cosmos-primary-key": {
+            "sensitive": true,
+            "value": "cosmos-primary-key"
+        },
+        "sb-connection": {
+            "sensitive": true,
+            "value": "{{ sb-namespace }}"
+        },
+        "sb-namespace": {
+            "sensitive": false,
+            "value": "mybus"
+        },
+        "storage-account-key": {
+            "sensitive": true,
+            "value": "storage-key"
+        },
+        "storage-account-name": {
+            "sensitive": true,
+            "value": "storage"
+        },
+        "storage-account-blob-endpoint": {
+            "sensitive": true,
+            "value": "storage-account-blob-endpoint"
+        },
+        "ingest-storage-account-name": {
+            "sensitive": true,
+            "value": "ingest-storage"
+        },
+        "ingest-storage-account-key": {
+            "sensitive": true,
+            "value": "ingest-storage-key"
+        },
+        "hierarchical-storage-account-name": {
+            "sensitive": true,
+            "value": "hierarchical-storage"
+        },
+        "hierarchical-storage-account-key": {
+            "sensitive": true,
+            "value": "hierarchical-storage-key"
+        },
+        "eventgrid-recordstopic": {
+            "sensitive": true,
+            "value": "eventgrid-recordstopic"
+        },
+        "eventgrid-recordstopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-recordstopic-accesskey"
+        },
+        "eventgrid-legaltagschangedtopic": {
+            "sensitive": true,
+            "value": "eventgrid-legaltagschangedtopic"
+        },
+        "eventgrid-legaltagschangedtopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-legaltagschangedtopic-accesskey"
+        },
+        "eventgrid-resourcegroup": {
+            "sensitive": true,
+            "value": "eventgrid-resourcegroup"
+        },
+        "encryption-key-identifier": {
+            "sensitive": true,
+            "value": "encryption-key-identifier"
+        },
+        "sdms-storage-account-name": {
+            "sensitive": true,
+            "value": "sdms-storage"
+        },
+        "sdms-storage-account-key": {
+            "sensitive": true,
+            "value": "sdms-storage-key"
+        },
+        "eventgrid-schemanotificationtopic": {
+            "sensitive": true,
+            "value": "eventgrid-schemachangedtopic"
+        },
+         "eventgrid-schemanotificationtopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-schemachangedtopic-accesskey"
+        },
+        "eventgrid-gsmtopic": {
+            "sensitive": true,
+            "value": "eventgrid-statuschangedtopic"
+        },
+         "eventgrid-gsmtopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-statuschangedtopic-accesskey"
+        },
+        "eventgrid-statuschangedtopic": {
+            "sensitive": true,
+            "value": "eventgrid-statuschangedtopic"
+        },
+         "eventgrid-statuschangedtopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-statuschangedtopic-accesskey"
+        },
+        "eventgrid-schemachangedtopic": {
+            "sensitive": true,
+            "value": "eventgrid-schemachangedtopic"
+        },
+         "eventgrid-schemachangedtopic-accesskey": {
+            "sensitive": true,
+            "value": "eventgrid-schemachangedtopic-accesskey"
+        },
+        "reservoir-connection": {
+            "sensitive": true,
+            "value": "reservoir-conn"
+        },
+        "indexer-decimation-enabled": {
+            "sensitive": false,
+            "value": "true"
+        }
+    }
+}
+
+
+
 ###
 # @name getPartitions
 GET {{PARTITION_HOST}}/partitions/
 Authorization: Bearer {{access_token}}
 Accept: application/json
-x-payload: ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUlzSW5nMWRDSTZJbkV0TWpObVlXeGxkbHBvYUVRemFHMDVRMUZpYTFBMVRWRjVWU0lzSW10cFpDSTZJbkV0TWpObVlXeGxkbHBvYUVRemFHMDVRMUZpYTFBMVRWRjVWU0o5LmV5SmhkV1FpT2lJNE9EQXpNalJoTWkxbVpUbGpMVFExTURjdFlUaGlaaTA1TlRjMFlXTTBNREF6WTJZaUxDSnBjM01pT2lKb2RIUndjem92TDNOMGN5NTNhVzVrYjNkekxtNWxkQzgzTW1ZNU9EaGlaaTA0Tm1ZeExUUXhZV1l0T1RGaFlpMHlaRGRqWkRBeE1XUmlORGN2SWl3aWFXRjBJam94TnpFeU16STBNVGN3TENKdVltWWlPakUzTVRJek1qUXhOekFzSW1WNGNDSTZNVGN4TWpReE1EZzNNQ3dpWVdsdklqb2lSVEpPWjFsR1FsZ3plak55YTJ4RlYzbzJOMDR6YVRaMlNIaHBiRUYzUVQwaUxDSmhjSEJwWkNJNklqZzRNRE15TkdFeUxXWmxPV010TkRVd055MWhPR0ptTFRrMU56UmhZelF3TUROalppSXNJbUZ3Y0dsa1lXTnlJam9pTVNJc0ltbGtjQ0k2SW1oMGRIQnpPaTh2YzNSekxuZHBibVJ2ZDNNdWJtVjBMemN5WmprNE9HSm1MVGcyWmpFdE5ERmhaaTA1TVdGaUxUSmtOMk5rTURFeFpHSTBOeThpTENKdmFXUWlPaUk1WlRCa09HVmhNUzA0WTJKbUxUUTVPREF0WWpZNU5TMHhaVFkxTmpOak16RTBNakFpTENKeWFDSTZJakF1UVZKdlFYWTBhalZqZGtkSGNqQkhVbkY1TVRnd1FraGlValpKYTBFMGFXTmZaMlJHY1V3dFZtUkxlRUZCT0RoaFFVRkJMaUlzSW5OMVlpSTZJamxsTUdRNFpXRXhMVGhqWW1ZdE5EazRNQzFpTmprMUxURmxOalUyTTJNek1UUXlNQ0lzSW5ScFpDSTZJamN5WmprNE9HSm1MVGcyWmpFdE5ERmhaaTA1TVdGaUxUSmtOMk5rTURFeFpHSTBOeUlzSW5WMGFTSTZJazQxUmsxdVNEQjFSV3Q1UlhodlFsODRWMUp0UVVFaUxDSjJaWElpT2lJeExqQWlmUS5LMEQyRFZDOHFMeTZpbV90U3J6R3pBNTZKTnBGUTlCbjBTcjBtaTRHd3FiTnRBS3FqLU5rMW9MRFlEbWFyY3lpb1VERHMxNGxLQUllZDgyYXdkSmR4cjROam9pbFhQS2RqcE1hRElZM2paQThiazBydWRNUG0wSV9lZTRYV0J0MDBidkQ0amNpNW5GSjhzTG5vbnhBSjZhVTZYcmotVC0xeXVWZUt2VWxnZ0E0UE05bjBkZGo2OGM4ZjMtejBmNXZtZG9tQTBOemx3dHl2MGdvb180NTA4VDFlc3M5TU9KM3JJdllBcUdrZHNZNF9vb1dWeUloN0JFTVl1bG9RYWw3LVVsNGt2V0hTSkNKc2ZiRy1IRWlWQngwMVo2WVMwMTV5U204cGlOd2oxYVZTLVBady1rRTVieGdRRUQ0RFU5YTlubnpieE5zN2VUaU9TYW9IeVFrMmc=
 
 @partition = {{getPartitions.response.body.$[0]}}
 
@@ -63,3 +214,11 @@ x-payload: ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUlzSW5nMWRDSTZJbkV0TWpOb
 GET {{PARTITION_HOST}}/partitions/{{partition}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
+
+
+###
+# @name deletePartition
+DELETE {{PARTITION_HOST}}/partitions/{{data_partition_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+data-partition-id: {{data_partition_id}}

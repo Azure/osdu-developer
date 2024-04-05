@@ -23,29 +23,29 @@ spec:
       namespace: podinfo
 
 
-# ######################
-# ## Dev Sample App
-# ######################
-# ---
-# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-# kind: Kustomization
-# metadata:
-#   name: application-devsample
-#   namespace: flux-system
-# spec:
-#   interval: 1h
-#   retryInterval: 1m
-#   timeout: 5m
-#   sourceRef:
-#     kind: GitRepository
-#     name: flux-system
-#   path: ./software/applications/dev-sample
-#   prune: true
-#   wait: true
-#   healthChecks:
-#     - kind: Deployment
-#       name: env-debug
-#       namespace: dev-sample
+######################
+## Dev Sample App
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-devsample
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/dev-sample
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: env-debug
+      namespace: dev-sample
 
 
 # ######################

@@ -367,6 +367,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     enableSoftwareLoad: clusterSoftware.enable
 
+    applicationClientId: applicationClientId
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
     managedIdentityName: stampIdentity.outputs.name

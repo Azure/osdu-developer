@@ -91,32 +91,6 @@ spec:
           - "/api/entitlements/v2/swagger-resources/*"
           - "/api/entitlements/v2/webjars/*"
       env:
-      - name: spring_application_name
-        value: "entitlements"
-      - name: server.servlet.contextPath
-        value: "/api/entitlements/v2/"
-      - name: LOGGING_LEVEL
-        value: "DEBUG"
-      - name: server_port
-        value: "80"
-      - name: service_domain_name
-        value: "contoso.com"
-      - name: root_data_group_quota
-        value: "5000"
-      - name: redis_ttl_seconds
-        value: "1"
-      - name: partition_service_endpoint
-        value: "http://partition/api/partition/v1"
-      - name: azure_istioauth_enabled
-        value: "true"
-      - name: azure_activedirectory_AppIdUri
-        value: "api://"
-      - name: azure_paas_podIdentity_isEnabled
-        value: "true"
-      - name: azure_msi_client_id
-        secret:
-          name: active-directory
-          key: msi-clientid
       - name: AZURE_TENANT_ID
         secret:
           name: active-directory
@@ -137,3 +111,34 @@ spec:
         secret:
           name: azure-resources
           key: insights-key
+      - name: AZURE_MSI_CLIENT_ID
+        secret:
+          name: active-directory
+          key: msi-clientid
+      - name: SPRING_APPLICATION_NAME
+        value: "entitlements"
+      - name: LOGGING_LEVEL
+        value: "DEBUG"
+      - name: SERVICE_DOMAIN_NAME
+        value: "contoso.com"
+      - name: ROOT_DATA_GROUP_QUOTA
+        value: "5000"
+      - name: REDIS_TTL_SECONDS
+        value: "1"
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: AAD_CLIENT_ID
+        value: ${AZURE_CLIENT_ID}
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+        value: "true"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/entitlements/v2/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+
+      # - name: azure_activedirectory_AppIdUri
+      #   value: "api://"

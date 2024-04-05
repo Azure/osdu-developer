@@ -29,7 +29,7 @@ spec:
     route:
     - destination:
         host: partition.osdu-core.svc.cluster.local
-        subset: "0.0.1"
+        subset: v1
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -56,6 +56,7 @@ spec:
     remediation:
       retries: 3
   values:
+    version: v1
     replicaCount: 1
     service:
       type: ClusterIP

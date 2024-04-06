@@ -52,5 +52,9 @@ spec:
       secret:
         name: common-secrets
         key: database-connection
+    - name: INSIGHTS_KEY
+      secret:
+        name: common-secrets
+        key: insights-key
     
     

@@ -133,6 +133,7 @@ var configuration = {
     cosmosPrimaryKey: 'graph-db-primary-key'
     logAnalyticsId: 'log-workspace-id'
     logAnalyticsKey: 'log-workspace-key'
+    insightsKey: 'insights-key'
   }
   logs: {
     sku: 'PerGB2018'
@@ -366,6 +367,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     enableSoftwareLoad: clusterSoftware.enable
 
+    applicationClientId: applicationClientId
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
     managedIdentityName: stampIdentity.outputs.name
@@ -379,7 +381,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterSize: tier
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress
+    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress 
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     dockerBridgeCidr: clusterNetwork.dockerBridgeCidr == '' ? '172.17.0.1/16' : clusterNetwork.dockerBridgeCidr

@@ -46,7 +46,8 @@ param kvUri string
 @description('The name of the Storage Account')
 param storageName string 
 
-
+@description('Specify the AD Application Client Id.')
+param applicationClientId string
 
 @description('Software GIT Repository URL')
 param softwareRepository string
@@ -100,6 +101,9 @@ param partitionStorageNames string[]
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool
 
+@description('Feature Flag to Enable Managed Observability.')
+param enableMonitoring bool = false
+
 param appSettings appConfigItem[]
 
 /////////////////////////////////
@@ -118,22 +122,9 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? '' : softwareBranch
-    tag: softwareTag == '' && softwareBranch == '' ? 'v0.6.0' : softwareTag
+    tag: softwareTag == '' && softwareBranch == '' ? 'v0.7.0' : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
-  }
-  imageList: {
-    None: []
-    M22: [
-      'community.opengroup.org:5555/osdu/platform/system/partition/partition-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-24:latest'
-      'community.opengroup.org:5555/osdu/platform/system/storage/storage-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/file/file-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-v0-24-0:latest'
-      'community.opengroup.org:5555/osdu/platform/system/search-service/search-service-v0-24-0:latest'
-    ]
   }
 }
 
@@ -178,9 +169,9 @@ module cluster './aks_cluster.bicep' = {
     dockerBridgeCidr: dockerBridgeCidr
 
     // Configure Istio
-    serviceMeshProfile: 'Istio'
-    istioRevision: serviceLayerConfig.cluster.meshVersion
-    istioIngressGatewayMode: clusterIngress
+    serviceMeshProfile: enableMonitoring ? 'Istio' : null
+    istioRevision: enableMonitoring ? serviceLayerConfig.cluster.meshVersion : null
+    istioIngressGatewayMode: enableMonitoring ? clusterIngress : null
 
     // Configure Add Ons
     enable_aad: empty(clusterAdminIds) == true ? false : true
@@ -195,6 +186,8 @@ module cluster './aks_cluster.bicep' = {
     azurepolicy: 'audit'
   }
 }
+
+
 
 /////////////////
 // Elastic Configuration 
@@ -317,15 +310,15 @@ resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 }
 
 module federatedCredsOsduAzure './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-azure'
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-core'
   params: {
-    name: 'federated-ns_osdu-azure'
+    name: 'federated-ns_osdu-core'
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.outputs.name
-    subject: 'system:serviceaccount:osdu-azure:workload-identity-sa'
+    subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
   }
   dependsOn: [
     appIdentity
@@ -494,6 +487,7 @@ values.yaml: |
     configEndpoint: {2}
     keyvaultUri: {3}
     keyvaultName: {4}
+    appId: {5}
   '''
 }
 
@@ -517,7 +511,8 @@ module appConfigMap './aks-config-map/main.bicep' = {
              appIdentity.outputs.clientId,
              app_config.outputs.endpoint,
              kvUri,
-             kvName)
+             kvName,
+             applicationClientId)
     ]
   }
 }
@@ -578,4 +573,54 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
     pool2
     pool3
   ]
+}
+
+
+/*
+.___  ___.   ______   .__   __.  __  .___________.  ______   .______      
+|   \/   |  /  __  \  |  \ |  | |  | |           | /  __  \  |   _  \     
+|  \  /  | |  |  |  | |   \|  | |  | `---|  |----`|  |  |  | |  |_)  |    
+|  |\/|  | |  |  |  | |  . `  | |  |     |  |     |  |  |  | |      /     
+|  |  |  | |  `--'  | |  |\   | |  |     |  |     |  `--'  | |  |\  \----.
+|__|  |__|  \______/  |__| \__| |__|     |__|      \______/  | _| `._____|
+*/
+
+var name = 'amw${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+
+module prometheus 'aks_prometheus.bicep' = if(enableMonitoring) {
+  name: '${bladeConfig.sectionName}-managed-prometheus'
+  params: {
+    // Basic Details
+    name: length(name) > 23 ? substring(name, 0, 23) : name
+    location: location
+    tags: {
+      layer: bladeConfig.displayName
+    }
+
+    publicNetworkAccess: 'Enabled'    
+    clusterName: cluster.outputs.aksClusterName
+    actionGroupId: ''
+  }
+}
+
+module grafana 'aks_grafana.bicep' = if(enableMonitoring){
+  name: '${bladeConfig.sectionName}-managed-grafana'
+  params: {
+    // Basic Details
+    name: length(name) > 23 ? substring(name, 0, 23) : name
+    location: location
+    tags: {
+      layer: bladeConfig.displayName
+    }
+
+    skuName: 'Standard'
+    apiKey: 'Enabled'
+    autoGeneratedDomainNameLabelScope: 'TenantReuse'
+    deterministicOutboundIP: 'Disabled'
+    publicNetworkAccess: 'Enabled'
+    zoneRedundancy: 'Disabled'
+    prometheusName: prometheus.outputs.name
+    // userId: userId
+
+  }
 }

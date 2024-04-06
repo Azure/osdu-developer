@@ -2,9 +2,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: podinfo
-  namespace: podinfo
+  namespace: flux-system
 spec:
   releaseName: podinfo
+  targetNamespace: podinfo
   chart:
     spec:
       chart: podinfo
@@ -19,10 +20,18 @@ spec:
   # Default values
   # https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
   values:
+    labels: {
+      app: podinfo
+    }
+    logLevel: info
+    # Redis address in the format tcp://<host>:<port>
+    cache: "tcp://redis-master.redis-cluster.svc.cluster.local:6379"
     redis:
-      enabled: true
+      enabled: false
       repository: public.ecr.aws/docker/library/redis
       tag: 7.0.6
     ingress:
       enabled: true
       className: nginx
+    serviceMonitor:
+      enabled: false

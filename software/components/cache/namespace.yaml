@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: airflow
+  name: redis-cluster
   labels:
     istio-injection: disabled
     toolkit.fluxcd.io/tenant: component

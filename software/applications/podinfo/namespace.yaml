@@ -4,4 +4,4 @@ metadata:
   name: podinfo
   labels:
     toolkit.fluxcd.io/tenant: dev-team
-    istio.io/rev: asm-1-18
+    istio-injection: enabled

@@ -1,0 +1,141 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: schema
+  namespace: osdu-core
+spec:
+  host: schema.osdu-core.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: schema
+  namespace: osdu-core
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-system/internal-gateway
+  - istio-system/external-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api/schema/v1/
+    route:
+    - destination:
+        host: schema.osdu-core.svc.cluster.local
+        # subset: v1
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: schema-service
+  namespace: flux-system
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+  - name: osdu-developer-base
+    namespace: default
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  values:
+    subset: v1
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: schema
+      repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-22
+      tag: latest
+      path: /api/schema-service/v1/*
+      probe:
+        path: /actuator/health
+        port: 8081
+      keyvault: true
+      auth:
+        disable:
+        - "*/index.html"
+        - "*/swagger"
+        - "/api/schema-service/v1/swagger-ui/*"
+        - "/api/schema-service/v1/v3/api-docs/*"
+        - "*/swagger-config"
+        - "*/v1/api-docs"
+        - "*/api-docs.yaml"
+        - "*/actuator/health"
+        - "*/_ah/**"
+        - "/api/schema-service/v1/info"
+      env:
+      - name: spring_application_name
+        value: "schema"
+      - name: server.servlet.contextPath
+        value: "/api/schema-service/v1/"
+      - name: server_port
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: cosmosdb_database
+        value: "osdu-db"
+      - name: LOG_PREFIX
+        value: "schema"
+      - name: entitlements_service_endpoint
+        value: "http://entitlements/api/entitlements/v2"
+      - name: entitlements_service_api_key
+        value: "OBSOLETE"
+      - name: partition_service_endpoint
+        value: "http://partition/api/partition/v1"
+      - name: shared_partition
+        value: "opendes"
+      - name: azure_istioauth_enabled
+        value: "true"
+      - name: event_grid_enabled
+        value: "false"
+      - name: event_grid_topic
+        value: "schemachangedtopic"
+      - name: azure_paas_podIdentity_isEnabled
+        value: "true"
+      - name: aad_client_id
+        value: "api://"
+      - name: servicebus_topic_name
+        value: schemachangedtopic
+      - name: event_grid_enabled
+        value: 'false'
+      - name: service_bus_enabled
+        value: 'true'
+      - name: AZURE_TENANT_ID
+        secret:
+          name: active-directory
+          key: tenant-id
+      - name: AZURE_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key

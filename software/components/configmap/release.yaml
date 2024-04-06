@@ -1,0 +1,29 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: config-maps
+  namespace: default   ## Have to install here so we can get the configmap values
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: default
+  chart:
+    spec:
+      chart: ./charts/config-maps
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 5m0s
+  releaseName: config-maps
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    fullnameOverride: configmap-ac
+

@@ -1,44 +1,11 @@
+######################
+## PodInfo App
+######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: application-component-elastic
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/applications/elastic-search
-  prune: true
-  wait: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: application-component-monitoring
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/applications/monitoring
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: Deployment
-      name: kiali
-      namespace: monitoring
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: application-component-podinfo
+  name: application-podinfo
   namespace: flux-system
 spec:
   interval: 1h
@@ -54,15 +21,16 @@ spec:
     - kind: Deployment
       name: podinfo
       namespace: podinfo
-    - kind: Deployment
-      name: podinfo-redis
-      namespace: podinfo
 
+
+######################
+## Dev Sample App
+######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: application-component-devsample
+  name: application-devsample
   namespace: flux-system
 spec:
   interval: 1h
@@ -78,11 +46,16 @@ spec:
     - kind: Deployment
       name: env-debug
       namespace: dev-sample
+
+
+######################
+## Elastic Search App
+######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: application-component-osdu
+  name: application-elastic
   namespace: flux-system
 spec:
   interval: 1h
@@ -91,6 +64,53 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/applications/osdu-azure
+  path: ./software/applications/elastic-search
   prune: true
   wait: true
+  healthChecks:
+    - kind: StatefulSet
+      name: elasticsearch-ha-es-master
+      namespace: elastic-search
+    - kind: StatefulSet
+      name: elasticsearch-ha-es-coordinating
+      namespace: elastic-search
+
+
+######################
+## OSDU App
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-osdu-core
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/osdu-core
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: default
+      namespace: osdu-core
+    - kind: Deployment
+      name: partition
+      namespace: osdu-core
+    - kind: Deployment
+      name: entitlements
+      namespace: osdu-core
+    - kind: Deployment
+      name: legal
+      namespace: osdu-core
+    - kind: Deployment
+      name: schema
+      namespace: osdu-core
+    - kind: Deployment
+      name: file
+      namespace: osdu-core

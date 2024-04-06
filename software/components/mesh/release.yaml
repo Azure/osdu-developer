@@ -1,0 +1,164 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-base
+  namespace: istio-system
+spec:
+  targetNamespace: istio-system
+  releaseName: istio-base
+  chart:
+    spec:
+      chart: base
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-system
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    defaultRevision: default
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cert-manager-istio-csr
+  namespace: istio-system
+spec:
+  targetNamespace: cert-manager
+  releaseName: cert-manager-isito-csr
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
+  chart:
+    spec:
+      chart: cert-manager-istio-csr
+      # version: "1.13.x"
+      sourceRef:
+        kind: HelmRepository
+        name: cert-manager
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 10m0s
+  values:
+    app:
+      certmanager:
+        issuer:
+          name: istio-ca
+          kind: Issuer
+          group: cert-manager.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istiod
+  namespace: istio-system
+spec:
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
+    - name: cert-manager-istio-csr
+      namespace: istio-system
+  chart:
+    spec:
+      chart: istiod
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 10m0s
+  values:
+    # profile: default
+    meshConfig:
+      ingressSelector: istio-ingress
+      ingressService: istio-ingressgateway
+    pilot:
+      env:
+        K8S_INGRESS_NS: istio-ingress
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-ingress-internal
+  namespace: istio-system
+spec:
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
+    - name: istiod
+      namespace: istio-system
+  chart:
+    spec:
+      chart: gateway
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-system
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    service:
+        type: LoadBalancer
+        ports:
+        - name: status-port
+          port: 15021
+          protocol: TCP
+          targetPort: 15021
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
+        - name: https
+          port: 443
+          protocol: TCP
+          targetPort: 443
+        annotations: 
+          service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-ingress-external
+  namespace: istio-system
+spec:
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
+    - name: istiod
+      namespace: istio-system
+  chart:
+    spec:
+      chart: gateway
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-system
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    service:
+        type: LoadBalancer
+        ports:
+        - name: status-port
+          port: 15021
+          protocol: TCP
+          targetPort: 15021
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
+        - name: https
+          port: 443
+          protocol: TCP
+          targetPort: 443

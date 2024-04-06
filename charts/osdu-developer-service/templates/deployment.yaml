@@ -5,7 +5,7 @@
 {{- $nodePool := .Values.nodePool}}
 {{- $toleration := .Values.toleration}}
 {{- $affinity := .Values.affinity}}
-{{- $podIdentity := .Values.podIdentity}}
+{{- $subset := .Values.subset}}
 {{- $podAnnotations := .Values.podAnnotations}}
 {{- $configMap := .Values.configMap -}}
 {{- $version := .Chart.AppVersion -}}
@@ -33,8 +33,8 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels: {{ $selectorLabels }}
-        {{- if $podIdentity }}
-        aadpodidbinding: {{ $podIdentity }}
+        {{- if $subset }}
+        version: {{ $subset }}
         {{- end }}
     spec:
       {{- if $nodePool }}

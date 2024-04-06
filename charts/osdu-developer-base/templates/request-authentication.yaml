@@ -1,0 +1,29 @@
+{{- $tenantId := .Values.azure.tenantId -}}
+{{- $appId := .Values.azure.appId -}}
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: req-authn-for-all
+  namespace: istio-system
+spec:
+  jwtRules:
+  - issuer: "https://sts.windows.net/{{ $tenantId }}/"
+    jwksUri: "https://login.microsoftonline.com:443/common/discovery/v2.0/keys"
+    audiences:
+      - "{{ $appId }}"
+    outputPayloadToHeader: "x-payload"
+    forwardOriginalToken: true
+    fromHeaders:
+      - name: Authorization
+        prefix: "Bearer "
+  - issuer: "https://login.microsoftonline.com/{{ $tenantId }}/v2.0"
+    jwksUri: "https://login.microsoftonline.com/common/discovery/v2.0/keys"
+    audiences:
+      - "{{ $appId }}"
+    outputPayloadToHeader: "x-payload"
+    forwardOriginalToken: true
+    fromHeaders:
+      - name: Authorization
+        prefix: "Bearer "
+
+

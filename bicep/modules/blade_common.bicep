@@ -62,6 +62,9 @@ param applicationClientPrincipalOid string = ''
 
 
 var commonLayerConfig = {
+  insights: {
+    sku: 'web'
+  }
   storage: {
     sku: 'Standard_LRS'
     tables: [
@@ -85,6 +88,29 @@ var commonLayerConfig = {
         partitionKeyPaths: [
           '/dataPartitionId'
         ]
+      }
+    ]
+  }
+}
+
+module insights 'br/public:avm/res/insights/component:0.2.1' = {
+  name: '${bladeConfig.sectionName}-insights'
+  params: {
+    name: 'ai-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+    location: location
+    enableTelemetry: enableTelemetry
+    kind: commonLayerConfig.insights.sku
+    workspaceResourceId: workspaceResourceId
+    
+    diagnosticSettings: [
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        name: 'customSetting'
+        workspaceResourceId: workspaceResourceId
       }
     ]
   }
@@ -126,7 +152,7 @@ var vaultSecrets = [
   }
   {
     secretName: 'redis-hostname'
-    secretValue: 'redis-master-0.redis-master.redis-cache.svc.cluster.local'
+    secretValue: 'redis-master.redis-cluster.svc.cluster.local'
   }
   {
     secretName: 'redis-password'
@@ -179,6 +205,7 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
     workspaceName: workspaceName
     workspaceIdName: workspaceIdName
     workspaceKeySecretName: workspaceKeySecretName
+    insightsName: insights.outputs.name
   }
 }
 

@@ -413,4 +413,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
   ]
 }
 
+output KEYVAULT_NAME string = commonBlade.outputs.keyvaultName
+
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

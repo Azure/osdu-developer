@@ -208,7 +208,7 @@ spec:
           typed_config:
             "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
             inlineCode: |
-              msft_issuer = "https://sts.windows.net/{{ $mstenant }}/"
+              msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
               serviceAccountClientId = "{{ $serviceAccountClientId }}"
               function envoy_on_request(request_handle)
                 local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
@@ -251,7 +251,7 @@ spec:
           typed_config:
             "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
             inlineCode: |
-              msft_issuer = "https://login.microsoftonline.com/{{ $mstenant }}/v2.0"
+              msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
               serviceAccountClientId = "{{ $serviceAccountClientId }}"
               function envoy_on_request(request_handle)
                 local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")

@@ -185,3 +185,91 @@ spec:
                 end
               end
 {{- end }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: header-4-add-appid-from-msft-aad-token
+spec:
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+              subFilter:
+                name: envoy.lua.remove-user-appid-header
+      patch:
+        operation: INSERT_AFTER
+        value:
+          name: envoy.lua.appid-from-msft-aad-token
+          typed_config:
+            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+            inlineCode: |
+              msft_issuer = "https://sts.windows.net/{{ $mstenant }}/"
+              serviceAccountClientId = "{{ $serviceAccountClientId }}"
+              function envoy_on_request(request_handle)
+                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+                if jwt_authn then
+                  if jwt_authn[msft_issuer] then
+                    if not jwt_authn[msft_issuer]["upn"] and not jwt_authn[msft_issuer]["unique_name"] then
+                        request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
+                        if jwt_authn[msft_issuer]["appid"] then
+                          on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
+                          if (jwt_authn[msft_issuer]["appid"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
+                            request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
+                          else 
+                            request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
+                          end
+                        end
+                    end
+                  end
+                end
+              end
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: header-5-add-appid-from-msftonline-token
+spec:
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+              subFilter:
+                name: envoy.lua.remove-user-appid-header
+      patch:
+        operation: INSERT_AFTER
+        value:
+          name: envoy.lua.appid-from-msftonline-token
+          typed_config:
+            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+            inlineCode: |
+              msft_issuer = "https://login.microsoftonline.com/{{ $mstenant }}/v2.0"
+              serviceAccountClientId = "{{ $serviceAccountClientId }}"
+              function envoy_on_request(request_handle)
+                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+                if jwt_authn then
+                  if jwt_authn[msft_issuer] then
+                    if not jwt_authn[msft_issuer]["scp"] then
+                      request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
+                      if jwt_authn[msft_issuer]["appid"] then
+                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
+                      elseif jwt_authn[msft_issuer]["azp"] then
+                        on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
+                        if (jwt_authn[msft_issuer]["azp"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
+                          request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
+                        else  
+                          request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
+                        end
+                      end
+                    end
+                  end
+                end
+              end

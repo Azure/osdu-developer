@@ -1,4 +1,5 @@
 {{- $tenant := .Values.azure.tenantId -}}
+{{- $appId := .Values.azure.appId -}}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
@@ -209,7 +210,7 @@ spec:
             "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
             inlineCode: |
               msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
-              serviceAccountClientId = "{{ $serviceAccountClientId }}"
+              appId = "{{ $appId }}"
               function envoy_on_request(request_handle)
                 local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
                 if jwt_authn then
@@ -218,7 +219,7 @@ spec:
                         request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
                         if jwt_authn[msft_issuer]["appid"] then
                           on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                          if (jwt_authn[msft_issuer]["appid"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
+                          if (jwt_authn[msft_issuer]["appid"] == appId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
                             request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
                           else 
                             request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
@@ -252,7 +253,7 @@ spec:
             "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
             inlineCode: |
               msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-              serviceAccountClientId = "{{ $serviceAccountClientId }}"
+              appId = "{{ $appId }}"
               function envoy_on_request(request_handle)
                 local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
                 if jwt_authn then
@@ -263,7 +264,7 @@ spec:
                         request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
                       elseif jwt_authn[msft_issuer]["azp"] then
                         on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                        if (jwt_authn[msft_issuer]["azp"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
+                        if (jwt_authn[msft_issuer]["azp"] == appId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
                           request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
                         else  
                           request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])

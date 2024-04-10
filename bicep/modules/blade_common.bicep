@@ -390,13 +390,15 @@ module database './cosmos-db/main.bicep' = {
     databaseEndpointSecretName: 'graph-db-endpoint'
     databasePrimaryKeySecretName: 'graph-db-primary-key'
     databaseConnectionStringSecretName: 'graph-db-connection'
+    
 
     roleAssignments: [
       {
         roleDefinitionIdOrName: 'Contributor'
-        principalIds: [
-          applicationClientPrincipalOid
-          
+        principals: [
+          {
+            id: applicationClientPrincipalOid
+          }
         ]
         principalType: 'ServicePrincipal'
       }

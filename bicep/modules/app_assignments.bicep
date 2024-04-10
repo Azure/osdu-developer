@@ -7,6 +7,9 @@ param kvName string = ''
 @description('The name of the Azure Storage Account')
 param storageName string = ''
 
+@description('The name of the Azure Comos DB Account')
+param databaseName string = ''
+
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: kvName
@@ -14,6 +17,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageName
+}
+
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' existing = {
+  name: databaseName
 }
 
 var keyVaultSecretsUser = resourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
@@ -56,6 +63,17 @@ resource storageRoleTable 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   name: guid(identityprincipalId, storageAccount.id, storageTableContributor)
   properties: {
     roleDefinitionId: storageTableContributor
+    principalType: 'ServicePrincipal'
+    principalId: identityprincipalId
+  }
+}
+
+var databaseContributor = resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+resource databaseRole 'Microsoft.Authorization/roleAssignments@2022-04-01' =  if (databaseName != '') {
+  scope: databaseAccount
+  name: guid(identityprincipalId, storageAccount.id, databaseContributor)
+  properties: {
+    roleDefinitionId: databaseContributor
     principalType: 'ServicePrincipal'
     principalId: identityprincipalId
   }

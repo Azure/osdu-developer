@@ -78,7 +78,7 @@ var commonLayerConfig = {
     ]
   }
   database: {
-    name: 'graph-db'
+    name: 'osdu-graph'
     throughput: 2000
     backup: 'Continuous'
     graphs: [
@@ -390,6 +390,17 @@ module database './cosmos-db/main.bicep' = {
     databaseEndpointSecretName: 'graph-db-endpoint'
     databasePrimaryKeySecretName: 'graph-db-primary-key'
     databaseConnectionStringSecretName: 'graph-db-connection'
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principalIds: [
+          applicationClientPrincipalOid
+          
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
   }
 }
 

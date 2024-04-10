@@ -111,8 +111,8 @@ spec:
         value: ${AZURE_CLIENT_ID}
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      # - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-      #   value: "true"
+      - name: AZURE_PAAS_PODIDENTITY
+        value: "true"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/legal/v1/"
       - name: SERVER_PORT

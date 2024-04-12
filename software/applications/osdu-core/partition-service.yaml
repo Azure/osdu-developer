@@ -108,15 +108,11 @@ spec:
         secret:
           name: azure-resources
           key: insights-key
-      - name: SPRING_APPLICATION_NAME
-        value: "partition"
       - name: AAD_CLIENT_ID
         value: ${AZURE_CLIENT_ID}
-      - name: REDIS_DATABASE
-        value: "1"
-      - name: PARTITION_SPRING_LOGGING_LEVEL
-        value: "DEBUG"
       - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY
         value: "true"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/partition/v1/"
@@ -124,3 +120,9 @@ spec:
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: "partition"
+      - name: REDIS_DATABASE
+        value: "1"
+      - name: PARTITION_SPRING_LOGGING_LEVEL
+        value: "DEBUG"

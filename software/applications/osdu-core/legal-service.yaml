@@ -87,42 +87,6 @@ spec:
           - "*/actuator/health"
           - "*/health"
       env:
-      - name: spring_application_name
-        value: "legal"
-      - name: server.servlet.contextPath
-        value: "/api/legal/v1/"
-      - name: server_port
-        value: "80"
-      - name: ACCEPT_HTTP
-        value: "true"
-      - name: cosmosdb_database
-        value: "osdu-db"
-      - name: LOG_PREFIX
-        value: "legal"
-      - name: azure_storage_container_name
-        value: "legal-service-azure-configuration"
-      - name: azure_storage_enable_https
-        value: "true"
-      - name: legal_service_region
-        value: "us"
-      - name: servicebus_topic_name
-        value: "legaltags"
-      - name: entitlements_service_endpoint
-        value: "http://entitlements/api/entitlements/v2"
-      - name: entitlements_service_api_key
-        value: "OBSOLETE"
-      - name: partition_service_endpoint
-        value: "http://partition/api/partition/v1"
-      - name: azure_istioauth_enabled
-        value: "true"
-      - name: SPRING_CONFIG_NAME
-        value: "common,application"
-      - name: azure_paas_podIdentity_isEnabled
-        value: "true"
-      - name: REDIS_DATABASE
-        value: "2"
-      - name: aad_client_id
-        value: "api://"
       - name: AZURE_TENANT_ID
         secret:
           name: active-directory
@@ -143,3 +107,39 @@ spec:
         secret:
           name: azure-resources
           key: insights-key
+      - name: AAD_CLIENT_ID
+        value: ${AZURE_CLIENT_ID}
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY
+        value: "true"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/legal/v1/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: "legal"
+      - name: SPRING_CONFIG_NAME
+        value: "common,application"
+      - name: LOG_PREFIX
+        value: "legal"
+      - name: AZURE_STORAGE_ENABLE_HTTPS
+        value: "true"
+      - name: COSMOSDB_DATABASE
+        value: "osdu-db"
+      - name: AZURE_STORAGE_CONTAINER_NAME
+        value: "legal-service-azure-configuration"
+      - name: LEGAL_SERVICE_REGION
+        value: "us"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: "legaltags"
+      - name: REDIS_DATABASE
+        value: "2"
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://entitlements/api/entitlements/v2"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"

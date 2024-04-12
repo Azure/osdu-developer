@@ -49,6 +49,9 @@ param storageName string
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
+@description('Specify the AD Application Principal Id.')
+param applicationClientPrincipalOid string = ''
+
 @description('Software GIT Repository URL')
 param softwareRepository string
 
@@ -488,6 +491,7 @@ values.yaml: |
     keyvaultUri: {3}
     keyvaultName: {4}
     appId: {5}
+    appOid: {6}
   '''
 }
 
@@ -512,7 +516,8 @@ module appConfigMap './aks-config-map/main.bicep' = {
              app_config.outputs.endpoint,
              kvUri,
              kvName,
-             applicationClientId)
+             applicationClientId,
+             applicationClientPrincipalOid)
     ]
   }
 }

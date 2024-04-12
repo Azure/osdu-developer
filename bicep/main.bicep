@@ -368,6 +368,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableSoftwareLoad: clusterSoftware.enable
 
     applicationClientId: applicationClientId
+    applicationClientPrincipalOid: applicationClientPrincipalOid
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
     managedIdentityName: stampIdentity.outputs.name
@@ -412,5 +413,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     partitionBlade
   ]
 }
+
+output KEYVAULT_NAME string = commonBlade.outputs.keyvaultName
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

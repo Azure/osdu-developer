@@ -1,15 +1,14 @@
-FROM mcr.microsoft.com/cbl-mariner/base/azure-cli:2
+FROM mcr.microsoft.com/azure-cli:latest
 
-# Install required packages
-RUN tdnf update -y && \
-  tdnf install -y curl gawk ncurses && \
-  rm -rf /var/cache/tdnf/*
+# Install OS packages
+RUN apk add --no-cache curl ncurses
 
 # Install azd
 RUN curl -fsSL https://aka.ms/install-azd.sh | bash
 
 # Copy the script into the container
 COPY functions.sh /usr/local/bin/functions.sh
+COPY hook-postprovision.sh /usr/local/bin/postprovision.sh
 COPY hook-preprovision.sh /usr/local/bin/preprovision.sh
 
 # Create a directory to work in
@@ -17,6 +16,7 @@ WORKDIR /workspace
 
 # Make the script executable
 RUN chmod +x /usr/local/bin/functions.sh \
+    && chmod +x /usr/local/bin/postprovision.sh \
     && chmod +x /usr/local/bin/preprovision.sh 
 
 # Set the entrypoint to run your script

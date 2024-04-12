@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "17340838967145320109"
+      "templateHash": "1930096404913962047"
     }
   },
   "parameters": {
@@ -6120,7 +6120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.54.24096",
-              "templateHash": "8380259286094042348"
+              "templateHash": "10279347236902840144"
             }
           },
           "definitions": {
@@ -6258,7 +6258,7 @@
                 ]
               },
               "database": {
-                "name": "graph-db",
+                "name": "osdu-graph",
                 "throughput": 2000,
                 "backup": "Continuous",
                 "graphs": [
@@ -12345,6 +12345,19 @@
                   },
                   "databaseConnectionStringSecretName": {
                     "value": "graph-db-connection"
+                  },
+                  "roleAssignments": {
+                    "value": [
+                      {
+                        "roleDefinitionIdOrName": "Contributor",
+                        "principals": [
+                          {
+                            "id": "[parameters('applicationClientPrincipalOid')]"
+                          }
+                        ],
+                        "principalType": "ServicePrincipal"
+                      }
+                    ]
                   }
                 },
                 "template": {
@@ -20196,6 +20209,9 @@
           "applicationClientId": {
             "value": "[parameters('applicationClientId')]"
           },
+          "applicationClientPrincipalOid": {
+            "value": "[parameters('applicationClientPrincipalOid')]"
+          },
           "workspaceResourceId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name)), '2022-09-01').outputs.resourceId.value]"
           },
@@ -20264,7 +20280,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.54.24096",
-              "templateHash": "114115936922464326"
+              "templateHash": "836719626563517208"
             }
           },
           "definitions": {
@@ -20368,6 +20384,13 @@
               "type": "string",
               "metadata": {
                 "description": "Specify the AD Application Client Id."
+              }
+            },
+            "applicationClientPrincipalOid": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the AD Application Principal Id."
               }
             },
             "softwareRepository": {
@@ -20506,7 +20529,7 @@
               }
             },
             "configMaps": {
-              "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n    appId: {5}\n  "
+              "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n    appId: {5}\n    appOid: {6}\n  "
             },
             "name": "[format('amw{0}{1}', replace(parameters('bladeConfig').sectionName, '-', ''), uniqueString(resourceGroup().id, parameters('bladeConfig').sectionName))]"
           },
@@ -22891,7 +22914,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.26.54.24096",
-                      "templateHash": "13638133015979952932"
+                      "templateHash": "15596173713149496049"
                     }
                   },
                   "parameters": {
@@ -22911,13 +22934,21 @@
                       "metadata": {
                         "description": "The name of the Azure Storage Account"
                       }
+                    },
+                    "databaseName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The name of the Azure Comos DB Account"
+                      }
                     }
                   },
                   "variables": {
                     "keyVaultSecretsUser": "[resourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')]",
                     "storageFileDataSmbShareReader": "[resourceId('Microsoft.Authorization/roleDefinitions', 'aba4ae5f-2193-4029-9191-0cb91df5e314')]",
                     "storageBlobContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
-                    "storageTableContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]"
+                    "storageTableContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                    "databaseContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
                   },
                   "resources": [
                     {
@@ -22964,6 +22995,18 @@
                       "name": "[guid(parameters('identityprincipalId'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), variables('storageTableContributor'))]",
                       "properties": {
                         "roleDefinitionId": "[variables('storageTableContributor')]",
+                        "principalType": "ServicePrincipal",
+                        "principalId": "[parameters('identityprincipalId')]"
+                      }
+                    },
+                    {
+                      "condition": "[not(equals(parameters('databaseName'), ''))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('databaseName'))]",
+                      "name": "[guid(parameters('identityprincipalId'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), variables('databaseContributor'))]",
+                      "properties": {
+                        "roleDefinitionId": "[variables('databaseContributor')]",
                         "principalType": "ServicePrincipal",
                         "principalId": "[parameters('identityprincipalId')]"
                       }
@@ -23004,7 +23047,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.26.54.24096",
-                      "templateHash": "13638133015979952932"
+                      "templateHash": "15596173713149496049"
                     }
                   },
                   "parameters": {
@@ -23024,13 +23067,21 @@
                       "metadata": {
                         "description": "The name of the Azure Storage Account"
                       }
+                    },
+                    "databaseName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The name of the Azure Comos DB Account"
+                      }
                     }
                   },
                   "variables": {
                     "keyVaultSecretsUser": "[resourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')]",
                     "storageFileDataSmbShareReader": "[resourceId('Microsoft.Authorization/roleDefinitions', 'aba4ae5f-2193-4029-9191-0cb91df5e314')]",
                     "storageBlobContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
-                    "storageTableContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]"
+                    "storageTableContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                    "databaseContributor": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
                   },
                   "resources": [
                     {
@@ -23077,6 +23128,18 @@
                       "name": "[guid(parameters('identityprincipalId'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), variables('storageTableContributor'))]",
                       "properties": {
                         "roleDefinitionId": "[variables('storageTableContributor')]",
+                        "principalType": "ServicePrincipal",
+                        "principalId": "[parameters('identityprincipalId')]"
+                      }
+                    },
+                    {
+                      "condition": "[not(equals(parameters('databaseName'), ''))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('databaseName'))]",
+                      "name": "[guid(parameters('identityprincipalId'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), variables('databaseContributor'))]",
+                      "properties": {
+                        "roleDefinitionId": "[variables('databaseContributor')]",
                         "principalType": "ServicePrincipal",
                         "principalId": "[parameters('identityprincipalId')]"
                       }
@@ -24049,7 +24112,7 @@
                   },
                   "fileData": {
                     "value": [
-                      "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference('appIdentity').outputs.clientId.value, reference('app_config').outputs.endpoint.value, parameters('kvUri'), parameters('kvName'), parameters('applicationClientId'))]"
+                      "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference('appIdentity').outputs.clientId.value, reference('app_config').outputs.endpoint.value, parameters('kvUri'), parameters('kvName'), parameters('applicationClientId'), parameters('applicationClientPrincipalOid'))]"
                     ]
                   }
                 },
@@ -25323,5 +25386,11 @@
         "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name))]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "KEYVAULT_NAME": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultName.value]"
+    }
+  }
 }

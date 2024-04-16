@@ -63,7 +63,7 @@ spec:
       port: 80
     configuration:
     - service: schema
-      repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-22
+      repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-23
       tag: latest
       path: /api/schema-service/v1/*
       probe:

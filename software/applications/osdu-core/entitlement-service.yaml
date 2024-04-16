@@ -110,9 +110,9 @@ spec:
           key: insights-key
       - name: AAD_CLIENT_ID
         value: ${AZURE_CLIENT_ID}
-      - name: AZURE_ISTIOAUTH_ENABLED
+      - name: AZURE_ISTIO_AUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/entitlements/v2/"

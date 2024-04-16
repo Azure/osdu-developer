@@ -227,7 +227,7 @@ data-partition-id: {{data_partition_id}}
 ###
 # @name entitlementsInfo
 GET {{ENTITLEMENTS_HOST}}/info
-Authorization: Basic {{CREDENTIALS}}
+Authorization: Bearer {{access_token}}
 Accept: application/json
 
 
@@ -236,9 +236,9 @@ Accept: application/json
 # Istio Bypass: Yes - KV app-dev-sp-username value must be same as the x-user-id.
 # @name tenantInit
 POST {{ENTITLEMENTS_HOST}}/tenant-provisioning
-Authorization: Bearer {{access_token}}
+# Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 x-payload: Bearer {{access_token}}
 x-user-id: {{CLIENT_ID}}
-x-app-id: {{CLIENT_ID}}
+# x-app-id: {{CLIENT_ID}}

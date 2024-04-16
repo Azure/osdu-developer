@@ -109,10 +109,12 @@ spec:
           name: active-directory
           key: principal-clientid
       - name: AAD_CLIENT_ID
-        value: ${AZURE_CLIENT_ID}
+        secret:
+          name: active-directory
+          key: principal-clientid
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "true"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/file/"

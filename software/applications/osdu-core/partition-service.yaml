@@ -109,8 +109,10 @@ spec:
           name: azure-resources
           key: insights-key
       - name: AAD_CLIENT_ID
-        value: ${AZURE_CLIENT_ID}
-      - name: AZURE_ISTIO_AUTH_ENABLED
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "true"

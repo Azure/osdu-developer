@@ -104,10 +104,10 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
-      - name: APPINSIGHTS_KEY
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
         secret:
           name: azure-resources
-          key: insights-key
+          key: insights-connection
       - name: AAD_CLIENT_ID
         secret:
           name: active-directory

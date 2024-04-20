@@ -1,130 +1,12 @@
-{{- $tenant := .Values.azure.tenantId -}}
-{{- $appId := .Values.azure.appId -}}
+{{- $tenant := .Values.azure.tenantId1 -}}
+{{- $appId := .Values.azure.appId1 -}}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: header-1-remove-user-appid-from-default
+  name: multi-issuer-jwt-header-filter
+  namespace: {{ .Release.Namespace }}
 spec:
-  configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: envoy.http_connection_manager
-            subFilter:
-              name: envoy.router
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.lua.remove-user-appid-header
-        typed_config:
-          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-          inlineCode: |
-            function envoy_on_request(request_handle)
-              request_handle:headers():remove("x-user-id")
-              request_handle:headers():remove("x-app-id")
-            end
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-2-add-user-from-msft-aad-token
-spec:
-  configPatches:
-    - applyTo: HTTP_FILTER
-      match:
-        context: SIDECAR_INBOUND
-        listener:
-          filterChain:
-            filter:
-              name: envoy.http_connection_manager
-              subFilter:
-                name: envoy.lua.remove-user-appid-header
-      patch:
-        operation: INSERT_AFTER
-        value:
-          name: envoy.lua.user-from-msft-aad-token
-          typed_config:
-            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-            inlineCode: |
-              msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
-              serviceAccountClientId = "{{ $appId }}"
-              function envoy_on_request(request_handle)
-                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-                if jwt_authn then
-                  if jwt_authn[msft_issuer] then
-                    request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                    if jwt_authn[msft_issuer]["upn"] then
-                      if jwt_authn[msft_issuer]["oid"] then
-                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
-                      end
-                    elseif jwt_authn[msft_issuer]["unique_name"] then
-                      if jwt_authn[msft_issuer]["oid"] then
-                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
-                      end
-                    elseif jwt_authn[msft_issuer]["appid"] then
-                      on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                      if (jwt_authn[msft_issuer]["appid"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
-                        request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
-                      else
-                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
-                      end
-                    end
-                  end
-                end
-              end
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-3-add-user-from-msftonline-token
-spec:
-  configPatches:
-    - applyTo: HTTP_FILTER
-      match:
-        context: SIDECAR_INBOUND
-        listener:
-          filterChain:
-            filter:
-              name: envoy.http_connection_manager
-              subFilter:
-                name: envoy.lua.remove-user-appid-header
-      patch:
-        operation: INSERT_AFTER
-        value:
-          name: envoy.lua.user-from-msftonline-token
-          typed_config:
-            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-            inlineCode: |
-              msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-              serviceAccountClientId = "{{ $appId }}"
-              function envoy_on_request(request_handle)
-                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-                if jwt_authn then
-                  if jwt_authn[msft_issuer] then
-                    request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                    if jwt_authn[msft_issuer]["oid"] and jwt_authn[msft_issuer]["scp"] then
-                      request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
-                    elseif jwt_authn[msft_issuer]["azp"] then
-                      on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                      if (jwt_authn[msft_issuer]["azp"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
-                        request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
-                      else
-                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
-                      end
-                    end
-                  end
-                end
-              end
-
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-4-add-appid-from-msft-aad-token
-spec:
+  # This filter applies to all workloads in the namespace since workloadSelector is not specified
   configPatches:
     - applyTo: HTTP_FILTER
       match:
@@ -134,76 +16,81 @@ spec:
             filter:
               name: envoy.filters.network.http_connection_manager
               subFilter:
-                name: envoy.lua.remove-user-appid-header
+                name: envoy.filters.http.router
       patch:
-        operation: INSERT_AFTER
+        operation: INSERT_BEFORE
         value:
-          name: envoy.lua.appid-from-msft-aad-token
+          name: envoy.filters.http.jwt_authn
           typed_config:
-            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-            inlineCode: |
-              msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
-              serviceAccountClientId = "{{ $appId }}"
-              function envoy_on_request(request_handle)
-                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-                if jwt_authn then
-                  if jwt_authn[msft_issuer] then
-                    if not jwt_authn[msft_issuer]["upn"] and not jwt_authn[msft_issuer]["unique_name"] then
-                        request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                        if jwt_authn[msft_issuer]["appid"] then
-                          on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                          if (jwt_authn[msft_issuer]["appid"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
-                            request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
-                          else
-                            request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
-                          end
-                        end
-                    end
-                  end
-                end
-              end
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-5-add-appid-from-msftonline-token
-spec:
-  configPatches:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+            providers:
+              microsoft_v1:
+                issuer: "https://sts.windows.net/{{ $tenant }}/"
+                jwksUri: "https://sts.windows.net/{{ $tenant }}/discovery/keys"
+                forward: true
+                forward_payload_header: "x-jwt-payload"
+              microsoft_v2:
+                issuer: "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
+                jwksUri: "https://login.microsoftonline.com/{{ $tenant }}/discovery/v2.0/keys"
+                forward: true
+                forward_payload_header: "x-jwt-payload"
+            rules:
+              - match:
+                  prefix: "/"
+                requires:
+                  requires_any:
+                    requirements:
+                      - provider_and_audiences:
+                          provider_name: "microsoft_v1"
+                          audiences: ["{{ $appId }}"]
+                      - provider_and_audiences:
+                          provider_name: "microsoft_v2"
+                          audiences: ["{{ $appId }}"]
     - applyTo: HTTP_FILTER
       match:
         context: SIDECAR_INBOUND
         listener:
           filterChain:
             filter:
-              name: envoy.filters.network.http_connection_manager
+              name: "envoy.filters.network.http_connection_manager"
               subFilter:
-                name: envoy.lua.remove-user-appid-header
+                name: "envoy.filters.http.jwt_authn"
       patch:
         operation: INSERT_AFTER
         value:
-          name: envoy.lua.appid-from-msftonline-token
+          name: "envoy.filters.http.lua"
           typed_config:
-            "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+            "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
             inlineCode: |
-              msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-              serviceAccountClientId = "{{ $appId }}"
               function envoy_on_request(request_handle)
-                local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-                if jwt_authn then
-                  if jwt_authn[msft_issuer] then
-                    if not jwt_authn[msft_issuer]["scp"] then
-                      request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                      if jwt_authn[msft_issuer]["appid"] then
-                        request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
-                      elseif jwt_authn[msft_issuer]["azp"] then
-                        on_behalf_of_header = request_handle:headers():get("x-on-behalf-of")
-                        if (jwt_authn[msft_issuer]["azp"] == serviceAccountClientId and on_behalf_of_header ~= nil and on_behalf_of_header ~= '') then
-                          request_handle:headers():add("x-user-id", request_handle:headers():get("x-on-behalf-of"))
-                        else
-                          request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
-                        end
+                -- Remove any existing x-user-id and x-app-id headers
+                request_handle:headers():remove("x-user-id")
+                request_handle:headers():remove("x-app-id")
+                -- Log that headers were removed
+                request_handle:logInfo("x-user-id and x-app-id headers removed")
+                -- Proceed to set x-user-id and x-app-id if JWT payload has relevant claims
+                local jwt_payload = request_handle:headers():get("x-jwt-payload")
+                if jwt_payload then
+                  local ok, decoded_json = pcall(require("cjson").decode, jwt_payload)
+                  if ok and decoded_json then
+                    -- Log the version of the JWT
+                    request_handle:logInfo("Received JWT with version: " .. (decoded_json.ver or "unknown"))
+                    -- Setting x-user-id based on oid claim
+                    if decoded_json.oid then
+                      request_handle:headers():add("x-user-id", decoded_json.oid)
+                    end
+                    -- Setting x-app-id based on issuer specific claim
+                    if decoded_json.iss and string.find(decoded_json.iss, "login.microsoftonline.com") then
+                      if decoded_json.appid then
+                        request_handle:headers():add("x-app-id", decoded_json.appid)
+                      end
+                    elseif decoded_json.iss and string.find(decoded_json.iss, "sts.windows.net") then
+                      if decoded_json.azp then
+                        request_handle:headers():add("x-app-id", decoded_json.azp)
                       end
                     end
                   end
+                else
+                  request_handle:logInfo("No JWT payload found")
                 end
               end

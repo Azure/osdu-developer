@@ -52,9 +52,7 @@ spec:
       secret:
         name: common-secrets
         key: database-connection
-    - name: INSIGHTS_KEY
+    - name: APPLICATIONINSIGHTS_CONNECTION_STRING
       secret:
-        name: common-secrets
-        key: insights-key
-    
-    
+        name: azure-resources
+        key: insights-connection

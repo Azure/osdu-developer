@@ -58,5 +58,5 @@ spec:
         key: insights-key
     - name: APPLICATIONINSIGHTS_CONNECTION_STRING
       secret:
-        name: azure-resources
+        name: common-secrets
         key: insights-connection

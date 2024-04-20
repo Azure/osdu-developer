@@ -27,20 +27,20 @@ hooks:
           fi
         fi
 
-    # windows:
-    #   interactive: false
-    #   continueOnError: false
-    #   shell: pwsh
-    #   run: |
-    #     if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue))
-    #     {
-    #       Write-Host "no docker"
-    #       exit
-    #     }
-    #     Write-Host "Building Docker Image"
-    #     docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
-    #     docker run --rm -v ${pwd}:/workspace -v "$($HOME)/.azure:/root/.azure" -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/preprovision.sh -s $env:AZURE_SUBSCRIPTION_ID
-    #     Start-Sleep -Seconds 5
+    windows:
+      interactive: false
+      continueOnError: false
+      shell: pwsh
+      run: |
+        if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue))
+        {
+          Write-Host "no docker"
+          exit
+        }
+        Write-Host "Building Docker Image"
+        docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
+        docker run --rm -v ${pwd}:/workspace -v "$($HOME)/.azure:/root/.azure" -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/preprovision.sh -s $env:AZURE_SUBSCRIPTION_ID
+        Start-Sleep -Seconds 5
 
   postprovision:
     posix:

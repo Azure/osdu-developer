@@ -92,7 +92,7 @@ POST {{ENTITLEMENTS_HOST}}/tenant-provisioning
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
-x-user-id: {{CLIENT_ID}}
+# x-user-id: {{CLIENT_ID}}
 # x-app-id: {{CLIENT_ID}}
 
 

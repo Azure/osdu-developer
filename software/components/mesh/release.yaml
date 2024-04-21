@@ -77,6 +77,8 @@ spec:
   values:
     # profile: default
     meshConfig:
+      enableEnvoyAccessLogService: true
+      proxyAdminPort: 15000
       ingressSelector: istio-ingress
       ingressService: istio-ingressgateway
     pilot:

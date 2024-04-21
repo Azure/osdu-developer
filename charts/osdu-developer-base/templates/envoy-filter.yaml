@@ -51,6 +51,7 @@ spec:
           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
           inlineCode: |
             msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
+            
             function envoy_on_request(request_handle)
               local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
               if jwt_authn then
@@ -72,6 +73,7 @@ spec:
                 request_handle:logInfo("JWT Payload: Not found")
               end
             end
+
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter

@@ -1,5 +1,5 @@
-{{- $tenant := .Values.azure.tenantId1 -}}
-{{- $appId := .Values.azure.appId1 -}}
+{{- $tenant := .Values.azure.tenantId -}}
+{{- $appId := .Values.azure.appId -}}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:

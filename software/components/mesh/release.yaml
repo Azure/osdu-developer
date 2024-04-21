@@ -75,13 +75,11 @@ spec:
       retries: 3
   interval: 10m0s
   values:
-    # profile: default
     meshConfig:
       accessLogFile: /dev/stdout
       enableEnvoyAccessLogService: true
       defaultConfig:
-        proxyMetadata:
-          ISTIO_META_PROXY_ADMIN_PORT: 15000
+        proxyAdminPort: 15000
       ingressSelector: istio-ingress
       ingressService: istio-ingressgateway
     pilot:

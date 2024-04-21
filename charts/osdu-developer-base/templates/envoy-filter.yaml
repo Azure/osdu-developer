@@ -98,13 +98,11 @@ spec:
           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
           inlineCode: |
             msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-
+            
             function envoy_on_request(request_handle)
               local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
               if jwt_authn then
                 if jwt_authn[msft_issuer] then
-                  request_handle:logInfo("Issuer: login.microsoftonline.com")
-                  request_handle:logInfo("Well Known Header: x-app-id added")
                   request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
                   request_handle:logInfo("Well Known Header: x-app-id added")
                   if jwt_authn[msft_issuer]["oid"] then
@@ -115,8 +113,9 @@ spec:
                     request_handle:logInfo("Well Known Header: x-user-id added -> Claim: azp")
                   end
                 end
+              else
+                request_handle:logInfo("JWT Payload: Not found")
               end
-            else
-              request_handle:logInfo("JWT Payload: Not found")
             end
+
 

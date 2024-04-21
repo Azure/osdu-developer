@@ -73,45 +73,47 @@ spec:
                 request_handle:logInfo("JWT Payload: Not found")
               end
             end
-# ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: EnvoyFilter
-# metadata:
-#   name: header-3-add-user-from-msftonline-token
-# spec:
-#   configPatches:
-#   - applyTo: HTTP_FILTER
-#     match:
-#       context: SIDECAR_INBOUND
-#       listener:
-#         filterChain:
-#           filter:
-#             name: envoy.filters.network.http_connection_manager
-#             subFilter: 
-#               name: envoy.lua.remove-user-appid-header
-#     patch:
-#       operation: INSERT_AFTER
-#       value:
-#         name: envoy.lua.user-from-msftonline-token
-#         typed_config:
-#           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-#           inlineCode: |
-#             msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-#             function envoy_on_request(request_handle)
-#               local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-#               if jwt_authn then
-#                 if jwt_authn[msft_issuer] then
-#                   request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-#                   request_handle:logInfo("Well Known Header: x-app-id added")
-#                   if jwt_authn[msft_issuer]["oid"] then
-#                     request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
-#                     request_handle:logInfo("Well Known Header: x-user-id added -> Claim: oid")
-#                   elseif jwt_authn[msft_issuer]["azp"] then
-#                     request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
-#                     request_handle:logInfo("Well Known Header: x-user-id added -> Claim: azp")
-#                   end
-#                 end
-#               end
-#             else
-#               request_handle:logInfo("JWT Payload: Not found")
-#             end
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: header-3-add-user-from-msftonline-token
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: envoy.filters.network.http_connection_manager
+            subFilter: 
+              name: envoy.lua.remove-user-appid-header
+    patch:
+      operation: INSERT_AFTER
+      value:
+        name: envoy.lua.user-from-msftonline-token
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+          inlineCode: |
+            msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
+            
+            function envoy_on_request(request_handle)
+              local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+              if jwt_authn then
+                if jwt_authn[msft_issuer] then
+                  request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
+                  request_handle:logInfo("Well Known Header: x-app-id added")
+                  if jwt_authn[msft_issuer]["oid"] then
+                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
+                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: oid")
+                  elseif jwt_authn[msft_issuer]["azp"] then
+                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
+                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: azp")
+                  end
+                end
+              end
+            else
+              request_handle:logInfo("JWT Payload: Not found")
+            end
+

@@ -77,6 +77,7 @@ spec:
   values:
     # profile: default
     meshConfig:
+      accessLogFile: /dev/stdout
       enableEnvoyAccessLogService: true
       proxyAdminPort: 15000
       ingressSelector: istio-ingress

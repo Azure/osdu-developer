@@ -104,7 +104,7 @@ spec:
       - name: shared_partition
         value: "opendes"
       - name: azure_istioauth_enabled
-        value: "true"
+        value: "false"
       - name: event_grid_enabled
         value: "false"
       - name: event_grid_topic

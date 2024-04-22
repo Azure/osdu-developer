@@ -1,4 +1,4 @@
-# This command enables logging -->  istioctl proxy-config log <pod_name> --level lua:info
+# This command increases logging -->  istioctl proxy-config log <pod_name> --level lua:debug
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:

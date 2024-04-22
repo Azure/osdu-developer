@@ -11,3 +11,5 @@ spec:
         maxConnections: 100
     tls:
       mode: ISTIO_MUTUAL
+      minProtocolVersion: TLSV1_3
+      maxProtocolVersion: TLSV1_3

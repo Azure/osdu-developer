@@ -10,7 +10,7 @@ spec:
     - port:
         name: http2
         number: 80
-        protocol: HTTP
+        protocol: HTTP2
       hosts:
         - "*"
       # tls:
@@ -24,6 +24,12 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: wild-card-tls
+        minProtocolVersion: TLSV1_3
+        maxProtocolVersion: TLSV1_3
+        cipherSuites:
+        - TLS_AES_256_GCM_SHA384
+        - TLS_CHACHA20_POLY1305_SHA256
+        - TLS_AES_128_GCM_SHA256
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -35,9 +41,9 @@ spec:
     istio: ingress-external
   servers:
     - port:
-        name: http
+        name: http2
         number: 80
-        protocol: HTTP
+        protocol: HTTP2
       hosts:
         - "*"
     - port:
@@ -49,3 +55,9 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: wild-card-tls
+        minProtocolVersion: TLSV1_3
+        maxProtocolVersion: TLSV1_3
+        cipherSuites:
+        - TLS_AES_256_GCM_SHA384
+        - TLS_CHACHA20_POLY1305_SHA256
+        - TLS_AES_128_GCM_SHA256

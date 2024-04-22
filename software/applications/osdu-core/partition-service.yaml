@@ -1,17 +1,5 @@
 ---
 apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: partition
-  namespace: osdu-core
-spec:
-  host: partition.osdu-core.svc.cluster.local
-  trafficPolicy:
-    connectionPool:
-      tcp:
-        maxConnections: 100
----
-apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: partition

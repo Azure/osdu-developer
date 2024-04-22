@@ -6,7 +6,7 @@ metadata:
   namespace: podinfo
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule

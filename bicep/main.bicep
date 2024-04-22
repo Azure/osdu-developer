@@ -4,15 +4,15 @@ targetScope = 'resourceGroup'
 @description('Specify the Azure region to place the application definition.')
 param location string = resourceGroup().location
 
-@description('Specify the AD Application Client Id.')
+@description('Specify the Application Client Id. (This is the unique application ID of this application.)')
 param applicationClientId string
 
-@description('Specify the AD Service Principal Object Id.')
-param applicationClientPrincipalOid string
-
-@description('Specify the AD Application Client Secret.')
+@description('Specify the Application Client Secret. (A valid secret for the application client ID.)')
 @secure()
 param applicationClientSecret string
+
+@description('Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)')
+param applicationClientPrincipalOid string
 
 @allowed([
   'CostOptimised'

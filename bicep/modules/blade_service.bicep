@@ -125,7 +125,7 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? '' : softwareBranch
-    tag: softwareTag == '' && softwareBranch == '' ? 'v0.7.0' : softwareTag
+    tag: softwareTag == '' && softwareBranch == '' ? 'v0.8.0' : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
   }
@@ -308,7 +308,7 @@ resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
 
   properties: {
-    value: appIdentity.outputs.clientId
+    value: applicationClientId
   }
 }
 

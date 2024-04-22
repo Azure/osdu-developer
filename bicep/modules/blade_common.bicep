@@ -93,7 +93,7 @@ var commonLayerConfig = {
   }
 }
 
-module insights 'br/public:avm/res/insights/component:0.2.1' = {
+module insights 'br/public:avm/res/insights/component:0.3.0' = {
   name: '${bladeConfig.sectionName}-insights'
   params: {
     name: 'ai-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'

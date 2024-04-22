@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "15634107713692671806"
+      "templateHash": "6644099236198658499"
     }
   },
   "parameters": {
@@ -6120,7 +6120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.170.59819",
-              "templateHash": "11247372889608125139"
+              "templateHash": "9832607646947063937"
             }
           },
           "definitions": {
@@ -6384,7 +6384,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.25.53.49325",
-                      "templateHash": "4580965560323333293"
+                      "templateHash": "4907651770505299610"
                     },
                     "name": "Application Insights",
                     "description": "This component deploys an Application Insights instance.",
@@ -6734,7 +6734,7 @@
                       "condition": "[parameters('enableTelemetry')]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2023-07-01",
-                      "name": "[format('46d3xbcp.res.insights-component.{0}.{1}', replace('0.2.1', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
+                      "name": "[format('46d3xbcp.res.insights-component.{0}.{1}', replace('0.3.0', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
                       "properties": {
                         "mode": "Incremental",
                         "template": {
@@ -6959,6 +6959,13 @@
                         "description": "Application Insights Instrumentation key. A read-only value that applications can use to identify the destination for all telemetry sent to Azure Application Insights. This value will be supplied upon construction of each new Application Insights component."
                       },
                       "value": "[reference('appInsights').InstrumentationKey]"
+                    },
+                    "connectionString": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Application Insights Connection String."
+                      },
+                      "value": "[reference('appInsights').ConnectionString]"
                     }
                   }
                 }
@@ -9431,7 +9438,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.26.170.59819",
-                      "templateHash": "3791263158576641956"
+                      "templateHash": "8012780031551491766"
                     }
                   },
                   "parameters": {
@@ -9497,6 +9504,14 @@
                       "name": "[format('{0}/{1}', parameters('keyVaultName'), 'insights-key')]",
                       "properties": {
                         "value": "[reference(resourceId('Microsoft.Insights/components', parameters('insightsName')), '2020-02-02').InstrumentationKey]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2023-07-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), 'insights-connection')]",
+                      "properties": {
+                        "value": "[reference(resourceId('Microsoft.Insights/components', parameters('insightsName')), '2020-02-02').ConnectionString]"
                       }
                     }
                   ],
@@ -20280,7 +20295,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.170.59819",
-              "templateHash": "3543100556093100940"
+              "templateHash": "16587079673950081255"
             }
           },
           "definitions": {
@@ -20512,7 +20527,7 @@
                 "name": "flux-system",
                 "url": "[if(equals(parameters('softwareRepository'), ''), 'https://github.com/azure/osdu-developer', parameters('softwareRepository'))]",
                 "branch": "[if(equals(parameters('softwareBranch'), ''), '', parameters('softwareBranch'))]",
-                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.7.0', parameters('softwareTag'))]",
+                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.8.0', parameters('softwareTag'))]",
                 "components": "./stamp/components",
                 "applications": "./stamp/applications"
               }
@@ -20545,10 +20560,9 @@
               "apiVersion": "2023-07-01",
               "name": "[format('{0}/{1}', parameters('kvName'), 'app-dev-sp-username')]",
               "properties": {
-                "value": "[reference('appIdentity').outputs.clientId.value]"
+                "value": "[parameters('applicationClientId')]"
               },
               "dependsOn": [
-                "appIdentity",
                 "keyVault"
               ]
             },

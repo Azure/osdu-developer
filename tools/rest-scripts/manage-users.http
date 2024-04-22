@@ -37,9 +37,7 @@ grant_type=client_credentials
 # -----------------------
 ###
 @access_token = {{login.response.body.access_token}}
-# @ENDPOINT = https://{{HOST}}
-@ENDPOINT = http://localhost:8080
-@ENTITLEMENTS_HOST = {{ENDPOINT}}/api/entitlements/v2
+@ENTITLEMENTS_HOST = {{HOST}}/api/entitlements/v2
 
 @domain = contoso.com
 @user_group = users@{{DATA_PARTITION}}.{{domain}}
@@ -94,10 +92,6 @@ POST {{ENTITLEMENTS_HOST}}/tenant-provisioning
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
-# x-payload: Bearer {{access_token}}
-# x-app-id: {{CLIENT_ID}}
-# x-user-id: {{CLIENT_ID}}
-
 
 ###
 # Purpose: Validate the Owner of the Partition.

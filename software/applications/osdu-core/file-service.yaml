@@ -63,7 +63,7 @@ spec:
       port: 80
     configuration:
     - service: file
-      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-22
+      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-23
       tag: latest
       path: /api/file/*
       probe:
@@ -100,20 +100,26 @@ spec:
         secret:
           name: azure-resources
           key: keyvault-uri
-      - name: APPINSIGHTS_KEY
-        secret:
-          name: azure-resources
-          key: insights-key
       - name: AZURE_AD_APP_RESOURCE_ID
         secret:
           name: active-directory
           key: principal-clientid
       - name: AAD_CLIENT_ID
-        value: ${AZURE_CLIENT_ID}
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY
-        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+        value: "false"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/file/"
       - name: SERVER_PORT

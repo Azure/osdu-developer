@@ -56,5 +56,7 @@ spec:
       secret:
         name: common-secrets
         key: insights-key
-    
-    
+    - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+      secret:
+        name: common-secrets
+        key: insights-connection

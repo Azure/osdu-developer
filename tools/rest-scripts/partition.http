@@ -29,9 +29,8 @@ grant_type=client_credentials
 # -----------------------
 ###
 @access_token = {{login.response.body.access_token}}
-@ENDPOINT = https://{{HOST}}
-# @ENDPOINT = http://localhost:8080
-@PARTITION_HOST = {{ENDPOINT}}/api/partition/v1
+
+@PARTITION_HOST = {{HOST}}/api/partition/v1
 @data_partition_id = opendes
 
 

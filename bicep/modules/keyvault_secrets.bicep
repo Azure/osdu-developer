@@ -61,4 +61,13 @@ resource insightsSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
+resource insightsConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'insights-connection'
+  parent: keyVault
+
+  properties: {
+    value: insights.properties.ConnectionString
+  }
+}
+
 output name string = keyVault.name

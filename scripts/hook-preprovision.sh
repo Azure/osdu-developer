@@ -118,7 +118,6 @@ fi
 
 # Registering AKS feature extensions
 aksExtensions=(
-  "AzureServiceMeshPreview"
   "PodSecurityPolicyPreview"
   "KubeletDisk"
   "AKS-KedaPreview"
@@ -127,9 +126,6 @@ aksExtensions=(
   "UserAssignedIdentityPreview"
   "EnablePrivateClusterPublicFQDN"
   "PodSubnetPreview"
-  "EnableOIDCIssuerPreview"
-  "EnableWorkloadIdentityPreview"
-  "EnableImageCleanerPreview"
   "AKS-VPAPreview"
   "AzureOverlayPreview"
   "KubeProxyConfigurationPreview"

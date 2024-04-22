@@ -1,8 +1,8 @@
-{{- $tenant := .Values.azure.tenantId -}}
+# This command enables logging -->  istioctl proxy-config log <pod_name> --level lua:info
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: header-1-remove-user-appid-from-default
+  name: identity-provider-microsoft
 spec:
   configPatches:
   - applyTo: HTTP_FILTER
@@ -22,100 +22,74 @@ spec:
           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
           inlineCode: |
             function envoy_on_request(request_handle)
-              request_handle:headers():remove("x-user-id")
-              request_handle:headers():remove("x-app-id")
-              -- Log that headers were removed
-              request_handle:logInfo("x-user-id and x-app-id headers removed")
-            end
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-2-add-user-from-msft-aad-token
-spec:
-  configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: envoy.filters.network.http_connection_manager
-            subFilter: 
-              name: envoy.lua.remove-user-appid-header
-    patch:
-      operation: INSERT_AFTER
-      value:
-        name: envoy.lua.user-from-msft-aad-token
-        typed_config:
-          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-          inlineCode: |
-            msft_issuer = "https://sts.windows.net/{{ $tenant }}/"
+                -- Remove the Well Known Headers
+                request_handle:headers():remove("x-user-id")
+                request_handle:headers():remove("x-app-id")
+                request_handle:logInfo("x-user-id and x-app-id headers removed")
 
-            function envoy_on_request(request_handle)
-              local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-              if jwt_authn then
-                if jwt_authn[msft_issuer] then
-                  request_handle:logInfo("Issuer: sts.windows.net")
-                  request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                  request_handle:logInfo("Well Known Header: x-app-id added")
-                  if jwt_authn[msft_issuer]["upn"] then
-                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["upn"])
-                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: upn")
-                  elseif jwt_authn[msft_issuer]["unique_name"] then
-                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["unique_name"])
-                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: unique_name")
-                  elseif jwt_authn[msft_issuer]["appid"] then
-                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["appid"])
-                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: appid")
-                  end
+                -- Retrieve the JWT Payload
+                local meta = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+
+                if meta and meta["payload"] then
+                    local payload = meta["payload"]
+                    request_handle:logDebug("JWT Payload: " .. tableToString(payload))
+
+                    -- Set the x-app-id Well Known Header if 'aud' claim is present
+                    if payload["aud"] then
+                        request_handle:headers():add("x-app-id", payload["aud"])
+                        request_handle:logWarn("x-app-id set from 'aud' claim: " .. payload["aud"])
+                    else
+                        request_handle:logError("JWT Payload does not contain 'aud' claim; cannot set x-app-id")
+                    end
+
+                    -- Check issuer 
+                    if string.find(payload["iss"], "sts.windows.net") then
+                        -- Set Well Known Header with an order of preference: upn, unique_name, appid
+                        if payload["upn"] then
+                            request_handle:headers():add("x-user-id", payload["upn"])
+                            request_handle:logWarn("x-user-id set from 'upn' claim: " .. payload["upn"])
+                        elseif payload["unique_name"] then
+                            request_handle:headers():add("x-user-id", payload["unique_name"])
+                            request_handle:logWarn("x-user-id set from 'unique_name' claim: " .. payload["unique_name"])
+                        elseif payload["appid"] then
+                            request_handle:headers():add("x-user-id", payload["appid"])
+                            request_handle:logWarn("x-user-id set from 'appid' claim: " .. payload["appid"])
+                        else
+                            request_handle:logError("No valid user ID claim (upn, unique_name, appid) found for sts.windows.net")
+                        end
+
+                    elseif string.find(payload["iss"], "login.microsoftonline.com") then
+                        -- Set Well Known Header with an order of preference: oid, azd
+                        if payload["oid"] then
+                            request_handle:headers():add("x-user-id", payload["oid"])
+                            request_handle:logWarn("x-user-id set from 'oid' claim: " .. payload["oid"])
+                        elseif payload["azd"] then
+                            request_handle:headers():add("x-user-id", payload["azd"])
+                            request_handle:logWarn("x-user-id set from 'azd' claim: " .. payload["azd"])
+                        else
+                            request_handle:logError("No valid user ID claim (oid, azd) found for login.microsoftonline.com")
+                        end
+                    else
+                        request_handle:logError("Issuer does not match known issuers")
+                    end
+                else
+                    request_handle:logError("No JWT metadata found or payload is malformed")
                 end
-              else
-                request_handle:logInfo("JWT Payload: Not found")
-              end
             end
----
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: header-3-add-user-from-msftonline-token
-spec:
-  configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: envoy.filters.network.http_connection_manager
-            subFilter: 
-              name: envoy.lua.remove-user-appid-header
-    patch:
-      operation: INSERT_AFTER
-      value:
-        name: envoy.lua.user-from-msftonline-token
-        typed_config:
-          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-          inlineCode: |
-            msft_issuer = "https://login.microsoftonline.com/{{ $tenant }}/v2.0"
-            
-            function envoy_on_request(request_handle)
-              local jwt_authn = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-              if jwt_authn then
-                if jwt_authn[msft_issuer] then
-                  request_handle:headers():add("x-app-id", jwt_authn[msft_issuer]["aud"])
-                  request_handle:logInfo("Well Known Header: x-app-id added")
-                  if jwt_authn[msft_issuer]["oid"] then
-                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["oid"])
-                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: oid")
-                  elseif jwt_authn[msft_issuer]["azp"] then
-                    request_handle:headers():add("x-user-id", jwt_authn[msft_issuer]["azp"])
-                    request_handle:logInfo("Well Known Header: x-user-id added -> Claim: azp")
-                  end
+
+            -- Helper function to convert a table to a string for logging
+            function tableToString(tbl, indent)
+                if not indent then indent = 0 end
+                if type(tbl) ~= 'table' then return tostring(tbl) end
+                local lines = {}
+                for k, v in pairs(tbl) do
+                    local formatting = string.rep("  ", indent) .. k .. ": "
+                    if type(v) == "table" then
+                        table.insert(lines, formatting)
+                        table.insert(lines, tableToString(v, indent+1))
+                    else
+                        table.insert(lines, formatting .. tostring(v))
+                    end
                 end
-              else
-                request_handle:logInfo("JWT Payload: Not found")
-              end
+                return table.concat(lines, "\n")
             end
-
-

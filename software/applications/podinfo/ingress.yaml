@@ -12,7 +12,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: podinfo-rule
-  namespace: osdu
+  namespace: podinfo
 spec:
   host: "*.podinfo.svc.cluster.local"
   trafficPolicy:

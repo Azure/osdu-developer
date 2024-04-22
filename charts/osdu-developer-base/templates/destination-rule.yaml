@@ -1,19 +1,10 @@
 {{- $namespace := .Release.Namespace }}
----
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: peer-authentication
-spec:
-  mtls:
-    mode: STRICT
----
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: destination-rule
 spec:
-  host: "*.{{ $namepace }}.svc.cluster.local"
+  host: "*.{{ $namespace }}.svc.cluster.local"
   trafficPolicy:
     connectionPool:
       tcp:

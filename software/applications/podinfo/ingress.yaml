@@ -6,7 +6,21 @@ metadata:
   namespace: podinfo
 spec:
   mtls:
-    mode: STRICT
+    mode: PERMISSIVE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: podinfo-rule
+  namespace: osdu
+spec:
+  host: "*.podinfo.svc.cluster.local"
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+    tls:
+      mode: ISTIO_MUTUAL
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService

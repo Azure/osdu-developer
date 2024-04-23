@@ -1,0 +1,24 @@
+{{- $namespace := .Release.Namespace }}
+{{- $subset := .Values.subset}}
+{{- if or .service .scaledObject }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ or .service .scaledObject }}-destinationrule
+spec:
+  host: {{ .name }}.{{ $namespace }}.svc.cluster.local
+  subsets:
+  - name: {{ $subset }}
+    labels:
+      app: {{ .name }}
+      version: {{ $subset }}
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+      connectionPool:
+        tcp:
+          maxConnections: 100
+      tls:
+        mode: ISTIO_MUTUAL
+{{- end }}

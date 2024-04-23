@@ -2,11 +2,11 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: partition-virtualservices
+  name: partition-virtualservice
   namespace: osdu-core
 spec:
   hosts:
-  - "*"
+  - partition.osdu-core.svc.cluster.local
   gateways:
   - istio-system/internal-gateway
   - istio-system/external-gateway
@@ -16,7 +16,9 @@ spec:
         prefix: /api/partition/v1
     route:
     - destination:
-        host: partition
+        host: partition.osdu-core.svc.cluster.local
+        subset: m23
+        weight: 100
         port:
           number: 80
     retries:
@@ -48,15 +50,16 @@ spec:
     remediation:
       retries: 3
   values:
-    subset: v1
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
+    subset: m23
     configuration:
-    - service: partition
-      repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-23
+    - service: partition-service
+      repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-26
       tag: latest
+      subset: m23
       path: /api/partition/v1/*
       probe:
         path: /actuator/health

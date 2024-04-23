@@ -2,7 +2,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: entitlements
+  name: entitlements-virtualservice
   namespace: osdu-core
 spec:
   hosts:
@@ -17,7 +17,13 @@ spec:
     route:
     - destination:
         host: entitlements.osdu-core.svc.cluster.local
-        # subset: v1
+        subset: m23
+        weight: 100
+        port:
+          number: 80
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -44,14 +50,14 @@ spec:
     remediation:
       retries: 3
   values:
-    subset: v2
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
+    subset: m23
     configuration:
     - service: entitlements
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-23
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
       tag: latest
       path: /api/entitlements/v2/*
       probe:

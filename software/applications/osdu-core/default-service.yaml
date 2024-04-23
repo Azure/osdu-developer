@@ -26,6 +26,7 @@ spec:
       retries: 3
   values:
     nameOverride: default-service
+    subset: v1
     replicaCount: 1
     service:
       type: ClusterIP

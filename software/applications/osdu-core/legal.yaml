@@ -32,14 +32,14 @@ spec:
       port: 80
     configuration:
     - service: legal
+      path: /api/legal/v1
       hosts:
         - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-release-0-24
-      tag: latest
-      path: /api/legal/v1/*
+      tag: latest 
       probe:
         path: /actuator/health
         port: 8081

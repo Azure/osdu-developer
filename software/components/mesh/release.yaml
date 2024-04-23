@@ -78,6 +78,10 @@ spec:
     meshConfig:
       accessLogFile: /dev/stdout
       enableEnvoyAccessLogService: true
+      meshMTLS:
+        minProtocolVersion: TLSV1_3
+      TLSConfig:
+        minProtocolVersion: TLSV1_3
       defaultConfig:
         proxyAdminPort: 15000
       ingressSelector: istio-ingress

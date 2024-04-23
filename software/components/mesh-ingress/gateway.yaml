@@ -24,12 +24,6 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: wild-card-tls
-        minProtocolVersion: TLSV1_3
-        maxProtocolVersion: TLSV1_3
-        cipherSuites:
-        - TLS_AES_256_GCM_SHA384
-        - TLS_CHACHA20_POLY1305_SHA256
-        - TLS_AES_128_GCM_SHA256
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -55,9 +49,3 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: wild-card-tls
-        minProtocolVersion: TLSV1_3
-        maxProtocolVersion: TLSV1_3
-        cipherSuites:
-        - TLS_AES_256_GCM_SHA384
-        - TLS_CHACHA20_POLY1305_SHA256
-        - TLS_AES_128_GCM_SHA256

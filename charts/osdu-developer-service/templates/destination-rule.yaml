@@ -6,7 +6,7 @@
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: {{ .service }}
+  name: {{ .service }}-destination
 spec:
   host: {{ .service }}.{{ $namespace }}.svc.cluster.local
   subsets:

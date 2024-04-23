@@ -97,9 +97,6 @@ spec:
   wait: true
   healthChecks:
     - kind: Deployment
-      name: default
-      namespace: osdu-core
-    - kind: Deployment
       name: partition
       namespace: osdu-core
     - kind: Deployment
@@ -108,9 +105,9 @@ spec:
     - kind: Deployment
       name: legal
       namespace: osdu-core
-    - kind: Deployment
-      name: schema
-      namespace: osdu-core
-    - kind: Deployment
-      name: file
-      namespace: osdu-core
+    # - kind: Deployment
+    #   name: schema
+    #   namespace: osdu-core
+    # - kind: Deployment
+    #   name: file
+    #   namespace: osdu-core

@@ -1,36 +1,4 @@
 # ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: DestinationRule
-# metadata:
-#   name: schema
-#   namespace: osdu-core
-# spec:
-#   host: schema.osdu-core.svc.cluster.local
-#   trafficPolicy:
-#     connectionPool:
-#       tcp:
-#         maxConnections: 100
-# ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: VirtualService
-# metadata:
-#   name: schema
-#   namespace: osdu-core
-# spec:
-#   hosts:
-#   - "*"
-#   gateways:
-#   - istio-system/internal-gateway
-#   - istio-system/external-gateway
-#   http:
-#   - match:
-#     - uri:
-#         prefix: /api/schema/v1/
-#     route:
-#     - destination:
-#         host: schema.osdu-core.svc.cluster.local
-#         # subset: v1
-# ---
 # apiVersion: helm.toolkit.fluxcd.io/v2beta1
 # kind: HelmRelease
 # metadata:

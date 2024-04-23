@@ -25,7 +25,7 @@ spec:
       retries: 3
   values:
     nameOverride: partition
-    subset: m23
+    subset: m22
     replicaCount: 1
     service:
       type: ClusterIP
@@ -38,9 +38,8 @@ spec:
         gateways:
           - istio-system/internal-gateway
           - istio-system/external-gateway
-        repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-26
+        repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-24
         tag: latest
-        subset: m23
         probe:
           path: /actuator/health
           port: 8081

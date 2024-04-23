@@ -13,7 +13,7 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /api/partition/v1
+            prefix: {{ .path }}
       route:
         - destination:
             host: {{ .service }}.{{ $namespace }}.svc.cluster.local

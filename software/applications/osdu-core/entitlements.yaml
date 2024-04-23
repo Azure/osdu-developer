@@ -39,7 +39,7 @@ spec:
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
       tag: latest
-      path: /api/entitlements/v2/*
+      path: /api/entitlements/v2/
       probe:
         path: /actuator/health
         port: 8081

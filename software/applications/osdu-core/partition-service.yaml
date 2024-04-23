@@ -50,14 +50,14 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: partition-service
+    nameOverride: partitio
     subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80 
     configuration:
-    - service: partition-service
+    - service: partition
       repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-release-0-26
       tag: latest
       subset: m23

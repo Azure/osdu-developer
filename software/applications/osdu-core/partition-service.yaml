@@ -16,7 +16,7 @@ spec:
           prefix: /api/partition/v1
       route:
       - destination:
-          host: partitiond.osdu-core.svc.cluster.local
+          host: partition.osdu-core.svc.cluster.local
           subset: m23
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1

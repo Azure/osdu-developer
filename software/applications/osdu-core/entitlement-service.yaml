@@ -1,139 +1,139 @@
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: entitlements
-  namespace: osdu-core
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - istio-system/internal-gateway
-  - istio-system/external-gateway
-  http:
-  - match:
-    - uri:
-        prefix: /api/entitlements/v2/
-    route:
-    - destination:
-        host: entitlements.osdu-core.svc.cluster.local
-        subset: m23
-        port:
-          number: 80
-      weight: 100
-    retries:
-      attempts: 3
-      perTryTimeout: 2s
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: entitlement-service
-  namespace: flux-system
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  targetNamespace: osdu-core
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-service
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  timeout: 6m
-  install:
-    remediation:
-      retries: 3
-  values:
-    nameOverride: entitlements
-    subset: m23
-    replicaCount: 1
-    service:
-      type: ClusterIP
-      port: 80
-    configuration:
-    - service: entitlements
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
-      tag: latest
-      path: /api/entitlements/v2/*
-      probe:
-        path: /actuator/health
-        port: 8081
-        liveness:
-          delay: 250
-          seconds: 10
-      keyvault: true
-      auth:
-        disable:
-          - "/"
-          - "*/index.html"
-          - "*/v2/api-docs"
-          - "*/swagger-resources"
-          - "*/swagger-ui.html"
-          - "*/actuator/health"
-          - "*/health"
-          - "*/configuration/ui"
-          - "*/configuration/security"
-          - "/api/entitlements/v2/info"
-          - "/api/entitlements/v2/swagger-resources/*"
-          - "/api/entitlements/v2/webjars/*"
-      env:
-      - name: AZURE_TENANT_ID
-        secret:
-          name: active-directory
-          key: tenant-id
-      - name: AZURE_CLIENT_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
-      - name: KEYVAULT_URI
-        secret:
-          name: azure-resources
-          key: keyvault-uri 
-      - name: AAD_CLIENT_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
-      - name: APPINSIGHTS_KEY
-        secret:
-          name: azure-resources
-          key: insights-key
-      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-        secret:
-          name: azure-resources
-          key: insights-connection
-      - name: AZURE_ISTIOAUTH_ENABLED
-        value: "true"
-      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "false"
-      - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/entitlements/v2/"
-      - name: SERVER_PORT
-        value: "80"
-      - name: ACCEPT_HTTP
-        value: "true"
-      - name: SPRING_APPLICATION_NAME
-        value: "entitlements"
-      - name: SPRING_CONFIG_NAME
-        value: "common,application"
-      - name: LOG_PREFIX
-        value: "entitlements"
-      - name: LOGGING_LEVEL
-        value: "DEBUG"
-      - name: SERVICE_DOMAIN_NAME
-        value: "contoso.com"
-      - name: ROOT_DATA_GROUP_QUOTA
-        value: "5000"
-      - name: REDIS_TTL_SECONDS
-        value: "1"
-      - name: PARTITION_SERVICE_ENDPOINT
-        value: "http://partition/api/partition/v1"
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: entitlements
+#   namespace: osdu-core
+# spec:
+#   hosts:
+#   - "*"
+#   gateways:
+#   - istio-system/internal-gateway
+#   - istio-system/external-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /api/entitlements/v2/
+#     route:
+#     - destination:
+#         host: entitlements.osdu-core.svc.cluster.local
+#         subset: m23
+#         port:
+#           number: 80
+#       weight: 100
+#     retries:
+#       attempts: 3
+#       perTryTimeout: 2s
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: entitlement-service
+#   namespace: flux-system
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   dependsOn:
+#   - name: osdu-developer-base
+#     namespace: default
+#   targetNamespace: osdu-core
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-service
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   timeout: 6m
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     nameOverride: entitlements
+#     subset: m23
+#     replicaCount: 1
+#     service:
+#       type: ClusterIP
+#       port: 80
+#     configuration:
+#     - service: entitlements
+#       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
+#       tag: latest
+#       path: /api/entitlements/v2/*
+#       probe:
+#         path: /actuator/health
+#         port: 8081
+#         liveness:
+#           delay: 250
+#           seconds: 10
+#       keyvault: true
+#       auth:
+#         disable:
+#           - "/"
+#           - "*/index.html"
+#           - "*/v2/api-docs"
+#           - "*/swagger-resources"
+#           - "*/swagger-ui.html"
+#           - "*/actuator/health"
+#           - "*/health"
+#           - "*/configuration/ui"
+#           - "*/configuration/security"
+#           - "/api/entitlements/v2/info"
+#           - "/api/entitlements/v2/swagger-resources/*"
+#           - "/api/entitlements/v2/webjars/*"
+#       env:
+#       - name: AZURE_TENANT_ID
+#         secret:
+#           name: active-directory
+#           key: tenant-id
+#       - name: AZURE_CLIENT_ID
+#         secret:
+#           name: active-directory
+#           key: principal-clientid
+#       - name: AZURE_CLIENT_SECRET
+#         secret:
+#           name: active-directory
+#           key: principal-clientpassword
+#       - name: KEYVAULT_URI
+#         secret:
+#           name: azure-resources
+#           key: keyvault-uri 
+#       - name: AAD_CLIENT_ID
+#         secret:
+#           name: active-directory
+#           key: principal-clientid
+#       - name: APPINSIGHTS_KEY
+#         secret:
+#           name: azure-resources
+#           key: insights-key
+#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+#         secret:
+#           name: azure-resources
+#           key: insights-connection
+#       - name: AZURE_ISTIOAUTH_ENABLED
+#         value: "true"
+#       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+#         value: "false"
+#       - name: SERVER_SERVLET_CONTEXTPATH
+#         value: "/api/entitlements/v2/"
+#       - name: SERVER_PORT
+#         value: "80"
+#       - name: ACCEPT_HTTP
+#         value: "true"
+#       - name: SPRING_APPLICATION_NAME
+#         value: "entitlements"
+#       - name: SPRING_CONFIG_NAME
+#         value: "common,application"
+#       - name: LOG_PREFIX
+#         value: "entitlements"
+#       - name: LOGGING_LEVEL
+#         value: "DEBUG"
+#       - name: SERVICE_DOMAIN_NAME
+#         value: "contoso.com"
+#       - name: ROOT_DATA_GROUP_QUOTA
+#         value: "5000"
+#       - name: REDIS_TTL_SECONDS
+#         value: "1"
+#       - name: PARTITION_SERVICE_ENDPOINT
+#         value: "http://partition/api/partition/v1"

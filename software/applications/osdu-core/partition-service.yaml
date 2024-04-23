@@ -50,7 +50,7 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: partitio
+    nameOverride: partition
     subset: m23
     replicaCount: 1
     service:

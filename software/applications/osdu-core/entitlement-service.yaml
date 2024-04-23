@@ -18,9 +18,9 @@ spec:
     - destination:
         host: entitlements.osdu-core.svc.cluster.local
         subset: m23
-        weight: 100
         port:
           number: 80
+      weight: 100
     retries:
       attempts: 3
       perTryTimeout: 2s

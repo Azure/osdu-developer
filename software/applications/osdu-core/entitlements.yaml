@@ -32,7 +32,7 @@ spec:
       port: 80
     configuration:
     - service: entitlements
-      path: /api/entitlements/v2
+      path: /api/entitlements/v2/
       hosts:
       - "*"
       gateways:

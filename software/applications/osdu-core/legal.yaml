@@ -32,7 +32,7 @@ spec:
       port: 80
     configuration:
     - service: legal
-      path: /api/legal/v1
+      path: /api/legal/v1/
       hosts:
         - "*"
       gateways:

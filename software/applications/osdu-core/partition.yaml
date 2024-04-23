@@ -32,7 +32,7 @@ spec:
       port: 80
     configuration:
       - service: partition
-        path: /api/partition/v1
+        path: /api/partition/v1/
         hosts:
           - "*"
         gateways:

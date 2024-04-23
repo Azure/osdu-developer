@@ -156,6 +156,9 @@ spec:
   values:
     service:
         type: LoadBalancer
+        annotations: 
+          service.beta.kubernetes.io/azure-load-balancer-internal: 'false'
+          service.beta.kubernetes.io/azure-dns-label-name: 'external.osdu-developer.com'
         ports:
         - name: status-port
           port: 15021

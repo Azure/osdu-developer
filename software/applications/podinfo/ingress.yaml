@@ -14,7 +14,7 @@ metadata:
   name: podinfo-rule
   namespace: podinfo
 spec:
-  host: "*.podinfo.svc.cluster.local"
+  host: podinfo.podinfo.svc.cluster.local
   trafficPolicy:
     connectionPool:
       tcp:

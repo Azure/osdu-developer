@@ -50,11 +50,12 @@ spec:
     remediation:
       retries: 3
   values:
+    nameOverride: partition-service
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
-    subset: m23
     configuration:
     - service: entitlements
       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26

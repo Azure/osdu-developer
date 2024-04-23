@@ -39,7 +39,7 @@ spec:
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-release-0-24
       tag: latest
-      path: /api/legal/v1/
+      path: /api/legal/v1/*
       probe:
         path: /actuator/health
         port: 8081

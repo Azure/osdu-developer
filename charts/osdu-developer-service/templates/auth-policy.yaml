@@ -5,7 +5,7 @@
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: {{ .service }}-auth
+  name: {{ .service }}
   labels: {{ $labels }}
 spec:
   selector:

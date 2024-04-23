@@ -43,6 +43,7 @@ grant_type=client_credentials
 GET {{PARTITION_HOST}}/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
+Host: local.osdu-developer.com
 
 # -----------------------
 # API: Partition

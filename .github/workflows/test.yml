@@ -353,6 +353,23 @@ jobs:
             DEPNAME='Dep${{ github.run_number }}'
             PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }}"
             az stack group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --verbose
+      
+      - name: Azure Login Refresh Token
+        uses: Azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+          environment: azurecloud
+          allow-no-subscriptions: false
+
+      - name: Retrieve AKS Name
+        id: getAks
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
             az stack group list --resource-group $RESOURCE_GROUP -o table
 
             AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "14724803713165345042"
+      "templateHash": "5486072545266746743"
     }
   },
   "parameters": {
@@ -20295,7 +20295,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.54.24096",
-              "templateHash": "14573980887666030719"
+              "templateHash": "1770604761791484415"
             }
           },
           "definitions": {
@@ -20527,7 +20527,7 @@
                 "name": "flux-system",
                 "url": "[if(equals(parameters('softwareRepository'), ''), 'https://github.com/azure/osdu-developer', parameters('softwareRepository'))]",
                 "branch": "[if(equals(parameters('softwareBranch'), ''), '', parameters('softwareBranch'))]",
-                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.9.0', parameters('softwareTag'))]",
+                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.10.0', parameters('softwareTag'))]",
                 "components": "./stamp/components",
                 "applications": "./stamp/applications"
               }

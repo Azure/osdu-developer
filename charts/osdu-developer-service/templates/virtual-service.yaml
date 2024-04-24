@@ -1,0 +1,22 @@
+{{- $namespace := .Release.Namespace }}
+{{- $subset := .Values.subset}}
+{{- range .Values.configuration }}
+{{- if and .service .hosts .gateways }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .service }}
+spec:
+  hosts: {{ toYaml .hosts | nindent 4 }}
+  gateways: {{ toYaml .gateways | nindent 4 }}
+  http:
+    - match:
+        - uri:
+            prefix: {{ .path }}
+      route:
+        - destination:
+            host: {{ .service }}.{{ $namespace }}.svc.cluster.local
+            subset: {{ $subset }}
+{{- end }}
+{{- end }}

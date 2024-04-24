@@ -1,40 +1,8 @@
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: entitlements
-  namespace: osdu-core
-spec:
-  host: entitlements.osdu-core.svc.cluster.local
-  trafficPolicy:
-    connectionPool:
-      tcp:
-        maxConnections: 100
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: entitlements
-  namespace: osdu-core
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - istio-system/internal-gateway
-  - istio-system/external-gateway
-  http:
-  - match:
-    - uri:
-        prefix: /api/entitlements/v2/
-    route:
-    - destination:
-        host: entitlements.osdu-core.svc.cluster.local
-        # subset: v1
----
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: entitlement-service
+  name: entitlements
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
@@ -56,16 +24,22 @@ spec:
     remediation:
       retries: 3
   values:
-    subset: v2
+    nameOverride: entitlements
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
     - service: entitlements
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-23
+      path: /api/entitlements/v2/
+      hosts:
+      - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-24
       tag: latest
-      path: /api/entitlements/v2/*
       probe:
         path: /actuator/health
         port: 8081

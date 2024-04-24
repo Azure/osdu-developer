@@ -78,6 +78,10 @@ spec:
     meshConfig:
       accessLogFile: /dev/stdout
       enableEnvoyAccessLogService: true
+      meshMTLS:
+        minProtocolVersion: TLSV1_3
+      TLSConfig:
+        minProtocolVersion: TLSV1_3
       defaultConfig:
         proxyAdminPort: 15000
       ingressSelector: istio-ingress
@@ -152,6 +156,9 @@ spec:
   values:
     service:
         type: LoadBalancer
+        annotations: 
+          service.beta.kubernetes.io/azure-load-balancer-internal: 'false'
+          # service.beta.kubernetes.io/azure-dns-label-name: 'osdu-developer'
         ports:
         - name: status-port
           port: 15021

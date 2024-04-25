@@ -285,7 +285,7 @@ var subnets = {
   }
 }
 
-module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection) {
+module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-nsg-cluster'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-aks'
@@ -305,7 +305,7 @@ module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection && enableBastion) {
+module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection && enableBastion) {
   name: '${bladeConfig.sectionName}-nsg-bastion'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-bastion'
@@ -329,7 +329,7 @@ module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection && enableBastion) {
+module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection && enableBastion) {
   name: '${bladeConfig.sectionName}-nsg-manage'
   params: {
     name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-vm'
@@ -345,7 +345,7 @@ module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module network 'br/public:avm/res/network/virtual-network:0.1.0' = if (!enableVnetInjection) {
+module network 'br/public:avm/res/network/virtual-network:0.1.5' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-virtual-network'
   params: {
     name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'

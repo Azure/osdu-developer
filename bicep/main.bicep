@@ -150,11 +150,11 @@ var configuration = {
 //*****************************************************************//
 //  Identity Resources                                             //
 //*****************************************************************//
-module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
+module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.2.1' = {
   name: '${configuration.name}-user-managed-identity'
   params: {
     // Required parameters
-    name: 'id-${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
+    name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -169,10 +169,10 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
 //*****************************************************************//
 //  Monitoring Resources                                           //
 //*****************************************************************//
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
   name: '${configuration.name}-log-analytics'
   params: {
-    name: 'log-${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
+    name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
     location: location
     enableTelemetry: enableTelemetry
 
@@ -376,6 +376,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     kvUri: commonBlade.outputs.keyvaultUri
     storageName: commonBlade.outputs.storageAccountName
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
+    partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     
     aksSubnetId: networkBlade.outputs.aksSubnetId
     podSubnetId: enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
@@ -415,5 +416,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
 }
 
 output KEYVAULT_NAME string = commonBlade.outputs.keyvaultName
+output ACR_NAME string = serviceBlade.outputs.registryName
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

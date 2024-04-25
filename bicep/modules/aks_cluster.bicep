@@ -649,7 +649,7 @@ var ingressModes = {
 | _| `._____||_______|_______/     \______/   \______/  | _| `._____| \______||_______|_______/    
 */
 
-resource aks 'Microsoft.ContainerService/managedClusters@2023-10-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2024-01-01' = {
   name: length(name) > 63 ? substring(name, 0, 63) : name
   location: location
   tags: tags

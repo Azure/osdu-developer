@@ -81,12 +81,12 @@ param manageLayerConfig manageSettings
 |______/  /__/     \__\ |_______/       |__|     |__|  \______/  |__| \__| 
 */
 
-module bastionHost 'br/public:avm/res/network/bastion-host:0.1.1' = if (enableBastion) {
+module bastionHost 'br/public:avm/res/network/bastion-host:0.2.1' = if (enableBastion) {
   name: '${bladeConfig.sectionName}-bastion'
   params: {
     name: 'bh-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     skuName: manageLayerConfig.bastion.skuName
-    vNetId: vnetId
+    virtualNetworkResourceId: vnetId
     location: location
     enableTelemetry: enableTelemetry
   }  

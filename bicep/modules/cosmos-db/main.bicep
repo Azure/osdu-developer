@@ -202,7 +202,7 @@ param kvKeyUri string = ''
 @description('Optional. Indicates if the module is used in a cross tenant scenario. If true, a resourceId must be provided in the role assignment\'s principal object.')
 param crossTenant bool = false
 
-var name = 'dba-${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
+var name = '${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 
 var diagnosticsLogs = [for log in logsToEnable: {

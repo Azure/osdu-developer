@@ -13,6 +13,9 @@ type bladeSettings = {
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
+@description('Optional. The tags to apply to the resources')
+param tags object = {}
+
 @description('The location of resources to deploy')
 param location string
 
@@ -174,9 +177,12 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
     enableTelemetry: enableTelemetry
     
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     enablePurgeProtection: false
     
@@ -288,9 +294,12 @@ module configStorage './storage-account/main.bicep' = {
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -356,9 +365,12 @@ module database './cosmos-db/main.bicep' = {
     resourceLocation: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId

@@ -43,6 +43,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool = false
 
@@ -89,6 +92,13 @@ module bastionHost 'br/public:avm/res/network/bastion-host:0.2.1' = if (enableBa
     virtualNetworkResourceId: vnetId
     location: location
     enableTelemetry: enableTelemetry
+
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
   }  
 }
 
@@ -113,9 +123,12 @@ module virtualMachine './virtual_machine.bicep' = if (enableBastion) {
     vmSize: manageLayerConfig.machine.vmSize
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     vmSubnetId: vmSubnetId
     vmAdminUsername: vmAdminUsername

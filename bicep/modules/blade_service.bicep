@@ -27,6 +27,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool
 
@@ -77,10 +80,6 @@ param clusterAdminIds array
 @description('The address range to use for services')
 param serviceCidr string
 
-@minLength(9)
-@maxLength(18)
-@description('The address range to use for the docker bridge')
-param dockerBridgeCidr string
 
 @minLength(7)
 @maxLength(15)
@@ -174,9 +173,12 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     enableTelemetry: enableTelemetry
 
@@ -233,9 +235,12 @@ module cluster './aks_cluster.bicep' = {
     networkPlugin: serviceLayerConfig.cluster.networkPlugin
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Configure Linking Items
     aksSubnetId: aksSubnetId
@@ -246,7 +251,6 @@ module cluster './aks_cluster.bicep' = {
     // Configure VNET Injection
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
-    dockerBridgeCidr: dockerBridgeCidr
 
     // Configure Istio
     serviceMeshProfile: enableMonitoring ? 'Istio' : null
@@ -347,110 +351,72 @@ module pool3 './aks_agent_pool.bicep' = {
   }
 }
 
-var federations = [
-  {
-    name: 'federated-cred-ns_default'
-    namespace: 'default'
-    serviceAccount: 'workload-identity-sa'
-  }
-  {
-    name: 'federated-cred-ns_osdu-core'
-    namespace: 'osdu-core'
-    serviceAccount: 'workload-identity-sa'
-  }
-  {
-    name: 'federated-cred-ns_dev-sample'
-    namespace: 'dev-sample'
-    serviceAccount: 'workload-identity-sa'
-  }
-  {
-    name: 'federated-cred-ns_config-maps'
-    namespace: 'azappconfig-system'
-    serviceAccount: 'az-appconfig-k8s-provider'
-  }
-]
 
-module identityFederations './federated_identity.bicep' = [for (config, i) in federations : {
-  name: '${bladeConfig.sectionName}-${config.name}'
+
+// Federated Credentials have to be sequentially added.  Ensure depends on to do sequentially.
+module federatedCredsDefaultNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_default'
   params: {
-    name: 'federated-ns_${config.namespace}'
+    name: 'federated-ns_default'
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:${config.namespace}:${config.serviceAccount}'
+    subject: 'system:serviceaccount:default:workload-identity-sa'
   }
   dependsOn: [
     cluster
   ]
-}]
+}
 
+module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-core'
+  params: {
+    name: 'federated-ns_osdu-core'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsDefaultNamespace
+  ]
+}
 
-// module federatedCredsDefaultNamespace './federated_identity.bicep' = {
-//   name: '${bladeConfig.sectionName}-federated-cred-ns_default'
-//   params: {
-//     name: 'federated-ns_default'
-//     audiences: [
-//       'api://AzureADTokenExchange'
-//     ]
-//     issuer: cluster.outputs.aksOidcIssuerUrl
-//     userAssignedIdentityName: appIdentity.name
-//     subject: 'system:serviceaccount:default:workload-identity-sa'
-//   }
-//   dependsOn: [
-//     cluster
-//   ]
-// }
+module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
+  params: {
+    name: 'federated-ns_dev-sample'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsOsduCoreNamespace
+  ]
+}
 
-// module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
-//   name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-core'
-//   params: {
-//     name: 'federated-ns_osdu-core'
-//     audiences: [
-//       'api://AzureADTokenExchange'
-//     ]
-//     issuer: cluster.outputs.aksOidcIssuerUrl
-//     userAssignedIdentityName: appIdentity.name
-//     subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
-//   }
-//   dependsOn: [
-//     federatedCredsDefaultNamespace
-//   ]
-// }
-
-// // Federated Credentials have to be sequentially added.  Ensure depends on.
-// module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
-//   name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
-//   params: {
-//     name: 'federated-ns_dev-sample'
-//     audiences: [
-//       'api://AzureADTokenExchange'
-//     ]
-//     issuer: cluster.outputs.aksOidcIssuerUrl
-//     userAssignedIdentityName: appIdentity.name
-//     subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
-//   }
-//   dependsOn: [
-//     federatedCredsOsduCoreNamespace
-//   ]
-// }
-
-// module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
-//   name: '${bladeConfig.sectionName}-federated-cred-ns_config-maps'
-//   params: {
-//     name: 'federated-ns_azappconfig-system'
-//     audiences: [
-//       'api://AzureADTokenExchange'
-//     ]
-//     issuer: cluster.outputs.aksOidcIssuerUrl
-//     userAssignedIdentityName: appIdentity.name
-//     subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
-//   }
-//   dependsOn: [
-//     federatedCredsDevSampleNamespace
-//   ]
-// }
+module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_config-maps'
+  params: {
+    name: 'federated-ns_azappconfig-system'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
+  }
+  dependsOn: [
+    federatedCredsDevSampleNamespace
+  ]
+}
 
 module appRoleAssignments './app_assignments.bicep' = {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac'
@@ -460,7 +426,10 @@ module appRoleAssignments './app_assignments.bicep' = {
     storageName: storageName
   }
   dependsOn: [
-    identityFederations
+    federatedCredsDefaultNamespace
+    federatedCredsOsduCoreNamespace
+    federatedCredsDevSampleNamespace
+    federatedCredsConfigMapsNamespace
   ]
 }
 
@@ -471,7 +440,10 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
     storageName: name
   }
   dependsOn: [
-    identityFederations
+    federatedCredsDefaultNamespace
+    federatedCredsOsduCoreNamespace
+    federatedCredsDevSampleNamespace
+    federatedCredsConfigMapsNamespace
   ]
 }]
 
@@ -582,9 +554,12 @@ module app_config './app-configuration/main.bicep' = {
   params: {
     resourceName: bladeConfig.sectionName
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Add Role Assignment
     roleAssignments: [
@@ -733,9 +708,12 @@ module prometheus 'aks_prometheus.bicep' = if(enableMonitoring) {
     // Basic Details
     name: length(name) > 23 ? substring(name, 0, 23) : name
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     publicNetworkAccess: 'Enabled'    
     clusterName: cluster.outputs.aksClusterName
@@ -749,9 +727,12 @@ module grafana 'aks_grafana.bicep' = if(enableMonitoring){
     // Basic Details
     name: length(name) > 23 ? substring(name, 0, 23) : name
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     skuName: 'Standard'
     apiKey: 'Enabled'

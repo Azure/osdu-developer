@@ -16,6 +16,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
@@ -360,15 +363,19 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
   name: '${bladeConfig.sectionName}-azure-storage-${index}'
   params: {
     #disable-next-line BCP335 BCP332
-    name: 'sa${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
+    name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-      partition: partition.name
-      purpose: 'data'
-    }
+
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -412,11 +419,14 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     resourceLocation: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-      partition: partition.name
-      purpose: 'data'
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -465,15 +475,18 @@ module partitionDbEndpoint './private-endpoint/main.bicep' = [for (partition, in
 module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-service-bus-${index}'
   params: {
-    name: 'sb${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
+    name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-      partition: partition.name
-      purpose: 'data'
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticSettings: [

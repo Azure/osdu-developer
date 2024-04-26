@@ -1,0 +1,21 @@
+
+{{- $namespace := .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "osdu-developer-auth.fullname" . }}-html
+  namespace: {{ $namespace }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <h1>Hello from the Cloud</h1>
+        <script>
+          const queryDict = {};
+          location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+          document.querySelector("h1").innerText=`Hello ${queryDict["name"]} from the Cloud`;
+        </script>
+      </body>
+    </html>

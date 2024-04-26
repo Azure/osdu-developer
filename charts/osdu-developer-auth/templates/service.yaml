@@ -1,0 +1,16 @@
+{{- $namespace := .Release.Namespace }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "osdu-developer-auth.fullname" . }}
+  namespace: {{ $namespace }}
+  labels:
+    app: osdu-auth
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  selector:
+    app: {{ include "osdu-developer-auth.fullname" . }}

@@ -111,3 +111,23 @@ spec:
     # - kind: Deployment
     #   name: file
     #   namespace: osdu-core
+
+######################
+## OSDU Auth
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-osdu-auth
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/osdu-auth
+  prune: true
+  wait: true

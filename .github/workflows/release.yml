@@ -37,11 +37,19 @@ jobs:
         run: |
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
-      - name: Github Checkin
+      - name: Generate Changelog
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configuration: ".github/changelog_config.yml"
+          output-file: "CHANGELOG.md"
+
+      - name: Commit Generated File
         uses: EndBug/add-and-commit@v9
         with:
-          message: "Initialize Software Install"
-          add: "."
+          message: "Add updated azuredeploy.json"
+          add: "azuredeploy.json"
 
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.69.0
@@ -55,7 +63,9 @@ jobs:
         with:
           repository: ${{ github.repository }}
 
-      - uses: ncipollo/release-action@v1
+      - name: Create Release
+        uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.latest.outputs.tag }}
-          artifacts: "azuredeploy.json"
+          artifacts: "azuredeploy.json,CHANGELOG.md"
+          bodyFile: "CHANGELOG.md"

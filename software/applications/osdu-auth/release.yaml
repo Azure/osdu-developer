@@ -29,5 +29,5 @@ spec:
     gateways:
       - istio-system/internal-gateway
       - istio-system/external-gateway
-    path: /login/
+    path: /auth/
 

@@ -63,24 +63,24 @@ sequenceDiagram
     participant Workflow as "GitHub Workflow"
 
     participant Azure as "Azure/login@v2"
-    participant anothrNick as "github-tag-action@1.69.0"
+    participant extension1 as "github-tag-action@1.69.0"
     participant bashCommand as "bash"
     participant pwshCommand as "pwsh"
-    participant mikepenz as "elease-changelog-builder-action@v1"
+    participant extension2 as "elease-changelog-builder-action@v1"
     participant EndBug as "add-and-commit@v9"
-    participant ncipollo as "release-action@v1"
+    participant extension3 as "release-action@v1"
 
 
     Workflow->>Workflow: Manual Trigger
     Workflow->>Workflow: Code Checkout
     Workflow->>Azure: Azure Login
-    Workflow->>anothrNick: New Tag
+    Workflow->>extension1: New Tag
     Workflow->>bashCommand: Version Update
     Workflow->>pwshCommand: Bicep Install
     Workflow->>pwshCommand: Bicep Build
-    Workflow->>mikepenz: Generate Changes
+    Workflow->>extension2: Generate Changes
     Workflow->>EndBug: Git Commit
-    Workflow->>ncipollo: Create Release
+    Workflow->>extension3: Create Release
 ```
 
 ## Misc actions used in this repo

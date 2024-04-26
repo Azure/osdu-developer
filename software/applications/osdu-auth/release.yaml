@@ -23,3 +23,11 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+  values:
+    hosts:
+      - "*"
+    gateways:
+      - istio-system/internal-gateway
+      - istio-system/external-gateway
+    path: /login/
+

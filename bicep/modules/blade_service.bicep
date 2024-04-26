@@ -128,7 +128,7 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? '' : softwareBranch
-    tag: softwareTag == '' && softwareBranch == '' ? 'v0.10.0' : softwareTag
+    tag: softwareTag == '' && softwareBranch == '' ? 'v0.11.0' : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
   }

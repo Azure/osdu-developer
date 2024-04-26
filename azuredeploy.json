@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "3854446754092335363"
+      "templateHash": "10416940666917304104"
     }
   },
   "parameters": {
@@ -25004,7 +25004,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.170.59819",
-              "templateHash": "14108948775829244242"
+              "templateHash": "10956132890371012251"
             }
           },
           "definitions": {
@@ -30064,7 +30064,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.26.170.59819",
-                      "templateHash": "13319486303990973389"
+                      "templateHash": "18284416707479368009"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -30275,7 +30275,7 @@
                         }
                       }
                     ],
-                    "name": "[format('ac-{0}{1}', replace(parameters('resourceName'), '-', ''), uniqueString(resourceGroup().id, parameters('resourceName')))]",
+                    "name": "[format('{0}{1}', replace(parameters('resourceName'), '-', ''), uniqueString(resourceGroup().id, parameters('resourceName')))]",
                     "enableCMEK": "[if(and(and(not(empty(parameters('cmekConfiguration').kvUrl)), not(empty(parameters('cmekConfiguration').keyName))), not(empty(parameters('cmekConfiguration').identityId))), true(), false())]",
                     "identityType": "[if(parameters('systemAssignedIdentity'), 'SystemAssigned', if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
                     "enablePrivateLink": "[and(not(equals(parameters('privateLinkSettings').vnetId, '1')), not(equals(parameters('privateLinkSettings').subnetId, '1')))]",

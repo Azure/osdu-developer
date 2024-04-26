@@ -112,7 +112,7 @@ param cmekConfiguration object = {
 }
 
 
-var name = 'ac-${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
+var name = '${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 var enableCMEK = !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) && !empty(cmekConfiguration.identityId) ? true : false
 

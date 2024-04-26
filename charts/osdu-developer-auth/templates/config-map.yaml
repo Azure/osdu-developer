@@ -1,0 +1,167 @@
+
+{{- $namespace := .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: osdu-auth-html
+  namespace: {{ $namespace }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <!-- python3 -m http.server 8080 -->
+
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      <title>OAuth Login</title>
+      <!-- Font Awesome -->
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+      <!-- Bootstrap core CSS -->
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+      <style type="text/css">
+        textarea {
+          margin-bottom: 5px;
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <div id="app">
+
+        <form id="oauth-form" @submit.prevent="getToken" class="text-center border border-light p-5" action="#!">
+
+          <p class="h2 mb-4">Microsoft Identity Platform (v2.0)</p>
+
+          <div class="form-group">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label class="float-left" for="clientId">ClientId</label>
+                <input type="text" class="form-control" id="clientId" v-model="clientId">
+              </div>
+              <div class="form-group col-md-6">
+                <label class="float-left" for="tenantId">TenantId</label>
+                <input type="text" class="form-control" id="tenantId" v-model="tenantId">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-6 mb-3">
+                <label class="float-left" for="responseType">RedirectUrl</label>
+                <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="float-left" for="responseType">ResponseType</label>
+                <input type="text" class="form-control" id="responseType" v-model="responseType">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="float-left" for="responseMode">ResponseMode</label>
+                <input type="text" class="form-control" id="responseMode" v-model="responseMode">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+                <label class="float-left" for="scope">Scope</label>
+                <input type="text" class="form-control" id="scope" v-model="scope">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-1">
+                <a :href="signOutUrl" class="btn btn-link float-left" v-if="authorizationCode" class="col-2">Logout</a>
+                <a :href="authorizeUrl" class="btn btn-primary float-right" class="col-2">Authorize</a>
+              </div>
+            </div>
+
+          </div>
+          <hr />
+
+          <div class="form-group shadow-textarea">
+            <div class="form-row">
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="accessToken">ResponseType: code</label>
+                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1"
+                  rows="10"></textarea>
+              </div>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="accessToken">ResponseType: token</label>
+                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="10"></textarea>
+                <a @click="decodeAccess()" class="btn btn-info btn-sm float-right" v-if="accessToken">Decode</a>
+              </div>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="idToken">ResponseType: id_token</label>
+                <textarea id="idToken" v-model="idToken" class="form-control z-depth-1" rows="10"></textarea>
+                <a @click="decodeId()" class="btn btn-info btn-sm float-right" v-if="idToken">Decode</a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- SCRIPTS -->
+      <!-- JQuery -->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <!-- Bootstrap core JavaScript -->
+      <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      <!-- Vue JavaScript -->
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script>
+
+        var app = new Vue({
+          el: '#oauth-form',
+          data: {
+            tenantId: '{{ .Values.azure.tenantId }}',
+            clientId: '{{ .Values.azure.clientId }}',
+            redirectUrl: window.location.href, // Use the current page URL,
+            responseType: 'code',
+            responseMode: 'fragment',
+            scope: '{{ .Values.azure.clientId }}/.default openid profile offline_access',
+            authorizationCode: null,
+            accessToken: null,
+            idToken: null
+          },
+          computed: {
+            authorizeUrl: function () {
+              return "https://login.microsoftonline.com/" + this.tenantId +
+                "/oauth2/v2.0/authorize?" +
+                "client_id=" + this.clientId +
+                "&response_type=" + this.responseType +
+                "&redirect_uri=" + this.redirectUrl +
+                "&response_mode=" + this.responseMode +
+                "&scope=" + this.scope +
+                "&state=12345" +
+                "&nonce=dummy123";
+            },
+            decodeId: function () {
+              decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
+              window.open(decodeUrl, "_blank");
+            },
+            decodeAccess: function () {
+              decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
+              window.open(decodeUrl, "_blank");
+            },
+            signOutUrl: function () {
+              return "https://login.microsoftonline.com/" + this.clientId + "/oauth2/logout";
+            },
+            redirect: function () {
+              return location.protocol + '//' + location.host + location.pathname
+            }
+          },
+          beforeMount: function () {
+            if (window.location.hash) {
+              var params = window.location.hash.substr(1).split('&').reduce(function (result, item) {
+                var parts = item.split('=');
+                result[parts[0]] = parts[1];
+                return result;
+              }, {});
+              this.authorizationCode = params['code'];
+              this.accessToken = params['access_token'];
+              this.idToken = params['id_token'];
+            }
+          }
+        })
+      </script>
+    </body>
+
+    </html>

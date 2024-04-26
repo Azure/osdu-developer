@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: osdu-auth
+  labels:
+    toolkit.fluxcd.io/tenant: dev-team
+    istio-injection: enabled

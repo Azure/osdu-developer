@@ -1,0 +1,19 @@
+{{- $namespace := .Release.Namespace }}
+{{- if and .Values.hosts .Values.gateways }} 
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: osdu-auth
+  namespace: {{ $namespace }}
+spec:
+  hosts: {{ toYaml .Values.hosts | nindent 4 }}
+  gateways: {{ toYaml .Values.gateways | nindent 4 }}
+  http:
+    - match:
+        - uri:
+            prefix: {{ .Values.path }}
+      route:
+        - destination:
+            host: osdu-auth.{{ $namespace }}.svc.cluster.local
+{{- end }}

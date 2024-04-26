@@ -131,3 +131,7 @@ spec:
   path: ./software/applications/osdu-auth
   prune: true
   wait: true
+  healthChecks:
+    - kind: Deployment
+      name: osdu-auth
+      namespace: osdu-auth

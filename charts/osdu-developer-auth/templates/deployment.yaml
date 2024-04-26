@@ -2,7 +2,7 @@
 ---
 apiVersion: apps/v1
 metadata:
-  name: {{ include "osdu-developer-auth.fullname" . }}
+  name: osdu-auth
   namespace: {{ $namespace }}
 kind: Deployment
 spec:
@@ -28,4 +28,4 @@ spec:
       volumes:
       - name: index-volume
         configMap:
-          name: {{ include "osdu-developer-auth.fullname" . }}-html
+          name: osdu-auth-html

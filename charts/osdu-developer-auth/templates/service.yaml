@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "osdu-developer-auth.fullname" . }}
+  name: osdu-auth
   namespace: {{ $namespace }}
   labels:
     app: osdu-auth
@@ -13,4 +13,4 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    app: {{ include "osdu-developer-auth.fullname" . }}
+    app: osdu-auth

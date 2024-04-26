@@ -115,6 +115,8 @@ param appSettings appConfigItem[]
 // Configuration 
 /////////////////////////////////
 
+var version = loadJsonContent('../../version.json')
+
 var serviceLayerConfig = {
   registry: {
     sku: 'Basic'
@@ -128,7 +130,7 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? '' : softwareBranch
-    tag: softwareTag == '' && softwareBranch == '' ? 'v0.11.0' : softwareTag
+    tag: softwareTag == '' && softwareBranch == '' ? version.release : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
   }

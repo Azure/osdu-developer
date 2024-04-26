@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "10416940666917304104"
+      "templateHash": "10740191622741202190"
     }
   },
   "parameters": {
@@ -25004,7 +25004,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.26.170.59819",
-              "templateHash": "10956132890371012251"
+              "templateHash": "7125294884320098906"
             }
           },
           "definitions": {
@@ -25256,6 +25256,10 @@
                 }
               }
             ],
+            "$fxv#0": {
+              "release": "v0.13.0"
+            },
+            "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
               "registry": {
                 "sku": "Basic"
@@ -25269,7 +25273,7 @@
                 "name": "flux-system",
                 "url": "[if(equals(parameters('softwareRepository'), ''), 'https://github.com/azure/osdu-developer', parameters('softwareRepository'))]",
                 "branch": "[if(equals(parameters('softwareBranch'), ''), '', parameters('softwareBranch'))]",
-                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), 'v0.11.0', parameters('softwareTag'))]",
+                "tag": "[if(and(equals(parameters('softwareTag'), ''), equals(parameters('softwareBranch'), '')), variables('version').release, parameters('softwareTag'))]",
                 "components": "./stamp/components",
                 "applications": "./stamp/applications"
               }

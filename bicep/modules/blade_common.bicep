@@ -13,6 +13,9 @@ type bladeSettings = {
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
+@description('Optional. The tags to apply to the resources')
+param tags object = {}
+
 @description('The location of resources to deploy')
 param location string
 
@@ -96,7 +99,7 @@ var commonLayerConfig = {
 module insights 'br/public:avm/res/insights/component:0.3.0' = {
   name: '${bladeConfig.sectionName}-insights'
   params: {
-    name: 'ai-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
     enableTelemetry: enableTelemetry
     kind: commonLayerConfig.insights.sku
@@ -125,7 +128,7 @@ module insights 'br/public:avm/res/insights/component:0.3.0' = {
 |__|\__\ |_______|   |__|         \__/ /__/     \__\ \______/  |_______|    |__|                                                                     
 */
 
-var name = 'kv-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+var name = '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
 
 @description('The list of secrets to persist to the Key Vault')
 var vaultSecrets = [ 
@@ -166,7 +169,7 @@ var roleAssignment = {
   principalType: 'ServicePrincipal'
 }
 
-module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
+module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
   name: '${bladeConfig.sectionName}-keyvault'
   params: {
     name: length(name) > 24 ? substring(name, 0, 24) : name
@@ -174,9 +177,12 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.3.4' = {
     enableTelemetry: enableTelemetry
     
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     enablePurgeProtection: false
     
@@ -284,13 +290,16 @@ var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
 module configStorage './storage-account/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage'
   params: {
-    name: 'sa${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -356,9 +365,12 @@ module database './cosmos-db/main.bicep' = {
     resourceLocation: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId

@@ -158,11 +158,6 @@ param podCidr string = '192.168.0.0/16'
 @description('The address range to use for services')
 param serviceCidr string = '172.16.0.0/16'
 
-@minLength(9)
-@maxLength(18)
-@description('The address range to use for the docker bridge')
-param dockerBridgeCidr string = '172.17.0.1/16'
-
 @minLength(7)
 @maxLength(15)
 @description('The IP address to reserve for DNS')
@@ -331,7 +326,7 @@ param istioRevision string = 'asm-1-18'
 */
                                                                                                
 @description('The name of the AKS cluster.')
-var name = 'aks-${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
+var name = '${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 var serviceMeshProfileObj = {
   istio: {
@@ -576,7 +571,6 @@ var aksProperties = union({
     podCidr: networkPlugin=='kubenet' || networkPluginMode=='Overlay' || cniDynamicIpAllocation ? podCidr : null
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
-    dockerBridgeCidr: dockerBridgeCidr
     outboundType: outboundTrafficType
     ebpfDataplane: networkPlugin=='azure' ? ebpfDataplane : ''
   }
@@ -649,7 +643,7 @@ var ingressModes = {
 | _| `._____||_______|_______/     \______/   \______/  | _| `._____| \______||_______|_______/    
 */
 
-resource aks 'Microsoft.ContainerService/managedClusters@2023-10-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2023-11-01' = {
   name: length(name) > 63 ? substring(name, 0, 63) : name
   location: location
   tags: tags

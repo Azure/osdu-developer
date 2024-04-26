@@ -68,11 +68,10 @@ param clusterSoftware object = {
 }
 
 // This would be a type but bugs exist for ARM Templates so is object instead.
-@description('Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dockerBridgeCidr}, {dnsServiceIP}')
+@description('Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dnsServiceIP}')
 param clusterNetwork object = {
   ingress: ''
   serviceCidr: ''
-  dockerBridgeCidr: ''
   dnsServiceIP: ''
 }
 
@@ -146,21 +145,23 @@ var configuration = {
   ]
 }
 
+var rg_unique_id = '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
 
 //*****************************************************************//
 //  Identity Resources                                             //
 //*****************************************************************//
-module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
+module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.2.1' = {
   name: '${configuration.name}-user-managed-identity'
   params: {
     // Required parameters
-    name: 'id-${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
+    name: rg_unique_id
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
     tags: {
       layer: configuration.displayName
+      id: rg_unique_id
     }
   }
 }
@@ -169,16 +170,17 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
 //*****************************************************************//
 //  Monitoring Resources                                           //
 //*****************************************************************//
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.2.1' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
   name: '${configuration.name}-log-analytics'
   params: {
-    name: 'log-${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
+    name: rg_unique_id
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
     tags: {
       layer: configuration.displayName
+      id: rg_unique_id
     }
 
     skuName: configuration.logs.sku
@@ -195,6 +197,10 @@ module networkBlade 'modules/blade_network.bicep' = {
     bladeConfig: {
       sectionName: 'networkblade'
       displayName: 'Network Resources'
+    }
+
+    tags: {
+      id: rg_unique_id
     }
 
     location: location
@@ -248,6 +254,10 @@ module commonBlade 'modules/blade_common.bicep' = {
       displayName: 'Common Resources'
     }
 
+    tags: {
+      id: rg_unique_id
+    }
+
     location: location
     enableTelemetry: enableTelemetry
     deploymentScriptIdentity: stampIdentity.outputs.name
@@ -283,6 +293,10 @@ module manageBlade 'modules/blade_manage.bicep' = {
     bladeConfig: {
       sectionName: 'manageblade'
       displayName: 'Manage Resources'
+    }
+
+    tags: {
+      id: rg_unique_id
     }
 
     manageLayerConfig: {
@@ -329,6 +343,10 @@ module partitionBlade 'modules/blade_partition.bicep' = {
       displayName: 'Partition Resources'
     }
 
+    tags: {
+      id: rg_unique_id
+    }
+
     location: location
     workspaceResourceId: logAnalytics.outputs.resourceId
 
@@ -362,6 +380,10 @@ module serviceBlade 'modules/blade_service.bicep' = {
       displayName: 'Service Resources'
     }
 
+    tags: {
+      id: rg_unique_id
+    }
+
     location: location
     enableTelemetry: enableTelemetry
 
@@ -376,6 +398,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     kvUri: commonBlade.outputs.keyvaultUri
     storageName: commonBlade.outputs.storageAccountName
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
+    partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     
     aksSubnetId: networkBlade.outputs.aksSubnetId
     podSubnetId: enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
@@ -385,7 +408,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress 
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
-    dockerBridgeCidr: clusterNetwork.dockerBridgeCidr == '' ? '172.17.0.1/16' : clusterNetwork.dockerBridgeCidr
     networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin
 
     softwareBranch: clusterSoftware.branch
@@ -415,5 +437,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
 }
 
 output KEYVAULT_NAME string = commonBlade.outputs.keyvaultName
+output ACR_NAME string = serviceBlade.outputs.registryName
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

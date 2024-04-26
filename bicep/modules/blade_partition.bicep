@@ -16,6 +16,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
@@ -256,6 +259,93 @@ var partitionLayerConfig = {
       }
     ]
   }
+  servicebus: {
+    sku: 'Standard'
+    defaultSize: 1024
+    topics: [
+      {
+        name: 'indexing-progress'
+        subscriptions: [
+          {
+            name: 'indexing-progresssubscription'
+          }
+        ]
+      }
+      {
+        name: 'legaltags'
+        subscriptions: [
+          {
+            name: 'legaltagssubscription'
+          }
+        ]
+      }
+      {
+        name: 'recordstopic'
+        subscriptions: [
+          {
+            name: 'recordstopicsubscription'
+          }
+        ]
+      }
+      {
+        name: 'recordstopicdownstream'
+        subscriptions: [
+          {
+            name: 'downstreamsub'
+          }
+        ]
+      }
+      {
+        name: 'recordstopiceg'
+        subscriptions: [
+          {
+            name: 'eg_sb_wkssubscription'
+          }
+        ]
+      }
+      {
+        name: 'schemachangedtopic'
+        subscriptions: [
+          {
+            name: 'schemachangedtopicsubscription'
+          }
+        ]
+      }
+      {
+        name: 'schemachangedtopiceg'
+        subscriptions: [
+          {
+            name: 'eg_sb_schemasubscription'
+          }
+        ]
+      }
+      {
+        name: 'legaltagschangedtopiceg'
+        subscriptions: [
+          {
+            name: 'eg_sb_legaltagssubscription'
+          }
+        ]
+      }
+      {
+        name: 'statuschangedtopic'
+        maxSizeInMegabytes: 5120
+        subscriptions: [
+          {
+            name: 'eg_sb_statussubscription'
+          }
+        ]
+      }
+      {
+        name: 'statuschangedtopiceg'
+        subscriptions: []
+      }
+      {
+        name: 'replayrecordtopic'
+        subscriptions: []
+      }
+    ]
+  }
 }
 
 
@@ -273,15 +363,19 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
   name: '${bladeConfig.sectionName}-azure-storage-${index}'
   params: {
     #disable-next-line BCP335 BCP332
-    name: 'sa${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
+    name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
     location: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-      partition: partition.name
-      purpose: 'data'
-    }
+
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -325,11 +419,14 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     resourceLocation: location
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-      partition: partition.name
-      purpose: 'data'
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
 
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
@@ -374,5 +471,65 @@ module partitionDbEndpoint './private-endpoint/main.bicep' = [for (partition, in
   }
 }]
 
-    // Output partitionStorage names
+
+module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for (partition, index) in partitions:  {
+  name: '${bladeConfig.sectionName}-service-bus-${index}'
+  params: {
+    name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
+    location: location
+
+    // Assign Tags
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+        partition: partition.name
+        purpose: 'data'
+      }
+    )
+
+    // Hook up Diagnostics
+    diagnosticSettings: [
+      {
+        workspaceResourceId: workspaceResourceId
+      }
+    ]
+
+    skuObject: {
+      name: partitionLayerConfig.servicebus.sku
+    }
+
+    authorizationRules: [
+      {
+        name: 'RootManageSharedAccessKey'
+        rights: [
+          'Listen'
+          'Manage'
+          'Send'
+        ]
+      }
+    ]
+
+    topics: [
+      for topic in partitionLayerConfig.servicebus.topics: {
+        name: topic.name
+        maxSizeInMegabytes: (contains(topic, 'maxSizeInMegabytes') ? topic.maxSizeInMegabytes : partitionLayerConfig.servicebus.defaultSize)
+        authorizationRules: [
+          {
+            name: 'RootManageSharedAccessKey'
+            rights: [
+              'Listen'
+              'Manage'
+              'Send'
+            ]
+          }
+        ]
+        subscriptions: topic.subscriptions
+      }
+    ]
+  }
+}]
+
+// Output partitionStorage names
 output partitionStorageNames string[] = [for (partition, index) in partitions: partitionStorage[index].outputs.name]
+output partitionServiceBusNames string[] = [for (partition, index) in partitions: partitonNamespace[index].outputs.name]

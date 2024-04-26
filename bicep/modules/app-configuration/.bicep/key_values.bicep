@@ -22,7 +22,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2022-0
 
 var keyValueName = empty(label) ? name : '${name}$${label}'
 
-resource keyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+resource keyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   name: keyValueName
   parent: appConfiguration
   properties: {

@@ -42,6 +42,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool = false
 
@@ -285,17 +288,20 @@ var subnets = {
   }
 }
 
-module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection) {
+module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-nsg-cluster'
   params: {
-    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-aks'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}-aks'
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     securityRules: union(
       array(nsgRules.http_inbound_rule),
@@ -305,17 +311,20 @@ module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection && enableBastion) {
+module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection && enableBastion) {
   name: '${bladeConfig.sectionName}-nsg-bastion'
   params: {
-    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-bastion'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}-bastion'
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     securityRules: union(
       array(nsgRules.https_inbound_rule),
@@ -329,33 +338,39 @@ module bastionNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
   }
 }
 
-module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.0' = if (!enableVnetInjection && enableBastion) {
+module machineNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.1.3' = if (!enableVnetInjection && enableBastion) {
   name: '${bladeConfig.sectionName}-nsg-manage'
   params: {
-    name: 'nsg-common${uniqueString(resourceGroup().id, 'common')}-vm'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}-vm'
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     securityRules: []
   }
 }
 
-module network 'br/public:avm/res/network/virtual-network:0.1.0' = if (!enableVnetInjection) {
+module network 'br/public:avm/res/network/virtual-network:0.1.5' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-virtual-network'
   params: {
-    name: 'vnet-common${uniqueString(resourceGroup().id, 'common')}'
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
     enableTelemetry: enableTelemetry
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     addressPrefixes: [
       networkConfiguration.prefix

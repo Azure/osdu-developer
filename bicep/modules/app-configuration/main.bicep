@@ -139,7 +139,7 @@ var diagnosticsMetrics = [for metric in metricsToEnable: {
 var identityType = systemAssignedIdentity ? 'SystemAssigned' : !empty(userAssignedIdentities) ? 'UserAssigned' : 'None'
 
 
-resource configStore 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
+resource configStore 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
   name: length(name) > 50 ? substring(name, 0, 50) : name
   location: location
   tags: tags
@@ -178,7 +178,7 @@ module configurationStore_keyValues './.bicep/key_values.bicep' = [for (keyValue
 }]
 
 // Apply Resource Lock
-resource resource_lock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource resource_lock 'Microsoft.Authorization/locks@2020-05-01' = if (lock != 'NotSpecified') {
   name: '${configStore.name}-${lock}-lock'
   properties: {
     level: lock

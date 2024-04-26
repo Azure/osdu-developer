@@ -27,6 +27,9 @@ param bladeConfig bladeSettings
 @description('The location of resources to deploy')
 param location string
 
+@description('The tags to apply to the resources')
+param tags object = {}
+
 @description('Feature Flag to Enable Telemetry')
 param enableTelemetry bool
 
@@ -77,10 +80,6 @@ param clusterAdminIds array
 @description('The address range to use for services')
 param serviceCidr string
 
-@minLength(9)
-@maxLength(18)
-@description('The address range to use for the docker bridge')
-param dockerBridgeCidr string
 
 @minLength(7)
 @maxLength(15)
@@ -101,6 +100,9 @@ param identityId string
 @description('The name of the partition storage accounts')
 param partitionStorageNames string[]
 
+@description('The name of the partition service bus namespaces')
+param partitionServiceBusNames string[]
+
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool
 
@@ -114,8 +116,9 @@ param appSettings appConfigItem[]
 /////////////////////////////////
 
 var serviceLayerConfig = {
-  // name: 'service'
-  // displayName: 'Service Resources'
+  registry: {
+    sku: 'Basic'
+  }
   cluster: {
     aksVersion: '1.28'
     meshVersion: 'asm-1-19'
@@ -125,9 +128,85 @@ var serviceLayerConfig = {
     name: 'flux-system'
     url: softwareRepository == '' ? 'https://github.com/azure/osdu-developer' : softwareRepository
     branch: softwareBranch == '' ? '' : softwareBranch
-    tag: softwareTag == '' && softwareBranch == '' ? 'v0.10.0' : softwareTag
+    tag: softwareTag == '' && softwareBranch == '' ? 'v0.11.0' : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
+  }
+}
+
+/////////////////////////////////
+// Existing Resources
+/////////////////////////////////
+
+resource appIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: managedIdentityName
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: kvName
+}
+
+resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'app-dev-sp-username'
+  parent: keyVault
+
+  properties: {
+    value: applicationClientId
+  }
+}
+
+/*
+.______       _______   _______  __       _______.___________..______     ____    ____ 
+|   _  \     |   ____| /  _____||  |     /       |           ||   _  \    \   \  /   / 
+|  |_)  |    |  |__   |  |  __  |  |    |   (----`---|  |----`|  |_)  |    \   \/   /  
+|      /     |   __|  |  | |_ | |  |     \   \       |  |     |      /      \_    _/   
+|  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |     
+| _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|                                                                                                                              
+*/
+
+
+
+module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
+  name: '${bladeConfig.sectionName}-container-registry'
+  params: {
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+    location: location
+
+    // Assign Tags
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
+
+    enableTelemetry: enableTelemetry
+
+    // Hook up Diagnostics
+    diagnosticSettings: [
+      {
+        workspaceResourceId: workspaceResourceId
+      }
+    ]
+
+    // Configure Service
+    acrSku: serviceLayerConfig.registry.sku
+
+    managedIdentities: {
+      systemAssigned: true
+      userAssignedResourceIds: [
+        appIdentity.id
+      ]
+    }
+
+    // Add Role Assignment
+    roleAssignments: [
+      {
+        principalId: appIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'AcrPull'
+      }
+    ]
   }
 }
 
@@ -156,9 +235,12 @@ module cluster './aks_cluster.bicep' = {
     networkPlugin: serviceLayerConfig.cluster.networkPlugin
 
     // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Configure Linking Items
     aksSubnetId: aksSubnetId
@@ -169,7 +251,6 @@ module cluster './aks_cluster.bicep' = {
     // Configure VNET Injection
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
-    dockerBridgeCidr: dockerBridgeCidr
 
     // Configure Istio
     serviceMeshProfile: enableMonitoring ? 'Istio' : null
@@ -271,48 +352,25 @@ module pool3 './aks_agent_pool.bicep' = {
 }
 
 
-/////////////////
-// Workload Identity Federated Credentials 
-/////////////////
-module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.1.0' = {
-  name: '${bladeConfig.sectionName}-user-managed-identity'
+
+// Federated Credentials have to be sequentially added.  Ensure depends on to do sequentially.
+module federatedCredsDefaultNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_default'
   params: {
-    // Required parameters
-    name: 'id-${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
-    location: location
-    enableTelemetry: enableTelemetry
-
-    // Only support 1.  https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation-considerations#concurrent-updates-arent-supported-user-assigned-managed-identities
-    federatedIdentityCredentials: [{
-      audiences: [
-        'api://AzureADTokenExchange'
-      ]
-      issuer: cluster.outputs.aksOidcIssuerUrl
-      name: 'federated-ns_default'
-      subject: 'system:serviceaccount:default:workload-identity-sa'
-    }]
-
-    // Assign Tags
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    name: 'federated-ns_default'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:default:workload-identity-sa'
   }
+  dependsOn: [
+    cluster
+  ]
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: kvName
-}
-
-resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: 'app-dev-sp-username'
-  parent: keyVault
-
-  properties: {
-    value: applicationClientId
-  }
-}
-
-module federatedCredsOsduAzure './federated_identity.bicep' = {
+module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-core'
   params: {
     name: 'federated-ns_osdu-core'
@@ -320,16 +378,15 @@ module federatedCredsOsduAzure './federated_identity.bicep' = {
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.outputs.name
+    userAssignedIdentityName: appIdentity.name
     subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
   }
   dependsOn: [
-    appIdentity
+    federatedCredsDefaultNamespace
   ]
 }
 
-// Federated Credentials have to be sequentially added.  Ensure depends on.
-module federatedCredsDevSample './federated_identity.bicep' = {
+module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
   params: {
     name: 'federated-ns_dev-sample'
@@ -337,15 +394,15 @@ module federatedCredsDevSample './federated_identity.bicep' = {
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.outputs.name
+    userAssignedIdentityName: appIdentity.name
     subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
   }
   dependsOn: [
-    federatedCredsOsduAzure
+    federatedCredsOsduCoreNamespace
   ]
 }
 
-module federatedCredsConfigMaps './federated_identity.bicep' = {
+module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_config-maps'
   params: {
     name: 'federated-ns_azappconfig-system'
@@ -353,34 +410,40 @@ module federatedCredsConfigMaps './federated_identity.bicep' = {
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.outputs.name
+    userAssignedIdentityName: appIdentity.name
     subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
   }
   dependsOn: [
-    federatedCredsDevSample
+    federatedCredsDevSampleNamespace
   ]
 }
 
 module appRoleAssignments './app_assignments.bicep' = {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac'
   params: {
-    identityprincipalId: appIdentity.outputs.principalId
+    identityprincipalId: appIdentity.properties.principalId
     kvName: kvName
     storageName: storageName
   }
   dependsOn: [
-    federatedCredsConfigMaps
+    federatedCredsDefaultNamespace
+    federatedCredsOsduCoreNamespace
+    federatedCredsDevSampleNamespace
+    federatedCredsConfigMapsNamespace
   ]
 }
 
 module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in partitionStorageNames: {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac-${name}'
   params: {
-    identityprincipalId: appIdentity.outputs.principalId
+    identityprincipalId: appIdentity.properties.principalId
     storageName: name
   }
   dependsOn: [
-    federatedCredsDevSample
+    federatedCredsDefaultNamespace
+    federatedCredsOsduCoreNamespace
+    federatedCredsDevSampleNamespace
+    federatedCredsConfigMapsNamespace
   ]
 }]
 
@@ -415,6 +478,35 @@ module helmAppConfigProvider './aks-run-command/main.bicep' = {
 /__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______|
 */
 
+//--------------Config Map---------------
+// These are common service helm chart values.
+var common_helm_values = [
+  {
+    name: 'AZURE_ISTIOAUTH_ENABLED'
+    value: 'true'
+    contentType: 'text/plain'
+    label: 'configmap-common-values'
+  }
+  {
+    name: 'AZURE_PAAS_PODIDENTITY_ISENABLED'
+    value: 'false'
+    contentType: 'text/plain'
+    label: 'configmap-common-values'
+  }
+  {
+    name: 'ACCEPT_HTTP'
+    value: 'true'
+    contentType: 'text/plain'
+    label: 'configmap-common-values'
+  }
+  {
+    name: 'SERVER_PORT'
+    value: '80'
+    contentType: 'text/plain'
+    label: 'configmap-common-values'
+  }
+]
+
 var settings = [
   {
     name: 'Settings:Message'
@@ -430,7 +522,7 @@ var settings = [
   }
   {
     name: 'azure_msi_client_id'
-    value: appIdentity.outputs.clientId
+    value: appIdentity.properties.clientId
     contentType: 'text/plain'
     label: 'configmap-services'
   }
@@ -442,28 +534,46 @@ var settings = [
   }
 ]
 
+var partitionBusSettings = [for (name, i) in partitionServiceBusNames: {
+  name: 'partition_servicebus_name_${i}'
+  value: name
+  contentType: 'text/plain'
+  label: 'configmap-services'
+}]
+
+var partitionStorageSettings = [for (name, i) in partitionStorageNames: {
+  name: 'partition_storage_name_${i}'
+  value: name
+  contentType: 'text/plain'
+  label: 'configmap-services'
+}]
+
+
 module app_config './app-configuration/main.bicep' = {
   name: '${bladeConfig.sectionName}-appconfig'
   params: {
     resourceName: bladeConfig.sectionName
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     // Add Role Assignment
     roleAssignments: [
       {
         roleDefinitionIdOrName: 'App Configuration Data Reader'
         principalIds: [
-          appIdentity.outputs.principalId
+          appIdentity.properties.principalId
         ]
         principalType: 'ServicePrincipal'
       }
     ]
 
     // Add Configuration
-    keyValues: concat(union(appSettings, settings))
+    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, common_helm_values))
   }
   dependsOn: [
     appRoleAssignments
@@ -503,16 +613,16 @@ module appConfigMap './aks-config-map/main.bicep' = {
     name: 'config-map-values'
     namespace: 'default'
     
-    // newOrExistingManagedIdentity: 'existing'
-    // managedIdentityName: managedIdentityName
-    // existingManagedIdentitySubId: subscription().subscriptionId
-    // existingManagedIdentityResourceGroupName:resourceGroup().name
+    newOrExistingManagedIdentity: 'existing'
+    managedIdentityName: managedIdentityName
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
 
     // Order of items matters here.
     fileData: [
       format(configMaps.appConfigTemplate, 
              subscription().tenantId, 
-             appIdentity.outputs.clientId,
+             appIdentity.properties.clientId,
              app_config.outputs.endpoint,
              kvUri,
              kvName,
@@ -533,7 +643,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
 */
 
 //--------------Flux Config---------------
-module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = if(enableSoftwareLoad) {
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
   name: '${bladeConfig.sectionName}-cluster-gitops'
   params: {
     name: serviceLayerConfig.gitops.name
@@ -598,9 +708,12 @@ module prometheus 'aks_prometheus.bicep' = if(enableMonitoring) {
     // Basic Details
     name: length(name) > 23 ? substring(name, 0, 23) : name
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     publicNetworkAccess: 'Enabled'    
     clusterName: cluster.outputs.aksClusterName
@@ -614,9 +727,12 @@ module grafana 'aks_grafana.bicep' = if(enableMonitoring){
     // Basic Details
     name: length(name) > 23 ? substring(name, 0, 23) : name
     location: location
-    tags: {
-      layer: bladeConfig.displayName
-    }
+    tags: union(
+      tags,
+      {
+        layer: bladeConfig.displayName
+      }
+    )
 
     skuName: 'Standard'
     apiKey: 'Enabled'
@@ -625,7 +741,8 @@ module grafana 'aks_grafana.bicep' = if(enableMonitoring){
     publicNetworkAccess: 'Enabled'
     zoneRedundancy: 'Disabled'
     prometheusName: prometheus.outputs.name
-    // userId: userId
-
   }
 }
+
+@description('The name of the container registry.')
+output registryName string = registry.outputs.name

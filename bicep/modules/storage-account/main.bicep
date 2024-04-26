@@ -261,13 +261,13 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01
   }
 }
 
-resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2022-05-01' = {
+resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2023-01-01' = {
   name: 'default'
   parent: storage
   properties: {}
 }
 
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2022-05-01' = {
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
   name: 'default'
   parent: storage
   properties: {
@@ -279,7 +279,7 @@ resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2022-05-01
   }
 }
 
-resource storage_containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-05-01' = [for item in containers: {
+resource storage_containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for item in containers: {
   parent: blobServices
   name: item
   properties: {
@@ -289,12 +289,12 @@ resource storage_containers 'Microsoft.Storage/storageAccounts/blobServices/cont
   }
 }]
 
-resource storage_tables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for item in tables: {
+resource storage_tables 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = [for item in tables: {
   parent: tableServices
   name: item
 }]
 
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-05-01' = [for item in shares: {
+resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = [for item in shares: {
   parent: fileServices
   name: item
   properties: {
@@ -305,7 +305,7 @@ resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-0
 }]
 
 // Apply Resource Lock
-resource resource_lock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource resource_lock 'Microsoft.Authorization/locks@2020-05-01' = if (lock != 'NotSpecified') {
   name: '${storage.name}-${lock}-lock'
   properties: {
     level: lock

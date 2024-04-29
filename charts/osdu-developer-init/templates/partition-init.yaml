@@ -1,0 +1,244 @@
+{{- $namespace := .Release.Namespace -}}
+{{- $SERVICE_BUS_NAME := "" }}
+{{- $PARTITION := "" }}
+{{- range .Values.env }}
+  {{- if eq .name "SERVICE_BUS_NAME" }}
+    {{- $SERVICE_BUS_NAME = .value }}
+  {{- end }}
+  {{- if eq .name "PARTITION" }}
+    {{- $PARTITION = .value }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: partition-init
+  namespace: {{ $namespace }}
+spec:
+  template:
+    spec:
+      volumes:
+      - name: script
+        configMap:
+          name: partition-init-script
+          defaultMode: 0500
+      initContainers:
+      - name: data-seed
+        image: badouralix/curl-jq
+        command:
+        - script/init.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+        env:
+          {{- if .Values.env }}
+          {{- range .Values.env }}
+          - name: {{ .name | quote }}
+            value: {{ .value | quote }}
+          {{- end }}
+          {{- end }}
+      containers:
+      - name: sleep
+        image: istio/base
+        command: ["/bin/sleep", "20"]
+        volumeMounts:  # Ensure this container also mounts the volume if needed
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: partition-init-script
+  namespace: {{ $namespace }}
+data:
+  partition.json: |
+    {
+      "properties": {
+          "compliance-ruleset": {
+              "value": "shared"
+          },
+          "elastic-endpoint": {
+              "sensitive": true,
+              "value": "elastic-endpoint"
+          },
+          "elastic-username": {
+              "sensitive": true,
+              "value": "elastic-username"
+          },
+          "elastic-password": {
+              "sensitive": true,
+              "value": "elastic-password"
+          },
+          "cosmos-connection": {
+              "sensitive": true,
+              "value": "cosmos-connection"
+          },
+          "cosmos-endpoint": {
+              "sensitive": true,
+              "value": "cosmos-endpoint"
+          },
+          "cosmos-primary-key": {
+              "sensitive": true,
+              "value": "cosmos-primary-key"
+          },
+          "sb-connection": {
+              "sensitive": true,
+              "value": "sb-connection"
+          },
+          "sb-namespace": {
+              "sensitive": false,
+              "value": "{{ $SERVICE_BUS_NAME }}"
+          },
+          "storage-account-key": {
+              "sensitive": true,
+              "value": "storage-key"
+          },
+          "storage-account-name": {
+              "sensitive": true,
+              "value": "storage"
+          },
+          "storage-account-blob-endpoint": {
+              "sensitive": true,
+              "value": "storage-account-blob-endpoint"
+          },
+          "ingest-storage-account-name": {
+              "sensitive": true,
+              "value": "ingest-storage"
+          },
+          "ingest-storage-account-key": {
+              "sensitive": true,
+              "value": "ingest-storage-key"
+          },
+          "hierarchical-storage-account-name": {
+              "sensitive": true,
+              "value": "hierarchical-storage"
+          },
+          "hierarchical-storage-account-key": {
+              "sensitive": true,
+              "value": "hierarchical-storage-key"
+          },
+          "eventgrid-recordstopic": {
+              "sensitive": true,
+              "value": "eventgrid-recordstopic"
+          },
+          "eventgrid-recordstopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-recordstopic-accesskey"
+          },
+          "eventgrid-legaltagschangedtopic": {
+              "sensitive": true,
+              "value": "eventgrid-legaltagschangedtopic"
+          },
+          "eventgrid-legaltagschangedtopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-legaltagschangedtopic-accesskey"
+          },
+          "eventgrid-resourcegroup": {
+              "sensitive": true,
+              "value": "eventgrid-resourcegroup"
+          },
+          "encryption-key-identifier": {
+              "sensitive": true,
+              "value": "encryption-key-identifier"
+          },
+          "sdms-storage-account-name": {
+              "sensitive": true,
+              "value": "sdms-storage"
+          },
+          "sdms-storage-account-key": {
+              "sensitive": true,
+              "value": "sdms-storage-key"
+          },
+          "eventgrid-schemanotificationtopic": {
+              "sensitive": true,
+              "value": "eventgrid-schemachangedtopic"
+          },
+          "eventgrid-schemanotificationtopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-schemachangedtopic-accesskey"
+          },
+          "eventgrid-gsmtopic": {
+              "sensitive": true,
+              "value": "eventgrid-statuschangedtopic"
+          },
+          "eventgrid-gsmtopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-statuschangedtopic-accesskey"
+          },
+          "eventgrid-statuschangedtopic": {
+              "sensitive": true,
+              "value": "eventgrid-statuschangedtopic"
+          },
+          "eventgrid-statuschangedtopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-statuschangedtopic-accesskey"
+          },
+          "eventgrid-schemachangedtopic": {
+              "sensitive": true,
+              "value": "eventgrid-schemachangedtopic"
+          },
+          "eventgrid-schemachangedtopic-accesskey": {
+              "sensitive": true,
+              "value": "eventgrid-schemachangedtopic-accesskey"
+          },
+          "reservoir-connection": {
+              "sensitive": true,
+              "value": "reservoir-conn"
+          },
+          "indexer-decimation-enabled": {
+              "sensitive": false,
+              "value": "true"
+          }
+      }
+    }
+  init.sh: |
+    #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
+
+    echo "=================================================================="
+    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "=================================================================="
+    echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
+
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
+        --header "content-type: application/x-www-form-urlencoded" \
+        --data "grant_type=client_credentials" \
+        --data "client_id=${AZURE_CLIENT_ID}" \
+        --data "client_secret=${AZURE_CLIENT_SECRET}" \
+        --data "resource=${AZURE_CLIENT_ID}")
+
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
+
+    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      exit 1
+    fi
+
+    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+      --url http://partition.{{ $namespace }}/api/partition/v1/partitions/{{ $PARTITION }} \
+      --header "Host: partition.{{ $namespace }}" \
+      --header "accept: application/json" \
+      --header "content-type: application/json" \
+      --header "authorization: Bearer $TOKEN" \
+      --header "data-partition-id: {{ $PARTITION }}" \
+      --data $(jq -c '.' /script/partition.json))
+
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
+  
+    if [ "$HTTP_STATUS_CODE" == "201" ]; then
+      echo "Success: $(echo "$BODY" | jq .)"
+    elif [ "$HTTP_STATUS_CODE" == "409" ]; then
+      echo "Item already exists: $(echo "$BODY" | jq .)"
+    else
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi

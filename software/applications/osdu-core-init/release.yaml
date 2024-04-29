@@ -1,0 +1,38 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-init
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: osdu-core
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    env:
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: SERVICE_BUS_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: configmap-services
+            key: partition_servicebus_name_0
+      - name: PARTITION
+        value: opendes

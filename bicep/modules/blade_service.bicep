@@ -122,7 +122,7 @@ var serviceLayerConfig = {
     sku: 'Basic'
   }
   cluster: {
-    aksVersion: '1.28'
+    aksVersion: '1.29'
     meshVersion: 'asm-1-19'
     networkPlugin: networkPlugin
   }
@@ -388,6 +388,22 @@ module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsOduInitNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-init'
+  params: {
+    name: 'federated-ns_osdu-init'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:osdu-init:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsOsduCoreNamespace
+  ]
+}
+
 module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
   name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
   params: {
@@ -400,7 +416,7 @@ module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
     subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
   }
   dependsOn: [
-    federatedCredsOsduCoreNamespace
+    federatedCredsOduInitNamespace
   ]
 }
 
@@ -420,6 +436,8 @@ module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
   ]
 }
 
+
+
 module appRoleAssignments './app_assignments.bicep' = {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac'
   params: {
@@ -430,6 +448,7 @@ module appRoleAssignments './app_assignments.bicep' = {
   dependsOn: [
     federatedCredsDefaultNamespace
     federatedCredsOsduCoreNamespace
+    federatedCredsOduInitNamespace
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
   ]

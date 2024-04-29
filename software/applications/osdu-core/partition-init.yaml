@@ -25,7 +25,6 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: config-map-values
-      namespace: default
       valuesKey: values.yaml
   values:
     env:
@@ -37,7 +36,6 @@ spec:
         valueFrom:
           configMapKeyRef:
             name: configmap-services
-            namespace: osdu-core
             key: partition_servicebus_name_0
       - name: PARTITION
         value: opendes

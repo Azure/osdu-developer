@@ -9,7 +9,7 @@ metadata:
 spec:
   dependsOn:
     - name: partition
-      namespace: osdu-core
+      namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

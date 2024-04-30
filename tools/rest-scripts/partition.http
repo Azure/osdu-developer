@@ -89,7 +89,7 @@ data-partition-id: {{data_partition_id}}
         },
         "sb-connection": {
             "sensitive": true,
-            "value": "{{ sb-namespace }}"
+            "value": "sb-connection"
         },
         "sb-namespace": {
             "sensitive": false,

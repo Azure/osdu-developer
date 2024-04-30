@@ -89,6 +89,7 @@ spec:
     pilot:
       env:
         K8S_INGRESS_NS: istio-ingress
+        ENABLE_NATIVE_SIDECARS: true
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

@@ -6,6 +6,7 @@ metadata:
   name: partition-init
   namespace: {{ $namespace }}
 spec:
+  ttlSecondsAfterFinished: 120
   template:
     spec:
       volumes:
@@ -40,7 +41,7 @@ spec:
       containers:
       - name: sleep
         image: istio/base
-        command: ["/bin/sleep", "infinity"]
+        command: ["/bin/sleep", "10"]
         volumeMounts:  # Ensure this container also mounts the volume if needed
           - name: script
             mountPath: "/script"

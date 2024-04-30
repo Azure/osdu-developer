@@ -9,6 +9,11 @@ cat > custom_values.yaml << EOF
 nameOverride: ""
 fullnameOverride: "osdu-init"
 
+tenantId: 
+clientId: 
+clientSecret: 
+serviceBus: 
+partition: 
 EOF
 
 

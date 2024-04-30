@@ -1,5 +1,6 @@
-azure:
-  enabled: false
-
-env:
+tenantId: 
+clientId: 
+clientSecret: 
+serviceBus: 
+partition: 
   

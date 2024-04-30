@@ -39,7 +39,7 @@ spec:
       containers:
       - name: sleep
         image: istio/base
-        command: ["/bin/sleep", "10"]
+        command: ["/bin/sleep", "30"]
         volumeMounts:  # Ensure this container also mounts the volume if needed
           - name: script
             mountPath: "/script"

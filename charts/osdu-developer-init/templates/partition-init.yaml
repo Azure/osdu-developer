@@ -28,7 +28,12 @@ spec:
           - name: AZURE_CLIENT_ID
             value: {{ .Values.client_id | quote }}
           - name: AZURE_CLIENT_SECRET
-            value: {{ .Values.client_secret | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.client_secret_secret_name | quote }}
+                key: {{ .Values.client_secret_secret_key | quote }}
+          # - name: AZURE_CLIENT_SECRET
+          #   value: {{ .Values.client_secret | quote }}
           - name: SERVICE_BUS_NAME
             value: {{ .Values.service_bus | quote }}
       containers:

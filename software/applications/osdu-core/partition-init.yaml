@@ -1,47 +1,49 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: osdu-init
-  namespace: osdu-core
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  dependsOn:
-    - name: partition
-      namespace: flux-system
-  targetNamespace: osdu-core
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-init
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  values:
-    env:
-      - name: AZURE_TENANT_ID
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: tenant_id
-      - name: AZURE_CLIENT_ID
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: client_id
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
-      - name: SERVICE_BUS_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: partition_servicebus_name_0
-      - name: PARTITION
-        value: opendes
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: osdu-init
+#   namespace: osdu-core
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   dependsOn:
+#     - name: osdu-developer-base
+#       namespace: default
+#     - name: partition
+#       namespace: flux-system
+#   targetNamespace: osdu-core
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-init
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     env:
+#       - name: AZURE_TENANT_ID
+#         valueFrom:
+#           configMapKeyRef:
+#             name: configmap-services
+#             key: tenant_id
+#       - name: AZURE_CLIENT_ID
+#         valueFrom:
+#           configMapKeyRef:
+#             name: configmap-services
+#             key: client_id
+#       - name: AZURE_CLIENT_SECRET
+#         secret:
+#           name: active-directory
+#           key: principal-clientpassword
+#       - name: SERVICE_BUS_NAME
+#         valueFrom:
+#           configMapKeyRef:
+#             name: configmap-services
+#             key: partition_servicebus_name_0
+#       - name: PARTITION
+#         value: opendes

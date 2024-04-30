@@ -29,7 +29,6 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: configmap-services
-      namespace: osdu-core
       valuesKey: client_id
       targetPath: client_id
 

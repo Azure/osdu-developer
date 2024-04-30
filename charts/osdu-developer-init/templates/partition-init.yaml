@@ -1,14 +1,5 @@
 {{- $namespace := .Release.Namespace -}}
-{{- $SERVICE_BUS_NAME := "" }}
-{{- $PARTITION := "" }}
-{{- range .Values.env }}
-  {{- if eq .name "SERVICE_BUS_NAME" }}
-    {{- $SERVICE_BUS_NAME = .value }}
-  {{- end }}
-  {{- if eq .name "PARTITION" }}
-    {{- $PARTITION = .value }}
-  {{- end }}
-{{- end }}
+{{- $partition := .Values.PARTITION -}}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -32,12 +23,14 @@ spec:
           - name: script
             mountPath: "/script"
         env:
-          {{- if .Values.env }}
-          {{- range .Values.env }}
-          - name: {{ .name | quote }}
-            value: {{ .value | quote }}
-          {{- end }}
-          {{- end }}
+          - name: AZURE_TENANT_ID
+            value: {{ .Values.AZURE_TENANT_ID | quote }}
+          - name: AZURE_CLIENT_ID
+            value: {{ .Values.AZURE_CLIENT_ID | quote }}
+          - name: AZURE_CLIENT_SECRET
+            value: {{ .Values.AZURE_CLIENT_SECRET | quote }}
+          - name: SERVICE_BUS_NAME
+            value: {{ .Values.SERVICE_BUS_NAME | quote }}
       containers:
       - name: sleep
         image: istio/base
@@ -89,7 +82,7 @@ data:
           },
           "sb-namespace": {
               "sensitive": false,
-              "value": "{{ $SERVICE_BUS_NAME }}"
+              "value": "{{ .Values.SERVICE_BUS_NAME }}"
           },
           "storage-account-key": {
               "sensitive": true,
@@ -222,12 +215,12 @@ data:
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-      --url http://partition.{{ $namespace }}/api/partition/v1/partitions/{{ $PARTITION }} \
+      --url http://partition.{{ $namespace }}/api/partition/v1/partitions/{{ $partition }} \
       --header "Host: partition.{{ $namespace }}" \
       --header "accept: application/json" \
       --header "content-type: application/json" \
       --header "authorization: Bearer $TOKEN" \
-      --header "data-partition-id: {{ $PARTITION }}" \
+      --header "data-partition-id: {{ $partition }}" \
       --data $(jq -c '.' /script/partition.json))
 
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')

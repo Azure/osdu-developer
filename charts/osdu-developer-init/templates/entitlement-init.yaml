@@ -87,7 +87,7 @@ data:
       --header "accept: application/json" \
       --header "content-type: application/json" \
       --header "authorization: Bearer $TOKEN" \
-      --header "data-partition-id: ${PARTITION}"
+      --header "data-partition-id: ${PARTITION}")
 
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
     BODY=${OUTPUT%???}

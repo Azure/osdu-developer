@@ -48,7 +48,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: partition-init-script
+  name: entitlement-init-script
   namespace: {{ $namespace }}
 data:
   init.sh: |

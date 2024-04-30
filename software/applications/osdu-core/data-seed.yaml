@@ -23,6 +23,7 @@ spec:
     remediation:
       retries: 3
   values:
+    nameOverride: partition-init
     jobs:   
       partitionInit: true
       entitlementInit: false
@@ -68,6 +69,7 @@ spec:
     remediation:
       retries: 3
   values:
+    nameOverride: entitlements-init
     jobs:   
       partitionInit: false
       entitlementInit: true

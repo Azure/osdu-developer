@@ -26,24 +26,24 @@ spec:
       retries: 3
   values:
     env:
-      - name: AZURE_TENANT_ID
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: tenant_id
-      - name: AZURE_CLIENT_ID
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: client_id
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
-      - name: SERVICE_BUS_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: configmap-services
-            key: partition_servicebus_name_0
-      - name: PARTITION
-        value: opendes
+    - name: AZURE_TENANT_ID
+      valueFrom:
+        configMapKeyRef:
+          name: configmap-services
+          key: tenant_id
+    - name: AZURE_CLIENT_ID
+      valueFrom:
+        configMapKeyRef:
+          name: configmap-services
+          key: client_id
+    - name: AZURE_CLIENT_SECRET
+      secret:
+        name: active-directory
+        key: principal-clientpassword
+    - name: SERVICE_BUS_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: configmap-services
+          key: partition_servicebus_name_0
+    - name: PARTITION
+      value: opendes

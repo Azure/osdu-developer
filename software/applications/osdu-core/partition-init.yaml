@@ -26,9 +26,13 @@ spec:
   values:
     env:
     - name: AZURE_TENANT_ID
-      value: 72f988bf-86f1-41af-91ab-2d7cd011db47
+      secret:
+        name: active-directory
+        key: tenant-id
     - name: AZURE_CLIENT_ID
-      value: 880324a2-fe9c-4507-a8bf-9574ac4003cf
+      secret:
+        name: active-directory
+        key: principal-clientid
     - name: AZURE_CLIENT_SECRET
       secret:
         name: active-directory

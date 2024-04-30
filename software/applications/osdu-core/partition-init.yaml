@@ -31,4 +31,12 @@ spec:
       name: configmap-services
       valuesKey: client_id
       targetPath: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      valuesKey: tenant_id
+      targetPath: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      valuesKey: partition_servicebus_name_0
+      targetPath: service_bus
 

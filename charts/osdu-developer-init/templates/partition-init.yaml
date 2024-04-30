@@ -23,6 +23,8 @@ spec:
           - name: script
             mountPath: "/script"
         env:
+          - name: SERVICE_BUS_NAME
+            value: {{ .Values.service_bus | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenant_id | quote }}
           - name: AZURE_CLIENT_ID
@@ -30,12 +32,11 @@ spec:
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.client_secret_secret_name | quote }}
-                key: {{ .Values.client_secret_secret_key | quote }}
+                name: {{ .Values.client_secret_name | quote }}
+                key: {{ .Values.client_secret_key | quote }}
           # - name: AZURE_CLIENT_SECRET
           #   value: {{ .Values.client_secret | quote }}
-          - name: SERVICE_BUS_NAME
-            value: {{ .Values.service_bus | quote }}
+          
       containers:
       - name: sleep
         image: istio/base

@@ -15,7 +15,7 @@ spec:
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: badouralix/curl-jq
+        image: alpine
         command:
         - script/init.sh
         volumeMounts:
@@ -196,6 +196,8 @@ data:
     #!/usr/bin/env sh
     set -euo pipefail
     set -o nounset
+
+    apk add --no-cache curl jq
 
     echo "=================================================================="
     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "

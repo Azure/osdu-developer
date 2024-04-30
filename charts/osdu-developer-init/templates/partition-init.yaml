@@ -40,7 +40,7 @@ spec:
       containers:
       - name: sleep
         image: istio/base
-        command: ["/bin/sleep", "20"]
+        command: ["/bin/sleep", "3"]
         volumeMounts:  # Ensure this container also mounts the volume if needed
           - name: script
             mountPath: "/script"
@@ -199,6 +199,8 @@ data:
 
     apk add --no-cache curl jq
 
+    trap "curl --max-time 3 -s -f -XPOST http://127.0.0.1:15000/quitquitquit" EXIT
+
     echo "=================================================================="
     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
     echo "=================================================================="
@@ -243,3 +245,5 @@ data:
       echo "Response body: $BODY"
       exit 1
     fi
+
+    

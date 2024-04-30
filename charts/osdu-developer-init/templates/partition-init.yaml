@@ -32,8 +32,8 @@ spec:
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.client_secret_name | quote }}
-                key: {{ .Values.client_secret_key | quote }}
+                name: {{ .Values.clientSecretName | quote }}
+                key: {{ .Values.clientSecretKey | quote }}
           # - name: AZURE_CLIENT_SECRET
           #   value: {{ .Values.client_secret | quote }}
           

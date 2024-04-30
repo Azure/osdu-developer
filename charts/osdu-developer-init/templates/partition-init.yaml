@@ -1,5 +1,4 @@
 {{- $namespace := .Release.Namespace -}}
-{{- $partition := .Values.PARTITION -}}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -23,6 +22,10 @@ spec:
           - name: script
             mountPath: "/script"
         env:
+          - name: NAMESPACE
+            value: {{ $namespace }}
+          - name: PARTITION
+            value: {{ .Values.partition | quote }}
           - name: SERVICE_BUS_NAME
             value: {{ .Values.service_bus | quote }}
           - name: AZURE_TENANT_ID
@@ -218,12 +221,12 @@ data:
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-      --url http://partition.{{ $namespace }}/api/partition/v1/partitions/{{ $partition }} \
+      --url http://partition.{{ $namespace }}/api/partition/v1/partitions/${PARTITION} \
       --header "Host: partition.{{ $namespace }}" \
       --header "accept: application/json" \
       --header "content-type: application/json" \
       --header "authorization: Bearer $TOKEN" \
-      --header "data-partition-id: {{ $partition }}" \
+      --header "data-partition-id: ${PARTITION}" \
       --data $(jq -c '.' /script/partition.json))
 
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')

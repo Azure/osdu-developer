@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: osdu-init
-  namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
@@ -30,6 +29,10 @@ spec:
       value: 72f988bf-86f1-41af-91ab-2d7cd011db47
     - name: AZURE_CLIENT_ID
       value: 880324a2-fe9c-4507-a8bf-9574ac4003cf
+    - name: AZURE_CLIENT_SECRET
+      secret:
+        name: active-directory
+        key: principal-clientpassword
     # - name: AZURE_TENANT_ID
     #   valueFrom:
     #     configMapKeyRef:
@@ -40,10 +43,7 @@ spec:
     #     configMapKeyRef:
     #       name: configmap-services
     #       key: client_id
-    # - name: AZURE_CLIENT_SECRET
-    #   secret:
-    #     name: active-directory
-    #     key: principal-clientpassword
+
     # - name: SERVICE_BUS_NAME
     #   valueFrom:
     #     configMapKeyRef:

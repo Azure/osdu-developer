@@ -27,11 +27,11 @@ spec:
           - name: PARTITION
             value: {{ .Values.partition | quote }}
           - name: SERVICE_BUS_NAME
-            value: {{ .Values.service_bus | quote }}
+            value: {{ .Values.serviceBus | quote }}
           - name: AZURE_TENANT_ID
-            value: {{ .Values.tenant_id | quote }}
+            value: {{ .Values.tenantId | quote }}
           - name: AZURE_CLIENT_ID
-            value: {{ .Values.client_id | quote }}
+            value: {{ .Values.clientId | quote }}
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:

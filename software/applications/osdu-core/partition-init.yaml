@@ -32,13 +32,14 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: configmap-services
+      targetPath: clientId
       valuesKey: client_id
-      targetPath: client_id
     - kind: ConfigMap
       name: configmap-services
+      targetPath: tenantId
       valuesKey: tenant_id
-      targetPath: tenant_id
     - kind: ConfigMap
       name: configmap-services
+      targetPath: serviceBus
       valuesKey: partition_servicebus_name_0
-      targetPath: service_bus
+      

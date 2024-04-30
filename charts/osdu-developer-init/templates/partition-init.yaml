@@ -246,5 +246,3 @@ data:
     fi
 
     exit 0
-
-    #curl --max-time 2 -s -f -XPOST http://127.0.0.1:15000/quitquitquit

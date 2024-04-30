@@ -49,7 +49,7 @@ jobs:
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
       - name: Generate Changelog
-        uses: mikepenz/release-changelog-builder-action@v1
+        uses: mikepenz/release-changelog-builder-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

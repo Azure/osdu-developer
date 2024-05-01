@@ -9,11 +9,16 @@ cat > custom_values.yaml << EOF
 nameOverride: ""
 fullnameOverride: "osdu-init"
 
-tenantId: 
-clientId: 
-clientSecret: 
-serviceBus: 
-partition: 
+jobs:
+  entitlementInit: true
+  partitionInit: true
+tenantId: <your_tenant_id>
+clientId: <your_client_id>
+clientSecret:
+  name: active-directory
+  key: principal-clientpassword
+partition: opendes
+serviceBus: <your_service_bus_name>
 EOF
 
 

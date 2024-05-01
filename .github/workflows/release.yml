@@ -48,14 +48,6 @@ jobs:
         run: |
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
-      - name: Generate Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          configuration: ".github/changelog_config.json"
-
       - name: Commit Changes
         uses: EndBug/add-and-commit@v9
         with:
@@ -63,6 +55,14 @@ jobs:
           add: |
             version.json
             azuredeploy.json
+
+      - name: Generate Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configuration: ".github/changelog_config.json"
 
       - name: Create Release
         uses: ncipollo/release-action@v1

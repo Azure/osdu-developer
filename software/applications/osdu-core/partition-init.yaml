@@ -23,6 +23,9 @@ spec:
     remediation:
       retries: 3
   values:
+    jobs:
+      entitlementInit: true
+      partitionInit: true
     partition: opendes
     clientSecret:
       name: active-directory

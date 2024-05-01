@@ -1,48 +1,48 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: osdu-init
-#   namespace: osdu-core
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#     - name: partition
-#       namespace: flux-system
-#   targetNamespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-init
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     jobs:
-#       partitionInit: true
-#       entitlementInit: false
-#     partition: opendes
-#     clientSecret:
-#       name: active-directory
-#       key: principal-clientpassword
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: clientId
-#       valuesKey: client_id
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: tenantId
-#       valuesKey: tenant_id
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: serviceBus
-#       valuesKey: partition_servicebus_name_0   ## This is the first data partition service bus name
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-init-partition
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: partition
+      namespace: flux-system
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    jobs:
+      partitionInit: true
+      entitlementInit: false
+    partition: opendes
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: serviceBus
+      valuesKey: partition_servicebus_name_0   ## This is the first data partition service bus name
 # ---
 # apiVersion: helm.toolkit.fluxcd.io/v2beta1
 # kind: HelmRelease

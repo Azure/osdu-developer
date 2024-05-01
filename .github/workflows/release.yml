@@ -49,12 +49,12 @@ jobs:
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
       - name: Generate Changelog
+        id: github_release
         uses: mikepenz/release-changelog-builder-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configuration: ".github/changelog_config.json"
-          output-file: "CHANGELOG.md"
 
       - name: Commit Changes
         uses: EndBug/add-and-commit@v9
@@ -63,11 +63,10 @@ jobs:
           add: |
             version.json
             azuredeploy.json
-            CHANGELOG.md
 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.bump_version.outputs.new_tag }}  # Use directly the tag from bump_version
-          artifacts: "azuredeploy.json,CHANGELOG.md"
-          bodyFile: "CHANGELOG.md"
+          artifacts: "azuredeploy.json"
+          body: ${{steps.github_release.outputs.changelog}}

@@ -102,3 +102,4 @@ data:
     fi
 
     exit 0
+{{- end }}

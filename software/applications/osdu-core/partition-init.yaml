@@ -25,7 +25,7 @@ spec:
   values:
     jobs:
       entitlementInit: true
-      partitionInit: true
+      partitionInit: false
     partition: opendes
     clientSecret:
       name: active-directory

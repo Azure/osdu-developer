@@ -1,4 +1,5 @@
 {{- $namespace := .Release.Namespace -}}
+{{- if .Values.jobs.entitlementInit }}
 ---
 apiVersion: batch/v1
 kind: Job

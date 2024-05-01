@@ -16,8 +16,7 @@ changelog:
   exclude:
     labels:
       - "ignore-for-release"  # Exclude all issues/PRs with this label
-    authors:
-      - "octocat"  # Exclude all contributions from this author
+
 
   # Configuration options for the changelog generator
   # Change log file settings

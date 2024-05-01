@@ -53,7 +53,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          configuration: ".github/changelog_config.yml"
+          configuration: ".github/changelog_config.json"
           output-file: "CHANGELOG.md"
 
       - name: Commit Changes

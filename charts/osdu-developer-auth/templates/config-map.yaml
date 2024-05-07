@@ -1,5 +1,7 @@
 
 {{- $namespace := .Release.Namespace }}
+{{- $clientId := .Values.azure.appId }}
+{{- $tenantId := .Values.azure.tenantId }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -111,12 +113,12 @@ data:
         var app = new Vue({
           el: '#oauth-form',
           data: {
-            tenantId: '{{ .Values.azure.tenantId }}',
-            clientId: '{{ .Values.azure.clientId }}',
+            tenantId: '{{ $tenantId }}',
+            clientId: '{{ $clientId }}',
             redirectUrl: window.location.href, // Use the current page URL,
             responseType: 'code',
             responseMode: 'fragment',
-            scope: '{{ .Values.azure.clientId }}/.default openid profile offline_access',
+            scope: '{{ $clientId }}/.default openid profile offline_access',
             authorizationCode: null,
             accessToken: null,
             idToken: null

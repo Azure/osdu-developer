@@ -438,5 +438,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
 output KEYVAULT_NAME string = commonBlade.outputs.keyvaultName
 output ACR_NAME string = serviceBlade.outputs.registryName
+output AKS_NAME string = serviceBlade.outputs.clusterName
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

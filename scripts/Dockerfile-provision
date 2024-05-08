@@ -1,15 +1,30 @@
 FROM mcr.microsoft.com/azure-cli:latest
 
 # Install OS packages
-RUN apk add --no-cache curl ncurses
+RUN apk --no-cache update && \
+    apk add --no-cache \
+        curl \
+        ncurses \
+        # build dependencies for native binaries in Python packages
+        gcc \
+        make \
+        openssl-dev \
+        libffi-dev \
+        musl-dev \
+        python3-dev 
 
 # Install azd
 RUN curl -fsSL https://aka.ms/install-azd.sh | bash
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel httpie \
+    && pip3 install --no-cache-dir --force-reinstall pycryptodome
 
 # Copy the script into the container
 COPY functions.sh /usr/local/bin/functions.sh
 COPY hook-postprovision.sh /usr/local/bin/postprovision.sh
 COPY hook-preprovision.sh /usr/local/bin/preprovision.sh
+COPY hook-predeploy.sh /usr/local/bin/predeploy.sh
+COPY hook-postdeploy.sh /usr/local/bin/postdeploy.sh
 
 # Create a directory to work in
 WORKDIR /workspace
@@ -17,7 +32,9 @@ WORKDIR /workspace
 # Make the script executable
 RUN chmod +x /usr/local/bin/functions.sh \
     && chmod +x /usr/local/bin/postprovision.sh \
-    && chmod +x /usr/local/bin/preprovision.sh 
+    && chmod +x /usr/local/bin/preprovision.sh \
+    && chmod +x /usr/local/bin/predeploy.sh \
+    && chmod +x /usr/local/bin/postdeploy.sh
 
 # Set the entrypoint to run your script
 CMD ["/bin/bash"]

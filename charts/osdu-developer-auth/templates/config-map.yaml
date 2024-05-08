@@ -147,7 +147,7 @@ data:
               return "https://login.microsoftonline.com/" + this.clientId + "/oauth2/logout";
             },
             redirect: function () {
-              return location.protocol + '//' + location.host + location.pathname
+              return 'https://' + location.host + location.pathname
             }
           },
           beforeMount: function () {

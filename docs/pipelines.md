@@ -58,6 +58,7 @@ This action ensures that the bicep can build properly.
 
 The release action will run whenever a release is created to ensure we have a copy of the ARM template from that release that could then be used by other systems as necessary.
 
+<!--- https://diagrams.helpful.dev/ --->
 ```mermaid
 sequenceDiagram
     participant Workflow as "GitHub Workflow"

@@ -228,20 +228,22 @@ azd env set ENABLE_BLOB_PUBLIC_ACCESS false
 
 Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
 
-
-```mermaid
+<!--- https://diagrams.helpful.dev/ --->
+```mermaid 
 sequenceDiagram
-    participant Azd as azd
-    participant Provision as provision
-    participant Deploy as deploy
+    participant Azd as user
+    participant Provision as command
+    participant Azure as azure
+
 
     rect rgb(191, 223, 255)
     alt 
     Note over Provision: featureCheck
     Note over Provision: credCheck
     end
-    Azd->>+Provision: provision  
-    Provision->>-Azd: provision complete
+    Azd->>+Provision: azd provision 
+    Provision->>Azure: arm deploy
+    Provision-->>-Azd: complete
     alt 
     Note over Provision: softwareCheck
     Note over Provision: entraAuth
@@ -250,16 +252,16 @@ sequenceDiagram
     
     rect rgb(144,238,144)
     alt 
-    Note over Deploy: firstUser
-    Note over Deploy: refreshToken
+    Note over Provision: firstUser
+    Note over Provision: refreshToken
     end
-    Azd-->>Deploy: triggers deploy
-    activate Deploy
-    Deploy-->>Azd: deploy complete
-    deactivate Deploy
+    Azd->>Provision: azd deploy
+    activate Provision
+    Provision-->>Azd: complete
+    deactivate Provision
     alt 
 
-    Note over Deploy: accessToken
+    Note over Provision: accessToken
     end
     end
 ```

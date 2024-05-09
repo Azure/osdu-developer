@@ -68,7 +68,7 @@ param partitions array = [
 var partitionLayerConfig = {
   secrets: {
     storageAccountName: 'storage'
-    storageAccountKey: 'key'
+    storageAccountKey: 'storage-key'
     cosmosConnectionString: 'cosmos-connection'
     cosmosEndpoint: 'cosmos-endpoint'
     cosmosPrimaryKey: 'cosmos-primary-key'

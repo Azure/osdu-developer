@@ -297,7 +297,7 @@ var databaseAccount_properties = union({
     defaultIdentity: !empty(defaultIdentity) ? 'UserAssignedIdentity=${defaultIdentity}': 'FirstPartyIdentity'
     enablePartitionKeyMonitor: true
     enablePartitionMerge: false
-    keyVaultKeyUri:  !empty(kvKeyUri) ? kvKeyUri : json('null')
+    keyVaultKeyUri:  !empty(kvKeyUri) ? kvKeyUri : null
   } : {}), (!empty(mongodbDatabases) ? {
     // MongoDb properties
     apiProperties: {

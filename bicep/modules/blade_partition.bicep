@@ -261,10 +261,10 @@ var partitionLayerConfig = {
   }
   servicebus: {
     sku: 'Standard'
-    defaultSize: 1024
     topics: [
       {
         name: 'indexing-progress'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'indexing-progresssubscription'
@@ -273,6 +273,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'legaltags'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'legaltagssubscription'
@@ -281,6 +282,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'recordstopic'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'recordstopicsubscription'
@@ -289,6 +291,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'recordstopicdownstream'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'downstreamsub'
@@ -297,6 +300,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'recordstopiceg'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'eg_sb_wkssubscription'
@@ -305,6 +309,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'schemachangedtopic'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'schemachangedtopicsubscription'
@@ -313,6 +318,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'schemachangedtopiceg'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'eg_sb_schemasubscription'
@@ -321,6 +327,7 @@ var partitionLayerConfig = {
       }
       {
         name: 'legaltagschangedtopiceg'
+        maxSizeInMegabytes: 1024
         subscriptions: [
           {
             name: 'eg_sb_legaltagssubscription'
@@ -338,10 +345,12 @@ var partitionLayerConfig = {
       }
       {
         name: 'statuschangedtopiceg'
+        maxSizeInMegabytes: 1024
         subscriptions: []
       }
       {
         name: 'replayrecordtopic'
+        maxSizeInMegabytes: 1024
         subscriptions: []
       }
     ]
@@ -513,7 +522,7 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for 
     topics: [
       for topic in partitionLayerConfig.servicebus.topics: {
         name: topic.name
-        maxSizeInMegabytes: (contains(topic, 'maxSizeInMegabytes') ? topic.maxSizeInMegabytes : partitionLayerConfig.servicebus.defaultSize)
+        maxSizeInMegabytes: topic.maxSizeInMegabytes
         authorizationRules: [
           {
             name: 'RootManageSharedAccessKey'

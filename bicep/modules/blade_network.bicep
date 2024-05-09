@@ -68,6 +68,8 @@ param identityId string
 
 var networkConfiguration = vnetConfiguration.name == '' ? {
   prefix: '10.1.0.0/16'
+  group: resourceGroup().name
+  name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
   aksSubnet: {
     name: 'ClusterSubnet'
     prefix: '10.1.0.0/20'

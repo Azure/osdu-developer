@@ -110,15 +110,18 @@ AZURE_CLIENT_SECRET=$(echo "$output" | grep "AZURE_CLIENT_SECRET" | cut -d'=' -f
 AUTH_INGRESS=$(echo "$output" | grep "AUTH_INGRESS" | cut -d'=' -f2 | tr -d '"')
 AUTH_REFRESH=$(echo "$output" | grep "AUTH_REFRESH" | cut -d'=' -f2 | tr -d '"')
 
-cat << EOF > "${AZURE_RESOURCE_GROUP}_env.json"
+mkdir -p .vscode
+cat << EOF > ".vscode/settings.json"
 {
-  "${AZURE_RESOURCE_GROUP}": {
-    "TENANT_ID": "${AZURE_TENANT_ID}",
-    "CLIENT_ID": "${AZURE_CLIENT_ID}",
-    "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
-    "HOST": "${AUTH_INGRESS}",
-    "REFRESH_TOKEN": "${AUTH_REFRESH}",
-    "DATA_PARTITION": "opendes"
-  }
+    "rest-client.environmentVariables": {
+        "${AZURE_RESOURCE_GROUP}": {
+          "TENANT_ID": "${AZURE_TENANT_ID}",
+          "CLIENT_ID": "${AZURE_CLIENT_ID}",
+          "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
+          "HOST": "${AUTH_INGRESS}",
+          "REFRESH_TOKEN": "${AUTH_REFRESH}",
+          "DATA_PARTITION": "opendes"
+        }
+    }
 }
 EOF

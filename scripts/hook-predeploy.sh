@@ -116,7 +116,8 @@ if [[ ! -n $AUTH_USER ]]; then
       --data "client_secret=${AZURE_CLIENT_SECRET}" \
       --data "scope=${AZURE_CLIENT_ID}/.default" |jq -r .access_token)
 
-    AUTH_USER=$(az ad signed-in-user show --query id -o tsv)
+###
+    AUTH_USER=$(az ad signed-in-user show --query userPrincipalName -o tsv)
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
      # Add the first user.

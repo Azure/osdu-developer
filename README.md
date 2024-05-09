@@ -260,8 +260,7 @@ sequenceDiagram
     Provision-->>Azd: complete
     deactivate Provision
     alt 
-
-    Note over Provision: accessToken
+    Note over Provision: settingsJson
     end
     end
 ```

@@ -118,17 +118,9 @@ fi
 
 # Registering AKS feature extensions
 aksExtensions=(
-  "PodSecurityPolicyPreview"
-  "KubeletDisk"
-  "AKS-KedaPreview"
   "RunCommandPreview"
   "EnablePodIdentityPreview"
-  "UserAssignedIdentityPreview"
-  "EnablePrivateClusterPublicFQDN"
   "PodSubnetPreview"
-  "AKS-VPAPreview"
-  "AzureOverlayPreview"
-  "KubeProxyConfigurationPreview"
 )
 
 
@@ -174,4 +166,22 @@ if [[ $ok == 1 ]]; then
   PrintMessage "  Refreshing the registration of the Microsoft.ContainerService resource provider..."
   az provider register --namespace Microsoft.ContainerService
   PrintMessage "  Microsoft.ContainerService resource provider registration successfully refreshed"
+fi
+
+if [[ -z $AZURE_CLIENT_ID ]]; then
+  PrintMessage "==================================================================" 4
+  PrintMessage "********ERROR*********   --> Missing AZURE_CLIENT_ID" 4
+  PrintMessage "==================================================================" 4
+  exit 1
+fi
+
+
+if [[ -z $AZURE_CLIENT_PRINCIPAL_OID ]]; then
+  PrintMessage "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
+  azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp show --id $AZURE_CLIENT_ID --query "id" -otsv)
+fi
+
+if [[ -z $AZURE_CLIENT_SECRET ]]; then
+  PrintMessage "  Retrieving AZURE_CLIENT_SECRET..."
+  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password -otsv)
 fi

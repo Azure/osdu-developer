@@ -38,8 +38,7 @@ grant_type=refresh_token
 # -----------------------
 ###
 @access_token = {{refresh.response.body.access_token}}
-@ENDPOINT = https://{{HOST}}
-@ENTITLEMENTS_HOST = {{ENDPOINT}}/api/entitlements/v2
+@ENTITLEMENTS_HOST = {{HOST}}/api/entitlements/v2
 
 
 # -----------------------

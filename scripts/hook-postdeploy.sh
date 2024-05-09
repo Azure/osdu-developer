@@ -2,10 +2,10 @@
 
 ###############################################################################################
 #  ----------------------------                                                               #
-#  postProvision - Post Provision                                                               #
+#  postDeploy - Post Deploy                                                                   #
 #  ----------------------------                                                               #
 #                                                                                             #
-# Usage: ./hook-postprovision.sh <options>                                                     #            
+# Usage: ./hook-postdeploy.sh <options>                                                       #            
 #                                                                                             #
 # Prerequisites:                                                                              #
 #   1. Ensure you have Azure CLI installed, and you're logged in to Azure CLI.                #
@@ -82,59 +82,46 @@ if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head
 fi
 
 ###############################
-# Checking Flux Compliance
-echo "Checking Software Installation..."
+# Get Access Token using Refresh Token
+if [[ -n $AUTH_REFRESH ]]; then
+    echo "Getting a Access Token using the Refresh Token..."
 
-# Initialize timer
-end=$((SECONDS+600))  # 600 seconds = 10 minutes
+    response=$(curl --request POST \
+      --url https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token \
+      --header "content-type: application/x-www-form-urlencoded" \
+      --data "grant_type=refresh_token" \
+      --data "client_id=${AZURE_CLIENT_ID}" \
+      --data "client_secret=$AZURE_CLIENT_SECRET" \
+      --data refresh_token=$REFAUTH_TOKENESH_TOKEN \
+      --data "scope=${AZURE_CLIENT_ID}/.default openid profile offline_access")
 
-# Loop to check Flux compliance every 30 seconds up to 10 minutes
-while [ $SECONDS -lt $end ]; do
-    
-    compliance_state=$(az k8s-configuration flux show -t managedClusters -g $AZURE_RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -otsv)
-    
-    echo "Current Software State: $compliance_state"
-
-    if [ "$compliance_state" == "Compliant" ]; then
-        echo "Software has been installed."
-        break
-    else
-        echo "Software still installing, retrying in 30 seconds."
-        sleep 30
+    # Extract the Refresh Token from the body and set it as an environment variable
+    refresh_token=$(echo "$response" | jq -r '.refresh_token')
+    if [[ -n $refresh_token ]]; then
+        azd env set AUTH_REFRESH $refresh_token
     fi
-done
-
-if [ $SECONDS -ge $end ]; then
-    echo "Software check timed out after 10 minutes."
 fi
 
+output=$(azd env get-values)
+AZURE_RESOURCE_GROUP=$(echo "$output" | grep "AZURE_RESOURCE_GROUP" | cut -d'=' -f2 | tr -d '"')
+AZURE_TENANT_ID=$(echo "$output" | grep "AZURE_TENANT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_ID=$(echo "$output" | grep "AZURE_CLIENT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_SECRET=$(echo "$output" | grep "AZURE_CLIENT_SECRET" | cut -d'=' -f2 | tr -d '"')
+AUTH_INGRESS=$(echo "$output" | grep "AUTH_INGRESS" | cut -d'=' -f2 | tr -d '"')
+AUTH_REFRESH=$(echo "$output" | grep "AUTH_REFRESH" | cut -d'=' -f2 | tr -d '"')
 
-###############################
-# Add Redirect URIs to Azure AD App
-redirect_uris=()  # Initialize an empty array to hold the redirect URIs
-
-# Fetch Node Resource Group from AKS Cluster
-node_resource_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
-
-# Fetch Public IP Address of the Load Balancer named 'kubernetes'
-public_ip=$(az network public-ip list -g "$node_resource_group" --query "[?contains(name, 'kubernetes')].ipAddress" -otsv)
-if [[ -n $public_ip ]]; then
-    echo "Adding Public Web Endpoint:"
-    redirect_uris+=("https://$public_ip/auth/")  # Add public ingress URI
-fi
-
-# Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
-private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
-if [[ -n $private_ip ]]; then
-    echo "Adding Public Web Endpoint:"
-    redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
-fi
-
-
-# Update Azure AD app only if there are URIs to add
-if [ ${#redirect_uris[@]} -gt 0 ]; then
-    echo "=================================================================="
-    echo "Adding Web Direct URIs"
-    echo "=================================================================="
-    az ad app update --id $AZURE_CLIENT_ID --web-redirect-uris "${redirect_uris[@]}"
-fi
+mkdir -p .vscode
+cat << EOF > ".vscode/settings.json"
+{
+    "rest-client.environmentVariables": {
+        "${AZURE_RESOURCE_GROUP}": {
+          "TENANT_ID": "${AZURE_TENANT_ID}",
+          "CLIENT_ID": "${AZURE_CLIENT_ID}",
+          "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
+          "HOST": "${AUTH_INGRESS}",
+          "REFRESH_TOKEN": "${AUTH_REFRESH}",
+          "DATA_PARTITION": "opendes"
+        }
+    }
+}
+EOF

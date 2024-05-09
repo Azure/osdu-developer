@@ -767,3 +767,6 @@ module grafana 'aks_grafana.bicep' = if(enableMonitoring){
 
 @description('The name of the container registry.')
 output registryName string = registry.outputs.name
+
+@description('The name of the cluster.')
+output clusterName string = cluster.outputs.aksClusterName

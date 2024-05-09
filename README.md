@@ -144,8 +144,6 @@ Replace <your_ad_application_name> with your actual Azure AD Application Name.
 ```bash
 APP_NAME=<your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
-azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp list --display-name $APP_NAME --query "[].id" -otsv)
-azd env set AZURE_CLIENT_SECRET $(az ad sp credential reset --id myServicePrincipalID --query "password" -otsv)
 ```
 
 3. Set Software Repository Location:
@@ -230,6 +228,43 @@ azd env set ENABLE_BLOB_PUBLIC_ACCESS false
 
 Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
 
+<!--- https://diagrams.helpful.dev/ --->
+```mermaid 
+sequenceDiagram
+    participant Azd as user
+    participant Provision as command
+    participant Azure as azure
+
+
+    rect rgb(191, 223, 255)
+    alt 
+    Note over Provision: featureCheck
+    Note over Provision: credCheck
+    end
+    Azd->>+Provision: azd provision 
+    Provision->>Azure: arm deploy
+    Provision-->>-Azd: complete
+    alt 
+    Note over Provision: softwareCheck
+    Note over Provision: entraAuth
+    end
+    end
+    
+    rect rgb(144,238,144)
+    alt 
+    Note over Provision: firstUser
+    Note over Provision: refreshToken
+    end
+    Azd->>Provision: azd deploy
+    activate Provision
+    Provision-->>Azd: complete
+    deactivate Provision
+    alt 
+    Note over Provision: settingsJson
+    end
+    end
+```
+
 __Starting the Deployment__
 
 To initiate the deployment, use the following command:
@@ -238,7 +273,37 @@ To initiate the deployment, use the following command:
 azd provision
 ```
 
-This command starts the provisioning process, setting up all necessary resources in Azure according to your configuration.
+This command starts the provisioning process, setting up all necessary resources in Azure according to your configuration.  It involves a pre and post hook that peforms some additional automation.
+
+_Prehook_
+
+1. Ensure that the subscription is configured with the required features.
+2. Ensure a Client Secret is available for use.
+3. Gather the Service Principal Object Id.
+
+_Posthook_
+
+1. Ensure that the software installation is in compliance.
+2. Ensure the AD Application has the Ingress Authentication Redirect URLs
+
+
+__Deploy Initial Configuration__
+
+Prior to running this command on the ingress url `https://<your_ingress>/auth/` an authorization code can be easily retrieved to use in getting a refresh token for ease of use in calling APIs that require a bearer token.
+
+```bash
+azd env set AUTH_CODE <your_auth_code>
+azd deploy
+azd env show AUTH_TOKEN
+```
+
+This command deploys some additional configuration helpful to using the solution.
+
+_Posthook_
+
+1. Configure the Initial User into Entitlements.
+2. Using a provided Authorization Code get an initial user refresh token.
+
 
 __Removal and Cleaning up__
 

@@ -96,14 +96,29 @@ if [[ -n $AUTH_REFRESH ]]; then
       --data "scope=${AZURE_CLIENT_ID}/.default openid profile offline_access")
 
     # Extract the Refresh Token from the body and set it as an environment variable
-    access_token=$(echo "$response" | jq -r '.access_token')
-    if [[ -n $access_token ]]; then
-        azd env set AUTH_TOKEN $access_token
-    fi
-
-    # Extract the Refresh Token from the body and set it as an environment variable
     refresh_token=$(echo "$response" | jq -r '.refresh_token')
     if [[ -n $refresh_token ]]; then
         azd env set AUTH_REFRESH $refresh_token
     fi
 fi
+
+output=$(azd env get-values)
+AZURE_RESOURCE_GROUP=$(echo "$output" | grep "AZURE_RESOURCE_GROUP" | cut -d'=' -f2 | tr -d '"')
+AZURE_TENANT_ID=$(echo "$output" | grep "AZURE_TENANT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_ID=$(echo "$output" | grep "AZURE_CLIENT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_SECRET=$(echo "$output" | grep "AZURE_CLIENT_SECRET" | cut -d'=' -f2 | tr -d '"')
+AUTH_INGRESS=$(echo "$output" | grep "AUTH_INGRESS" | cut -d'=' -f2 | tr -d '"')
+AUTH_REFRESH=$(echo "$output" | grep "AUTH_REFRESH" | cut -d'=' -f2 | tr -d '"')
+
+cat << EOF > "${AZURE_RESOURCE_GROUP}_env.json"
+{
+  "${AZURE_RESOURCE_GROUP}": {
+    "TENANT_ID": "${AZURE_TENANT_ID}",
+    "CLIENT_ID": "${AZURE_CLIENT_ID}",
+    "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
+    "HOST": "${AUTH_INGRESS}",
+    "REFRESH_TOKEN": "${AUTH_REFRESH}",
+    "DATA_PARTITION": "opendes"
+  }
+}
+EOF

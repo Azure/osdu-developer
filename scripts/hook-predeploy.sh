@@ -81,41 +81,53 @@ if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head
   exit 1
 fi
 
-
-###############################
-# Gather Information
-TENANT_ID=$(az account show --query tenantId -o tsv)
-# Fetch Node Resource Group from AKS Cluster
-node_resource_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
-if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
-    WEB_ENDPOINT="https://$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query '[].privateIPAddress' -o tsv)"
-else
-    WEB_ENDPOINT="https://$(az network public-ip list -g "$node_resource_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
+if [[ ! -n $AZURE_TENANT_ID ]]; then
+  AZURE_TENANT_ID=$(az account show --query tenantId -o tsv)
+  azd env set AZURE_TENANT_ID $AZURE_TENANT_ID
 fi
 
-ACCESS_TOKEN=$(curl --request POST \
-  --url https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token \
-  --header "content-type: application/x-www-form-urlencoded" \
-  --data "grant_type=client_credentials" \
-  --data "client_id=${AZURE_CLIENT_ID}" \
-  --data "client_secret=${AZURE_CLIENT_SECRET}" \
-  --data "scope=${AZURE_CLIENT_ID}/.default" |jq -r .access_token)
+###############################
+# Add Ingress
+if [[ ! -n $AUTH_INGRESS ]]; then
+  echo "Fetching Ingress IP Address..."
 
-USER_ID=$(az ad signed-in-user show --query id -o tsv)
+  # Fetch Node Resource Group from AKS Cluster
+  node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
+  if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
+      AUTH_INGRESS="https://$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
+  else
+      AUTH_INGRESS="https://$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
+  fi
+
+  azd env set AUTH_INGRESS $AUTH_INGRESS
+fi
 
 
 ###############################
 # Add the first user.
-if [ -n "$ACCESS_TOKEN" ] && [ -n "$USER_ID" ]; then
-    json_payload=$(jq -n --arg email "$USER_ID" '{"email": $email, "role": "MEMBER"}')
+if [[ ! -n $AUTH_USER ]]; then
+    echo "Adding the first user..."
 
-    # Add the first user.
-    response=$(curl -s -w "%{http_code}" -X POST "${WEB_ENDPOINT}/api/entitlements/v2/groups/users@opendes.contoso.com/members" \
+    ACCESS_TOKEN=$(curl --request POST \
+      --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token \
+      --header "content-type: application/x-www-form-urlencoded" \
+      --data "grant_type=client_credentials" \
+      --data "client_id=${AZURE_CLIENT_ID}" \
+      --data "client_secret=${AZURE_CLIENT_SECRET}" \
+      --data "scope=${AZURE_CLIENT_ID}/.default" |jq -r .access_token)
+
+    AUTH_USER=$(az ad signed-in-user show --query id -o tsv)
+    json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
+
+     # Add the first user.
+    response=$(curl -s -w "%{http_code}" -X POST "${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.contoso.com/members" \
+        --insecure \
         -H "Authorization: Bearer ${ACCESS_TOKEN}" \
         -H "Accept: application/json" \
         -H "data-partition-id: opendes" \
         -H "Content-Type: application/json" \
         -d "$json_payload")
+
 
     # Extract HTTP status code from the last three characters
     http_status_code=$(echo "$response" | grep -oE '[0-9]{3}$')
@@ -123,15 +135,19 @@ if [ -n "$ACCESS_TOKEN" ] && [ -n "$USER_ID" ]; then
     # Remove the last three characters (HTTP status code) to isolate the body
     body=${response%???}
 
+
     # Check the response code and act accordingly
     if [ "$http_status_code" -eq 200 ] || [ "$http_status_code" -eq 201 ] || [ "$http_status_code" -eq 409 ]; then
-        echo "Request successful. Body: $body"
+        echo "Request successful."
     else
         echo "Request failed with status $http_status_code. Body: $body"
+        exit 1
     fi
 
     # Assign the Ops role to the user.
-    response=$(curl -s -w "%{http_code}" -X POST "${WEB_ENDPOINT}/api/entitlements/v2/groups/users.datalake.ops@.opendes.contoso.com/members" \
+    echo "Assigning the Ops role to the user..."
+    response=$(curl -s -w "%{http_code}" -X POST "${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.contoso.com/members" \
+      --insecure \
       -H "accept: application/json" \
       -H "content-type: application/json" \
       -H "authorization: Bearer ${ACCESS_TOKEN}" \
@@ -146,46 +162,53 @@ if [ -n "$ACCESS_TOKEN" ] && [ -n "$USER_ID" ]; then
 
     # Check the response code and act accordingly
     if [ "$http_status_code" -eq 200 ] || [ "$http_status_code" -eq 201 ] || [ "$http_status_code" -eq 409 ]; then
-        echo "Request successful. Body: $body"
+        echo "Request successful."
     else
         echo "Request failed with status $http_status_code. Body: $body"
+        exit 1
     fi
-    
-else
-    if [ -z "$ACCESS_TOKEN" ]; then echo "Failed to retrieve access token."; fi
-    if [ -z "$USER_ID" ]; then echo "Failed to retrieve user ID."; fi
-    exit 1
+
+    azd env set AUTH_USER $AUTH_USER
 fi
 
 
 ###############################
 # Get Refresh Token using Authorization Code
-if [[ -n $AUTH_CODE ]]; then
-    echo "Getting a Refresh Token using the Authorization Code..."
-    
-    response=$(curl -s -w "%{http_code}" --request POST \
-      --url https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token \
-      --header "Content-Type: application/x-www-form-urlencoded" \
-      --data-urlencode "grant_type=authorization_code" \
-      --data-urlencode "redirect_uri=$WEB_ENDPOINT/auth/" \
-      --data-urlencode "client_id=$AZURE_CLIENT_ID" \
-      --data-urlencode "client_secret=$AZURE_CLIENT_SECRET" \
-      --data-urlencode "scope=$AZURE_CLIENT_ID/.default openid profile offline_access" \
-      --data-urlencode "code=$AUTH_CODE")
+if [[ -z "$AUTH_REFRESH" ]]; then
+    if [[ -z "$AUTH_CODE" ]]; then
+        echo "Error: Neither AUTH_CODE nor AUTH_REFRESH is available."
+        exit 1
+    else
+        echo "Getting a Refresh Token using the Authorization Code..."
+        
+        response=$(curl -s -w "%{http_code}" --request POST \
+          --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token \
+          --header "Content-Type: application/x-www-form-urlencoded" \
+          --data-urlencode "grant_type=authorization_code" \
+          --data-urlencode "redirect_uri=$AUTH_INGRESS/auth/" \
+          --data-urlencode "client_id=$AZURE_CLIENT_ID" \
+          --data-urlencode "client_secret=$AZURE_CLIENT_SECRET" \
+          --data-urlencode "scope=$AZURE_CLIENT_ID/.default openid profile offline_access" \
+          --data-urlencode "code=$AUTH_CODE")
 
-    # Extract HTTP status code from the last three characters
-    http_status_code=$(echo "$response" | grep -oE '[0-9]{3}$')
+        # Extract HTTP status code from the last three characters
+        http_status_code=$(echo "$response" | grep -oE '[0-9]{3}$')
 
-    # Remove the last three characters (HTTP status code) to isolate the body
-    body=${response%???}
+        # Remove the last three characters (HTTP status code) to isolate the body
+        body=${response%???}
 
-    # Extract the Refresh Token from the body and set it as an environment variable
-    refresh_token=$(echo "$body" | jq -r '.refresh_token')
-    if [[ -n $refresh_token ]]; then
-        azd env set AUTH_REFRESH $refresh_token
+        # Check the response code and act accordingly
+        if [ "$http_status_code" -eq 200 ]; then
+            echo "Request successful."
+            # Set the refresh token and void the auth code.
+            refresh_token=$(echo "$body" | jq -r '.refresh_token')
+            azd env set AUTH_REFRESH $refresh_token
+            azd env set AUTH_CODE ""
+        else
+            echo "Request failed with status $http_status_code. Body: $body"
+            exit 1
+        fi
     fi
-
-    # Clear the AUTH_CODE
-    azd env set AUTH_CODE ""
 fi
+
 

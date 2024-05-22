@@ -361,6 +361,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
 
     partitionSize: tier
     partitions: configuration.partitions
+    managedIdentityName: stampIdentity.outputs.name
   }
   dependsOn: [
     networkBlade

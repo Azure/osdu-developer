@@ -121,6 +121,8 @@ aksExtensions=(
   "RunCommandPreview"
   "EnablePodIdentityPreview"
   "PodSubnetPreview"
+  "EnableImageCleanerPreview"
+  "AKS-AzureKeyVaultSecretsProvider"
 )
 
 

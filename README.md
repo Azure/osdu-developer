@@ -15,10 +15,6 @@ The guiding principle of this development approach is to offer a way to facilita
 
 To support ease of use, this idea integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), working to facilitate seamless development and innovation on ideas.
 
-### Desired State
-
-To accomplish the goal of a `minimal` approach the use of a desired state approach is a key driver.
-
 __Bicep for Desired State Configuration__
 
 Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It is built on top of Azure Resource Manager (ARM) templates and simplifies the syntax and experience of authoring ARM templates. With Bicep, you define the desired state of your Azure infrastructure in code. This includes specifying the resources you want to deploy, their configurations, and the relationships between resources.
@@ -36,70 +32,14 @@ __Combination of Bicep and Gitops__
 The combination of Bicep and GitOps is a powerful strategy that allows for a single place where both the infrastructure and software are fully defined, enabling the system itself to work towards achieving the state that has been described. This integrated approach ensures alignment between infrastructure provisioning and application deployment, streamlining and automating the entire provisioning and application deployment process.
 
 
-## Setup
-
-This section guides you through setting up the necessary Azure features for this development workspace. Please note that this uses Azure features currently in Public Preview, which might not be fully stable and are subject to changes.
-
-### Registering Azure Features
-
-Before you begin, you need to register specific features in Azure that this approach relies on. Here's how to do it:
-
-
-**Step 1: Register the AzureServiceMeshPreview feature**
-
-The AzureServiceMeshPreview feature enables [AKS service mesh addon for Istio](https://learn.microsoft.com/en-us/azure/aks/istio-about). To register this feature, use the Azure CLI command below:
-
-```bash
-az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
-```
-
-_* Please wait a few minutes for the feature to register. The process might take up to 10 minutes._
-
-
-**Step 2: Verify the Registration Status**
-
-After registering the feature, ensure that the registration was successful. Check the status using the following command:
-
-```bash
-az feature show --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
-```
-
-Look for a status that indicates "Registered". If the status hasn't updated, you may need to wait a little longer and try again.
-
-
-**Step 3: Refresh the Resource Provider**
-
-Once the feature is registered, it's necessary to refresh the resource provider to apply the changes. Use this command to refresh the Microsoft.ContainerService resource provider:
-
-```bash
-az provider register --namespace Microsoft.ContainerService
-```
-
-With these steps, you have successfully registered the necessary Azure features. Next, you can proceed to the deployment phase.
-
-
-# ARM Template - Deployment
-
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
-
-To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
-
-__Important Parameter Requirement:__
-
-During the deployment process, there's one essential parameter you need to provide:
-
-`applicationClientId`: Fill this with the Application ClientId that you intend to use. This step is crucial for the proper functioning of the template.
-Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
-
-To begin, simply click the button below:
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
-
 
 
 # Azure Developer CLI - Deployment
 
-The recommended approach for working with this is through the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
+The recommended approach for working with this solution is by using the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
+
+
+The solution enables alternate configurations based off of feature flags. See the document [feature-flags](docs/feature-flags.md) for alternate configurations.
 
 
 ## Enabling Alpha Features for Azure Developer CLI
@@ -155,78 +95,70 @@ azd env set SOFTWARE_REPOSITORY https://github.com/azure/osdu-developer
 azd env set SOFTWARE_BRANCH main
 ```
 
+## Deploying the Solution
 
+Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of an environment.
 
-## Optional Features
+__Provision__
 
-Customize your resources by enabling these optional features based on your specific requirements:
-
-
-### Feature: Pod Subnet
-
-__Purpose:__ Enhances network configuration for Kubernetes Pods.
-
-__Details:__ Typically, with kubenet in Kubernetes, nodes are assigned IP addresses from the Azure virtual network subnet. Enabling the Pod Subnet feature allows Pods to receive IP addresses from a different address space, separate from the subnet of the nodes. This separation alters the network flows.
-
-
-__How To Enable:__
+To initiate the deployment, use the following command:
 
 ```bash
-azd env set ENABLE_POD_SUBNET true
+azd provision
 ```
 
+__Configure__
 
-### Feature: Vnet Injection
-
-__Purpose:__ Enables a bring your own network capability.
-
-__Details:__ Typically, internal solutions require a preconfigured network due to possible S2S vpn configurations or a Hub Spoke Network design.
-
-__How To Enable:__
+Prior to running this command on the ingress url `https://<your_ingress>/auth/` retrieve an authorization code to use in getting a refresh token to be used when calling APIs.
 
 ```bash
-azd env set ENABLE_VNET_INJECTION true
-azd env set VIRTUAL_NETWORK_GROUP <your_network_group>
-azd env set VIRTUAL_NETWORK_NAME <your_network_name>
-azd env set VIRTUAL_NETWORK_PREFIX <your_network_prefix>
-azd env set VIRTUAL_NETWORK_IDENTITY <your_network_managed_identity>
-
-azd env set AKS_SUBNET_NAME <your_subnet_name>
-azd env set AKS_SUBNET_PREFIX <your_subnet_prefix>
-
-azd env set POD_SUBNET_NAME <your_subnet_name>
-azd env set POD_SUBNET_PREFIX <your_subnet_prefix>
+azd env set AUTH_CODE <your_auth_code>
+azd hooks run predeploy
 ```
 
+__Execute__
 
-### Feature: Manage
+The environment is now ready for use and API calls can be made.  [Rest scripts](tools/rest-scripts/README.md) can be used now to run api checks as desired.
 
-__Purpose:__ Facilitates secure access to internal network resources.
 
-__Details:__ Internal ingress configurations can sometimes make it challenging to access network resources. The Bastion feature addresses this by creating a bastion host and a virtual machine. These components act as a secure gateway, allowing you to communicate with and manage resources within the private network, even if they're not exposed to the public internet.
+__Removal and Cleaning up__
 
-__How To Enable:__
+The resource group can be deleted manually and keyvaults and app configuration purged or use the following command:
 
 ```bash
-azd env set ENABLE_MANAGE true
+azd down --purge --force
 ```
 
-### Feature: Public Blob Access
-
-__Purpose:__ Control public access to Blob Storage.
-
-__Details:__ The Storage accounts have public access points that can be enabled or disabled to enhance security.
-
-__How to Disable:__
-
-```bash
-azd env set ENABLE_BLOB_PUBLIC_ACCESS false
-```
+This command will stop all running services and remove resources that were created during the deployment. The --purge flag ensures that any keyvaults are completely removed, and the --force option bypasses any confirmation prompts, making the process faster.
 
 
-## Deployment Commands
 
-Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of your environment.
+
+
+# ARM Template - Deployment
+
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
+
+To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
+
+__Important Parameter Requirement:__
+
+During the deployment process, there's one essential parameter you need to provide:
+
+`applicationClientId`: Fill this with the Application ClientId that you intend to use. This step is crucial for the proper functioning of the template.
+Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
+
+To begin, simply click the button below:
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
+
+
+
+
+
+# Sequence Diagram
+
+This diagram documents how the interactions work for the Azure CLI Developer Command Structures
 
 <!--- https://diagrams.helpful.dev/ --->
 ```mermaid 
@@ -265,59 +197,6 @@ sequenceDiagram
     end
 ```
 
-__Starting the Deployment__
-
-To initiate the deployment, use the following command:
-
-```bash
-azd provision
-```
-
-This command starts the provisioning process, setting up all necessary resources in Azure according to your configuration.  It involves a pre and post hook that peforms some additional automation.
-
-_Prehook_
-
-1. Ensure that the subscription is configured with the required features.
-2. Ensure a Client Secret is available for use.
-3. Gather the Service Principal Object Id.
-
-_Posthook_
-
-1. Ensure that the software installation is in compliance.
-2. Ensure the AD Application has the Ingress Authentication Redirect URLs
-
-
-__Deploy Initial Configuration__
-
-Prior to running this command on the ingress url `https://<your_ingress>/auth/` an authorization code can be easily retrieved to use in getting a refresh token for ease of use in calling APIs that require a bearer token.
-
-```bash
-azd env set AUTH_CODE <your_auth_code>
-azd hooks run predeploy
-```
-
-This command performs the following actions:
-
-1. Adds the first user to the platform with an operator role.
-2. Retrieves an openid refresh token for the first user.
-3. Writes necessary environment to the Visual Studio Code settings file.
-
-
-__Execute Rest Scripts__
-
-Using the Rest Client Extension for VSCode an environment has been conveniently added in `.vscode/scipts` which can be selected and the scripts now in `tools/rest-scripts` can be used to run api checks.
-
-
-
-__Removal and Cleaning up__
-
-When you need to remove your deployment and clean up resources, use this command:
-
-```bash
-azd down --purge --force
-```
-
-This command will stop all running services and remove resources that were created during the deployment. The --purge flag ensures that any keyvaults are completely removed, and the --force option bypasses any confirmation prompts, making the process faster.
 
 
 # Infrastructure

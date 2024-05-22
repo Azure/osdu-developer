@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "193201145499578087"
+      "templateHash": "28197527462381428"
     }
   },
   "parameters": {
@@ -16540,6 +16540,9 @@
           },
           "partitions": {
             "value": "[variables('configuration').partitions]"
+          },
+          "managedIdentityName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.name.value]"
           }
         },
         "template": {
@@ -16550,7 +16553,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.27.1.19265",
-              "templateHash": "4475319098249216199"
+              "templateHash": "12978322226088669109"
             }
           },
           "definitions": {
@@ -16667,13 +16670,19 @@
               "metadata": {
                 "description": "List of Data Partitions"
               }
+            },
+            "managedIdentityName": {
+              "type": "string",
+              "metadata": {
+                "description": "The managed identity name for deployment scripts"
+              }
             }
           },
           "variables": {
             "partitionLayerConfig": {
               "secrets": {
                 "storageAccountName": "storage",
-                "storageAccountKey": "key",
+                "storageAccountKey": "storage-key",
                 "cosmosConnectionString": "cosmos-connection",
                 "cosmosEndpoint": "cosmos-endpoint",
                 "cosmosPrimaryKey": "cosmos-primary-key"
@@ -24875,6 +24884,228 @@
                   }
                 }
               }
+            },
+            "blobUpload": {
+              "copy": {
+                "name": "blobUpload",
+                "count": "[length(parameters('partitions'))]"
+              },
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-storage-blob-upload-{1}', parameters('bladeConfig').sectionName, copyIndex())]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "storageAccountName": {
+                    "value": "[reference(format('partitionStorage[{0}]', copyIndex())).outputs.name.value]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "useExistingManagedIdentity": {
+                    "value": true
+                  },
+                  "managedIdentityName": {
+                    "value": "[parameters('managedIdentityName')]"
+                  },
+                  "existingManagedIdentitySubId": {
+                    "value": "[subscription().subscriptionId]"
+                  },
+                  "existingManagedIdentityResourceGroupName": {
+                    "value": "[resourceGroup().name]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.27.1.19265",
+                      "templateHash": "18072865228594700777"
+                    },
+                    "name": "Blob Upload",
+                    "description": "This module uploads a file to a blob storage account",
+                    "owner": "azure-global-energy"
+                  },
+                  "parameters": {
+                    "storageAccountName": {
+                      "type": "string",
+                      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name, 'blob')]",
+                      "metadata": {
+                        "description": "Desired name of the storage account"
+                      }
+                    },
+                    "containerName": {
+                      "type": "string",
+                      "defaultValue": "legal-service-azure-configuration",
+                      "metadata": {
+                        "description": "Name of the blob container"
+                      }
+                    },
+                    "filename": {
+                      "type": "string",
+                      "defaultValue": "Legal_COO.json",
+                      "metadata": {
+                        "description": "Name of the blob as it is stored in the blob container"
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]",
+                      "metadata": {
+                        "description": "The location of the Storage Account and where to deploy the module resources to"
+                      }
+                    },
+                    "forceUpdateTag": {
+                      "type": "string",
+                      "defaultValue": "[utcNow()]",
+                      "metadata": {
+                        "description": "How the deployment script should be forced to execute"
+                      }
+                    },
+                    "rbacRoleNeeded": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Azure RoleId that are required for the DeploymentScript resource to upload blobs"
+                      }
+                    },
+                    "useExistingManagedIdentity": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Does the Managed Identity already exists, or should be created"
+                      }
+                    },
+                    "managedIdentityName": {
+                      "type": "string",
+                      "defaultValue": "[format('id-storage-blob-{0}', parameters('location'))]",
+                      "metadata": {
+                        "description": "Name of the Managed Identity resource"
+                      }
+                    },
+                    "existingManagedIdentitySubId": {
+                      "type": "string",
+                      "defaultValue": "[subscription().subscriptionId]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Subscription Id it is located in"
+                      }
+                    },
+                    "existingManagedIdentityResourceGroupName": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().name]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Resource Group it is located in"
+                      }
+                    },
+                    "initialScriptDelay": {
+                      "type": "string",
+                      "defaultValue": "30s",
+                      "metadata": {
+                        "description": "A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate"
+                      }
+                    },
+                    "cleanupPreference": {
+                      "type": "string",
+                      "defaultValue": "OnSuccess",
+                      "allowedValues": [
+                        "OnSuccess",
+                        "OnExpiration",
+                        "Always"
+                      ],
+                      "metadata": {
+                        "description": "When the script resource is cleaned up"
+                      }
+                    }
+                  },
+                  "variables": {
+                    "$fxv#0": "[{\n  \"name\": \"Andorra\",\n  \"alpha2\": \"AD\",\n  \"numeric\": 16,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"United Arab Emirates\",\n  \"alpha2\": \"AE\",\n  \"numeric\": 784,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Afghanistan\",\n  \"alpha2\": \"AF\",\n  \"numeric\": 4,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Antigua and Barbuda\",\n  \"alpha2\": \"AG\",\n  \"numeric\": 28,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Anguilla\",\n  \"alpha2\": \"AI\",\n  \"numeric\": 660,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Albania\",\n  \"alpha2\": \"AL\",\n  \"numeric\": 8,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Armenia\",\n  \"alpha2\": \"AM\",\n  \"numeric\": 51,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Netherlands Antilles\",\n  \"alpha2\": \"AN\",\n  \"numeric\": 530,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Angola\",\n  \"alpha2\": \"AO\",\n  \"numeric\": 24,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Antarctica\",\n  \"alpha2\": \"AQ\",\n  \"numeric\": 10,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Argentina\",\n  \"alpha2\": \"AR\",\n  \"numeric\": 32,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"American Samoa\",\n  \"alpha2\": \"AS\",\n  \"numeric\": 16,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Austria\",\n  \"alpha2\": \"AT\",\n  \"numeric\": 40,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Australia\",\n  \"alpha2\": \"AU\",\n  \"numeric\": 36,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Aruba\",\n  \"alpha2\": \"AW\",\n  \"numeric\": 533,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Aland Islands\",\n  \"alpha2\": \"AX\",\n  \"numeric\": 248,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Azerbaijan\",\n  \"alpha2\": \"AZ\",\n  \"numeric\": 31,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Bosnia and Herzegovina\",\n  \"alpha2\": \"BA\",\n  \"numeric\": 70,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Barbados\",\n  \"alpha2\": \"BB\",\n  \"numeric\": 52,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bangladesh\",\n  \"alpha2\": \"BD\",\n  \"numeric\": 50,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Belgium\",\n  \"alpha2\": \"BE\",\n  \"numeric\": 56,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Burkina Faso\",\n  \"alpha2\": \"BF\",\n  \"numeric\": 854,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bulgaria\",\n  \"alpha2\": \"BG\",\n  \"numeric\": 100,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bahrain\",\n  \"alpha2\": \"BH\",\n  \"numeric\": 48,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Burundi\",\n  \"alpha2\": \"BI\",\n  \"numeric\": 108,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Benin\",\n  \"alpha2\": \"BJ\",\n  \"numeric\": 204,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Barthelemy\",\n  \"alpha2\": \"BL\",\n  \"numeric\": 652,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bermuda\",\n  \"alpha2\": \"BM\",\n  \"numeric\": 60,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Brunei Darussalam\",\n  \"alpha2\": \"BN\",\n  \"numeric\": 96,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bolivia\",\n  \"alpha2\": \"BO\",\n  \"numeric\": 68,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Brazil\",\n  \"alpha2\": \"BR\",\n  \"numeric\": 76,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bahamas\",\n  \"alpha2\": \"BS\",\n  \"numeric\": 44,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bhutan\",\n  \"alpha2\": \"BT\",\n  \"numeric\": 64,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Bouvet Island\",\n  \"alpha2\": \"BV\",\n  \"numeric\": 74,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Botswana\",\n  \"alpha2\": \"BW\",\n  \"numeric\": 72,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Belarus\",\n  \"alpha2\": \"BY\",\n  \"numeric\": 112,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Belize\",\n  \"alpha2\": \"BZ\",\n  \"numeric\": 84,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Canada\",\n  \"alpha2\": \"CA\",\n  \"numeric\": 124,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cocos Islands\",\n  \"alpha2\": \"CC\",\n  \"numeric\": 166,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"The Democratic Republic of the Congo\",\n  \"alpha2\": \"CD\",\n  \"numeric\": 180,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Central African Republic\",\n  \"alpha2\": \"CF\",\n  \"numeric\": 140,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Congo\",\n  \"alpha2\": \"CG\",\n  \"numeric\": 178,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Switzerland\",\n  \"alpha2\": \"CH\",\n  \"numeric\": 756,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cote d'Ivoire\",\n  \"alpha2\": \"CI\",\n  \"numeric\": 384,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cook Islands\",\n  \"alpha2\": \"CK\",\n  \"numeric\": 184,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Chile\",\n  \"alpha2\": \"CL\",\n  \"numeric\": 152,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cameroon\",\n  \"alpha2\": \"CM\",\n  \"numeric\": 120,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"China\",\n  \"alpha2\": \"CN\",\n  \"numeric\": 156,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Colombia\",\n  \"alpha2\": \"CO\",\n  \"numeric\": 170,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Costa Rica\",\n  \"alpha2\": \"CR\",\n  \"numeric\": 188,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cuba\",\n  \"alpha2\": \"CU\",\n  \"numeric\": 192,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Cape Verde\",\n  \"alpha2\": \"CV\",\n  \"numeric\": 132,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Christmas Island\",\n  \"alpha2\": \"CX\",\n  \"numeric\": 162,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cyprus\",\n  \"alpha2\": \"CY\",\n  \"numeric\": 196,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Czech Republic\",\n  \"alpha2\": \"CZ\",\n  \"numeric\": 203,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Germany\",\n  \"alpha2\": \"DE\",\n  \"numeric\": 276,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Djibouti\",\n  \"alpha2\": \"DJ\",\n  \"numeric\": 262,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Denmark\",\n  \"alpha2\": \"DK\",\n  \"numeric\": 208,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Dominica\",\n  \"alpha2\": \"DM\",\n  \"numeric\": 212,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Dominican Republic\",\n  \"alpha2\": \"DO\",\n  \"numeric\": 214,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Algeria\",\n  \"alpha2\": \"DZ\",\n  \"numeric\": 12,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Ecuador\",\n  \"alpha2\": \"EC\",\n  \"numeric\": 218,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Estonia\",\n  \"alpha2\": \"EE\",\n  \"numeric\": 233,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Egypt\",\n  \"alpha2\": \"EG\",\n  \"numeric\": 818,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Western Sahara\",\n  \"alpha2\": \"EH\",\n  \"numeric\": 732,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Eritrea\",\n  \"alpha2\": \"ER\",\n  \"numeric\": 232,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Spain\",\n  \"alpha2\": \"ES\",\n  \"numeric\": 724,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Ethiopia\",\n  \"alpha2\": \"ET\",\n  \"numeric\": 231,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Finland\",\n  \"alpha2\": \"FI\",\n  \"numeric\": 246,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Fiji\",\n  \"alpha2\": \"FJ\",\n  \"numeric\": 242,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Falkland Islands\",\n  \"alpha2\": \"FK\",\n  \"numeric\": 238,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Federated States of Micronesia\",\n  \"alpha2\": \"FM\",\n  \"numeric\": 583,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Faroe Islands\",\n  \"alpha2\": \"FO\",\n  \"numeric\": 234,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"France\",\n  \"alpha2\": \"FR\",\n  \"numeric\": 250,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Gabon\",\n  \"alpha2\": \"GA\",\n  \"numeric\": 266,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"United Kingdom\",\n  \"alpha2\": \"GB\",\n  \"numeric\": 826,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Grenada\",\n  \"alpha2\": \"GD\",\n  \"numeric\": 308,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Georgia\",\n  \"alpha2\": \"GE\",\n  \"numeric\": 268,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"French Guiana\",\n  \"alpha2\": \"GF\",\n  \"numeric\": 254,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guernsey\",\n  \"alpha2\": \"GG\",\n  \"numeric\": 831,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Ghana\",\n  \"alpha2\": \"GH\",\n  \"numeric\": 288,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Gibraltar\",\n  \"alpha2\": \"GI\",\n  \"numeric\": 292,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Greenland\",\n  \"alpha2\": \"GL\",\n  \"numeric\": 304,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Gambia\",\n  \"alpha2\": \"GM\",\n  \"numeric\": 270,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guinea\",\n  \"alpha2\": \"GN\",\n  \"numeric\": 324,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guadeloupe\",\n  \"alpha2\": \"GP\",\n  \"numeric\": 312,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Equatorial Guinea\",\n  \"alpha2\": \"GQ\",\n  \"numeric\": 226,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Greece\",\n  \"alpha2\": \"GR\",\n  \"numeric\": 300,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"South Georgia and the South Sandwich Islands\",\n  \"alpha2\": \"GS\",\n  \"numeric\": 239,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guatemala\",\n  \"alpha2\": \"GT\",\n  \"numeric\": 320,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guam\",\n  \"alpha2\": \"GU\",\n  \"numeric\": 316,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guinea-Bissau\",\n  \"alpha2\": \"GW\",\n  \"numeric\": 624,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Guyana\",\n  \"alpha2\": \"GY\",\n  \"numeric\": 328,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Hong Kong\",\n  \"alpha2\": \"HK\",\n  \"numeric\": 344,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Heard Island and McDonald Islands\",\n  \"alpha2\": \"HM\",\n  \"numeric\": 334,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Honduras\",\n  \"alpha2\": \"HN\",\n  \"numeric\": 340,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Croatia\",\n  \"alpha2\": \"HR\",\n  \"numeric\": 191,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Haiti\",\n  \"alpha2\": \"HT\",\n  \"numeric\": 332,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Hungary\",\n  \"alpha2\": \"HU\",\n  \"numeric\": 348,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Indonesia\",\n  \"alpha2\": \"ID\",\n  \"numeric\": 360,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Ireland\",\n  \"alpha2\": \"IE\",\n  \"numeric\": 372,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Israel\",\n  \"alpha2\": \"IL\",\n  \"numeric\": 376,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Isle of Man\",\n  \"alpha2\": \"IM\",\n  \"numeric\": 833,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"India\",\n  \"alpha2\": \"IN\",\n  \"numeric\": 356,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"British Indian Ocean Territory\",\n  \"alpha2\": \"IO\",\n  \"numeric\": 86,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Iraq\",\n  \"alpha2\": \"IQ\",\n  \"numeric\": 368,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Islamic Republic of Iran\",\n  \"alpha2\": \"IR\",\n  \"numeric\": 364,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Iceland\",\n  \"alpha2\": \"IS\",\n  \"numeric\": 352,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Italy\",\n  \"alpha2\": \"IT\",\n  \"numeric\": 380,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Jersey\",\n  \"alpha2\": \"JE\",\n  \"numeric\": 832,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Jamaica\",\n  \"alpha2\": \"JM\",\n  \"numeric\": 388,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Jordan\",\n  \"alpha2\": \"JO\",\n  \"numeric\": 400,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Japan\",\n  \"alpha2\": \"JP\",\n  \"numeric\": 392,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Kenya\",\n  \"alpha2\": \"KE\",\n  \"numeric\": 404,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Kyrgyzstan\",\n  \"alpha2\": \"KG\",\n  \"numeric\": 417,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Cambodia\",\n  \"alpha2\": \"KH\",\n  \"numeric\": 116,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Kiribati\",\n  \"alpha2\": \"KI\",\n  \"numeric\": 296,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Comoros\",\n  \"alpha2\": \"KM\",\n  \"numeric\": 174,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Kitts and Nevis\",\n  \"alpha2\": \"KN\",\n  \"numeric\": 659,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Democratic People's Republic of Korea\",\n  \"alpha2\": \"KP\",\n  \"numeric\": 408,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Republic of Korea\",\n  \"alpha2\": \"KR\",\n  \"numeric\": 410,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Kuwait\",\n  \"alpha2\": \"KW\",\n  \"numeric\": 414,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Cayman Islands\",\n  \"alpha2\": \"KY\",\n  \"numeric\": 136,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Kazakhstan\",\n  \"alpha2\": \"KZ\",\n  \"numeric\": 398,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Lao People's Democratic Republic\",\n  \"alpha2\": \"LA\",\n  \"numeric\": 418,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Lebanon\",\n  \"alpha2\": \"LB\",\n  \"numeric\": 422,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Lucia\",\n  \"alpha2\": \"LC\",\n  \"numeric\": 662,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Liechtenstein\",\n  \"alpha2\": \"LI\",\n  \"numeric\": 438,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Sri Lanka\",\n  \"alpha2\": \"LK\",\n  \"numeric\": 144,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Liberia\",\n  \"alpha2\": \"LR\",\n  \"numeric\": 430,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Lesotho\",\n  \"alpha2\": \"LS\",\n  \"numeric\": 426,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Lithuania\",\n  \"alpha2\": \"LT\",\n  \"numeric\": 440,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Luxembourg\",\n  \"alpha2\": \"LU\",\n  \"numeric\": 442,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Latvia\",\n  \"alpha2\": \"LV\",\n  \"numeric\": 428,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Libya\",\n  \"alpha2\": \"LY\",\n  \"numeric\": 434,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Morocco\",\n  \"alpha2\": \"MA\",\n  \"numeric\": 504,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Monaco\",\n  \"alpha2\": \"MC\",\n  \"numeric\": 492,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Republic of Moldova\",\n  \"alpha2\": \"MD\",\n  \"numeric\": 498,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Montenegro\",\n  \"alpha2\": \"ME\",\n  \"numeric\": 499,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Martin\",\n  \"alpha2\": \"MF\",\n  \"numeric\": 663,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Madagascar\",\n  \"alpha2\": \"MG\",\n  \"numeric\": 450,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Marshall Islands\",\n  \"alpha2\": \"MH\",\n  \"numeric\": 584,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"The former Yugoslav Republic of Macedonia\",\n  \"alpha2\": \"MK\",\n  \"numeric\": 807,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mali\",\n  \"alpha2\": \"ML\",\n  \"numeric\": 466,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Myanmar\",\n  \"alpha2\": \"MM\",\n  \"numeric\": 104,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mongolia\",\n  \"alpha2\": \"MN\",\n  \"numeric\": 496,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Macao\",\n  \"alpha2\": \"MO\",\n  \"numeric\": 446,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Northern Mariana Islands\",\n  \"alpha2\": \"MP\",\n  \"numeric\": 580,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Martinique\",\n  \"alpha2\": \"MQ\",\n  \"numeric\": 474,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mauritania\",\n  \"alpha2\": \"MR\",\n  \"numeric\": 478,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Montserrat\",\n  \"alpha2\": \"MS\",\n  \"numeric\": 500,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Malta\",\n  \"alpha2\": \"MT\",\n  \"numeric\": 470,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mauritius\",\n  \"alpha2\": \"MU\",\n  \"numeric\": 480,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Maldives\",\n  \"alpha2\": \"MV\",\n  \"numeric\": 462,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Malawi\",\n  \"alpha2\": \"MW\",\n  \"numeric\": 454,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mexico\",\n  \"alpha2\": \"MX\",\n  \"numeric\": 484,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Malaysia\",\n  \"alpha2\": \"MY\",\n  \"numeric\": 458,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Mozambique\",\n  \"alpha2\": \"MZ\",\n  \"numeric\": 508,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Namibia\",\n  \"alpha2\": \"NA\",\n  \"numeric\": 516,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"New Caledonia\",\n  \"alpha2\": \"NC\",\n  \"numeric\": 540,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Niger\",\n  \"alpha2\": \"NE\",\n  \"numeric\": 562,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Norfolk Island\",\n  \"alpha2\": \"NF\",\n  \"numeric\": 574,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Nigeria\",\n  \"alpha2\": \"NG\",\n  \"numeric\": 566,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Nicaragua\",\n  \"alpha2\": \"NI\",\n  \"numeric\": 558,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Netherlands\",\n  \"alpha2\": \"NL\",\n  \"numeric\": 528,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Norway\",\n  \"alpha2\": \"NO\",\n  \"numeric\": 578,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Nepal\",\n  \"alpha2\": \"NP\",\n  \"numeric\": 524,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Nauru\",\n  \"alpha2\": \"NR\",\n  \"numeric\": 520,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Niue\",\n  \"alpha2\": \"NU\",\n  \"numeric\": 570,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"New Zealand\",\n  \"alpha2\": \"NZ\",\n  \"numeric\": 554,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Oman\",\n  \"alpha2\": \"OM\",\n  \"numeric\": 512,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Panama\",\n  \"alpha2\": \"PA\",\n  \"numeric\": 591,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Peru\",\n  \"alpha2\": \"PE\",\n  \"numeric\": 604,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"French Polynesia\",\n  \"alpha2\": \"PF\",\n  \"numeric\": 258,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Papua New Guinea\",\n  \"alpha2\": \"PG\",\n  \"numeric\": 598,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Philippines\",\n  \"alpha2\": \"PH\",\n  \"numeric\": 608,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Pakistan\",\n  \"alpha2\": \"PK\",\n  \"numeric\": 586,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Poland\",\n  \"alpha2\": \"PL\",\n  \"numeric\": 616,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Pierre and Miquelon\",\n  \"alpha2\": \"PM\",\n  \"numeric\": 666,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Pitcairn\",\n  \"alpha2\": \"PN\",\n  \"numeric\": 612,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Puerto Rico\",\n  \"alpha2\": \"PR\",\n  \"numeric\": 630,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Palestinian Territory\",\n  \"alpha2\": \"PS\",\n  \"numeric\": 275,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Portugal\",\n  \"alpha2\": \"PT\",\n  \"numeric\": 620,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Palau\",\n  \"alpha2\": \"PW\",\n  \"numeric\": 585,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Paraguay\",\n  \"alpha2\": \"PY\",\n  \"numeric\": 600,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Qatar\",\n  \"alpha2\": \"QA\",\n  \"numeric\": 634,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Reunion\",\n  \"alpha2\": \"RE\",\n  \"numeric\": 638,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Romania\",\n  \"alpha2\": \"RO\",\n  \"numeric\": 642,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Serbia\",\n  \"alpha2\": \"RS\",\n  \"numeric\": 688,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Russian Federation\",\n  \"alpha2\": \"RU\",\n  \"numeric\": 643,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Rwanda\",\n  \"alpha2\": \"RW\",\n  \"numeric\": 646,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saudi Arabia\",\n  \"alpha2\": \"SA\",\n  \"numeric\": 682,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Solomon Islands\",\n  \"alpha2\": \"SB\",\n  \"numeric\": 90,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Seychelles\",\n  \"alpha2\": \"SC\",\n  \"numeric\": 690,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Sudan\",\n  \"alpha2\": \"SD\",\n  \"numeric\": 729,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Sweden\",\n  \"alpha2\": \"SE\",\n  \"numeric\": 752,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Singapore\",\n  \"alpha2\": \"SG\",\n  \"numeric\": 702,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Helena\",\n  \"alpha2\": \"SH\",\n  \"numeric\": 654,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Slovenia\",\n  \"alpha2\": \"SI\",\n  \"numeric\": 705,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Svalbard and Jan Mayen\",\n  \"alpha2\": \"SJ\",\n  \"numeric\": 744,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Slovakia\",\n  \"alpha2\": \"SK\",\n  \"numeric\": 703,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Sierra Leone\",\n  \"alpha2\": \"SL\",\n  \"numeric\": 694,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"San Marino\",\n  \"alpha2\": \"SM\",\n  \"numeric\": 674,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Senegal\",\n  \"alpha2\": \"SN\",\n  \"numeric\": 686,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Somalia\",\n  \"alpha2\": \"SO\",\n  \"numeric\": 706,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Suriname\",\n  \"alpha2\": \"SR\",\n  \"numeric\": 740,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"South Sudan\",\n  \"alpha2\": \"SS\",\n  \"numeric\": 728,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Sao Tome and Principe\",\n  \"alpha2\": \"ST\",\n  \"numeric\": 678,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"El Salvador\",\n  \"alpha2\": \"SV\",\n  \"numeric\": 222,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Syrian Arab Republic\",\n  \"alpha2\": \"SY\",\n  \"numeric\": 760,\n  \"residencyRisk\": \"Embargoed\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Swaziland\",\n  \"alpha2\": \"SZ\",\n  \"numeric\": 748,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Turks and Caicos Islands\",\n  \"alpha2\": \"TC\",\n  \"numeric\": 796,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Chad\",\n  \"alpha2\": \"TD\",\n  \"numeric\": 148,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Togo\",\n  \"alpha2\": \"TG\",\n  \"numeric\": 768,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Thailand\",\n  \"alpha2\": \"TH\",\n  \"numeric\": 764,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Tajikistan\",\n  \"alpha2\": \"TJ\",\n  \"numeric\": 762,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Tokelau\",\n  \"alpha2\": \"TK\",\n  \"numeric\": 772,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Timor-Leste\",\n  \"alpha2\": \"TL\",\n  \"numeric\": 626,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Turkmenistan\",\n  \"alpha2\": \"TM\",\n  \"numeric\": 795,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Tunisia\",\n  \"alpha2\": \"TN\",\n  \"numeric\": 788,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Tonga\",\n  \"alpha2\": \"TO\",\n  \"numeric\": 776,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Turkey\",\n  \"alpha2\": \"TR\",\n  \"numeric\": 792,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Trinidad and Tobago\",\n  \"alpha2\": \"TT\",\n  \"numeric\": 780,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Tuvalu\",\n  \"alpha2\": \"TV\",\n  \"numeric\": 798,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Taiwan, Province of China\",\n  \"alpha2\": \"TW\",\n  \"numeric\": 158,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"United Republic of Tanzania\",\n  \"alpha2\": \"TZ\",\n  \"numeric\": 834,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Ukraine\",\n  \"alpha2\": \"UA\",\n  \"numeric\": 804,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Uganda\",\n  \"alpha2\": \"UG\",\n  \"numeric\": 800,\n  \"residencyRisk\": \"Not assigned\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"United States Minor Outlying Islands\",\n  \"alpha2\": \"UM\",\n  \"numeric\": 581,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"United States\",\n  \"alpha2\": \"US\",\n  \"numeric\": 840,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Uruguay\",\n  \"alpha2\": \"UY\",\n  \"numeric\": 858,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"Uzbekistan\",\n  \"alpha2\": \"UZ\",\n  \"numeric\": 860,\n  \"residencyRisk\": \"No restriction\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Saint Vincent and the Grenadines\",\n  \"alpha2\": \"VC\",\n  \"numeric\": 670,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Venezuela\",\n  \"alpha2\": \"VE\",\n  \"numeric\": 862,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"British Virgin Islands\",\n  \"alpha2\": \"VG\",\n  \"numeric\": 92,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Virgin Islands, U.S.\",\n  \"alpha2\": \"VI\",\n  \"numeric\": 850,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Vietnam\",\n  \"alpha2\": \"VN\",\n  \"numeric\": 704,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Vanuatu\",\n  \"alpha2\": \"VU\",\n  \"numeric\": 548,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Wallis and Futuna\",\n  \"alpha2\": \"WF\",\n  \"numeric\": 876,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Samoa\",\n  \"alpha2\": \"WS\",\n  \"numeric\": 882,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Yemen\",\n  \"alpha2\": \"YE\",\n  \"numeric\": 887,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": []\n}, {\n  \"name\": \"South Africa\",\n  \"alpha2\": \"ZA\",\n  \"numeric\": 710,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Zambia\",\n  \"alpha2\": \"ZM\",\n  \"numeric\": 894,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Zimbabwe\",\n  \"alpha2\": \"ZW\",\n  \"numeric\": 716,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}, {\n  \"name\": \"Default\",\n  \"alpha2\": \"XX\",\n  \"numeric\": 999,\n  \"residencyRisk\": \"Default\",\n  \"typesNotApplyDataResidency\": [\"Transferred Data\"]\n}\n]\n",
+                    "$fxv#1": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication ($initialDelay)\"\nsleep $initialDelay\n\necho \"$CONTENT\" > ${FILE_NAME}\n\n# Upload the blob, overwriting if it exists\naz storage blob upload -f ${FILE_NAME} -c ${CONTAINER} -n ${FILE_NAME} --overwrite\necho \"Blob ${CONTAINER} uploaded to container ${CONTAINER}, overwriting if it existed.\""
+                  },
+                  "resources": [
+                    {
+                      "condition": "[not(parameters('useExistingManagedIdentity'))]",
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2023-01-31",
+                      "name": "[parameters('managedIdentityName')]",
+                      "location": "[parameters('location')]"
+                    },
+                    {
+                      "condition": "[not(empty(parameters('rbacRoleNeeded')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+                      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRoleNeeded'))]",
+                        "principalId": "[if(parameters('useExistingManagedIdentity'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId, reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId)]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deploymentScripts",
+                      "apiVersion": "2020-10-01",
+                      "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
+                      "location": "[parameters('location')]",
+                      "identity": {
+                        "type": "UserAssigned",
+                        "userAssignedIdentities": {
+                          "[format('{0}', if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]": {}
+                        }
+                      },
+                      "kind": "AzureCLI",
+                      "properties": {
+                        "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                        "azCliVersion": "2.45.0",
+                        "timeout": "PT15M",
+                        "retentionInterval": "PT1H",
+                        "environmentVariables": [
+                          {
+                            "name": "AZURE_STORAGE_ACCOUNT",
+                            "value": "[parameters('storageAccountName')]"
+                          },
+                          {
+                            "name": "AZURE_STORAGE_KEY",
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-04-01').keys[0].value]"
+                          },
+                          {
+                            "name": "CONTENT",
+                            "value": "[variables('$fxv#0')]"
+                          },
+                          {
+                            "name": "FILE_NAME",
+                            "value": "[parameters('filename')]"
+                          },
+                          {
+                            "name": "CONTAINER",
+                            "value": "[parameters('containerName')]"
+                          },
+                          {
+                            "name": "initialDelay",
+                            "value": "[parameters('initialScriptDelay')]"
+                          }
+                        ],
+                        "scriptContent": "[variables('$fxv#1')]",
+                        "cleanupPreference": "[parameters('cleanupPreference')]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+                        "[extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))))]"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[format('partitionStorage[{0}]', copyIndex())]"
+              ]
             }
           },
           "outputs": {
@@ -24904,7 +25135,8 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'common-blade')]",
         "[resourceId('Microsoft.Resources/deployments', format('{0}-log-analytics', variables('configuration').name))]",
-        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]"
+        "[resourceId('Microsoft.Resources/deployments', 'network-blade')]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name))]"
       ]
     },
     {
@@ -25013,7 +25245,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.27.1.19265",
-              "templateHash": "2043475580461773808"
+              "templateHash": "11963782751200748618"
             }
           },
           "definitions": {
@@ -25266,7 +25498,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.15.0"
+              "release": "v0.16.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -32159,10 +32391,6 @@
     }
   ],
   "outputs": {
-    "KEYVAULT_NAME": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.keyvaultName.value]"
-    },
     "ACR_NAME": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'service-blade'), '2022-09-01').outputs.registryName.value]"

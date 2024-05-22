@@ -82,9 +82,12 @@ resource uploadFile 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
       { name: 'AZURE_STORAGE_ACCOUNT', value: storageAccount.name }
       { name: 'AZURE_STORAGE_KEY', value: storageAccount.listKeys().keys[0].value }
       { name: 'CONTENT', value: loadTextContent('./Legal_COO.json') }
+      { name: 'FILE_NAME', value: filename }
+      { name: 'CONTAINER', value: containerName }
       { name: 'initialDelay', value: initialScriptDelay }
     ]
-    scriptContent: 'echo "$CONTENT" > ${filename} && az storage blob upload -f ${filename} -c ${containerName} -n ${filename}'
+    scriptContent: loadTextContent('script.sh')
+    // scriptContent: 'echo "$CONTENT" > ${filename} && az storage blob upload -f ${filename} -c ${containerName} -n ${filename}'
     cleanupPreference: cleanupPreference
   }
 }

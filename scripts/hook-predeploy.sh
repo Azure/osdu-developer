@@ -92,6 +92,7 @@ if [ -z $AKS_NAME ]; then
   exit 1;
 fi
 
+
 # Check Azure CLI version.
 REQUIRED_AZ_CLI_VERSION="2.58.0"
 CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
@@ -189,6 +190,7 @@ if [[ ! -n $AUTH_USER ]]; then
 
     azd env set AUTH_USER $AUTH_USER
 fi
+
 
 ###############################
 # Get Refresh Token using Authorization Code

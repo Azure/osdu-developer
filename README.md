@@ -296,12 +296,12 @@ azd env set AUTH_CODE <your_auth_code>
 azd hooks run predeploy
 ```
 
-This command deploys some additional configuration helpful to using the solution.
+This command performs the following actions:
 
-_Hook_
+1. Adds the first user to the platform with an operator role.
+2. Retrieves an openid refresh token for the first user.
+3. Writes necessary environment to the Visual Studio Code settings file.
 
-1. Configure the Initial User into Entitlements.
-2. Using a provided Authorization Code get an initial user refresh token.
 
 __Execute Rest Scripts__
 

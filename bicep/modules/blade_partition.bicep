@@ -62,13 +62,16 @@ param partitions array = [
   }
 ]
 
+@description('The managed identity name for deployment scripts')
+param managedIdentityName string
+
 /////////////////////////////////
 // Configuration 
 /////////////////////////////////
 var partitionLayerConfig = {
   secrets: {
     storageAccountName: 'storage'
-    storageAccountKey: 'key'
+    storageAccountKey: 'storage-key'
     cosmosConnectionString: 'cosmos-connection'
     cosmosEndpoint: 'cosmos-endpoint'
     cosmosPrimaryKey: 'cosmos-primary-key'
@@ -538,6 +541,23 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for 
     ]
   }
 }]
+
+
+// Deployment Scripts are not enabled yet for Private Link
+// https://github.com/Azure/bicep/issues/6540
+module blobUpload './script-blob-upload/main.bicep' = [for (partition, index) in partitions: {
+  name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
+  params: {
+    storageAccountName: partitionStorage[index].outputs.name
+    location: location
+
+    useExistingManagedIdentity: true
+    managedIdentityName: managedIdentityName
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}]
+
 
 // Output partitionStorage names
 output partitionStorageNames string[] = [for (partition, index) in partitions: partitionStorage[index].outputs.name]

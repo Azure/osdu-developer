@@ -31,11 +31,12 @@ else
 fi
 
 print_help() {
-  echo -e "Usage: $0 --subscription SUBSCRIPTION_ID\n"
+  echo -e "Usage: $0 -s SUBSCRIPTION_ID\n"
   echo -e "Options:"
   echo -e " -s Set the subscription ID"
   echo -e " -h Print this help message and exit"
   echo -e "\nYou must provide a SubscriptionId."
+  exit 1;
 }
 
 # Parsing command-line arguments
@@ -81,12 +82,28 @@ if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head
   exit 1
 fi
 
+if [ -z $AZURE_CLIENT_ID ]; then
+  echo 'ERROR: AZURE_CLIENT_ID not provided'
+  exit 1;
+fi
+
+if [ -z $AZURE_RESOURCE_GROUP ]; then
+  echo 'ERROR: AZURE_RESOURCE_GROUP not provided'
+  exit 1;
+fi
+
+if [ -z $AKS_NAME ]; then
+  echo 'ERROR: AKS_NAME not provided'
+  exit 1;
+fi
+
+
 ###############################
 # Checking Flux Compliance
 echo "Checking Software Installation..."
 
 # Initialize timer
-end=$((SECONDS+600))  # 600 seconds = 10 minutes
+end=$((SECONDS+1200))  # 1200 seconds = 20 minutes
 
 # Loop to check Flux compliance every 30 seconds up to 10 minutes
 while [ $SECONDS -lt $end ]; do
@@ -126,7 +143,7 @@ fi
 # Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
 private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
 if [[ -n $private_ip ]]; then
-    echo "Adding Public Web Endpoint:"
+    echo "Adding Private Web Endpoint:"
     redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
 fi
 
@@ -134,7 +151,7 @@ fi
 # Update Azure AD app only if there are URIs to add
 if [ ${#redirect_uris[@]} -gt 0 ]; then
     echo "=================================================================="
-    echo "Adding Web Direct URIs"
+    echo "Adding Web Direct URIs: ${redirect_uris[@]}"
     echo "=================================================================="
     az ad app update --id $AZURE_CLIENT_ID --web-redirect-uris "${redirect_uris[@]}"
 fi

@@ -31,7 +31,7 @@ else
 fi
 
 print_help() {
-  echo -e "Usage: $0 --subscription SUBSCRIPTION_ID\n"
+  echo -e "Usage: $0 -s SUBSCRIPTION_ID\n"
   echo -e "Options:"
   echo -e " -s Set the subscription ID"
   echo -e " -h Print this help message and exit"
@@ -72,6 +72,27 @@ then
     exit 1
 fi
 
+if [ -z $AZURE_CLIENT_ID ]; then
+  echo 'ERROR: AZURE_CLIENT_ID not provided'
+  exit 1;
+fi
+
+if [ -z $AZURE_CLIENT_SECRET ]; then
+  echo 'ERROR: AZURE_CLIENT_ID not provided'
+  exit 1;
+fi
+
+if [ -z $AZURE_RESOURCE_GROUP ]; then
+  echo 'ERROR: AZURE_RESOURCE_GROUP not provided'
+  exit 1;
+fi
+
+if [ -z $AKS_NAME ]; then
+  echo 'ERROR: AKS_NAME not provided'
+  exit 1;
+fi
+
+
 # Check Azure CLI version.
 REQUIRED_AZ_CLI_VERSION="2.58.0"
 CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
@@ -102,7 +123,6 @@ if [[ ! -n $AUTH_INGRESS ]]; then
   azd env set AUTH_INGRESS $AUTH_INGRESS
 fi
 
-
 ###############################
 # Add the first user.
 if [[ ! -n $AUTH_USER ]]; then
@@ -116,7 +136,6 @@ if [[ ! -n $AUTH_USER ]]; then
       --data "client_secret=${AZURE_CLIENT_SECRET}" \
       --data "scope=${AZURE_CLIENT_ID}/.default" |jq -r .access_token)
 
-###
     AUTH_USER=$(az ad signed-in-user show --query userPrincipalName -o tsv)
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
@@ -212,4 +231,27 @@ if [[ -z "$AUTH_REFRESH" ]]; then
     fi
 fi
 
+output=$(azd env get-values)
+AZURE_RESOURCE_GROUP=$(echo "$output" | grep "AZURE_RESOURCE_GROUP" | cut -d'=' -f2 | tr -d '"')
+AZURE_TENANT_ID=$(echo "$output" | grep "AZURE_TENANT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_ID=$(echo "$output" | grep "AZURE_CLIENT_ID" | cut -d'=' -f2 | tr -d '"')
+AZURE_CLIENT_SECRET=$(echo "$output" | grep "AZURE_CLIENT_SECRET" | cut -d'=' -f2 | tr -d '"')
+AUTH_INGRESS=$(echo "$output" | grep "AUTH_INGRESS" | cut -d'=' -f2 | tr -d '"')
+AUTH_REFRESH=$(echo "$output" | grep "AUTH_REFRESH" | cut -d'=' -f2 | tr -d '"')
+
+mkdir -p .vscode
+cat << EOF > ".vscode/settings.json"
+{
+    "rest-client.environmentVariables": {
+        "${AZURE_RESOURCE_GROUP}": {
+          "TENANT_ID": "${AZURE_TENANT_ID}",
+          "CLIENT_ID": "${AZURE_CLIENT_ID}",
+          "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
+          "HOST": "${AUTH_INGRESS}",
+          "REFRESH_TOKEN": "${AUTH_REFRESH}",
+          "DATA_PARTITION": "opendes"
+        }
+    }
+}
+EOF
 

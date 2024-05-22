@@ -24,7 +24,6 @@ COPY functions.sh /usr/local/bin/functions.sh
 COPY hook-postprovision.sh /usr/local/bin/postprovision.sh
 COPY hook-preprovision.sh /usr/local/bin/preprovision.sh
 COPY hook-predeploy.sh /usr/local/bin/predeploy.sh
-COPY hook-postdeploy.sh /usr/local/bin/postdeploy.sh
 
 # Create a directory to work in
 WORKDIR /workspace
@@ -33,8 +32,7 @@ WORKDIR /workspace
 RUN chmod +x /usr/local/bin/functions.sh \
     && chmod +x /usr/local/bin/postprovision.sh \
     && chmod +x /usr/local/bin/preprovision.sh \
-    && chmod +x /usr/local/bin/predeploy.sh \
-    && chmod +x /usr/local/bin/postdeploy.sh
+    && chmod +x /usr/local/bin/predeploy.sh
 
 # Set the entrypoint to run your script
 CMD ["/bin/bash"]

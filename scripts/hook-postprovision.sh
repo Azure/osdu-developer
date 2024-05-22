@@ -143,7 +143,7 @@ fi
 # Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
 private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
 if [[ -n $private_ip ]]; then
-    echo "Adding Public Web Endpoint:"
+    echo "Adding Private Web Endpoint:"
     redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
 fi
 

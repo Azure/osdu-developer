@@ -67,9 +67,7 @@ shift $((OPTIND -1))
 # Checks
 if [[ -z "$AZURE_SUBSCRIPTION" ]];
 then
-    echo "Error: You must provide a SubscriptionId" >&2
-    print_help
-    exit 1
+    AZURE_SUBSCRIPTION=$(az account show --query id -otsv)
 fi
 
 # Check Azure CLI version.

@@ -85,7 +85,7 @@ APP_NAME=<your_ad_application_name>
 azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
 ```
 
-4. Set Software Repository Location:
+4. Set Software Repository Location (Optional):
 
 Configure the location of where the software declaration is.
 

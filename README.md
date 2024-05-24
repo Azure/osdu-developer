@@ -60,74 +60,56 @@ Authenticate your session to interact with Azure resources:
 azd auth login
 ```
 
-## Setting Up Environment Variables
-
-Define the necessary environment variables for your deployment:
-
-1. Initialize the environment and set the Azure Client ID:
-
-```bash
-azd init -e dev
-```
-
-2. Set the Azure Subscription ID:
-
-```bash
-azd env set AZURE_SUBSCRIPTION_ID $(az account show --query id -o tsv)
-```
-
-3. Set Azure Client ID:
-
-Replace <your_ad_application_name> with your actual Azure AD Application Name.
-
-```bash
-APP_NAME=<your_ad_application_name>
-azd env set AZURE_CLIENT_ID $(az ad app list --display-name $APP_NAME --query "[].appId" -otsv)
-```
-
-4. Set Software Repository Location (Optional):
-
-Configure the location of where the software declaration is.
-
-```bash
-azd env set SOFTWARE_REPOSITORY https://github.com/azure/osdu-developer
-azd env set SOFTWARE_BRANCH main
-```
-
 ## Deploying the Solution
 
-Efficiently manage the resources with these Azure Developer CLI commands. They are designed to streamline the deployment process, allowing for a smooth setup and teardown of an environment.
-
-**Provision**
-
-To initiate the deployment, use the following command:
+Initialize an environment and provision.
 
 ```bash
+# Initialize and Create a new Environment
+azd init -e dev
+
+# Provision the solution
 azd provision
 ```
 
-**Configure**
-
-Prior to running this command on the ingress url `https://<your_ingress>/auth/` retrieve an authorization code to use in getting a refresh token to be used when calling APIs.
+Once the environment has been provisioned retrieve the ingress url `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token to be used when calling APIs.
 
 ```bash
+# Open URL in Browser
+azd env get-values |grep INGRESS_EXTERNAL
+
+# Set Retrieved Authorization Code
 azd env set AUTH_CODE <your_auth_code>
 azd hooks run predeploy
 ```
 
-**Execute**
+Integrated [Rest scripts](tools/rest-scripts/README.md) can be used to easily execute api calls.
 
-The environment is now ready for use and API calls can be made. [Rest scripts](tools/rest-scripts/README.md) can be used now to run api checks as desired.
-
-**Removal and Cleaning up**
-
-The resource group can be deleted manually and keyvaults and app configuration purged or use the following command:
 
 ```bash
+# Remove the resources
 azd down --purge --force
+
+# Delete the environment
+rm -rf .azure/<your_environment_name>
 ```
 
-This command will stop all running services and remove resources that were created during the deployment. The --purge flag ensures that any keyvaults are completely removed, and the --force option bypasses any confirmation prompts, making the process faster.
+## Override Environment Variables
+
+Environment Variables can be optionally overriden
+
+```bash
+# Override Default Subscription
+azd env set AZURE_SUBSCRIPTION_ID <your_subscription_id>
+
+# Override Client Id Creation
+azd env set AZURE_CLIENT_ID <your_client_id>
+
+# Override Software Location
+azd env set SOFTWARE_REPOSITORY <your_git_url>
+azd env set SOFTWARE_BRANCH <your_branch>
+```
+
 
 # ARM Template - Deployment
 

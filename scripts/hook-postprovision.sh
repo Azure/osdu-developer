@@ -139,6 +139,7 @@ if [[ -n $public_ip ]]; then
     echo "Adding Public Web Endpoint:"
     redirect_uris+=("https://$public_ip/auth/")  # Add public ingress URI
 fi
+azd env set INGRESS_EXTERNAL https://$public_ip/auth/
 
 # Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
 private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
@@ -146,7 +147,7 @@ if [[ -n $private_ip ]]; then
     echo "Adding Private Web Endpoint:"
     redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
 fi
-
+azd env set INGRESS_INTERNAL https://$private_ip/auth/
 
 # Update Azure AD app only if there are URIs to add
 if [ ${#redirect_uris[@]} -gt 0 ]; then

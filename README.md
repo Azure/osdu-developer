@@ -57,6 +57,8 @@ Note: Alpha features are in experimental stages and may undergo changes.
 Authenticate your session to interact with Azure resources:
 
 ```bash
+az login
+az account set --subscription <your_subscription_id>
 azd auth login
 ```
 

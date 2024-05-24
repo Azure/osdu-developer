@@ -30,21 +30,21 @@ grant_type=client_credentials
 ###
 @access_token = {{login.response.body.access_token}}
 
-@PARTITION_HOST = {{HOST}}/api/partition/v1
+@PARTITION_HOST = {{HOST_IP}}/api/partition/v1
 @data_partition_id = opendes
 
 
 ###
 # @name infoPartition
 GET {{PARTITION_HOST}}/info
-Authorization: Bearer {{access_token}}
+Authorization: Basic user:password
+# Authorization: Bearer {{access_token}}
 Accept: application/json
 
 
 ###
 # @name createPartition
 POST {{PARTITION_HOST}}/partitions/{{data_partition_id}}
-Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{data_partition_id}}
 
@@ -194,6 +194,7 @@ data-partition-id: {{data_partition_id}}
 GET {{PARTITION_HOST}}/partitions/
 Authorization: Bearer {{access_token}}
 Accept: application/json
+data-partition-id: {{data_partition_id}}
 
 
 @partition = {{getPartitions.response.body.$[0]}}
@@ -219,7 +220,7 @@ data-partition-id: {{data_partition_id}}
 # API: Entitlements
 # -----------------------
 ###
-@ENTITLEMENTS_HOST = {{HOST}}/api/entitlements/v2
+@ENTITLEMENTS_HOST = {{HOST_IP}}/api/entitlements/v2
 
 # -----------------------
 # API: Version
@@ -229,6 +230,16 @@ data-partition-id: {{data_partition_id}}
 GET {{ENTITLEMENTS_HOST}}/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
+data-partition-id: {{DATA_PARTITION}}
+
+###
+# Get groups for the user encoded in the token
+# @name myPermissions
+GET {{ENTITLEMENTS_HOST}}/groups
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{DATA_PARTITION}}
+x-user-id: {{CLIENT_ID}}
 
 
 ###
@@ -242,3 +253,28 @@ data-partition-id: {{DATA_PARTITION}}
 x-payload: Bearer {{access_token}}
 x-user-id: {{CLIENT_ID}}
 # x-app-id: {{CLIENT_ID}}
+
+
+
+# -----------------------
+# API: Legal
+# -----------------------
+###
+@LEGAL_HOST = {{HOST_IP}}/api/legal/v1
+
+# -----------------------
+# API: Version
+# -----------------------
+###
+# @name info
+GET {{LEGAL_HOST}}/info
+Authorization: Bearer {{access_token}}
+
+
+###
+# @name getTagProperties
+GET {{LEGAL_HOST}}/legaltags:properties
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{DATA_PARTITION}}
+

@@ -11,31 +11,27 @@
 #   1. Ensure you have Azure CLI installed, and you're logged in to Azure CLI.                #
 #                                                                                             #
 # Options:                                                                                    # 
-#   -s : Specify a particular subscriptionId to use.                                          #
+#   -s : Specify a particular subscriptionId to use. If not provided, uses the current subscription.
 #   -h : Print help message and exit                                                          #
-#                                                                                             #
-# Note:                                                                                       #
-#   You must provide a subscription ID                                                        #
 #                                                                                             #
 ###############################################################################################
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-PARENT_DIR=`dirname $SCRIPT_DIR`
-ROOT_DIR=`dirname $PARENT_DIR`
+PARENT_DIR=$(dirname $SCRIPT_DIR)
+ROOT_DIR=$(dirname $PARENT_DIR)
 
 if [[ $SCRIPT_DIR == "/usr/local/bin" ]]
 then
     ROOT_DIR="/workspace"
 else
-    ROOT_DIR=`dirname $PARENT_DIR`
+    ROOT_DIR=$(dirname $PARENT_DIR)
 fi
 
 print_help() {
-  echo -e "Usage: $0 --subscription SUBSCRIPTION_ID\n"
+  echo -e "Usage: $0 [-s SUBSCRIPTION_ID]\n"
   echo -e "Options:"
-  echo -e " -s Set the subscription ID"
-  echo -e " -h Print this help message and exit"
-  echo -e "\nYou must provide a SubscriptionId."
+  echo -e " -s : Optionally specify a subscription ID to use. If not provided, the current subscription is used."
+  echo -e " -h : Print this help message and exit"
 }
 
 # Parsing command-line arguments
@@ -47,7 +43,7 @@ while getopts ":hs:" opt; do
       exit 0
       ;;
     s )
-      AZURE_SUBSCRIPTION=$OPTARG
+      AZURE_SUBSCRIPTION=${OPTARG:-default_value}  # Set to a default value or leave as empty
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -55,23 +51,19 @@ while getopts ":hs:" opt; do
       exit 1
       ;;
     : )
-      echo "Option -$OPTARG requires an argument." >&2
-      print_help
-      exit 1
+      if [ "$OPTARG" != "s" ]; then
+        echo "Option -$OPTARG requires an argument." >&2
+        print_help
+        exit 1
+      fi
       ;;
   esac
 done
 shift $((OPTIND -1))
 
-###############################
-# Checks
-if [[ -z "$AZURE_SUBSCRIPTION" ]];
-then
-    AZURE_SUBSCRIPTION=$(az account show --query id -otsv)
-fi
 
 # Check Azure CLI version.
-REQUIRED_AZ_CLI_VERSION="2.53.0"
+REQUIRED_AZ_CLI_VERSION="2.59.0"
 CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
 
 if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
@@ -85,6 +77,17 @@ if [[ -f "$SCRIPT_DIR/functions.sh" ]]; then
     source "$SCRIPT_DIR/functions.sh" 
 fi
 
+
+###############################
+# Subscription Check
+if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
+    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+    printf "\n"
+    PrintMessage "==================================================================" 4
+    PrintMessage "Default Subscription: ${AZURE_SUBSCRIPTION_ID}" 4
+    PrintMessage "==================================================================" 4
+    azd env set AZURE_SUBSCRIPTION_ID $AZURE_SUBSCRIPTION_ID
+fi
 
 ###############################
 ## Feature Check             ##
@@ -169,10 +172,58 @@ if [[ $ok == 1 ]]; then
 fi
 
 if [[ -z $AZURE_CLIENT_ID ]]; then
-  PrintMessage "==================================================================" 4
-  PrintMessage "********ERROR*********   --> Missing AZURE_CLIENT_ID" 4
-  PrintMessage "==================================================================" 4
-  exit 1
+  
+  # Define the application name using the Azure subscription ID
+  AZURE_CLIENT_NAME="osdu-${AZURE_ENV_NAME}-${AZURE_SUBSCRIPTION_ID}"
+
+  # Display the created application information
+  printf "\n"
+  echo "=================================================================="
+  echo " Creating Application: ${AZURE_CLIENT_NAME}"
+  echo "=================================================================="
+
+# Correctly format the JSON payload and headers
+JSON_PAYLOAD=$(cat <<EOF
+{
+    "displayName": "${AZURE_CLIENT_NAME}",
+    "signInAudience": "AzureADMyOrg",
+    "web": {
+        "redirectUris": ["https://localhost:8080/"],
+        "implicitGrantSettings": {
+            "enableIdTokenIssuance": true,
+            "enableAccessTokenIssuance": true
+        }
+    },
+    "requiredResourceAccess": [
+        {
+            "resourceAppId": "00000003-0000-0000-c000-000000000000",
+            "resourceAccess": [
+                {
+                    "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                    "type": "Scope"
+                }
+            ]
+        }
+    ]
+}
+EOF
+)
+
+  # Use az rest to create the application
+  az rest --method POST \
+          --uri "https://graph.microsoft.com/v1.0/applications" \
+          --headers 'Content-Type=application/json' \
+          --body "$JSON_PAYLOAD" > /dev/null 2>&1
+
+  # Wait for the application to be fully created
+  sleep 45
+
+  # Retrieve the application ID using az ad app list
+  AZURE_CLIENT_ID=$(az ad app list --display-name "$AZURE_CLIENT_NAME" --query "[0].appId" -o tsv)
+  az ad sp create --id $AZURE_CLIENT_ID -o none
+  
+  PrintMessage "  Retrieving AZURE_CLIENT_ID.."
+  azd env set AZURE_CLIENT_ID $AZURE_CLIENT_ID
 fi
 
 
@@ -183,5 +234,5 @@ fi
 
 if [[ -z $AZURE_CLIENT_SECRET ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_SECRET..."
-  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password -otsv)
+  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv)
 fi

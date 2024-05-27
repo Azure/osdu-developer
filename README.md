@@ -2,59 +2,69 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Open Subsurface Data Universe](https://osduforum.org) (OSDU) is a standard data platform that brings together a diverse array of subsurface and well data. It enables the energy industry to access and analyze data across various sources efficiently. This project aims to provide a streamlined approach to showcase a mechanism to develop and work directly with [OSDU](https://community.opengroup.org/osdu/platform) while using the [Microsoft Azure Cloud](https://azure.microsoft.com/).
+The [OSDU™](https://community.opengroup.org/osdu/platform) data platform is a standard for subsurface and well data, enabling efficient data access and analysis across the energy industry. This project is a solution that aims to enable development and work with OSDU on the [Microsoft Azure Cloud](https://azure.microsoft.com/).
+
 
 ## Guiding Principles
 
-The guiding principle of this development approach is to offer a way to facilitate direct engagement with the OSDU codebase on the Azure Cloud in a minimal fashion. This is not recomended for any production use and is purely seen as a method for development and does not come with any type of official support. The approach aligns with three key pillars from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework):
+This development approach focuses on the following principles from Microsoft's [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework). It is intended for development purposes and is not recommended for production scenarios, nor does it come with any official support.
 
-1. **Cost Optimization** -- We aim to create a cost-effective approach, balancing cost along with security considerations.
-2. **Security** -- Our goal is to enhance security levels within the constraints of working to allow for development in a secure manner, working to ensure a zero trust approach to development.
-3. **Operational Excellence** -- A strong DevOps, Standards, and Automation approach is always thought of first.
 
-To support ease of use, this idea integrates closely with [Github Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/), working to facilitate seamless development and innovation on ideas.
+1. **Cost Optimization** -- Creating a cost-effective solution while balancing security.
+2. **Security** -- Enhancing security within a development context, adhering to a zero trust model.
+3. **Operational Excellence** -- Prioritizing DevOps, standards, and automation to ensure efficient operations and robust monitoring.
+
 
 **Bicep for Desired State Configuration**
 
-Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It is built on top of Azure Resource Manager (ARM) templates and simplifies the syntax and experience of authoring ARM templates. With Bicep, you define the desired state of your Azure infrastructure in code. This includes specifying the resources you want to deploy, their configurations, and the relationships between resources.
-
-When you deploy a Bicep file, Azure Resource Manager (ARM) processes the file and ensures that the Azure environment matches the defined desired state. If the actual state drifts from the desired state defined in the Bicep file, redeploying the Bicep template can correct this drift, realigning the actual state with the desired state.
+Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Azure infrastructure in code. Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
 
 **GitOps for Desired State Management**
 
-GitOps extends the desired state management concept to application deployment. It uses Git as a single source of truth for declarative components and applications. With GitOps, you store the entire state of your software components and applications in Git repositories, and any changes to the state are made through Git commits.
+GitOps uses Git as a single source of truth for declarative components and applications. It ensures that the actual state of the components or application matches the desired state defined in the Git repository, automating updates through continuous monitoring and Git commits.
 
-Automated processes or operators continuously monitor the Git repository for changes. When a change is detected, these operators ensure that the actual state of the components or application (running in environments such as Kubernetes) is updated to match the desired state defined in the Git repository.
+**Combination of Bicep and GitOps**
 
-**Combination of Bicep and Gitops**
+Combining Bicep and GitOps provides a unified strategy for defining both infrastructure and software, enabling automated alignment and deployment through a single source of truth.
 
-The combination of Bicep and GitOps is a powerful strategy that allows for a single place where both the infrastructure and software are fully defined, enabling the system itself to work towards achieving the state that has been described. This integrated approach ensures alignment between infrastructure provisioning and application deployment, streamlining and automating the entire provisioning and application deployment process.
+Integration with [GitHub Codespaces](https://github.com/features/codespaces) and the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/) simplifies development and innovation.
 
-# Azure Developer CLI - Deployment
 
-The recommended approach for working with this solution is by using the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This method provides greater flexibility for customization and setting options. Here’s a streamlined guide to using the Azure Developer CLI:
+## Prerequisites
 
-The solution enables alternate configurations based off of feature flags. See the document [feature-flags](docs/feature-flags.md) for alternate configurations.
+Before starting, ensure you have the following prerequisites:
 
-## Enabling Alpha Features for Azure Developer CLI
+__Azure Subscription__: An active Microsoft Azure subscription.
 
-This solution utilizes Alpha Features in the Azure Developer CLI for advanced functionalities.
+__Azure CLI__: Installed and configured on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-**Resource Group Scoped Deployments**
+__Azure Developer CLI__: Installed on your local machine. Installation instructions are available [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
-This allows more granular control over deployments at the resource group level.
+> Resource Group Scoped Deployments should be enabled  
+    ```
+    azd config set alpha.resourceGroupDeployments on
+    ```
 
-Enable this feature using the following command:
+Optional but recommended:
+
+__Visual Studio Code__: Installed with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) for an enhanced development experience.
+
+
+## Installation
+
+The recommended approach is to clone the repository and use the Azure Developer CLI, which allows for customization and additional configuration. Alternatively, you can use the ARM Template Deploy to Azure button for a straightforward deployment, but would require manual configuration for establishing the first user and intial tokens.
+
+
+### Recommended: Azure Developer CLI
+
+1. Clone the repository:
 
 ```bash
-azd config set alpha.resourceGroupDeployments on
-```
+git clone https://github.com/azure/osdu-developer.git
+cd osdu-developer
+``` 
 
-Note: Alpha features are in experimental stages and may undergo changes.
-
-## Authentication
-
-Authenticate your session to interact with Azure resources:
+2. Authenticate your session:
 
 ```bash
 az login
@@ -62,9 +72,7 @@ az account set --subscription <your_subscription_id>
 azd auth login
 ```
 
-## Deploying the Solution
-
-Initialize an environment and provision.
+3. Initialize an environment and provision:
 
 ```bash
 # Initialize and Create a new Environment
@@ -74,7 +82,9 @@ azd init -e dev
 azd provision
 ```
 
-Once the environment has been provisioned retrieve the ingress url `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token to be used when calling APIs.
+4. Post Provisioning Configuration:
+
+    Once the environment has been provisioned, retrieve the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token for calling APIs.
 
 ```bash
 # Open URL in Browser
@@ -85,8 +95,9 @@ azd env set AUTH_CODE <your_auth_code>
 azd hooks run predeploy
 ```
 
-Integrated [Rest scripts](tools/rest-scripts/README.md) can be used to easily execute api calls.
+#### Cleanup
 
+Resources can be fully removed by running the following commands:
 
 ```bash
 # Remove the resources
@@ -96,9 +107,10 @@ azd down --purge --force
 rm -rf .azure/<your_environment_name>
 ```
 
-## Override Environment Variables
 
-Environment Variables can be optionally overriden
+#### Optional Overrides
+
+Environment variables can be overriden as necessary.
 
 ```bash
 # Override Default Subscription
@@ -112,105 +124,54 @@ azd env set SOFTWARE_REPOSITORY <your_git_url>
 azd env set SOFTWARE_BRANCH <your_branch>
 ```
 
+### Alternative: ARM Template Deployment
 
-# ARM Template - Deployment
-
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, it's worth noting that navigating parameter options can be challenging. For users seeking customization, we recommend using the Azure Developer CLI - Deployment, detailed in the following section.
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 
 **Important Parameter Requirement:**
 
-During the deployment process, there's one essential parameter you need to provide:
+During the deployment process, identity information is necessary and required to be provided in the deployment form.:
 
-`applicationClientId`: Fill this with the Application ClientId that you intend to use. This step is crucial for the proper functioning of the template.
+- `Application Client Id`: Specify the Application Client Id. (This is the unique application ID of this application.)
+- `Application Client Secret`: Specify the Application Client Secret. (A valid secret for the application client ID.)
+- `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)
+
+
 Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
 
 To begin, simply click the button below:
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
-# Sequence Diagram
 
-This diagram documents how the interactions work for the Azure CLI Developer Command Structures
+# Additional Information
 
-<!--- https://diagrams.helpful.dev/ --->
+## Architecture
 
-```mermaid
-sequenceDiagram
-    participant Azd as user
-    participant Provision as command
-    participant Azure as azure
+For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/archiecture.md).
 
-
-    rect rgb(191, 223, 255)
-    alt
-    Note over Provision: featureCheck
-    Note over Provision: credCheck
-    end
-    Azd->>+Provision: azd provision
-    Provision->>Azure: arm deploy
-    Provision-->>-Azd: complete
-    alt
-    Note over Provision: softwareCheck
-    Note over Provision: entraAuth
-    end
-    end
-
-    rect rgb(144,238,144)
-    alt
-    Note over Provision: firstUser
-    Note over Provision: refreshToken
-    end
-    Azd->>Provision: azd deploy
-    activate Provision
-    Provision-->>Azd: complete
-    deactivate Provision
-    alt
-    Note over Provision: settingsJson
-    end
-    end
-```
-
-# Infrastructure
-
-The architecture diagram below provides a visual representation of the infrastructure when deployed. It's designed to help you understand the various components and how they interact within the Azure environment.
-
-![[0]][0]
-
-## Key Components Illustrated in the Diagram:
-
-1. Azure Virtual Network: Illustrates the network and how feature enablement changes the network structure and subnets.
-2. Azure Kubernetes Service (AKS): Demonstrates the Kubernetes clusters and an example of how software is set up along with interactions to other Azure services.
-3. Storage Resources: Illustrates the use of services such as Azure Storage Accounts and Azure Cosmos Databases and how they connect to the network.
-4. Optional Features: If enabled, features like the Bastion Host, Public Blob Access and Pod Subnet are represented, attempting to show their placement and role within the architecture.
-
-## Software Management with a Gitops Approach
-
-In this workspace, we utilize a GitOps approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within the infrastructure.
-
-### GitOps Configuration
-
-Our GitOps configuration resides in this Git repository and uses a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) pattern. This repository includes:
-
-- **Configuration Files**: YAML files defining the desired state of our components and applications.
-
-- **Charts**: Helm charts used for defining, installing, and upgrading Kubernetes applications.
-
-### Advantages of GitOps
-
-- **Consistency and Standardization**: Ensures consistent configurations across different environments.
-- **Audit Trails**: Every change is recorded in Git, providing a clear audit trail.
-- **Rollbacks and Recovery**: Every change is recorded in Git, providing a clear audit trail.
-- **Enhanced Security**: Changes are reviewed through pull requests, increasing security and collaboration.
-
-Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load.
 
 ## Customizations
 
-There are many things that can be done to customize the deployment. One example of this might be virtual network injection.
+There are many ways to customize the deployment. For example, virtual network injection can be implemented. Details on how to perform such customizations can be found [here](docs/vnet-injection.md).
 
-See [this tutorial](docs/vnet-injection.md) for how a customization like this might be performed.
+
+## Feature Flags
+
+Feature flags are leveraged to assist in major modifications to the solution, ensuring adherence to different policies and requirements. More information can be found [here](docs/feature-flags.md).
+                          
+
+## Github Actions
+
+The repository is configured with Github Actions to automate the validation of pull requests.. The strategy for actions can be found [here](docs/pipelines.md).
+
+
+## Customizations
+
+There are many things that can be done to customize the deployment. One example of this might be virtual network injection. More information can be found [here](docs/vnet-injection.md).
+
 
 ## Trademarks
 
@@ -220,4 +181,4 @@ trademarks or logos is subject to and must follow
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
-[0]: docs/images/architecture.png "Architecture Diagram"
+

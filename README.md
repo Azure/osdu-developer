@@ -84,7 +84,7 @@ azd provision
 
 4. Post Provisioning Configuration:
 
-Once the environment has been provisioned, retrieve the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, retrieve the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token for calling APIs.
 
 ```bash
 # Open URL in Browser
@@ -97,7 +97,7 @@ azd hooks run predeploy
 
 #### Cleanup
 
-An environment can be fully removed by running the following commands:
+Resources can be fully removed by running the following commands:
 
 ```bash
 # Remove the resources
@@ -108,9 +108,9 @@ rm -rf .azure/<your_environment_name>
 ```
 
 
-#### Environment Overrides
+#### Optional Overrides
 
-Environment Variables can be optionally overriden
+Environment variables can be overriden as necessary.
 
 ```bash
 # Override Default Subscription
@@ -132,9 +132,12 @@ To facilitate a smooth deployment experience, we provide a "Deploy to Azure" but
 
 **Important Parameter Requirement:**
 
-During the deployment process, there's one essential parameter you need to provide:
+During the deployment process, identity information is necessary and required to be provided in the deployment form.:
 
-`applicationClientId`: Fill this with the Application ClientId that you intend to use. This step is crucial for the proper functioning of the template.
+- `Application Client Id`: Specify the Application Client Id. (This is the unique application ID of this application.)
+- `Application Client Secret`: Specify the Application Client Secret. (A valid secret for the application client ID.)
+- `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)
+
 
 Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
 

@@ -95,6 +95,18 @@ azd env set AUTH_CODE <your_auth_code>
 azd hooks run predeploy
 ```
 
+#### Cleanup
+
+An environment can be fully removed by running the following commands:
+
+```bash
+# Remove the resources
+azd down --purge --force
+
+# Delete the environment
+rm -rf .azure/<your_environment_name>
+```
+
 
 #### Environment Overrides
 

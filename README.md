@@ -168,13 +168,10 @@ Feature flags are leveraged to assist in major modifications to the solution, en
 The repository is configured with Github Actions to automate the validation of pull requests.. The strategy for actions can be found [here](docs/pipelines.md).
 
 
-
-
 ## Customizations
 
-There are many things that can be done to customize the deployment. One example of this might be virtual network injection.
+There are many things that can be done to customize the deployment. One example of this might be virtual network injection. More information can be found [here](docs/vnet-injection.md).
 
-See [this tutorial](docs/vnet-injection.md) for how a customization like this might be performed.
 
 ## Trademarks
 

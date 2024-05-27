@@ -7,7 +7,7 @@ The [OSDU™](https://community.opengroup.org/osdu/platform) data platform is a 
 
 ## Guiding Principles
 
-This development approach focuses on the following principles from the Microsoft [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework). It is intended for development purposes and is not recommended for production scenarios, nor does it come with any official support.
+This development approach focuses on the following principles from Microsoft's [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework). It is intended for development purposes and is not recommended for production scenarios, nor does it come with any official support.
 
 
 1. **Cost Optimization** -- Creating a cost-effective solution while balancing security.

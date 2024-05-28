@@ -1,7 +1,8 @@
 # -------HTTP REST CLIENT -------
 # https://marketplace.visualstudio.com/items?itemName=humao.rest-client
 #
-# Purpose: Sample requests for Legal Service
+# Purpose: Sample requests for Schema Service
+#          WARNING: Schemas can not be deleted
 
 # -----------------------
 # OAUTH (Variables)
@@ -32,89 +33,106 @@ grant_type=refresh_token
 # -----------------------
 ###
 @access_token = {{refresh.response.body.access_token}}
-@LEGAL_HOST = {{HOST}}/api/legal/v1
-@tag = legal-tag-load
+@SCHEMA_HOST = {{HOST}}/api/schema-service/v1
+
 
 # -----------------------
 # API: Version
 # -----------------------
+
 ###
 # @name info
-GET {{LEGAL_HOST}}/info
+GET {{SCHEMA_HOST}}/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 
 # -----------------------
-# API: legal
+# API: schema
 # -----------------------
+
 ###
-# @name getTagProperties
-GET {{LEGAL_HOST}}/legaltags:properties
+# @name getSchemaInfoList
+GET {{SCHEMA_HOST}}/schema
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
 
 ###
-# @name getAllTag
-GET {{LEGAL_HOST}}/legaltags
-Authorization: Bearer {{access_token}}
-Accept: application/json
-data-partition-id: {{DATA_PARTITION}}
-
-
-###
-# @name create_tag
-POST {{LEGAL_HOST}}/legaltags
+# @name createSchema
+POST {{SCHEMA_HOST}}/schema
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{DATA_PARTITION}}
 
 {
-  "name": "{{tag}}",
-  "description": "This is a TNO Data load tag",
-  "properties": {
-    "countryOfOrigin": [
-      "US"
-    ],
-    "contractId": "A1234",
-    "expirationDate": "2028-12-31",
-    "originator": "MyCompany",
-    "dataType": "Transferred Data",
-    "securityClassification": "Public",
-    "personalData": "No Personal Data",
-    "exportClassification": "EAR99"
+  "schemaInfo": {
+    "schemaIdentity": {
+      "authority": "lab",
+      "source": "test",
+      "entityType": "testSchema",
+      "schemaVersionMajor": 0,
+      "schemaVersionMinor": 0,
+      "schemaVersionPatch": 1,
+      "id": "lab:test:testSchema:0.0.1"
+    },
+    "status": "DEVELOPMENT",
+    "scope": "INTERNAL",
+    "createdBy": "John Smith",
+    "dateCreated": "2022-03-31T11:16:03Z"
+  },
+  "schema": {
+    "ValidationString": "Initial Creation",
+    "newfield": "something",
+    "definitions": {}
   }
 }
 
 
 ###
-# @name getTag
-GET {{LEGAL_HOST}}/legaltags/{{DATA_PARTITION}}-{{tag}}
+# @name getSchema
+GET {{SCHEMA_HOST}}/schema/lab:test:testSchema:0.0.1
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
 
 ###
-# @name updateTag
-PUT {{LEGAL_HOST}}/legaltags
+# @name updateSchema
+PUT {{SCHEMA_HOST}}/schema
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{DATA_PARTITION}}
 
 {
-  "name": "{{DATA_PARTITION}}-{{tag}}",
-  "contractId": "A1234",
-  "description": "Updated: This is a test tag from Rest Scripts",
-  "expirationDate": "2035-12-25"
+  "schemaInfo": {
+    "schemaIdentity": {
+      "authority": "lab",
+      "source": "test",
+      "entityType": "testSchema",
+      "schemaVersionMajor": 0,
+      "schemaVersionMinor": 1,
+      "schemaVersionPatch": 0,
+      "id": "lab:test:testSchema:0.1.0"
+    },
+    "status": "DEVELOPMENT",
+    "scope": "INTERNAL",
+    "createdBy": "John Smith",
+    "dateCreated": "2022-03-31T11:16:03Z"
+  },
+  "schema": {
+    "ValidationString": "Updated Schema",
+    "newfield": "something",
+    "anotherfield": "else",
+    "definitions": {}
+  }
 }
 
 
 ###
-# @name deleteTag
-DELETE {{LEGAL_HOST}}/legaltags/{{DATA_PARTITION}}-{{tag}}
+# @name getUpdatedSchema
+GET {{SCHEMA_HOST}}/schema/lab:test:testSchema:0.1.0
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}

@@ -24,16 +24,22 @@ spec:
     remediation:
       retries: 3
   values:
-    subset: v1
+    nameOverride: schema
+    subset: m22
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
     - service: schema
+      path: /api/schema-service/v1/
+      hosts:
+        - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-release-0-23
       tag: latest
-      path: /api/schema-service/v1/*
       probe:
         path: /actuator/health
         port: 8081

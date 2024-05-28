@@ -501,6 +501,36 @@ param databasePrimaryKeySecretName string = ''
 @description('Optional: To save storage account connectionstring into vault set the secret hame.')
 param databaseConnectionStringSecretName string = ''
 
+@description('Optional: Enable as System Partition.')
+param isSystemPartition bool = false
+
+module systemSecretDatabaseEndpoint  '.bicep/keyvault_secrets.bicep' = if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-name'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-cosmos-endpoint'
+    value: databaseAccount.properties.documentEndpoint
+  }
+}
+
+module systemSecretDatabasePrimaryKey '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-key'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-cosmos-primary-key'
+    value: databaseAccount.listKeys().primaryMasterKey
+  }
+}
+
+module systemSecretDatabaseConnectionString '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-connection'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-cosmos-connection'
+    value: databaseAccount.listConnectionStrings().connectionStrings[0].connectionString
+  }
+}
+
 module secretDatabaseEndpoint  '.bicep/keyvault_secrets.bicep' = if (!empty(keyVaultName) && !empty(databaseEndpointSecretName)) {
   name: '${deployment().name}-secret-name'
   params: {
@@ -520,7 +550,7 @@ module secretDatabasePrimaryKey '.bicep/keyvault_secrets.bicep' =  if (!empty(ke
 }
 
 module secretDatabaseConnectionString '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(databaseConnectionStringSecretName)) {
-  name: '${deployment().name}-secret-accountName'
+  name: '${deployment().name}-secret-connection'
   params: {
     keyVaultName: keyVaultName
     name: databaseConnectionStringSecretName

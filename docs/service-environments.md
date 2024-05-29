@@ -98,3 +98,33 @@ The following information can be used as a guide for the required environment va
 | `AZURE_PAAS_PODIDENTITY`             | `false`                                        | Azure PaaS pod identity                    |
 | `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
 | `AZURE_PAAS_PODIDENTITY_ISENABLED`   | `false`                                        | Azure PaaS pod identity enabled            |
+
+
+## Storage Service
+
+| Variable                             | Value                                          | Description                                |
+|--------------------------------------|------------------------------------------------|--------------------------------------------|
+| `APPINSIGHTS_KEY`                    | `<your_appinsights_key>`                       | Application Insights key                   |
+| `KEYVAULT_URI`                       | `<your_keyvault_uri>`                          | Key Vault URI                              |
+| `PARTITION_SERVICE_ENDPOINT`         | `<your_partition_service_endpoint>`            | Partition service endpoint                 |
+| `ENTITLEMENTS_SERVICE_ENDPOINT`      | `<your_entitlements_service_endpoint>`         | Entitlements service endpoint              |
+| `LEGAL_SERVICE_ENDPOINT`             | `<your_legal_service_endpoint>`                | Legal service endpoint                     |
+| `CRS_CONVERSION_SERVICE_ENDPOINT`    | `<your_crs_conversion_service_endpoint>`       | CRS Conversion service endpoint            |
+| `POLICY_SERVICE_ENDPOINT`            | `<your_policy_service_endpoint>`               | Policy service endpoint                    |
+| `AAD_CLIENT_ID`                      | `<your_aad_client_id>`                         | Active Directory client ID                 |
+| `SPRING_APPLICATION_NAME`            | `storage`                                      | Spring application name                    |
+| `AZURE_PAAS_PODIDENTITY`             | `false`                                        | Azure PaaS pod identity                    |
+| `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
+| `AZURE_PAAS_PODIDENTITY_ISENABLED`   | `false`                                        | Azure PaaS pod identity enabled            |
+| `LOG_PREFIX`                         | `storage`                                      | Log prefix                                 |
+| `AZURE_STORAGE_ENABLE_HTTPS`         | `true`                                         | Enable HTTPS for Azure storage             |
+| `COSMOSDB_DATABASE`                  | `osdu-db`                                      | Cosmos DB database name                    |
+| `SERVER_PORT`                        | `8080`                                         | Server port                                |
+| `SERVICEBUS_TOPIC_NAME`              | `recordstopic`                                 | Service Bus topic name                     |
+| `SERVICEBUS_V2_TOPIC_NAME`           | `recordstopic-v2`                              | Service Bus topic name (version 2)         |
+| `REDIS_DATABASE`                     | `4`                                            | Redis database number                      |
+| `ENTITLEMENTS_SERVICE_API_KEY`       | `OBSOLETE`                                     | Entitlements service API key               |
+| `LEGAL_SERVICE_REGION`               | `southcentralus`                               | Legal service region                       |
+| `LEGAL_SERVICEBUS_TOPIC_NAME`        | `legaltagschangedtopiceg`                      | Legal service bus topic name               |
+| `LEGAL_SERVICEBUS_TOPIC_SUBSCRIPTION`| `eg_sb_legaltagchangedsubscription`            | Legal service bus topic subscription       |
+| `OPA_ENABLED`                        | `false`                                        | Enable OPA                                 |

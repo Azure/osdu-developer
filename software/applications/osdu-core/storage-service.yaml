@@ -22,7 +22,7 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-azure
+  targetNamespace: osdu-core
   values:
     nameOverride: storage
     subset: m22

@@ -468,6 +468,45 @@ param sasProperties object = {
 @description('Optional: To save storage account sas token into vault set the properties.')
 param saveToken bool = false
 
+@description('Optional: Enable as System Partition.')
+param isSystemPartition bool = false
+
+module systemSecretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-name'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-storage'
+    value: storage.name
+  }
+}
+
+module systemSecretStorageAccountKey  '.bicep/keyvault_secrets.bicep' = if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-key'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-storage-key'
+    value: storage.listKeys().keys[0].value
+  }
+}
+
+module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-endpoint'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-storage-blob-endpoint'
+    value: storage.properties.primaryEndpoints.table
+  }
+}
+
+module systemSecretStorageAccountConnection '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+  name: '${deployment().name}-system-secret-connectionstring'
+  params: {
+    keyVaultName: keyVaultName
+    name: 'system-storage-connection'
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+  }
+}
+
 module secretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (!empty(keyVaultName) && !empty(storageAccountSecretName)) {
   name: '${deployment().name}-secret-name'
   params: {

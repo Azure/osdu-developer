@@ -86,6 +86,46 @@ var partitionLayerConfig = {
       'file-persistent-area'
     ]
   }
+  systemdb: {
+    name: 'osdu-system-db'
+    containers: [
+      {
+        name: 'Authority'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'EntityType'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'SchemaInfo'
+        kind: 'Hash'
+        paths: [
+          '/partitionId'
+        ]
+      }
+      {
+        name: 'Source'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'WorkflowV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+    ]
+  }
   database: {
     name: 'osdu-db'
     CostOptimised : {
@@ -361,6 +401,16 @@ var partitionLayerConfig = {
 }
 
 
+var systemDatabase = {
+  name: partitionLayerConfig.systemdb.name
+  containers: partitionLayerConfig.systemdb.containers
+}
+
+var partitionDatabase = {
+  name: partitionLayerConfig.database.name
+  containers: partitionLayerConfig.database.containers
+}
+
 
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __.      _______.
@@ -407,6 +457,9 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
     keyVaultName: kvName
     storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
     storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
+
+    // Set isSystemPartition based on index
+    isSystemPartition: index == 0 ? true : false
   }
 }]
 
@@ -444,13 +497,15 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     diagnosticWorkspaceId: workspaceResourceId
     diagnosticLogsRetentionInDays: 0
 
-    // Configure Service
-    sqlDatabases: [
-      {
-        name: partitionLayerConfig.database.name
-        containers: partitionLayerConfig.database.containers
-      }
-    ]
+    // Set isSystemPartition based on index
+    isSystemPartition: index == 0 ? true : false
+
+    // Configure Databases
+    sqlDatabases: index == 0 ? union(
+      array(systemDatabase),
+      array(partitionDatabase)
+    ) : array(partitionDatabase)
+  
     maxThroughput: partitionLayerConfig.database[partitionSize].throughput
     backupPolicyType: partitionLayerConfig.database.backup
 

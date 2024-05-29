@@ -29,7 +29,7 @@ grant_type=client_credentials
 # -----------------------
 ###
 @access_token = {{login.response.body.access_token}}
-
+@HOST_IP = http://localhost:8080
 @PARTITION_HOST = {{HOST_IP}}/api/partition/v1
 @data_partition_id = opendes
 
@@ -262,9 +262,6 @@ x-user-id: {{CLIENT_ID}}
 ###
 @LEGAL_HOST = {{HOST_IP}}/api/legal/v1
 
-# -----------------------
-# API: Version
-# -----------------------
 ###
 # @name info
 GET {{LEGAL_HOST}}/info
@@ -274,6 +271,26 @@ Authorization: Bearer {{access_token}}
 ###
 # @name getTagProperties
 GET {{LEGAL_HOST}}/legaltags:properties
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{DATA_PARTITION}}
+
+
+
+# -----------------------
+# API: schema
+# -----------------------
+@SCHEMA_HOST = {{HOST_IP}}/api/schema-service/v1
+
+###
+# @name info
+GET {{SCHEMA_HOST}}/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+###
+# @name getSchemaInfoList
+GET {{SCHEMA_HOST}}/schema
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}

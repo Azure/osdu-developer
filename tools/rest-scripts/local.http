@@ -295,3 +295,21 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
+
+# -----------------------
+# API: storage
+# -----------------------
+@STORAGE_HOST = {{HOST_IP}}/api/storage/v2
+
+###
+# @name info
+GET {{STORAGE_HOST}}/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+###
+# @name getRecord
+GET {{STORAGE_HOST}}/records/123
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{DATA_PARTITION}}

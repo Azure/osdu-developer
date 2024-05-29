@@ -105,9 +105,12 @@ spec:
     - kind: Deployment
       name: legal
       namespace: osdu-core
-    # - kind: Deployment
-    #   name: schema
-    #   namespace: osdu-core
+    - kind: Deployment
+      name: schema
+      namespace: osdu-core
+    - kind: Deployment
+      name: storage
+      namespace: osdu-core
     # - kind: Deployment
     #   name: file
     #   namespace: osdu-core

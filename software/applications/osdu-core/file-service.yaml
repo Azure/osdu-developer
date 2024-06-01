@@ -147,10 +147,6 @@ spec:
         value: http://search/api/search/v2
       - name: AZURE_PUBSUB_PUBLISH
         value: "true"
-      # - name: EVENT_GRID_ENABLED_STATUS
-      #   value: "false"
-      # - name: EVENT_GRID_TOPIC_STATUS
-      #   value: "statuschangedtopic"
       - name: SERVICE_BUS_ENABLED_STATUS
         value: "true"
       - name: SERVICE_BUS_TOPIC_STATUS

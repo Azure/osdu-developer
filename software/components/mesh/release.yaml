@@ -48,8 +48,8 @@ spec:
     app:
       certmanager:
         issuer:
-          name: istio-ca
-          kind: Issuer
+          name: root-ca-cluster-issuer
+          kind: ClusterIssuer
           group: cert-manager.io
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1

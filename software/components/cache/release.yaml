@@ -57,6 +57,13 @@ spec:
       enabled: true
       existingSecret: keyvault-secrets  # Reference the Kubernetes secret
       existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
+    tls:
+      enabled: true
+      authClients: false
+      existingSecret: "redis-tls-secret"
+      certFilename: "tls.crt"
+      certKeyFilename: "tls.key"
+      certCAFilename: "ca.crt"
     master:
       containerPorts:
         redis: 6380  # Change container port to 6380

@@ -436,6 +436,22 @@ module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsCacheNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_redis-cluster'
+  params: {
+    name: 'federated-ns_redis-cluster'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:redis-cluster:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsConfigMapsNamespace
+  ]
+}
+
 
 
 module appRoleAssignments './app_assignments.bicep' = {
@@ -451,6 +467,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsOduInitNamespace
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
+    federatedCredsCacheNamespace
   ]
 }
 

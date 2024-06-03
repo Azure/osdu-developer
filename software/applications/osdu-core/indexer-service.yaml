@@ -107,8 +107,6 @@ spec:
         value: osdu-db
       - name: REDIS_DATABASE
         value: "4"
-      - name: REDIS_PORT
-        value: "6379"
       - name: REDIS_TTL_SECONDS
         value: "3600"
       - name: SERVICEBUS_TOPIC_NAME

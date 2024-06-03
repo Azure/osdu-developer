@@ -153,14 +153,6 @@ var vaultSecrets = [
     secretName: 'app-dev-sp-id'
     secretValue: applicationClientId
   }
-  {
-    secretName: 'redis-hostname'
-    secretValue: 'redis-master.redis-cluster.svc.cluster.local'
-  }
-  {
-    secretName: 'redis-password'
-    secretValue: substring(base64(uniqueString(resourceGroup().id, bladeConfig.sectionName)), 0, 8)
-  }
 ]
 
 var roleAssignment = {
@@ -212,6 +204,7 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
     workspaceIdName: workspaceIdName
     workspaceKeySecretName: workspaceKeySecretName
     insightsName: insights.outputs.name
+    cacheName: redis.outputs.name
   }
 }
 
@@ -438,6 +431,27 @@ module graphEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
   dependsOn: [
     cosmosDNSZone
   ]
+}
+
+/*
+  ______     ___       ______  __    __   _______ 
+ /      |   /   \     /      ||  |  |  | |   ____|
+|  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__   
+|  |      /  /_\  \  |  |     |   __   | |   __|  
+|  `----./  _____  \ |  `----.|  |  |  | |  |____ 
+ \______/__/     \__\ \______||__|  |__| |_______|
+                                                  
+*/
+
+module redis 'br/public:avm/res/cache/redis:0.3.2' = {
+  name: '${bladeConfig.sectionName}-cache'
+  params: {
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+    location: location
+    skuName: 'Basic'
+    zoneRedundant: false
+    enableNonSslPort: true
+  }
 }
 
 output keyvaultName string = keyvault.outputs.name

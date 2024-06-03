@@ -23,7 +23,9 @@ spec:
       enabled: true
       slaveCount: 3
     auth:
-      enabled: false
+      enabled: true
+      existingSecret: redis-password-secret  # Reference the Kubernetes secret
+      existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
     master:
       port: 6379
       service:

@@ -159,7 +159,7 @@ var vaultSecrets = [
   }
   {
     secretName: 'redis-password'
-    secretValue: ''
+    secretValue: substring(base64(uniqueString(resourceGroup().id, bladeConfig.sectionName)), 0, 8)
   }
 ]
 

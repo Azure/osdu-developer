@@ -111,9 +111,12 @@ spec:
     - kind: Deployment
       name: storage
       namespace: osdu-core
-    # - kind: Deployment
-    #   name: file
-    #   namespace: osdu-core
+    - kind: Deployment
+      name: indexer
+      namespace: osdu-core
+    - kind: Deployment
+      name: file
+      namespace: osdu-core
 
 ######################
 ## OSDU Auth

@@ -29,114 +29,114 @@ spec:
         data:
           - key: redis-password
             vaultSecret: redis-password
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: redis
-#   namespace: flux-system
-# spec:
-#   targetNamespace: redis-cluster
-#   chart:
-#     spec:
-#       chart: redis
-#       sourceRef:
-#         kind: HelmRepository
-#         name: redis
-#         namespace: flux-system
-#   install:
-#     remediation:
-#       retries: 3
-#   interval: 10m0s
-#   releaseName: redis
-#   values:
-#     cluster:
-#       enabled: true
-#       slaveCount: 3
-#     auth:
-#       enabled: true
-#       existingSecret: redis-password-secret  # Reference the Kubernetes secret
-#       existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
-#     master:
-#       containerPorts:
-#         redis: 6380  # Change container port to 6380
-#       service:
-#         type: ClusterIP
-#         ports:
-#           redis: 6380  # Change service port to 6380
-#       livenessProbe:
-#         enabled: true
-#         initialDelaySeconds: 30
-#         periodSeconds: 10
-#         timeoutSeconds: 5
-#         successThreshold: 1
-#         failureThreshold: 5
-#       readinessProbe:
-#         enabled: true
-#         initialDelaySeconds: 5
-#         periodSeconds: 10
-#         timeoutSeconds: 1
-#         successThreshold: 1
-#         failureThreshold: 5
-#       tolerations:
-#         - effect: NoSchedule
-#           key: app
-#           value: "cluster"
-#       affinity:
-#         nodeAffinity:
-#           requiredDuringSchedulingIgnoredDuringExecution:
-#             nodeSelectorTerms:
-#               - matchExpressions:
-#                   - key: agentpool
-#                     operator: In
-#                     values:
-#                       - poolz1
-#                       - poolz2
-#                       - poolz3
-#               - matchExpressions:
-#                   - key: topology.kubernetes.io/zone
-#                     operator: In
-#                     values:
-#                       - eastus2-1 # THIS DEPENDS ON LOCATION
-#                       - eastus2-2 # THIS DEPENDS ON LOCATION
-#                       - eastus2-3 # THIS DEPENDS ON LOCATION
-#       persistence:
-#         enabled: true
-#         size: 8Gi
-#         accessModes:
-#         - ReadWriteOnce
-#       replicaCount: 1
-#     replica:
-#       containerPorts:
-#         redis: 6380  # Change container port to 6380
-#       service:
-#         ports:
-#           redis: 6380  # Change service port to 6380
-#       tolerations:
-#         - effect: NoSchedule
-#           key: app
-#           value: "cluster"
-#       affinity:
-#         nodeAffinity:
-#           requiredDuringSchedulingIgnoredDuringExecution:
-#             nodeSelectorTerms:
-#               - matchExpressions:
-#                   - key: agentpool
-#                     operator: In
-#                     values:
-#                       - poolz1
-#                       - poolz2
-#                       - poolz3
-#               - matchExpressions:
-#                   - key: topology.kubernetes.io/zone
-#                     operator: In
-#                     values:
-#                       - eastus2-1 # THIS DEPENDS ON LOCATION
-#                       - eastus2-2 # THIS DEPENDS ON LOCATION
-#                       - eastus2-3 # THIS DEPENDS ON LOCATION
-#       persistence:
-#         enabled: true
-#         size: 8Gi
-#         accessModes:
-#         - ReadWriteOnce
-#       replicaCount: 1
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: redis
+  namespace: flux-system
+spec:
+  targetNamespace: redis-cluster
+  chart:
+    spec:
+      chart: redis
+      sourceRef:
+        kind: HelmRepository
+        name: redis
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 10m0s
+  releaseName: redis
+  values:
+    cluster:
+      enabled: true
+      slaveCount: 3
+    auth:
+      enabled: true
+      existingSecret: keyvault-secrets  # Reference the Kubernetes secret
+      existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
+    master:
+      containerPorts:
+        redis: 6380  # Change container port to 6380
+      service:
+        type: ClusterIP
+        ports:
+          redis: 6380  # Change service port to 6380
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 5
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - eastus2-1 # THIS DEPENDS ON LOCATION
+                      - eastus2-2 # THIS DEPENDS ON LOCATION
+                      - eastus2-3 # THIS DEPENDS ON LOCATION
+      persistence:
+        enabled: true
+        size: 8Gi
+        accessModes:
+        - ReadWriteOnce
+      replicaCount: 1
+    replica:
+      containerPorts:
+        redis: 6380  # Change container port to 6380
+      service:
+        ports:
+          redis: 6380  # Change service port to 6380
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - eastus2-1 # THIS DEPENDS ON LOCATION
+                      - eastus2-2 # THIS DEPENDS ON LOCATION
+                      - eastus2-3 # THIS DEPENDS ON LOCATION
+      persistence:
+        enabled: true
+        size: 8Gi
+        accessModes:
+        - ReadWriteOnce
+      replicaCount: 1

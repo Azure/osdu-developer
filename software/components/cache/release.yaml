@@ -63,7 +63,9 @@ spec:
       service:
         type: ClusterIP
         ports:
-          redis: 6380  # Change service port to 6380
+          - name: redis
+            port: 6380  # Change service port to 6380
+            targetPort: 6380
       livenessProbe:
         enabled: true
         initialDelaySeconds: 30
@@ -97,9 +99,9 @@ spec:
                   - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - eastus2-1 # THIS DEPENDS ON LOCATION
-                      - eastus2-2 # THIS DEPENDS ON LOCATION
-                      - eastus2-3 # THIS DEPENDS ON LOCATION
+                      - eastus2-1
+                      - eastus2-2
+                      - eastus2-3
       persistence:
         enabled: true
         size: 8Gi
@@ -111,7 +113,9 @@ spec:
         redis: 6380  # Change container port to 6380
       service:
         ports:
-          redis: 6380  # Change service port to 6380
+          - name: redis
+            port: 6380  # Change service port to 6380
+            targetPort: 6380
       tolerations:
         - effect: NoSchedule
           key: app
@@ -131,9 +135,9 @@ spec:
                   - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - eastus2-1 # THIS DEPENDS ON LOCATION
-                      - eastus2-2 # THIS DEPENDS ON LOCATION
-                      - eastus2-3 # THIS DEPENDS ON LOCATION
+                      - eastus2-1
+                      - eastus2-2
+                      - eastus2-3
       persistence:
         enabled: true
         size: 8Gi

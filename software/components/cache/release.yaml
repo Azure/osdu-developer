@@ -118,11 +118,6 @@ spec:
     replica:
       containerPorts:
         redis: 6380  # Change container port to 6380
-      service:
-        ports:
-          - name: redis
-            port: 6380  # Change service port to 6380
-            targetPort: 6380
       tolerations:
         - effect: NoSchedule
           key: app

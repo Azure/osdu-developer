@@ -69,10 +69,6 @@ spec:
         redis: 6380  # Change container port to 6380
       service:
         type: ClusterIP
-        ports:
-          - name: redis
-            port: 6380  # Change service port to 6380
-            targetPort: 6380
       livenessProbe:
         enabled: true
         initialDelaySeconds: 30

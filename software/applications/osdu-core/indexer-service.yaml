@@ -1,133 +1,133 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: indexer-service
-#   namespace: flux-system
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#   - name: osdu-developer-base
-#     namespace: default
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   targetNamespace: osdu-core
-#   values:
-#     nameOverride: indexer
-#     subset: m22
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: indexer
-#       path: /api/indexer/v2/
-#       hosts:
-#         - "*"
-#       gateways:
-#         - istio-system/internal-gateway
-#         - istio-system/external-gateway
-#       repository: community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-release-0-24
-#       tag: latest
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#         liveness:
-#           delay: 250
-#           seconds: 10
-#       keyvault: true
-#       auth:
-#         disable:
-#           - /
-#           - '*/index.html'
-#           - '*/v2/api-docs'
-#           - '*/v2/api-docs.yaml'
-#           - '*/swagger'
-#           - /api/indexer/v2/swagger-ui/*
-#           - /api/indexer/v2/api-docs/swagger-config
-#           - '/api/indexer/v2/v3/api-docs/*'
-#           - '*/actuator/health'
-#           - '*/_ah/**'
-#           - '*/index-worker'
-#           - '*/_dps/task-handlers'
-#           - '*/reindex'
-#       env:
-#       - name: AZURE_TENANT_ID
-#         secret:
-#           name: active-directory
-#           key: tenant-id
-#       - name: AZURE_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AZURE_CLIENT_SECRET
-#         secret:
-#           name: active-directory
-#           key: principal-clientpassword
-#       - name: KEYVAULT_URI
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
-#       - name: AAD_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: APPINSIGHTS_KEY
-#         secret:
-#           name: azure-resources
-#           key: insights-key
-#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-#         secret:
-#           name: azure-resources
-#           key: insights-connection
-#       - name: AZURE_ISTIOAUTH_ENABLED
-#         value: "true"
-#       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-#         value: "false"
-#       - name: SERVER_PORT
-#         value: "80"
-#       - name: ACCEPT_HTTP
-#         value: "true"
-#       - name: SPRING_APPLICATION_NAME
-#         value: indexer
-#       - name: SERVER_SERVLET_CONTEXTPATH
-#         value: /api/indexer/v2/
-#       - name: COSMOSDB_DATABASE
-#         value: osdu-db
-#       - name: REDIS_DATABASE
-#         value: "4"
-#       - name: REDIS_TTL_SECONDS
-#         value: "3600"
-#       - name: SERVICEBUS_TOPIC_NAME
-#         value: indexing-progress
-#       - name: REINDEX_TOPIC_NAME
-#         value: recordstopic
-#       - name: PARTITION_SERVICE_ENDPOINT
-#         value: http://partition/api/partition/v1
-#       - name: ENTITLEMENTS_SERVICE_ENDPOINT
-#         value: http://entitlements/api/entitlements/v2
-#       - name: ENTITLEMENTS_SERVICE_API_KEY
-#         value: "OBSOLETE"
-#       - name: SCHEMA_SERVICE_URL
-#         value: http://schema/api/schema-service/v1
-#       - name: STORAGE_SERVICE_URL
-#         value: http://storage/api/storage/v2
-#       - name: STORAGE_SCHEMA_HOST
-#         value: http://storage/api/storage/v2/schemas
-#       - name: STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST
-#         value: http://storage/api/storage/v2/query/records:batch
-#       - name: STORAGE_QUERY_RECORD_HOST
-#         value: http://storage/api/storage/v2/query/records
-#       - name: SEARCH_SERVICE_URL
-#         value: http://search/api/search/v2
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: indexer-service
+  namespace: flux-system
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+  - name: osdu-developer-base
+    namespace: default
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: osdu-core
+  values:
+    nameOverride: indexer
+    subset: m22
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: indexer
+      path: /api/indexer/v2/
+      hosts:
+        - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-release-0-24
+      tag: latest
+      probe:
+        path: /actuator/health
+        port: 8081
+        liveness:
+          delay: 250
+          seconds: 10
+      keyvault: true
+      auth:
+        disable:
+          - /
+          - '*/index.html'
+          - '*/v2/api-docs'
+          - '*/v2/api-docs.yaml'
+          - '*/swagger'
+          - /api/indexer/v2/swagger-ui/*
+          - /api/indexer/v2/api-docs/swagger-config
+          - '/api/indexer/v2/v3/api-docs/*'
+          - '*/actuator/health'
+          - '*/_ah/**'
+          - '*/index-worker'
+          - '*/_dps/task-handlers'
+          - '*/reindex'
+      env:
+      - name: AZURE_TENANT_ID
+        secret:
+          name: active-directory
+          key: tenant-id
+      - name: AZURE_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: AAD_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+        value: "false"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: indexer
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: /api/indexer/v2/
+      - name: COSMOSDB_DATABASE
+        value: osdu-db
+      - name: REDIS_DATABASE
+        value: "4"
+      - name: REDIS_TTL_SECONDS
+        value: "3600"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: indexing-progress
+      - name: REINDEX_TOPIC_NAME
+        value: recordstopic
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: http://partition/api/partition/v1
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: http://entitlements/api/entitlements/v2
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"
+      - name: SCHEMA_SERVICE_URL
+        value: http://schema/api/schema-service/v1
+      - name: STORAGE_SERVICE_URL
+        value: http://storage/api/storage/v2
+      - name: STORAGE_SCHEMA_HOST
+        value: http://storage/api/storage/v2/schemas
+      - name: STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST
+        value: http://storage/api/storage/v2/query/records:batch
+      - name: STORAGE_QUERY_RECORD_HOST
+        value: http://storage/api/storage/v2/query/records
+      - name: SEARCH_SERVICE_URL
+        value: http://search/api/search/v2

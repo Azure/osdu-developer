@@ -1,0 +1,11 @@
+azure:
+  clientId: 
+  keyvaultName: 
+  tenantId: 
+secrets:
+  - secretName:                                   # Kubernetes secret name
+    data:
+      - key:                                      # Kubernetes secret key
+        vaultSecret:                              # KeyVault secret name
+      - key:                                      # Kubernetes secret key   
+        vaultSecret:                              # KeyVault secret name

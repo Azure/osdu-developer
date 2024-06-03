@@ -27,9 +27,12 @@ spec:
       existingSecret: redis-password-secret  # Reference the Kubernetes secret
       existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
     master:
-      port: 6380
+      containerPorts:
+        redis: 6380  # Change container port to 6380
       service:
         type: ClusterIP
+        ports:
+          redis: 6380  # Change service port to 6380
       livenessProbe:
         enabled: true
         initialDelaySeconds: 30
@@ -73,6 +76,11 @@ spec:
         - ReadWriteOnce
       replicaCount: 1
     replica:
+      containerPorts:
+        redis: 6380  # Change container port to 6380
+      service:
+        ports:
+          redis: 6380  # Change service port to 6380
       tolerations:
         - effect: NoSchedule
           key: app

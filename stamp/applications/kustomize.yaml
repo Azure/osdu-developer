@@ -113,6 +113,8 @@ spec:
       namespace: osdu-core
     - kind: Deployment
       name: indexer
+    - kind: Deployment
+      name: indexer-queue
       namespace: osdu-core
     - kind: Deployment
       name: file

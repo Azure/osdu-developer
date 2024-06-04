@@ -366,6 +366,9 @@ var partitionLayerConfig = {
           {
             name: 'eg_sb_schemasubscription'
           }
+          {
+            name: 'schemachangedtopicsubscription'
+          }
         ]
       }
       {
@@ -395,6 +398,15 @@ var partitionLayerConfig = {
         name: 'replayrecordtopic'
         maxSizeInMegabytes: 1024
         subscriptions: []
+      }
+      {
+        name: 'reindextopic'
+        maxSizeInMegabytes: 1024
+        subscriptions: [
+          {
+            name: 'reindextopicsubscription'
+          }
+        ]
       }
     ]
   }
@@ -566,6 +578,8 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for 
       name: partitionLayerConfig.servicebus.sku
     }
 
+    disableLocalAuth: false
+
     authorizationRules: [
       {
         name: 'RootManageSharedAccessKey'
@@ -610,6 +624,15 @@ module blobUpload './script-blob-upload/main.bicep' = [for (partition, index) in
     managedIdentityName: managedIdentityName
     existingManagedIdentitySubId: subscription().subscriptionId
     existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}]
+
+module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, index) in partitions: {
+  name: '${bladeConfig.sectionName}-secrets-${index}'
+  params: {
+    keyVaultName: kvName
+    partitionName: partition.name
+    serviceBusName: partitonNamespace[index].outputs.name
   }
 }]
 

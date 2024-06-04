@@ -1,31 +1,29 @@
-@description('Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment.')
+@description('The name of the parent key vault.')
 param keyVaultName string
 
-@description('Conditional. The name of the Analytics Workspace. Required if the template is used in a standalone deployment.')
+@description('The name of the Analytics Workspace.')
+@minLength(4)
 param workspaceName string
 
-@description('Required. The name of the secret.')
-param workspaceIdName string
-
-@description('Required. The name of the secret.')
-param workspaceKeySecretName string
-
-@description('Conditional. The name of the Analytics Workspace. Required if the template is used in a standalone deployment.')
+@description('he name of the Application Insights component.')
+@minLength(0)
 param insightsName string
 
-@description('Required. The name of the cache.')
+@description('The name of the cache.')
+@minLength(0)
 param cacheName string
 
-resource logAnaltyics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: workspaceName
 }
 
 resource insights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: insightsName
-}
-
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
 }
 
 resource redis 'Microsoft.Cache/redis@2022-06-01' existing = {
@@ -47,7 +45,6 @@ resource cacheHost 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 
   properties: {
     value: redis.properties.hostName
-    // value: 'redis-master.redis-cluster.svc.cluster.local'
   }
 }
 
@@ -61,20 +58,20 @@ resource vaultUrlSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 }
 
 resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: workspaceKeySecretName
+  name: 'log-workspace-key'
   parent: keyVault
 
   properties: {
-    value: logAnaltyics.listKeys().primarySharedKey
+    value: logAnalytics.listKeys().primarySharedKey
   }
 }
 
 resource idSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: workspaceIdName
+  name: 'log-workspace-id'
   parent: keyVault
 
   properties: {
-    value: logAnaltyics.id
+    value: logAnalytics.id
   }
 }
 
@@ -96,4 +93,4 @@ resource insightsConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-output name string = keyVault.name
+output keyVaultName string = keyVault.name

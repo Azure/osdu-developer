@@ -88,6 +88,8 @@ spec:
         value: reindex-topic
       - name: AZURE_SERVICEBUS_TOPIC_SUBSCRIPTION
         value: recordstopicsubscription
+      - name: AZURE_REINDEX_TOPIC_SUBSCRIPTION
+        value: reindextopicsubscription
       - name: MAX_CONCURRENT_CALLS
         value: "32"
       - name: MAX_DELIVERY_COUNT

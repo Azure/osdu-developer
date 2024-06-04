@@ -100,5 +100,5 @@ spec:
         value: "600"
       - name: PARTITION_API
         value: http://partition/api/partition/v1
-      - name: INDEXER_WORKER_API
+      - name: INDEXER_WORKER_URL
         value: http://indexer/api/indexer/v2/_dps/task-handlers/index-worker

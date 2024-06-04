@@ -62,6 +62,10 @@ spec:
         secret:
           name: active-directory
           key: principal-clientid
+      - name: AZURE_APP_RESOURCE_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
       - name: APPINSIGHTS_KEY
         secret:
           name: azure-resources

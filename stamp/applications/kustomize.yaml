@@ -119,6 +119,9 @@ spec:
     - kind: Deployment
       name: file
       namespace: osdu-core
+    - kind: Deployment
+      name: search
+      namespace: osdu-core
 
 ######################
 ## OSDU Auth

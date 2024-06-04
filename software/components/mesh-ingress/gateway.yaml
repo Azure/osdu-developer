@@ -18,7 +18,7 @@ spec:
     - port:
         name: https
         number: 443
-        protocol: HTTP2
+        protocol: HTTPS
       hosts:
         - "*"
       tls:
@@ -43,7 +43,7 @@ spec:
     - port:
         name: https
         number: 443
-        protocol: HTTP2
+        protocol: HTTPS
       hosts:
         - "*"
       tls:

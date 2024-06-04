@@ -130,8 +130,6 @@ var configuration = {
     cosmosConnectionString: 'graph-db-connection'
     cosmosEndpoint: 'graph-db-endpoint'
     cosmosPrimaryKey: 'graph-db-primary-key'
-    logAnalyticsId: 'log-workspace-id'
-    logAnalyticsKey: 'log-workspace-key'
     insightsKey: 'insights-key'
   }
   logs: {
@@ -270,9 +268,6 @@ module commonBlade 'modules/blade_common.bicep' = {
 
     enablePrivateLink: enablePrivateLink
     enableBlobPublicAccess: enableBlobPublicAccess
-    
-    workspaceIdName: configuration.secrets.logAnalyticsId
-    workspaceKeySecretName: configuration.secrets.logAnalyticsKey
 
     applicationClientId: applicationClientId
     applicationClientSecret: applicationClientSecret

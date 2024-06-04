@@ -34,12 +34,6 @@ param workspaceResourceId string
 @description('The Diagnostics Workspace Name')
 param workspaceName string
 
-@description('The KeyVault Secret Name for the Workspace Id')
-param workspaceIdName string
-
-@description('The KeyVault Secret Name for the Workspace Key')
-param workspaceKeySecretName string
-
 @description('The managed identity name for deployment scripts')
 param deploymentScriptIdentity string
 
@@ -201,8 +195,6 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
     // Persist Secrets to Vault
     keyVaultName: keyvault.outputs.name
     workspaceName: workspaceName
-    workspaceIdName: workspaceIdName
-    workspaceKeySecretName: workspaceKeySecretName
     insightsName: insights.outputs.name
     cacheName: redis.outputs.name
   }

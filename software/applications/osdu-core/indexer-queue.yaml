@@ -84,6 +84,8 @@ spec:
         value: indexer-queue
       - name: AZURE_SERVICEBUS_TOPIC_NAME
         value: recordstopic
+      - name: AZURE_REINDEX_TOPIC_NAME
+        value: reindex-topic
       - name: AZURE_SERVICEBUS_TOPIC_SUBSCRIPTION
         value: recordstopicsubscription
       - name: MAX_CONCURRENT_CALLS

@@ -64,7 +64,7 @@ data:
     fi
 
 
-    export AZURE_SCHEMA_URL="https://schema.osdu-core.svc.local/api/schema-service/v1/schemas/system"
+    export AZURE_SCHEMA_URL="http://schema.osdu-core.svc.cluster.local/api/schema-service/v1/schemas/system"
     currentStatus="success"
     currentMessage="All schemas uploaded successfully"
     BEARER_TOKEN=`python $AZURE_DEPLOYMENTS_SUBDIR/Token.py`

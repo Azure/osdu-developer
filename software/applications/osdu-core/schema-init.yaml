@@ -1,4 +1,15 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: osdu-init
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/azure/osdu-developer
+  ref:
+    branch: "schema-init"
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -16,7 +27,7 @@ spec:
       chart: ./charts/osdu-developer-init
       sourceRef:
         kind: GitRepository
-        name: flux-system
+        name: osdu-init
         namespace: flux-system
   interval: 5m0s
   install:

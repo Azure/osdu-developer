@@ -10,6 +10,11 @@ spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
+      volumes:
+      - name: script
+        configMap:
+          name: schema-init-script
+          defaultMode: 0500
       initContainers:
       - name: data-seed
         image: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-schema-load-release-0-24:2b6d853458ea51e48541eb1ff050bdad927cf757

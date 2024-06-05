@@ -15,7 +15,7 @@ spec:
       chart: ./charts/osdu-developer-init
       sourceRef:
         kind: GitRepository
-        name: osdu-init
+        name: flux-system
         namespace: flux-system
   interval: 5m0s
   install:

@@ -8,7 +8,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: schema
+    - name: schema-service
       namespace: flux-system
   targetNamespace: osdu-core
   chart:

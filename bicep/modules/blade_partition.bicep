@@ -469,9 +469,6 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
     keyVaultName: kvName
     storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
     storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
-
-    // Set isSystemPartition based on index
-    isSystemPartition: index == 0 ? true : false
   }
 }]
 

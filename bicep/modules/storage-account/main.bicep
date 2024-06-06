@@ -468,10 +468,10 @@ param sasProperties object = {
 @description('Optional: To save storage account sas token into vault set the properties.')
 param saveToken bool = false
 
-@description('Optional: Enable as System Partition.')
-param isSystemPartition bool = false
+@description('Optional: Enable as System Storage.')
+param isSystem bool = false
 
-module systemSecretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (isSystemPartition) {
+module systemSecretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (isSystem) {
   name: '${deployment().name}-system-secret-name'
   params: {
     keyVaultName: keyVaultName
@@ -480,7 +480,7 @@ module systemSecretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (isS
   }
 }
 
-module systemSecretStorageAccountKey  '.bicep/keyvault_secrets.bicep' = if (isSystemPartition) {
+module systemSecretStorageAccountKey  '.bicep/keyvault_secrets.bicep' = if (isSystem) {
   name: '${deployment().name}-system-secret-key'
   params: {
     keyVaultName: keyVaultName
@@ -489,7 +489,7 @@ module systemSecretStorageAccountKey  '.bicep/keyvault_secrets.bicep' = if (isSy
   }
 }
 
-module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if (isSystem) {
   name: '${deployment().name}-system-secret-endpoint'
   params: {
     keyVaultName: keyVaultName
@@ -498,7 +498,7 @@ module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if 
   }
 }
 
-module systemSecretStorageAccountConnection '.bicep/keyvault_secrets.bicep' =  if (isSystemPartition) {
+module systemSecretStorageAccountConnection '.bicep/keyvault_secrets.bicep' =  if (isSystem) {
   name: '${deployment().name}-system-secret-connectionstring'
   params: {
     keyVaultName: keyVaultName

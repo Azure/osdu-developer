@@ -68,6 +68,7 @@ var commonLayerConfig = {
       'system'
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
+      'adf-airflow'
     ]
     tables: [
       'partitionInfo'
@@ -440,8 +441,7 @@ module graphEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
 |  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__   
 |  |      /  /_\  \  |  |     |   __   | |   __|  
 |  `----./  _____  \ |  `----.|  |  |  | |  |____ 
- \______/__/     \__\ \______||__|  |__| |_______|
-                                                  
+ \______/__/     \__\ \______||__|  |__| |_______|                             
 */
 
 module redis 'br/public:avm/res/cache/redis:0.3.2' = {

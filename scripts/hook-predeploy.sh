@@ -115,9 +115,9 @@ if [[ ! -n $AUTH_INGRESS ]]; then
   # Fetch Node Resource Group from AKS Cluster
   node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
   if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
-      AUTH_INGRESS="http://$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
+      AUTH_INGRESS="$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
   else
-      AUTH_INGRESS="http://$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
+      AUTH_INGRESS="$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
   fi
 
   azd env set AUTH_INGRESS $AUTH_INGRESS
@@ -140,7 +140,7 @@ if [[ ! -n $AUTH_USER ]]; then
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
      # Add the first user.
-    response=$(curl -s -w "%{http_code}" -X POST "${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.contoso.com/members" \
+    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.contoso.com/members" \
         --insecure \
         -H "Authorization: Bearer ${ACCESS_TOKEN}" \
         -H "Accept: application/json" \
@@ -166,7 +166,7 @@ if [[ ! -n $AUTH_USER ]]; then
 
     # Assign the Ops role to the user.
     echo "Assigning the Ops role to the user..."
-    response=$(curl -s -w "%{http_code}" -X POST "${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.contoso.com/members" \
+    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.contoso.com/members" \
       --insecure \
       -H "accept: application/json" \
       -H "content-type: application/json" \
@@ -205,7 +205,7 @@ if [[ -z "$AUTH_REFRESH" ]]; then
           --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token \
           --header "Content-Type: application/x-www-form-urlencoded" \
           --data-urlencode "grant_type=authorization_code" \
-          --data-urlencode "redirect_uri=$AUTH_INGRESS/auth/" \
+          --data-urlencode "redirect_uri=https://$AUTH_INGRESS/auth/" \
           --data-urlencode "client_id=$AZURE_CLIENT_ID" \
           --data-urlencode "client_secret=$AZURE_CLIENT_SECRET" \
           --data-urlencode "scope=$AZURE_CLIENT_ID/.default openid profile offline_access" \

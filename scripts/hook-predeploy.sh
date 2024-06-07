@@ -191,7 +191,6 @@ if [[ ! -n $AUTH_USER ]]; then
     azd env set AUTH_USER $AUTH_USER
 fi
 
-exit
 
 ###############################
 # Get Refresh Token using Authorization Code

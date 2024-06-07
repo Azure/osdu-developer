@@ -115,9 +115,9 @@ if [[ ! -n $AUTH_INGRESS ]]; then
   # Fetch Node Resource Group from AKS Cluster
   node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
   if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
-      AUTH_INGRESS="https://$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
+      AUTH_INGRESS="http://$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
   else
-      AUTH_INGRESS="https://$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
+      AUTH_INGRESS="http://$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
   fi
 
   azd env set AUTH_INGRESS $AUTH_INGRESS
@@ -191,6 +191,7 @@ if [[ ! -n $AUTH_USER ]]; then
     azd env set AUTH_USER $AUTH_USER
 fi
 
+exit
 
 ###############################
 # Get Refresh Token using Authorization Code

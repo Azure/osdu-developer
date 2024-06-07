@@ -64,6 +64,12 @@ var commonLayerConfig = {
   }
   storage: {
     sku: 'Standard_LRS'
+    containers: [
+      'system'
+      'azure-webjobs-hosts'
+      'azure-webjobs-eventhub'
+      'adf-airflow'
+    ]
     tables: [
       'partitionInfo'
     ]
@@ -294,6 +300,7 @@ module configStorage './storage-account/main.bicep' = {
     sku: commonLayerConfig.storage.sku
     tables: commonLayerConfig.storage.tables
     shares: commonLayerConfig.storage.shares
+    containers: commonLayerConfig.storage.containers
 
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
@@ -306,6 +313,9 @@ module configStorage './storage-account/main.bicep' = {
     storageAccountSecretName: 'tbl-storage'
     storageAccountKeySecretName: 'tbl-storage-key'
     storageAccountEndpointSecretName: 'tbl-storage-endpoint'
+
+    // Use as System Storage Account
+    isSystem: true
   }
 }
 
@@ -431,8 +441,7 @@ module graphEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
 |  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__   
 |  |      /  /_\  \  |  |     |   __   | |   __|  
 |  `----./  _____  \ |  `----.|  |  |  | |  |____ 
- \______/__/     \__\ \______||__|  |__| |_______|
-                                                  
+ \______/__/     \__\ \______||__|  |__| |_______|                             
 */
 
 module redis 'br/public:avm/res/cache/redis:0.3.2' = {

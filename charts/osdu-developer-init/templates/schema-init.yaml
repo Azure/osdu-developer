@@ -10,6 +10,11 @@ spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
+      volumes:
+      - name: script
+        configMap:
+          name: schema-init-script
+          defaultMode: 0777
       initContainers:
       - name: data-seed
         image: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-schema-load-release-0-24:2b6d853458ea51e48541eb1ff050bdad927cf757
@@ -59,7 +64,7 @@ data:
     fi
 
 
-    export AZURE_SCHEMA_URL="https://schema.osdu-core.svc.local/api/schema-service/v1/schemas/system"
+    export AZURE_SCHEMA_URL="http://schema.osdu-core.svc.cluster.local/api/schema-service/v1/schemas/system"
     currentStatus="success"
     currentMessage="All schemas uploaded successfully"
     BEARER_TOKEN=`python $AZURE_DEPLOYMENTS_SUBDIR/Token.py`

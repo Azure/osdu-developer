@@ -1,46 +1,144 @@
 # Service Environment Variables
 
-The following information can be used as a guide for the required environment variables necessary to start a service locally, and the local.http rest script can be used for a quick test to call the local services.
+The following information can be used as a guide for the required environment variables necessary to start a service locally, and the [local.http](../tools/rest-scripts/local.http) rest script can be used for a quick test to call the local services.
+
+Environment Variables can be referenced in IntelliJ with the [EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile) plugin.
 
 ## Partition Service
 
+The partition service can be run locally in IntelliJ with the following run configuration
+
+```
+Build and Run Configuration: SpringBoot
+---------------------------------------
+Java SDK:  java zulu-17
+Module: partition-azure
+Class: opengroup.osdu.partition.provider.azure.PartitionApplication
+```
+
+The following environment variables are necessary to run the Partition Service.
+
+
 | Variable                             | Value                                          | Description                                |
 |--------------------------------------|------------------------------------------------|--------------------------------------------|
-| `KV_NAME`                            | `<your_keyvault_name>`                         | Key Vault name                             |
-| `STORAGE_NAME`                       | `<your_storage_name>`                          | Storage account name                       |
-| `AZURE_TENANT_ID`                    | `<your_tenant_id>`                             | Azure tenant ID                            |
-| `AZURE_CLIENT_ID`                    | `<your_client_id>`                             | Azure client ID                            |
-| `AZURE_CLIENT_SECRET`                | `<your_client_secret>`                         | Azure client secret                        |
 | `APPINSIGHTS_KEY`                    | `<your_insights_key>`                          | Application Insights key                   |
-| `KEYVAULT_URI`                       | `"https://${KV_NAME}.vault.azure.net"`         | Key Vault URI                              |
-| `AZURE_ISTIOAUTH_ENABLED`            | `false`                                        | Turn Istio auth off                        |
-| `AZURE_ACTIVEDIRECTORY_APP_ID_URI`   | `api://${AZURE_CLIENT_ID}`                     | Active Directory app ID URI                |
-| `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
+| `KEYVAULT_URI`                       | `"https://<your_storage_name>.vault.azure.net"`| Key Vault URI                              |
+| `AAD_CLIENT_ID`                      | `<your_client_id>`                             | Active Directory client ID                 |
+| `SERVER_PORT`                        | `8080`                                         | HTTP Server Port                           |
 | `SPRING_APPLICATION_NAME`            | `partition`                                    | Spring application name                    |
-| `AAD_CLIENT_ID`                      | `${AZURE_CLIENT_ID}`                           | Active Directory client ID                 |
 | `REDIS_DATABASE`                     | `1`                                            | Redis database number                      |
 | `PARTITION_SPRING_LOGGING_LEVEL`     | `INFO`                                         | Logging level for the Partition service    |
+| `AZURE_ISTIOAUTH_ENABLED`            | `false`                                        | Turn Istio auth off                        |
+| `AZURE_ACTIVEDIRECTORY_APP_ID_URI`   | `api://<your_client_id>`                       | Active Directory app ID URI                |
+| `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
+
+
+
+
+
+
+```json
+{
+  "APPINSIGHTS_KEY": "<your_insights_key>",
+  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
+  "AAD_CLIENT_ID": "<your_client_id>",
+  "SERVER_PORT": "8080",
+  "SPRING_APPLICATION_NAME": "partition",
+  "REDIS_DATABASE": "1",
+  "PARTITION_SPRING_LOGGING_LEVEL": "INFO",
+  "AZURE_ISTIO_AUTH_ENABLED": "false",
+  "AZURE_ACTIVEDIRECTORY_APP_ID_URI": "api://<your_client_id>",
+  "AZURE_ACTIVEDIRECTORY_SESSION_STATELESS": "true"
+}
+```
+
+### Testing
+
+The partition service can be tested locally in IntelliJ with the following run configuration
+
+```
+Build and Run Configuration: JUnit
+---------------------------------------
+Java SDK:  Java zulu-17
+Module: partition-test-azure
+All in package: org.opengroup.osdu.partition
+```
+
+| Variable                                | Value                                          | Description                                |
+|-----------------------------------------|------------------------------------------------|--------------------------------------------|
+| `AZURE_AD_TENANT_ID`                    | `<your_tenant_id>`                             | Azure tenant ID                            |
+| `INTEGRATION_TESTER`                    | `<your_client_id>`                             | Azure client ID                            |
+| `AZURE_TESTER_SERVICEPRINCIPAL_SECRET`  | `<your_client_secret>`                         | Azure client secret                        |
+| `AZURE_AD_APP_RESOURCE_ID`              | `<your_client_id>`                             | Azure client ID                            |
+| `PARTITION_BASE_URL`                    | `http://localhost:8080/`                       | Service URL                                |
+
+```json
+{
+  "AZURE_AD_TENANT_ID": "<your_tenant_id>",
+  "INTEGRATION_TESTER": "<your_client_id>",
+  "AZURE_TESTER_SERVICEPRINCIPAL_SECRET": "<your_client_secret>",
+  "AZURE_AD_APP_RESOURCE_ID": "<your_client_id>",
+  "PARTITION_BASE_URL": "http://localhost:8080/"
+}
+```
+
 
 ## Entitlements Service
 
+The entitlement service can be run locally in IntelliJ with the following run configuration
+
+```
+Build and Run Configuration: SpringBoot
+---------------------------------------
+Java SDK:  java zulu-17
+Module: entitlements-v2-azure
+Class: org.opengroup.osdu.entitlements.v2.azure.EntitlementsV2Application
+```
+
 | Variable                             | Value                                          | Description                                |
 |--------------------------------------|------------------------------------------------|--------------------------------------------|
-| `KV_NAME`                            | `<your_keyvault_name>`                         | Key Vault name                             |
-| `AZURE_HOST`                         | `<your_host_ip>`                               | Azure host IP                              |
-| `AZURE_TENANT_ID`                    | `<your_tenant_id>`                             | Azure tenant ID                            |
-| `AZURE_CLIENT_ID`                    | `<your_client_id>`                             | Azure client ID                            |
-| `AZURE_CLIENT_SECRET`                | `<your_client_secret>`                         | Azure client secret                        |
 | `APPINSIGHTS_KEY`                    | `<your_insights_key>`                          | Application Insights key                   |
 | `KEYVAULT_URI`                       | `"https://${KV_NAME}.vault.azure.net"`         | Key Vault URI                              |
-| `SPRING_APPLICATION_NAME`            | `entitlements`                                 | Spring application name                    |
+| `PARTITION_SERVICE_ENDPOINT`         | `http://${AZURE_HOST}/api/partition/v1`        | Partition service endpoint                 |
 | `AAD_CLIENT_ID`                      | `${AZURE_CLIENT_ID}`                           | Active Directory client ID                 |
+| `SERVER_PORT`                        | `8080`                                         | HTTP Server Port                           |
+| `SPRING_APPLICATION_NAME`            | `entitlements`                                 | Spring application name                    |
 | `LOGGING_LEVEL`                      | `INFO`                                         | Logging level for the Entitlements service |
 | `SERVICE_DOMAIN_NAME`                | `contoso.com`                                  | Service domain name                        |
 | `ROOT_DATA_GROUP_QUOTA`              | `5000`                                         | Root data group quota                      |
 | `REDIS_TTL_SECONDS`                  | `1`                                            | Redis TTL in seconds                       |
-| `PARTITION_SERVICE_ENDPOINT`         | `http://${AZURE_HOST}/api/partition/v1`        | Partition service endpoint                 |
 | `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
 | `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
+
+```json
+{
+  "APPINSIGHTS_KEY": "<your_insights_key>",
+  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
+  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
+  "AAD_CLIENT_ID": "<your_client_id>",
+  "SERVER_PORT": "8080",
+  "SPRING_APPLICATION_NAME": "entitlements",
+  "LOGGING_LEVEL": "INFO",
+  "SERVICE_DOMAIN_NAME": "contoso.com",
+  "ROOT_DATA_GROUP_QUOTA": "5000",
+  "REDIS_TTL_SECONDS": "1",
+  "AZURE_PAAS_PODIDENTITY": "false",
+  "AZURE_ISTIO_AUTH_ENABLED": "true",
+}
+```
+
+### Testing
+
+The entitlement service can be tested locally in IntelliJ with the following run configuration
+
+```
+Build and Run Configuration: JUnit
+---------------------------------------
+Java SDK:  Java zulu-17
+Module: entitlementsv2-test-azure
+All in package: org.opengroup.osdu.entitlements
+```
+
 
 ## Legal Service
 

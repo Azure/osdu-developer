@@ -133,9 +133,10 @@ hooks:
         Write-Host "Building Docker Image"
         docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
 
+        
         # Run Docker container with the necessary environment variables and volume mounts
-        $command = "docker run --rm -v ${pwd}:/workspace -v "$env:USERPROFILE\.azure:/root/.azure" $envVars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/predeploy.sh -s $env:AZURE_SUBSCRIPTION_ID"
+        $command = "docker run --rm -v ${pwd}:/workspace -v $env:USERPROFILE\.azure:/root/.azure $envVars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/predeploy.sh -s $env:AZURE_SUBSCRIPTION_ID"
         Invoke-Expression $command
-
+        
         # Sleep for 5 seconds
         Start-Sleep -Seconds 5

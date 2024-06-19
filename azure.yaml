@@ -26,20 +26,30 @@ hooks:
           exit 1
         fi
 
-  #   windows:
-  #     interactive: false
-  #     continueOnError: false
-  #     shell: pwsh
-  #     run: |
-  #       if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue))
-  #       {
-  #         Write-Host "no docker"
-  #         exit
-  #       }
-  #       Write-Host "Building Docker Image"
-  #       docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
-  #       docker run --rm -v ${pwd}:/workspace -v "$($HOME)/.azure:/root/.azure" -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/preprovision.sh -s $env:AZURE_SUBSCRIPTION_ID
-  #       Start-Sleep -Seconds 5
+    windows:
+      interactive: false
+      continueOnError: false
+      shell: pwsh
+      run: |
+        # Check if Docker is installed
+        if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
+            Write-Host "Docker is not installed."
+            exit 1
+        }
+
+        # Fetch environment variables and format them for Docker
+        $envVars = azd env get-values | ForEach-Object { $_ -replace '"', '' } | ForEach-Object { "-e $_" }
+
+
+        # Build Docker image
+        Write-Host "Building Docker Image"
+        docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
+
+        # Run Docker container with the necessary environment variables and volume mounts
+        docker run --rm -v ${pwd}:/workspace -v "$env:USERPROFILE\.azure:/root/.azure" $envVars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/preprovision.sh -s $env:AZURE_SUBSCRIPTION_ID
+
+        # Sleep for 5 seconds
+        Start-Sleep -Seconds 5
 
   postprovision:
     posix:
@@ -52,12 +62,39 @@ hooks:
         if command -v docker &> /dev/null; then
           echo "Building Docker Image"
           docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
-          docker run --rm -v $(pwd):/workspace -v "${HOME}/.azure:/root/.azure" $env_vars  -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/postprovision.sh -s ${AZURE_SUBSCRIPTION_ID}
+          docker run --rm -v $(pwd):/workspace -v "${HOME}/.azure:/root/.azure" $env_vars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/postprovision.sh -s ${AZURE_SUBSCRIPTION_ID}
           sleep 5
         else
           echo "Docker is not installed."
           exit 1
         fi
+
+    windows:
+      interactive: false
+      continueOnError: false
+      shell: pwsh
+      run: |
+        # Check if Docker is installed
+        if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
+            Write-Host "Docker is not installed."
+            exit 1
+        }
+
+        $envVars = azd env get-values | ForEach-Object { $_ -replace '"', '' } | ForEach-Object { "-e $_" }
+
+
+        # Build Docker image
+        Write-Host "Building Docker Image"
+        docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
+
+        # Run Docker container with the necessary environment variables and volume mounts
+        $command = "docker run --rm -v ${pwd}:/workspace -v $env:USERPROFILE\.azure:/root/.azure $envVars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/postprovision.sh -s $env:AZURE_SUBSCRIPTION_ID"
+        Invoke-Expression $command
+
+        # Sleep for 5 seconds
+        Start-Sleep -Seconds 5
+
+
 
   predeploy:
     posix:
@@ -76,3 +113,29 @@ hooks:
           echo "Docker is not installed."
           exit 1
         fi
+
+    windows:
+      interactive: false
+      continueOnError: false
+      shell: pwsh
+      run: |
+        # Check if Docker is installed
+        if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
+            Write-Host "Docker is not installed."
+            exit 1
+        }
+
+        # Fetch environment variables and format them for Docker
+        $envVars = azd env get-values | ForEach-Object { $_ -replace '"', '' } | ForEach-Object { "-e $_" }
+
+
+        # Build Docker image
+        Write-Host "Building Docker Image"
+        docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
+
+        # Run Docker container with the necessary environment variables and volume mounts
+        $command = "docker run --rm -v ${pwd}:/workspace -v "$env:USERPROFILE\.azure:/root/.azure" $envVars -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/predeploy.sh -s $env:AZURE_SUBSCRIPTION_ID"
+        Invoke-Expression $command
+
+        # Sleep for 5 seconds
+        Start-Sleep -Seconds 5

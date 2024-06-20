@@ -36,7 +36,7 @@ grant_type=client_credentials
 @access_token = {{login.response.body.access_token}}
 @ENTITLEMENTS_HOST = {{HOST}}/api/entitlements/v2
 
-@domain = contoso.com
+@domain = dataservices.energy
 @user_group = users@{{DATA_PARTITION}}.{{domain}}
 
 

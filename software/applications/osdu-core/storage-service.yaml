@@ -32,7 +32,7 @@ spec:
       port: 80
     configuration:
     - service: storage
-      path: /api/storage/v2/*
+      path: /api/storage/v2/
       hosts:
         - "*"
       gateways:

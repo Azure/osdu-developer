@@ -247,7 +247,7 @@ cat << EOF > ".vscode/settings.json"
           "TENANT_ID": "${AZURE_TENANT_ID}",
           "CLIENT_ID": "${AZURE_CLIENT_ID}",
           "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
-          "HOST": "${AUTH_INGRESS}",
+          "HOST": "http://${AUTH_INGRESS}",
           "REFRESH_TOKEN": "${AUTH_REFRESH}",
           "DATA_PARTITION": "opendes"
         }

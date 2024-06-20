@@ -135,4 +135,8 @@ spec:
         value: http://policy/api/policy/v1
       - name: OPA_ENABLED
         value: "false"
+      - name: REDIS_HOST_KEY
+        value: redis-hostname
+      - name: REDIS_PASSWORD_KEY
+        value: redis-password
       

@@ -461,7 +461,7 @@ module federatedCredsElasticNamespace './federated_identity.bicep' = {
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:redis-cluster:workload-identity-sa'
+    subject: 'system:serviceaccount:elastic-search:workload-identity-sa'
   }
   dependsOn: [
     federatedCredsCacheNamespace

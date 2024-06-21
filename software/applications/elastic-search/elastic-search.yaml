@@ -6,6 +6,8 @@ metadata:
   namespace: elastic-search
 spec:
   version: 8.5.3
+  secureSettings:
+    - secretName: elasticsearch-credentials
   nodeSets:
     - name: master
       count: 3

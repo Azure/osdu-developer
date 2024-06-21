@@ -101,8 +101,8 @@ spec:
         value: "osdu-db"
       - name: LOG_PREFIX
         value: "schema"
-      - name: SHARED_PARTITION
-        value: "opendes"
+      - name: AZURE_SYSTEM_STORAGECONTAINERNAME
+        value: "system"
       - name: SERVICEBUS_TOPIC_NAME
         value: "schemachangedtopic"
       - name: EVENT_GRID_ENABLED

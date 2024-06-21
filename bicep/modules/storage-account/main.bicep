@@ -494,7 +494,7 @@ module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if 
   params: {
     keyVaultName: keyVaultName
     name: 'system-storage-blob-endpoint'
-    value: storage.properties.primaryEndpoints.table
+    value: storage.properties.primaryEndpoints.blob
   }
 }
 

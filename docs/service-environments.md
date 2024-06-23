@@ -104,7 +104,7 @@ Class: org.opengroup.osdu.entitlements.v2.azure.EntitlementsV2Application
 | `SERVER_PORT`                        | `8080`                                         | HTTP Server Port                           |
 | `SPRING_APPLICATION_NAME`            | `entitlements`                                 | Spring application name                    |
 | `LOGGING_LEVEL`                      | `INFO`                                         | Logging level for the Entitlements service |
-| `SERVICE_DOMAIN_NAME`                | `contoso.com`                                  | Service domain name                        |
+| `SERVICE_DOMAIN_NAME`                | `dataservices.energy`                                  | Service domain name                        |
 | `ROOT_DATA_GROUP_QUOTA`              | `5000`                                         | Root data group quota                      |
 | `REDIS_TTL_SECONDS`                  | `1`                                            | Redis TTL in seconds                       |
 | `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
@@ -119,7 +119,7 @@ Class: org.opengroup.osdu.entitlements.v2.azure.EntitlementsV2Application
   "SERVER_PORT": "8080",
   "SPRING_APPLICATION_NAME": "entitlements",
   "LOGGING_LEVEL": "INFO",
-  "SERVICE_DOMAIN_NAME": "contoso.com",
+  "SERVICE_DOMAIN_NAME": "dataservices.energy",
   "ROOT_DATA_GROUP_QUOTA": "5000",
   "REDIS_TTL_SECONDS": "1",
   "AZURE_PAAS_PODIDENTITY": "false",

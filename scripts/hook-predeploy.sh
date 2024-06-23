@@ -140,7 +140,7 @@ if [[ ! -n $AUTH_USER ]]; then
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
      # Add the first user.
-    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.contoso.com/members" \
+    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
         --insecure \
         -H "Authorization: Bearer ${ACCESS_TOKEN}" \
         -H "Accept: application/json" \
@@ -166,7 +166,7 @@ if [[ ! -n $AUTH_USER ]]; then
 
     # Assign the Ops role to the user.
     echo "Assigning the Ops role to the user..."
-    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.contoso.com/members" \
+    response=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
       --insecure \
       -H "accept: application/json" \
       -H "content-type: application/json" \
@@ -247,7 +247,7 @@ cat << EOF > ".vscode/settings.json"
           "TENANT_ID": "${AZURE_TENANT_ID}",
           "CLIENT_ID": "${AZURE_CLIENT_ID}",
           "CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
-          "HOST": "${AUTH_INGRESS}",
+          "HOST": "http://${AUTH_INGRESS}",
           "REFRESH_TOKEN": "${AUTH_REFRESH}",
           "DATA_PARTITION": "opendes"
         }

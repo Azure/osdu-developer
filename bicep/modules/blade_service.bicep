@@ -452,6 +452,22 @@ module federatedCredsCacheNamespace './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsElasticNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_elastic-search'
+  params: {
+    name: 'federated-ns_elastic-search'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:elastic-search:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsCacheNamespace
+  ]
+}
+
 
 
 module appRoleAssignments './app_assignments.bicep' = {
@@ -468,6 +484,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
     federatedCredsCacheNamespace
+    federatedCredsElasticNamespace
   ]
 }
 

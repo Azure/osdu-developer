@@ -72,8 +72,11 @@ The recommended approach is to use the Azure Developer CLI, which allows for cus
     Once the environment has been provisioned, retrieve the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token for calling APIs.
 
     ```bash
-    # Open URL in browser
+    # Open URL in browser (bash)
     azd env get-values |grep INGRESS_EXTERNAL
+
+    # Open URL in browser (pwsh)
+    azd env get-values | Where-Object { $_ -match "INGRESS_EXTERNAL" }
     
     # Set retrieved authorization code
     azd env set AUTH_CODE <your_auth_code>

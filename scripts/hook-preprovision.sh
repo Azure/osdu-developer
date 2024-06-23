@@ -171,6 +171,7 @@ if [[ $ok == 1 ]]; then
   PrintMessage "  Microsoft.ContainerService resource provider registration successfully refreshed"
 fi
 
+
 if [[ -z $AZURE_CLIENT_ID ]]; then
   
   # Define the application name using the Azure subscription ID

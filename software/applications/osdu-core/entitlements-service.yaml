@@ -109,7 +109,7 @@ spec:
       - name: LOGGING_LEVEL
         value: "DEBUG"
       - name: SERVICE_DOMAIN_NAME
-        value: "contoso.com"
+        value: "dataservices.energy"
       - name: ROOT_DATA_GROUP_QUOTA
         value: "5000"
       - name: REDIS_TTL_SECONDS

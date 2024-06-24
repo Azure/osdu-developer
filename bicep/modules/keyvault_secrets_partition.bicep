@@ -27,4 +27,31 @@ resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = i
   }
 }
 
+resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: '${partitionName}-elastic-endpoint'
+  parent: keyVault
+
+  properties: {
+    value: 'http://elasticsearch-ha-es-http.elastic-search:9200'
+  }
+}
+
+resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: '${partitionName}-elastic-username'
+  parent: keyVault
+
+  properties: {
+    value: 'elastic'
+  }
+}
+
+resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: '${partitionName}-elastic-password'
+  parent: keyVault
+
+  properties: {
+    value: substring(uniqueString(keyVault.id, partitionName, resourceGroup().id), 0, 8)
+  }
+}
+
 output keyVaultName string = keyVault.name

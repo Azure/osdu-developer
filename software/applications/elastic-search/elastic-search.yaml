@@ -7,8 +7,6 @@ metadata:
     eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
   version: 8.5.3
-  secureSettings:
-    - secretName: elasticsearch-credentials
   nodeSets:
     - name: default
       count: 3

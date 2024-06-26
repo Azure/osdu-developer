@@ -18,9 +18,6 @@ spec:
         volumeMounts:
           - name: es-basic-auth
             mountPath: /mnt/elastic/es-basic-auth
-          - name: es-elastic-user
-            mountPath: /mnt/elasticsearch-es-elastic-user
-            subPath: elastic
         args:
         - /bin/sh
         - -c
@@ -28,7 +25,7 @@ spec:
           check_cluster_health() {
               echo ""
               echo "--------- Trying to fetch cluster health ----------"
-              response=$(curl -v -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.elastic-search:9200/_cluster/health"  2>&1)
+              response=$(curl -v -u "elastic:$(</mnt/elastic/es-basic-auth/elastic)" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.elastic-search:9200/_cluster/health"  2>&1)
               response=$(echo "$response" | sed "s/Authorization: Basic \S*/Authorization: <masked>/; s/Server auth using Basic with user \S*/Server auth using Basic with user <masked>/; s/{/'{/; s/}/}'/")
               echo ""
               echo "Cluster health response: $response"
@@ -62,13 +59,10 @@ spec:
       - name: role-and-user-creator
         image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
         volumeMounts:
-          - name: es-basic-auth
-            mountPath: /mnt/elastic/es-basic-auth
           - name: azure-keyvault
             mountPath: /mnt/azure-keyvault
-          - name: es-elastic-user
-            mountPath: /mnt/elasticsearch-es-elastic-user
-            subPath: elastic
+          - name: es-basic-auth
+            mountPath: /mnt/elastic/es-basic-auth
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 0
@@ -110,6 +104,3 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: azure-keyvault
-        - name: es-elastic-user
-          secret:
-            secretName: "elasticsearch-es-elastic-user"

@@ -95,7 +95,7 @@ spec:
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 
                 echo -e "######### Role and User setup complete!! ###########\n"
-      EOF
+                EOF
       restartPolicy: OnFailure
       volumes:
         - name: es-basic-auth

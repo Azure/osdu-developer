@@ -1,3 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod
+  namespace: elastic-search
+spec:
+  serviceAccountName: workload-identity-sa
+  containers:
+  - name: debug-container
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+    volumeMounts:
+      - name: es-basic-auth
+        mountPath: /mnt/elasticsearch-es-elastic-user
+        subPath: elastic
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do sleep 30; done"]
+  volumes:
+  - name: es-basic-auth
+    secret:
+      secretName: "elasticsearch-es-elastic-user"
+
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -17,7 +39,8 @@ spec:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
         volumeMounts:
           - name: es-basic-auth
-            mountPath: /mnt/elastic/es-basic-auth
+            mountPath: /mnt/elasticsearch-es-elastic-user
+            subPath: elastic
         args:
         - /bin/sh
         - -c
@@ -25,7 +48,9 @@ spec:
           check_cluster_health() {
               echo ""
               echo "--------- Trying to fetch cluster health ----------"
-              response=$(curl -v -u "elastic:$(</mnt/elastic/es-basic-auth/elastic)" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.elastic-search:9200/_cluster/health"  2>&1)
+              PASSWORD=$(cat /mnt/elasticsearch-es-elastic-user)
+              echo "Password read from secret: $PASSWORD"  # Debugging step
+              response=$(curl -v -u "elastic:$PASSWORD" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.elastic-search:9200/_cluster/health"  2>&1)
               response=$(echo "$response" | sed "s/Authorization: Basic \S*/Authorization: <masked>/; s/Server auth using Basic with user \S*/Server auth using Basic with user <masked>/; s/{/'{/; s/}/}'/")
               echo ""
               echo "Cluster health response: $response"
@@ -62,7 +87,8 @@ spec:
           - name: azure-keyvault
             mountPath: /mnt/azure-keyvault
           - name: es-basic-auth
-            mountPath: /mnt/elastic/es-basic-auth
+            mountPath: /mnt/elasticsearch-es-elastic-user
+            subPath: elastic
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 0
@@ -87,7 +113,7 @@ spec:
                 echo "Create Primary User - ResponseCode: $response, ResponseBody: $(cat response.txt)"
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 
-                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -XPOST "http://elasticsearch-es-http.elastic-searchg:9200/_security/user/${secondaryUserName}" -k -H "Content-Type: application/json" -d"${SECONDARY_USER_JSON}"))
+                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -XPOST "http://elasticsearch-es-http.elastic-search:9200/_security/user/${secondaryUserName}" -k -H "Content-Type: application/json" -d"${SECONDARY_USER_JSON}"))
                 echo "Create Secondary User - ResponseCode: $response, ResponseBody: $(cat response.txt)"
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 

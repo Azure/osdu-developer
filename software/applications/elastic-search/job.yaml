@@ -11,7 +11,7 @@ spec:
     metadata:
       name: cred-create
     spec:
-      serviceAccountName: workload-identity-sa
+      serviceAccountName: workload-identity-sa  # Specify the service account here
       initContainers:
       - name: health-check
         image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
@@ -20,6 +20,7 @@ spec:
             mountPath: /mnt/elastic/es-basic-auth
           - name: es-elastic-user
             mountPath: /mnt/elasticsearch-es-elastic-user
+            subPath: elastic
         args:
         - /bin/sh
         - -c
@@ -27,7 +28,7 @@ spec:
           check_cluster_health() {
               echo ""
               echo "--------- Trying to fetch cluster health ----------"
-              response=$(curl -v -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/password)" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_cluster/health"  2>&1)
+              response=$(curl -v -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -w " \\nHTTP ResponseCode: %{response_code}" "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_cluster/health"  2>&1)
               response=$(echo "$response" | sed "s/Authorization: Basic \S*/Authorization: <masked>/; s/Server auth using Basic with user \S*/Server auth using Basic with user <masked>/; s/{/'{/; s/}/}'/")
               echo ""
               echo "Cluster health response: $response"
@@ -67,6 +68,7 @@ spec:
             mountPath: /mnt/azure-keyvault
           - name: es-elastic-user
             mountPath: /mnt/elasticsearch-es-elastic-user
+            subPath: elastic
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 0
@@ -83,15 +85,15 @@ spec:
                 PRIMARY_USER_JSON="{\"password\":\"$(</mnt/azure-keyvault/opendes-es-primary-user-password)\" ,\"roles\":[\"${CUSTOM_ELASTIC_ROLE}\"]}"
                 SECONDARY_USER_JSON="{\"password\": \"$(</mnt/azure-keyvault/opendes-es-secondary-user-password)\",\"roles\":[\"${CUSTOM_ELASTIC_ROLE}\"]}"
 
-                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/password)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/role/${CUSTOM_ELASTIC_ROLE}" -k -H "Content-Type: application/json" -d"${ROLE_JSON}"))
+                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/role/${CUSTOM_ELASTIC_ROLE}" -k -H "Content-Type: application/json" -d"${ROLE_JSON}"))
                 echo "Create Custom Role - ResponseCode: $response, ResponseBody: $(cat response.txt)"
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 
-                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/password)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/user/${primaryUserName}" -k -H "Content-Type: application/json" -d"${PRIMARY_USER_JSON}"))
+                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/user/${primaryUserName}" -k -H "Content-Type: application/json" -d"${PRIMARY_USER_JSON}"))
                 echo "Create Primary User - ResponseCode: $response, ResponseBody: $(cat response.txt)"
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 
-                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/password)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/user/${secondaryUserName}" -k -H "Content-Type: application/json" -d"${SECONDARY_USER_JSON}"))
+                response=($(curl -s -w "\n%{http_code}" -o response.txt -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user)" -XPOST "http://elasticsearch-es-http.es-{{ lower $datapartition }}:9200/_security/user/${secondaryUserName}" -k -H "Content-Type: application/json" -d"${SECONDARY_USER_JSON}"))
                 echo "Create Secondary User - ResponseCode: $response, ResponseBody: $(cat response.txt)"
                 if [ "$response" -ne 200 ]; then echo "The request failed with status code: $response"; exit 1; fi
 

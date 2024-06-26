@@ -4,7 +4,6 @@ metadata:
   name: cred-init
   namespace: elastic-search
 spec:
-  serviceAccountName: workload-identity-sa
   activeDeadlineSeconds: 1200
   backoffLimit: 50
   ttlSecondsAfterFinished: 3600
@@ -12,6 +11,7 @@ spec:
     metadata:
       name: cred-create
     spec:
+      serviceAccountName: workload-identity-sa
       initContainers:
       - name: health-check
         image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3

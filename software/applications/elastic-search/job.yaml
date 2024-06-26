@@ -4,6 +4,7 @@ metadata:
   name: cred-init
   namespace: elastic-search
 spec:
+  serviceAccountName: workload-identity-sa
   activeDeadlineSeconds: 1200
   backoffLimit: 50
   ttlSecondsAfterFinished: 3600

@@ -26,6 +26,7 @@ spec:
     jobs:
       partitionInit: true
       entitlementInit: false
+      schemaInit: false
     partition: opendes
     clientSecret:
       name: active-directory
@@ -71,6 +72,8 @@ spec:
     jobs:
       partitionInit: false
       entitlementInit: true 
+      elasticInit: false
+      schemaInit: false
     partition: opendes
     clientSecret:
       name: active-directory

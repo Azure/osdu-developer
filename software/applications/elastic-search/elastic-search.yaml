@@ -51,9 +51,9 @@ spec:
                       - key: topology.kubernetes.io/zone
                         operator: In
                         values:
-                          - southcentralus-1
-                          - southcentralus-2
-                          - southcentralus-3
+                          - eastus-1
+                          - eastus-2
+                          - eastus-3
           containers:
           - name: elasticsearch
             env:
@@ -95,7 +95,24 @@ spec:
   podTemplate:
     spec:
       tolerations:
-        - key: "sku"
-          operator: "Equal"
-          value: "elasticsearch"
-          effect: "NoSchedule"
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - eastus-1
+                      - eastus-2
+                      - eastus-3

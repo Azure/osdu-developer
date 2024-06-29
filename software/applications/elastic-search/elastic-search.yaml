@@ -77,3 +77,25 @@ spec:
                 matchLabels:
                   elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
                   elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-default
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic-search
+spec:
+  version: 8.5.3
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  elasticsearchRef:
+    name: "elasticsearch"
+  count: 3
+  podTemplate:
+    spec:
+      tolerations:
+        - key: "sku"
+          operator: "Equal"
+          value: "elasticsearch"
+          effect: "NoSchedule"

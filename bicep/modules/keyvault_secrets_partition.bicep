@@ -41,7 +41,7 @@ resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
 
   properties: {
-    value: 'elastic'
+    value: 'elastic-user'
   }
 }
 

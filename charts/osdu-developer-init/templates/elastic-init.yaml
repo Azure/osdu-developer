@@ -21,7 +21,7 @@ spec:
         - |
           tdnf install -y curl jq && \
           while true; do
-            health_status=$(curl -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" -k -s https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_cluster/health | jq -r '.status')
+            health_status=$(curl -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" -k -s "https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200/_cluster/health" | jq -r '.status')
             if [ "$health_status" = "green" ]; then
               echo "Cluster health is green."
               exit 0
@@ -29,6 +29,11 @@ spec:
             echo "Cluster health is $health_status. Waiting for it to be green..."
             sleep 30
           done
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         volumeMounts:
         - name: es-basic-auth
           mountPath: /mnt/elasticsearch-es-elastic-user
@@ -40,6 +45,11 @@ spec:
         - -c
         - |
           sh /mnt/scripts/user-setup.sh
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         volumeMounts:
         - name: script-config
           mountPath: /mnt/scripts
@@ -61,6 +71,7 @@ spec:
       - name: script-config
         configMap:
           name: user-setup
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -80,15 +91,18 @@ data:
     ROLE_JSON="{\"cluster\":[\"all\"],\"indices\":[{\"names\":[\"*\"],\"privileges\":[\"read\",\"write\",\"create\",\"delete\",\"index\",\"monitor\",\"create_index\",\"delete_index\",\"view_index_metadata\",\"manage\"]}]}"
     USER_JSON="{\"password\":\"$NEW_PASSWORD\",\"roles\":[\"$CUSTOM_ELASTIC_ROLE\"]}"
 
+    # Elasticsearch service URL
+    ES_SERVICE_URL="https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200"
+
     # Check if the custom role already exists
     role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
-      "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_security/role/$CUSTOM_ELASTIC_ROLE")
+      "${ES_SERVICE_URL}/_security/role/$CUSTOM_ELASTIC_ROLE")
 
     if [ "$role_response" -eq 200 ]; then
       echo "Role $CUSTOM_ELASTIC_ROLE already exists."
     else
       # Create the custom role
-      create_role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_security/role/$CUSTOM_ELASTIC_ROLE" \
+      create_role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/role/$CUSTOM_ELASTIC_ROLE" \
         -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
         -H "Content-Type: application/json" \
         -d "$ROLE_JSON")
@@ -103,12 +117,12 @@ data:
 
     # Check if the new user already exists
     user_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
-      "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_security/user/$NEW_USERNAME")
+      "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME")
 
     if [ "$user_response" -eq 200 ]; then
       echo "User $NEW_USERNAME already exists. Updating password."
       # Update the existing user's password
-      update_password_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_security/user/$NEW_USERNAME/_password" \
+      update_password_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME/_password" \
         -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
         -H "Content-Type: application/json" \
         -d "{\"password\":\"$NEW_PASSWORD\"}")
@@ -117,7 +131,7 @@ data:
         echo "Successfully updated the password for user $NEW_USERNAME."
 
         # Test the new user credentials
-        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200")
+        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "${ES_SERVICE_URL}")
         
         if [ "$test_response" -eq 200 ]; then
           echo "Successfully authenticated with updated user credentials."
@@ -131,7 +145,7 @@ data:
       fi
     else
       # Create the new user with the custom role
-      create_user_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200/_security/user/$NEW_USERNAME" \
+      create_user_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME" \
         -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
         -H "Content-Type: application/json" \
         -d "$USER_JSON")
@@ -140,7 +154,7 @@ data:
         echo "Successfully created the new user $NEW_USERNAME."
 
         # Test the new user credentials
-        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "https://elasticsearch-es-http.elastic-search.svc.cluster.local:9200")
+        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "${ES_SERVICE_URL}")
         
         if [ "$test_response" -eq 200 ]; then
           echo "Successfully authenticated with new user credentials."

@@ -58,12 +58,3 @@ spec:
       entitlementInit: false
       schemaInit: false
       elasticInit: true
-  valuesFrom:
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: clientId
-      valuesKey: client_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id

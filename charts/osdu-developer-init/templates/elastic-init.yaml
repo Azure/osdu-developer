@@ -7,6 +7,7 @@ metadata:
   name: init-elastic
   namespace: {{ $namespace }}
 spec:
+  ttlSecondsAfterFinished: 120
   activeDeadlineSeconds: 600 # Timeout set to 10 minutes
   backoffLimit: 2            # Job will fail after 2 unsuccessful retries
   template:

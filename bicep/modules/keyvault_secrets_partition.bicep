@@ -32,7 +32,7 @@ resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
 
   properties: {
-    value: 'http://elasticsearch-ha-es-http.elastic-search:9200'
+    value: 'https://elasticsearch-es-http.elastic-search:9200'
   }
 }
 
@@ -41,7 +41,7 @@ resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
 
   properties: {
-    value: 'elastic'
+    value: 'elastic-user'
   }
 }
 

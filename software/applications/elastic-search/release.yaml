@@ -31,3 +31,30 @@ spec:
             vaultSecret: opendes-elastic-username
           - key: password
             vaultSecret: opendes-elastic-password
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: elastic-search-init
+  namespace: elastic-search
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: elastic-search
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    jobs:
+      partitionInit: false
+      entitlementInit: false
+      schemaInit: false
+      elasticInit: true

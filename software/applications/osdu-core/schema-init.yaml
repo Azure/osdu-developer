@@ -26,6 +26,7 @@ spec:
       partitionInit: false
       entitlementInit: false
       schemaInit: true
+      elasticInit: false
     partition: opendes
     clientSecret:
       name: active-directory

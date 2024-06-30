@@ -1,0 +1,171 @@
+{{- $namespace := .Release.Namespace -}}
+{{- if .Values.jobs.elasticInit }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-elastic
+  namespace: {{ $namespace }}
+spec:
+  ttlSecondsAfterFinished: 120
+  activeDeadlineSeconds: 600 # Timeout set to 10 minutes
+  backoffLimit: 2            # Job will fail after 2 unsuccessful retries
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa  # Specify the service account here
+      initContainers:
+      - name: health-check
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl jq && \
+          while true; do
+            health_status=$(curl -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" -k -s "https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200/_cluster/health" | jq -r '.status')
+            if [ "$health_status" = "green" ]; then
+              echo "Cluster health is green."
+              exit 0
+            fi
+            echo "Cluster health is $health_status. Waiting for it to be green..."
+            sleep 30
+          done
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: es-basic-auth
+          mountPath: /mnt/elasticsearch-es-elastic-user
+      containers:
+      - name: elastic-user
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          sh /mnt/scripts/user-setup.sh
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: script-config
+          mountPath: /mnt/scripts
+        - name: azure-keyvault
+          mountPath: /mnt/azure-keyvault
+        - name: es-basic-auth
+          mountPath: /mnt/elasticsearch-es-elastic-user
+      restartPolicy: Never
+      volumes:
+      - name: es-basic-auth
+        secret:
+          secretName: elasticsearch-es-elastic-user
+      - name: azure-keyvault
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: azure-keyvault
+      - name: script-config
+        configMap:
+          name: user-setup
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-setup
+  namespace: {{ $namespace }}
+data:
+  user-setup.sh: |
+    #!/bin/sh
+
+    # Read the new user's username and password from Azure KeyVault
+    NEW_USERNAME=$(cat /mnt/azure-keyvault/opendes-elastic-username)
+    NEW_PASSWORD=$(cat /mnt/azure-keyvault/opendes-elastic-password)
+    
+    # Define the custom role and user creation JSON payloads
+    CUSTOM_ELASTIC_ROLE="service-role"
+    ROLE_JSON="{\"cluster\":[\"all\"],\"indices\":[{\"names\":[\"*\"],\"privileges\":[\"read\",\"write\",\"create\",\"delete\",\"index\",\"monitor\",\"create_index\",\"delete_index\",\"view_index_metadata\",\"manage\"]}]}"
+    USER_JSON="{\"password\":\"$NEW_PASSWORD\",\"roles\":[\"$CUSTOM_ELASTIC_ROLE\"]}"
+
+    # Elasticsearch service URL
+    ES_SERVICE_URL="https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200"
+
+    # Check if the custom role already exists
+    role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
+      "${ES_SERVICE_URL}/_security/role/$CUSTOM_ELASTIC_ROLE")
+
+    if [ "$role_response" -eq 200 ]; then
+      echo "Role $CUSTOM_ELASTIC_ROLE already exists."
+    else
+      # Create the custom role
+      create_role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/role/$CUSTOM_ELASTIC_ROLE" \
+        -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
+        -H "Content-Type: application/json" \
+        -d "$ROLE_JSON")
+
+      if [ "$create_role_response" -eq 200 ]; then
+        echo "Successfully created the custom role $CUSTOM_ELASTIC_ROLE."
+      else
+        echo "Failed to create the custom role. HTTP status code: $create_role_response"
+        exit 1
+      fi
+    fi
+
+    # Check if the new user already exists
+    user_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
+      "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME")
+
+    if [ "$user_response" -eq 200 ]; then
+      echo "User $NEW_USERNAME already exists. Updating password."
+      # Update the existing user's password
+      update_password_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME/_password" \
+        -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
+        -H "Content-Type: application/json" \
+        -d "{\"password\":\"$NEW_PASSWORD\"}")
+
+      if [ "$update_password_response" -eq 200 ]; then
+        echo "Successfully updated the password for user $NEW_USERNAME."
+
+        # Test the new user credentials
+        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "${ES_SERVICE_URL}")
+        
+        if [ "$test_response" -eq 200 ]; then
+          echo "Successfully authenticated with updated user credentials."
+        else
+          echo "Failed to authenticate with updated user credentials. HTTP status code: $test_response"
+          exit 1
+        fi
+      else
+        echo "Failed to update the password for user. HTTP status code: $update_password_response"
+        exit 1
+      fi
+    else
+      # Create the new user with the custom role
+      create_user_response=$(curl -s -k -o /dev/null -w "%{http_code}" -X POST "${ES_SERVICE_URL}/_security/user/$NEW_USERNAME" \
+        -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \
+        -H "Content-Type: application/json" \
+        -d "$USER_JSON")
+
+      if [ "$create_user_response" -eq 200 ]; then
+        echo "Successfully created the new user $NEW_USERNAME."
+
+        # Test the new user credentials
+        test_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "$NEW_USERNAME:$NEW_PASSWORD" -k "${ES_SERVICE_URL}")
+        
+        if [ "$test_response" -eq 200 ]; then
+          echo "Successfully authenticated with new user credentials."
+        else
+          echo "Failed to authenticate with new user credentials. HTTP status code: $test_response"
+          exit 1
+        fi
+      else
+        echo "Failed to create the new user. HTTP status code: $create_user_response"
+        exit 1
+      fi
+    fi
+{{- end }}

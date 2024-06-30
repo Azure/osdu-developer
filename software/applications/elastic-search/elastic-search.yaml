@@ -1,96 +1,36 @@
-# This sets up an Elasticsearch cluster with 3 nodes.
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: elasticsearch-ha
+  name: elasticsearch
   namespace: elastic-search
+  annotations:
+    eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
   version: 8.5.3
-  secureSettings:
-    - secretName: elasticsearch-credentials
   nodeSets:
-    - name: master
+    - name: default
       count: 3
-      config:
-        node:
-          roles: ["master"]
-          store.allow_mmap: false
-      podTemplate:
-        spec:
-          tolerations:
-            - effect: NoSchedule
-              key: app
-              value: "cluster"
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: agentpool
-                        operator: In
-                        values:
-                          - poolz1
-                          - poolz2
-                          - poolz3
-                  - matchExpressions:
-                      - key: topology.kubernetes.io/zone
-                        operator: In
-                        values:
-                          - southcentralus-1 # THIS DEPENDS ON LOCATION
-                          - southcentralus-2 # THIS DEPENDS ON LOCATION
-                          - southcentralus-3 # THIS DEPENDS ON LOCATION
-          env:
-            - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
-
-    - name: coordinating
-      count: 3
-      config:
-        node:
-          roles: []
-          store.allow_mmap: false
-      podTemplate:
-        spec:
-          tolerations:
-            - effect: NoSchedule
-              key: app
-              value: "cluster"
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: agentpool
-                        operator: In
-                        values:
-                          - poolz1
-                          - poolz2
-                          - poolz3
-                  - matchExpressions:
-                      - key: topology.kubernetes.io/zone
-                        operator: In
-                        values:
-                          - eastus2-1 # THIS DEPENDS ON LOCATION
-                          - eastus2-2 # THIS DEPENDS ON LOCATION
-                          - eastus2-3 # THIS DEPENDS ON LOCATION
-          env:
-            - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
-
-    - name: data
-      count: 6
-      config:
-        node:
-          roles: ["data"]
-          store.allow_mmap: false
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
           spec:
             accessModes:
               - ReadWriteOnce
-            storageClassName: es-storageclass
+            resources:
+              requests:
+                storage: 128Gi
+            storageClassName: managed-premium
+      config:
+        node.roles: [ "master", "data", "ingest" ]
+        node.store.allow_mmap: false
+        node.attr.zone: "${ZONE}"
+        cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
       podTemplate:
+        metadata:
+          annotations:
+            traffic.sidecar.istio.io/includeInboundPorts: "*"
+            traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+            traffic.sidecar.istio.io/excludeInboundPorts: "9300"
         spec:
           tolerations:
             - effect: NoSchedule
@@ -111,9 +51,75 @@ spec:
                       - key: topology.kubernetes.io/zone
                         operator: In
                         values:
-                          - eastus2-1 # THIS DEPENDS ON LOCATION
-                          - eastus2-2 # THIS DEPENDS ON LOCATION
-                          - eastus2-3 # THIS DEPENDS ON LOCATION
+                          - "$(ZONE)-1"
+                          - "$(ZONE)-2"
+                          - "$(ZONE)-3"
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms1g -Xmx1g"
+                - name: ZONE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['topology.kubernetes.io/zone']
+              resources:
+                requests:
+                  cpu: 0.2
+                limits:
+                  memory: 8Gi
+                  cpu: 2
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+                  elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-default
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic-search
+spec:
+  version: 8.5.3
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  elasticsearchRef:
+    name: "elasticsearch"
+  count: 3
+  podTemplate:
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - "$(REGION)-1"
+                      - "$(REGION)-2"
+                      - "$(REGION)-3"
+      containers:
+        - name: kibana
           env:
-            - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
+            - name: REGION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['topology.kubernetes.io/region']

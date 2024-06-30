@@ -114,6 +114,12 @@ spec:
     replica:
       containerPorts:
         redis: 6380  # Change container port to 6380
+      persistence:
+        enabled: true
+        size: 8Gi
+        accessModes:
+        - ReadWriteOnce
+      replicaCount: 1
       tolerations:
         - effect: NoSchedule
           key: app
@@ -133,12 +139,6 @@ spec:
                   - key: topology.kubernetes.io/zone
                     operator: In
                     values:
-                      - eastus2-1
-                      - eastus2-2
-                      - eastus2-3
-      persistence:
-        enabled: true
-        size: 8Gi
-        accessModes:
-        - ReadWriteOnce
-      replicaCount: 1
+                      - "$(REGION)-1"
+                      - "$(REGION)-2"
+                      - "$(REGION)-3"

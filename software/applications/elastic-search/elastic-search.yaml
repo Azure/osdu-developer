@@ -123,4 +123,3 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.labels['topology.kubernetes.io/region']
-

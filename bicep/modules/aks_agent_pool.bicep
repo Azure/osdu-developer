@@ -47,7 +47,6 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-01-01' existing = 
   name: AksName
 }
 
-
 resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-11-01' = {
   parent: aks
   name: PoolName
@@ -70,8 +69,6 @@ resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-11
       maxSurge: '33%'
     }
     nodeTaints: nodeTaints
-    nodeLabels: union(nodeLabels, {
-      'topology.kubernetes.io/region': resourceGroup().location
-    })
+    nodeLabels: nodeLabels
   }
 }

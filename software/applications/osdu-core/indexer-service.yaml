@@ -100,7 +100,7 @@ spec:
       - name: ACCEPT_HTTP
         value: "true"
       - name: SECURITY_HTTPS_CERTIFICATE_TRUST
-        value: "false"
+        value: "true"
       - name: SPRING_APPLICATION_NAME
         value: indexer
       - name: SERVER_SERVLET_CONTEXTPATH

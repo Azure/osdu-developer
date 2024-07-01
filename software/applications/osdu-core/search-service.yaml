@@ -10,6 +10,8 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
+  - name: osdu-init-schema
+    namespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service

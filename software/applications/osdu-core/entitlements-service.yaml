@@ -10,6 +10,8 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
+  - name: partition
+    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

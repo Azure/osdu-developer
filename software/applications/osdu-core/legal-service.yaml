@@ -10,6 +10,8 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
+  - name: osdu-init-partition
+    namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:

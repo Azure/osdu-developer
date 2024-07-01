@@ -99,8 +99,8 @@ spec:
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
-      - name: SPRING_ELASTICSEARCH_REST_SSL_TRUST_STORE
-        value: classpath:truststore.jks
+      - name: SECURITY_HTTPS_CERTIFICATE_TRUST
+        value: "false"
       - name: SPRING_APPLICATION_NAME
         value: indexer
       - name: SERVER_SERVLET_CONTEXTPATH

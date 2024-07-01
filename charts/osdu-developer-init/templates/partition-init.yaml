@@ -72,6 +72,10 @@ data:
               "sensitive": true,
               "value": "elastic-password"
           },
+          "elastic-ssl-enabled": {
+              "sensitive": false,
+              "value": "false"
+          },
           "cosmos-connection": {
               "sensitive": true,
               "value": "cosmos-connection"

@@ -1,3 +1,5 @@
+# Retrigger:  kubectl annotate helmrelease osdu-init-partition fluxcd.io/retrigger=$(date +%s) -n osdu-core
+# Retrigger:  kubectl annotate helmrelease osdu-init-entitlements fluxcd.io/retrigger=$(date +%s) -n osdu-core
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -6,6 +8,7 @@ metadata:
   namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial"  # Update this to a new value each time
 spec:
   dependsOn:
     - name: partition
@@ -52,6 +55,7 @@ metadata:
   namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial" 
 spec:
   dependsOn:
     - name: osdu-init-partition

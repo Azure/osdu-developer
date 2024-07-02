@@ -6,7 +6,7 @@ metadata:
   namespace: elastic-search
 spec:
   hosts:
-  - "*" # Match all hosts
+  - "*" # Replace with your specific domain
   gateways:
   - istio-system/internal-gateway
   - istio-system/external-gateway
@@ -20,7 +20,8 @@ spec:
         port:
           number: 5601
     rewrite:
-      uri: "/"
+      uri: "/" # This keeps the URI structure intact for Kibana
+
 # ---
 # apiVersion: networking.istio.io/v1beta1
 # kind: VirtualService

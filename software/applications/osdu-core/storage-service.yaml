@@ -111,6 +111,10 @@ spec:
         value: /api/storage/v2/
       - name: COSMOSDB_DATABASE
         value: osdu-db
+      - name: AZURE_EVENTGRID_ENABLED
+        value: "false"
+      - name: AZURE_SERVICEBUS_ENABLED
+        value: "true" 
       - name: SERVICEBUS_TOPIC_NAME
         value: recordstopic
       - name: SERVICEBUS_V2_TOPIC_NAME

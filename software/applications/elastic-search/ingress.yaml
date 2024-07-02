@@ -19,8 +19,6 @@ spec:
         host: kibana-kb-http.elastic-search.svc.cluster.local
         port:
           number: 5601
-    rewrite:
-      uri: "/" # This keeps the URI structure intact for Kibana
 
 # ---
 # apiVersion: networking.istio.io/v1beta1

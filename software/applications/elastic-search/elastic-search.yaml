@@ -126,6 +126,8 @@ spec:
       containers:
         - name: kibana
           env:
+            - name: SERVER_BASEPATH
+              value: "/kibana" 
             - name: REGION
               valueFrom:
                 fieldRef:

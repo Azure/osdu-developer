@@ -1,25 +1,3 @@
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: elasticsearch
-  namespace: elastic-search
-spec:
-  hosts:
-  - "*" # Match all hosts
-  gateways:
-  - istio-system/internal-gateway
-  - istio-system/external-gateway
-  http:
-  - match:
-    - uri:
-        prefix: /elastic
-    route:
-    - destination:
-        host: elasticsearch-es-http.elastic-search.svc.cluster.local
-        port:
-          number: 9200
-    rewrite:
-      uri: "/"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -43,3 +21,26 @@ spec:
           number: 5601
     rewrite:
       uri: "/"
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   name: elasticsearch
+#   namespace: elastic-search
+# spec:
+#   hosts:
+#   - "*" # Match all hosts
+#   gateways:
+#   - istio-system/internal-gateway
+#   - istio-system/external-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /elastic
+#     route:
+#     - destination:
+#         host: elasticsearch-es-http.elastic-search.svc.cluster.local
+#         port:
+#           number: 9200
+#     rewrite:
+#       uri: "/"

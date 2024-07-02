@@ -18,7 +18,5 @@ spec:
         host: elasticsearch-es-http.elastic-search.svc.cluster.local
         port:
           number: 9200
-        tls:
-          mode: SIMPLE
     rewrite:
       uri: "/"

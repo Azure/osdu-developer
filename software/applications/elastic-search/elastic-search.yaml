@@ -77,6 +77,13 @@ spec:
                 matchLabels:
                   elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
                   elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-default
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+    service:
+      spec:
+        type: ClusterIP
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
@@ -119,6 +126,8 @@ spec:
       containers:
         - name: kibana
           env:
+            - name: SERVER_BASEPATH
+              value: "/kibana" 
             - name: REGION
               valueFrom:
                 fieldRef:

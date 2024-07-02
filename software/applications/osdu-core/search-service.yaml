@@ -10,6 +10,8 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
+  - name: osdu-init-schema
+    namespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -104,14 +106,14 @@ spec:
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
-      - name: SECURITY_HTTPS_CERTIFICATE_TRUST
-        value: "false"
       - name: SPRING_APPLICATION_NAME
         value: search
       - name: SERVER_SERVLET_CONTEXTPATH
         value: /api/search/v2/
       - name: LOG_PREFIX
         value: "search"
+      - name: SEARCH_SERVICE_SPRING_LOGGING_LEVEL
+        value: "DEBUG"
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
       - name: REDIS_DATABASE

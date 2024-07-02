@@ -112,6 +112,8 @@ spec:
         value: /api/search/v2/
       - name: LOG_PREFIX
         value: "search"
+      - name: SEARCH_SERVICE_SPRING_LOGGING_LEVEL
+        value: "DEBUG"
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
       - name: REDIS_DATABASE

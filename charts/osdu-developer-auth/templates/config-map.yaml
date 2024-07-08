@@ -92,7 +92,7 @@ data:
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios script -->
       <script>
         var app = new Vue({
           el: '#oauth-form',
@@ -146,11 +146,11 @@ data:
               }
             },
             decodeAccess: function () {
-              decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
+              var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
               window.open(decodeUrl, "_blank");
             },
             decodeId: function () {
-              decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
+              var decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
               window.open(decodeUrl, "_blank");
             }
           },

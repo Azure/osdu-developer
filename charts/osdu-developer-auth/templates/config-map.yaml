@@ -99,23 +99,25 @@ data:
       <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios script -->
       <script>
-        async function generateCodeVerifier() {
-          const array = new Uint32Array(56);
-          window.crypto.getRandomValues(array);
-          return btoa(String.fromCharCode.apply(null, array))
+        function base64urlencode(source) {
+          // Encode the source string into base64url format
+          return btoa(String.fromCharCode.apply(null, new Uint8Array(source)))
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=+$/, '');
+        }
+
+        async function generateCodeVerifier() {
+          const array = new Uint8Array(32);
+          window.crypto.getRandomValues(array);
+          return base64urlencode(array);
         }
 
         async function generateCodeChallenge(verifier) {
           const encoder = new TextEncoder();
           const data = encoder.encode(verifier);
           const digest = await window.crypto.subtle.digest('SHA-256', data);
-          return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
+          return base64urlencode(digest);
         }
 
         var app = new Vue({

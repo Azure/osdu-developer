@@ -1,72 +1,72 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: azure-keyvault-credentials
-#   namespace: default
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   targetNamespace: osdu-auth
-#   chart:
-#     spec:
-#       chart: ./charts/keyvault-secrets
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   install:
-#     remediation:
-#       retries: 3
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: config-map-values
-#       valuesKey: values.yaml
-#   values:
-#     secrets:
-#       - secretName: azure-keyvault-secrets
-#         data:
-#           - key: clientSecret
-#             vaultSecret: app-dev-sp-password
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: osdu-auth
-#   namespace: default
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#     - name: azure-keyvault-credentials
-#       namespace: default
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-auth
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   install:
-#     remediation:
-#       retries: 3
-#   targetNamespace: osdu-auth
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: config-map-values
-#       valuesKey: values.yaml
-#   values:
-#     hosts:
-#       - "*"
-#     gateways:
-#       - istio-system/internal-gateway
-#       - istio-system/external-gateway
-#     path: /auth/
-#     azure:
-#       clientSecret: 
-#         valueFrom:
-#           secretKeyRef:
-#             name: azure-keyvault-credentials
-#             key: clientSecret
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: azure-keyvault-credentials
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: osdu-auth
+  chart:
+    spec:
+      chart: ./charts/keyvault-secrets
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    secrets:
+      - secretName: azure-keyvault-secrets
+        data:
+          - key: clientSecret
+            vaultSecret: app-dev-sp-password
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-auth
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: azure-keyvault-credentials
+      namespace: default
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-auth
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: osdu-auth
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    hosts:
+      - "*"
+    gateways:
+      - istio-system/internal-gateway
+      - istio-system/external-gateway
+    path: /auth/
+    azure:
+      clientSecret: 
+        valueFrom:
+          secretKeyRef:
+            name: azure-keyvault-credentials
+            key: clientSecret

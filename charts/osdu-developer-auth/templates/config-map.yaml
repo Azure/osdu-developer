@@ -1,7 +1,8 @@
 {{- $namespace := .Release.Namespace }}
 {{- $clientId := .Values.azure.appId }}
 {{- $tenantId := .Values.azure.tenantId }}
-{{- $clientSecret := .Values.azure.clientSecret }}  # Add client secret
+{{- $secret := (lookup "v1" "Secret" $namespace "azure-keyvault-credentials") }}
+{{- $clientSecret := $secret.data.clientSecret | b64dec }}  # Decode the base64 secret
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -102,7 +103,7 @@ data:
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
-            clientSecret: '{{ $clientSecret }}', // Add client secret
+            clientSecret: '{{ $clientSecret }}', // Decoded client secret
             redirectUrl: window.location.href,
             responseType: 'code',
             responseMode: 'fragment',

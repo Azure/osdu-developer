@@ -27,66 +27,65 @@ data:
     </head>
     <body>
       <div id="app">
-        <form id="oauth-form" @submit.prevent="getToken" class="text-center border border-light p-5" action="#!">
+        <form id="oauth-form" @submit.prevent="exchangeToken" class="text-center border border-light p-5" action="#!">
           <p class="h2 mb-4">Microsoft Identity Platform (v2.0)</p>
           <div class="form-group">
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label class="float-left" for="clientId">ClientId</label>
-                <input type="text" class="form-control" id="clientId" v-model="clientId">
+                <input type="text" class="form-control" id="clientId" v-model="clientId" readonly>
               </div>
               <div class="form-group col-md-6">
                 <label class="float-left" for="tenantId">TenantId</label>
-                <input type="text" class="form-control" id="tenantId" v-model="tenantId">
+                <input type="text" class="form-control" id="tenantId" v-model="tenantId" readonly>
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-6 mb-3">
                 <label class="float-left" for="redirectUrl">RedirectUrl</label>
-                <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl">
+                <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl" readonly>
               </div>
               <div class="col-md-3 mb-3">
                 <label class="float-left" for="responseType">ResponseType</label>
-                <input type="text" class="form-control" id="responseType" v-model="responseType">
+                <input type="text" class="form-control" id="responseType" v-model="responseType" readonly>
               </div>
               <div class="col-md-3 mb-3">
                 <label class="float-left" for="responseMode">ResponseMode</label>
-                <input type="text" class="form-control" id="responseMode" v-model="responseMode">
+                <input type="text" class="form-control" id="responseMode" v-model="responseMode" readonly>
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-12 mb-3">
                 <label class="float-left" for="scope">Scope</label>
-                <input type="text" class="form-control" id="scope" v-model="scope">
+                <input type="text" class="form-control" id="scope" v-model="scope" readonly>
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-12 mb-1">
-                <a :href="signOutUrl" class="btn btn-link float-left" v-if="authorizationCode" class="col-2">Logout</a>
-                <a :href="authorizeUrl" class="btn btn-primary float-right" class="col-2">Authorize</a>
+                <a :href="authorizeUrl" class="btn btn-primary float-right">Authorize</a>
               </div>
             </div>
           </div>
           <hr />
           <div class="form-group shadow-textarea">
             <div class="form-row">
-              <div class="col-md-3 mb-4">
-                <label class="float-left" for="authorizationCode">ResponseType: code</label>
-                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="10"></textarea>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="authorizationCode">Authorization Code</label>
+                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="5" readonly></textarea>
               </div>
-              <div class="col-md-3 mb-4">
-                <label class="float-left" for="accessToken">ResponseType: token</label>
-                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="10"></textarea>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="accessToken">Access Token</label>
+                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="5" readonly></textarea>
                 <a @click="decodeAccess()" class="btn btn-info btn-sm float-right" v-if="accessToken">Decode</a>
               </div>
-              <div class="col-md-3 mb-4">
-                <label class="float-left" for="idToken">ResponseType: id_token</label>
-                <textarea id="idToken" v-model="idToken" class="form-control z-depth-1" rows="10"></textarea>
-                <a @click="decodeId()" class="btn btn-info btn-sm float-right" v-if="idToken">Decode</a>
-              </div>
-              <div class="col-md-3 mb-4">
+              <div class="col-md-4 mb-4">
                 <label class="float-left" for="refreshToken">Refresh Token</label>
-                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="10"></textarea>
+                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="5" readonly></textarea>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-1">
+                <button @click="exchangeToken" class="btn btn-success float-right" v-if="authorizationCode">Get Tokens</button>
               </div>
             </div>
           </div>
@@ -99,7 +98,7 @@ data:
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios script -->
       <script>
         var app = new Vue({
-          el: '#oauth-form',
+          el: '#app',
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
@@ -111,7 +110,6 @@ data:
             authorizationCode: null,
             accessToken: null,
             refreshToken: null,
-            idToken: null
           },
           computed: {
             authorizeUrl: function () {
@@ -124,13 +122,10 @@ data:
                 "&scope=" + this.scope +
                 "&state=12345" +
                 "&nonce=dummy123";
-            },
-            signOutUrl: function () {
-              return "https://login.microsoftonline.com/" + this.clientId + "/oauth2/logout";
             }
           },
           methods: {
-            getToken: function() {
+            exchangeToken: function() {
               if (this.authorizationCode) {
                 axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
                   client_id: this.clientId,
@@ -142,7 +137,7 @@ data:
                 .then(response => {
                   this.accessToken = response.data.access_token;
                   this.refreshToken = response.data.refresh_token;
-                  this.idToken = response.data.id_token;
+                  this.authorizationCode = null;  // Clear the authorization code after exchange
                 })
                 .catch(error => {
                   console.error(error);
@@ -151,10 +146,6 @@ data:
             },
             decodeAccess: function () {
               var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
-              window.open(decodeUrl, "_blank");
-            },
-            decodeId: function () {
-              var decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
               window.open(decodeUrl, "_blank");
             }
           },
@@ -166,8 +157,6 @@ data:
                 return result;
               }, {});
               this.authorizationCode = params['code'];
-              this.accessToken = params['access_token'];
-              this.idToken = params['id_token'];
             }
           }
         });

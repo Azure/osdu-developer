@@ -27,7 +27,7 @@ spec:
             - -c
             - |
               tdnf install -y curl jq && \
-              /script/example.sh
+              /script/init.sh
             volumeMounts:
               - name: script
                 mountPath: "/script"
@@ -56,7 +56,7 @@ metadata:
   name: user-init-script
   namespace: osdu-core  # Ensure the correct namespace
 data:
-  example.sh: |
+  init.sh: |
     #!/bin/sh
     echo "Hello, Kubernetes! The auth code is: $AUTH_CODE"
     # Add your script logic here

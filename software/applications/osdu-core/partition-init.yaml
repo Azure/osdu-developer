@@ -94,46 +94,46 @@ spec:
       name: configmap-services
       targetPath: tenantId
       valuesKey: tenant_id
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: osdu-init-entitlements
-  namespace: osdu-core
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  dependsOn:
-    - name: osdu-init-partition
-      namespace: osdu-core
-  targetNamespace: osdu-core
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-init
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  values:
-    jobs:
-      partitionInit: false
-      entitlementInit: false
-      userInit: true 
-      elasticInit: false
-      schemaInit: false
-    clientSecret:
-      name: active-directory
-      key: principal-clientpassword
-  valuesFrom:
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: clientId
-      valuesKey: client_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: osdu-init-entitlements
+#   namespace: osdu-core
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   dependsOn:
+#     - name: osdu-init-partition
+#       namespace: osdu-core
+#   targetNamespace: osdu-core
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-init
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     jobs:
+#       partitionInit: false
+#       entitlementInit: false
+#       userInit: true 
+#       elasticInit: false
+#       schemaInit: false
+#     clientSecret:
+#       name: active-directory
+#       key: principal-clientpassword
+#   valuesFrom:
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: clientId
+#       valuesKey: client_id
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: tenantId
+#       valuesKey: tenant_id

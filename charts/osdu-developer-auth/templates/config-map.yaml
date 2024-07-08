@@ -70,19 +70,23 @@ data:
           <hr />
           <div class="form-group shadow-textarea">
             <div class="form-row">
-              <div class="col-md-4 mb-4">
+              <div class="col-md-3 mb-4">
                 <label class="float-left" for="authorizationCode">ResponseType: code</label>
                 <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="10"></textarea>
               </div>
-              <div class="col-md-4 mb-4">
+              <div class="col-md-3 mb-4">
                 <label class="float-left" for="accessToken">ResponseType: token</label>
                 <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="10"></textarea>
                 <a @click="decodeAccess()" class="btn btn-info btn-sm float-right" v-if="accessToken">Decode</a>
               </div>
-              <div class="col-md-4 mb-4">
+              <div class="col-md-3 mb-4">
                 <label class="float-left" for="idToken">ResponseType: id_token</label>
                 <textarea id="idToken" v-model="idToken" class="form-control z-depth-1" rows="10"></textarea>
                 <a @click="decodeId()" class="btn btn-info btn-sm float-right" v-if="idToken">Decode</a>
+              </div>
+              <div class="col-md-3 mb-4">
+                <label class="float-left" for="refreshToken">Refresh Token</label>
+                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="10"></textarea>
               </div>
             </div>
           </div>

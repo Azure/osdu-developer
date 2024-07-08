@@ -1,8 +1,9 @@
 {{- $namespace := .Release.Namespace }}
 {{- $clientId := .Values.azure.appId }}
 {{- $tenantId := .Values.azure.tenantId }}
-{{- $secret := (lookup "v1" "Secret" $namespace "azure-keyvault-secrets") }}
-{{- $clientSecret := $secret.data.clientSecret | b64dec }}  # Decode the base64 secret
+{{- $secret := lookup "v1" "Secret" $namespace "azure-keyvault-secrets" }}
+{{- if $secret }}
+{{- $clientSecret := $secret.data.clientSecret | b64dec }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -104,9 +105,9 @@ data:
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
             clientSecret: '{{ $clientSecret }}', // Decoded client secret
-            redirectUrl: window.location.href,
+            redirectUrl: window.location.origin + window.location.pathname,
             responseType: 'code',
-            responseMode: 'fragment',
+            responseMode: 'query', // Change response mode to query
             scope: '{{ $clientId }}/.default openid profile offline_access',
             authorizationCode: null,
             accessToken: null,
@@ -151,16 +152,13 @@ data:
             }
           },
           beforeMount: function () {
-            if (window.location.hash) {
-              var params = window.location.hash.substr(1).split('&').reduce(function (result, item) {
-                var parts = item.split('=');
-                result[parts[0]] = parts[1];
-                return result;
-              }, {});
-              this.authorizationCode = params['code'];
-            }
+            const urlParams = new URLSearchParams(window.location.search);
+            this.authorizationCode = urlParams.get('code');
           }
         });
       </script>
     </body>
     </html>
+{{- else }}
+{{- fail "Secret 'azure-keyvault-secrets' not found" }}
+{{- end }}

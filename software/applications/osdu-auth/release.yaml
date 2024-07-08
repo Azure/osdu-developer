@@ -65,7 +65,7 @@ spec:
       - istio-system/external-gateway
     path: /auth/
     azure:
-      clientSecret: 
+      clientSecret:
         valueFrom:
           secretKeyRef:
             name: azure-keyvault-credentials

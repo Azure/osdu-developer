@@ -1,7 +1,7 @@
 {{- $namespace := .Release.Namespace }}
 {{- $clientId := .Values.azure.appId }}
 {{- $tenantId := .Values.azure.tenantId }}
-{{- $secret := (lookup "v1" "Secret" $namespace "azure-keyvault-credentials") }}
+{{- $secret := (lookup "v1" "Secret" $namespace "azure-keyvault-secrets") }}
 {{- $clientSecret := $secret.data.clientSecret | b64dec }}  # Decode the base64 secret
 ---
 apiVersion: v1

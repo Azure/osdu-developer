@@ -25,6 +25,7 @@ spec:
     jobs:
       partitionInit: false
       entitlementInit: false
+      userInit: false
       schemaInit: true
       elasticInit: false
     partition: opendes

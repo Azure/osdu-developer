@@ -56,5 +56,6 @@ spec:
     jobs:
       partitionInit: false
       entitlementInit: false
+      userInit: false
       schemaInit: false
       elasticInit: true

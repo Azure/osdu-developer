@@ -1,7 +1,7 @@
-
 {{- $namespace := .Release.Namespace }}
 {{- $clientId := .Values.azure.appId }}
 {{- $tenantId := .Values.azure.tenantId }}
+{{- $clientSecret := .Values.azure.clientSecret }}  # Add client secret
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -12,16 +12,12 @@ data:
   index.html: |
     <!DOCTYPE html>
     <html lang="en">
-    <!-- python3 -m http.server 8080 -->
-
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       <title>OAuth Login</title>
-      <!-- Font Awesome -->
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-      <!-- Bootstrap core CSS -->
       <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
       <style type="text/css">
         textarea {
@@ -29,15 +25,10 @@ data:
         }
       </style>
     </head>
-
     <body>
-
       <div id="app">
-
         <form id="oauth-form" @submit.prevent="getToken" class="text-center border border-light p-5" action="#!">
-
           <p class="h2 mb-4">Microsoft Identity Platform (v2.0)</p>
-
           <div class="form-group">
             <div class="form-row">
               <div class="form-group col-md-6">
@@ -51,7 +42,7 @@ data:
             </div>
             <div class="form-row">
               <div class="col-md-6 mb-3">
-                <label class="float-left" for="responseType">RedirectUrl</label>
+                <label class="float-left" for="redirectUrl">RedirectUrl</label>
                 <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl">
               </div>
               <div class="col-md-3 mb-3">
@@ -75,16 +66,13 @@ data:
                 <a :href="authorizeUrl" class="btn btn-primary float-right" class="col-2">Authorize</a>
               </div>
             </div>
-
           </div>
           <hr />
-
           <div class="form-group shadow-textarea">
             <div class="form-row">
               <div class="col-md-4 mb-4">
-                <label class="float-left" for="accessToken">ResponseType: code</label>
-                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1"
-                  rows="10"></textarea>
+                <label class="float-left" for="authorizationCode">ResponseType: code</label>
+                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="10"></textarea>
               </div>
               <div class="col-md-4 mb-4">
                 <label class="float-left" for="accessToken">ResponseType: token</label>
@@ -100,27 +88,25 @@ data:
           </div>
         </form>
       </div>
-
       <!-- SCRIPTS -->
-      <!-- JQuery -->
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-      <!-- Bootstrap core JavaScript -->
-      <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-      <!-- Vue JavaScript -->
-      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script>
-
         var app = new Vue({
           el: '#oauth-form',
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
-            redirectUrl: window.location.href, // Use the current page URL,
+            clientSecret: '{{ $clientSecret }}', // Add client secret
+            redirectUrl: window.location.href,
             responseType: 'code',
             responseMode: 'fragment',
             scope: '{{ $clientId }}/.default openid profile offline_access',
             authorizationCode: null,
             accessToken: null,
+            refreshToken: null,
             idToken: null
           },
           computed: {
@@ -135,19 +121,37 @@ data:
                 "&state=12345" +
                 "&nonce=dummy123";
             },
-            decodeId: function () {
-              decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
-              window.open(decodeUrl, "_blank");
+            signOutUrl: function () {
+              return "https://login.microsoftonline.com/" + this.clientId + "/oauth2/logout";
+            }
+          },
+          methods: {
+            getToken: function() {
+              if (this.authorizationCode) {
+                axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                  client_id: this.clientId,
+                  client_secret: this.clientSecret,
+                  grant_type: 'authorization_code',
+                  code: this.authorizationCode,
+                  redirect_uri: this.redirectUrl
+                }))
+                .then(response => {
+                  this.accessToken = response.data.access_token;
+                  this.refreshToken = response.data.refresh_token;
+                  this.idToken = response.data.id_token;
+                })
+                .catch(error => {
+                  console.error(error);
+                });
+              }
             },
             decodeAccess: function () {
               decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
               window.open(decodeUrl, "_blank");
             },
-            signOutUrl: function () {
-              return "https://login.microsoftonline.com/" + this.clientId + "/oauth2/logout";
-            },
-            redirect: function () {
-              return 'https://' + location.host + location.pathname
+            decodeId: function () {
+              decodeUrl = "https://jwt.ms/#id_token=" + this.idToken;
+              window.open(decodeUrl, "_blank");
             }
           },
           beforeMount: function () {
@@ -162,8 +166,7 @@ data:
               this.idToken = params['id_token'];
             }
           }
-        })
+        });
       </script>
     </body>
-
     </html>

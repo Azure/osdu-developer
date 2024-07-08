@@ -188,7 +188,3 @@ data:
       </script>
     </body>
     </html>
-{{- else }}
-{{- fail "Secret 'azure-keyvault-secrets' not found" }}
-{{- end }}
-

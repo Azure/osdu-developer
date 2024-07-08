@@ -1,9 +1,6 @@
 {{- $namespace := .Release.Namespace }}
 {{- $clientId := .Values.azure.appId }}
 {{- $tenantId := .Values.azure.tenantId }}
-{{- $secret := lookup "v1" "Secret" $namespace "azure-keyvault-secrets" }}
-{{- if $secret }}
-{{- $clientSecret := $secret.data.clientSecret | b64dec }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -125,10 +122,9 @@ data:
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
-            clientSecret: '{{ $clientSecret }}', // Decoded client secret
             redirectUrl: window.location.origin + window.location.pathname,
             responseType: 'code',
-            responseMode: 'query', // Change response mode to query
+            responseMode: 'query',
             scope: '{{ $clientId }}/.default openid profile offline_access',
             codeVerifier: '',
             codeChallenge: '',
@@ -158,7 +154,6 @@ data:
                   const storedCodeVerifier = localStorage.getItem('code_verifier');
                   const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
                     client_id: this.clientId,
-                    client_secret: this.clientSecret,
                     grant_type: 'authorization_code',
                     code: this.authorizationCode,
                     redirect_uri: this.redirectUrl,
@@ -196,3 +191,4 @@ data:
 {{- else }}
 {{- fail "Secret 'azure-keyvault-secrets' not found" }}
 {{- end }}
+

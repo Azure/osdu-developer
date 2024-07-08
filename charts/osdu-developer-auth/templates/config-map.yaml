@@ -155,13 +155,14 @@ data:
             async exchangeToken() {
               if (this.authorizationCode) {
                 try {
+                  const storedCodeVerifier = localStorage.getItem('code_verifier');
                   const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
                     client_id: this.clientId,
                     client_secret: this.clientSecret,
                     grant_type: 'authorization_code',
                     code: this.authorizationCode,
                     redirect_uri: this.redirectUrl,
-                    code_verifier: this.codeVerifier
+                    code_verifier: storedCodeVerifier
                   }));
                   this.accessToken = response.data.access_token;
                   this.refreshToken = response.data.refresh_token;
@@ -179,6 +180,7 @@ data:
           async beforeMount() {
             this.codeVerifier = await generateCodeVerifier();
             this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
+            localStorage.setItem('code_verifier', this.codeVerifier);
             const urlParams = new URLSearchParams(window.location.search);
             this.authorizationCode = urlParams.get('code');
           }

@@ -26,7 +26,7 @@ data:
     </head>
     <body>
       <div id="app">
-        <form id="oauth-form" @submit.prevent="exchangeToken" class="text-center border border-light p-5" action="#!">
+        <form id="oauth-form" @submit.prevent="handleAuthorize" class="text-center border border-light p-5" action="#!">
           <p class="h2 mb-4">Microsoft Identity Platform (v2.0)</p>
           <div class="form-group">
             <div class="form-row">
@@ -44,24 +44,14 @@ data:
                 <label class="float-left" for="redirectUrl">RedirectUrl</label>
                 <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl" readonly>
               </div>
-              <div class="col-md-3 mb-3">
-                <label class="float-left" for="responseType">ResponseType</label>
-                <input type="text" class="form-control" id="responseType" v-model="responseType" readonly>
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="float-left" for="responseMode">ResponseMode</label>
-                <input type="text" class="form-control" id="responseMode" v-model="responseMode" readonly>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="col-md-12 mb-3">
+              <div class="col-md-6 mb-3">
                 <label class="float-left" for="scope">Scope</label>
                 <input type="text" class="form-control" id="scope" v-model="scope" readonly>
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-12 mb-1">
-                <a :href="authorizeUrl" class="btn btn-primary float-right">Authorize</a>
+                <a @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
               </div>
             </div>
           </div>
@@ -123,23 +113,21 @@ data:
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
             redirectUrl: window.location.origin + window.location.pathname,
-            responseType: 'code',
-            responseMode: 'query',
             scope: '{{ $clientId }}/.default openid profile offline_access',
             codeVerifier: '',
             codeChallenge: '',
             authorizationCode: null,
             accessToken: null,
-            refreshToken: null,
+            refreshToken: localStorage.getItem('refresh_token') || null,
           },
           computed: {
             authorizeUrl: function () {
               return "https://login.microsoftonline.com/" + this.tenantId +
                 "/oauth2/v2.0/authorize?" +
                 "client_id=" + this.clientId +
-                "&response_type=" + this.responseType +
+                "&response_type=code" +
                 "&redirect_uri=" + this.redirectUrl +
-                "&response_mode=" + this.responseMode +
+                "&response_mode=query" +
                 "&scope=" + this.scope +
                 "&state=12345" +
                 "&nonce=dummy123" +
@@ -162,9 +150,34 @@ data:
                   this.accessToken = response.data.access_token;
                   this.refreshToken = response.data.refresh_token;
                   this.authorizationCode = null;  // Clear the authorization code after exchange
+                  localStorage.setItem('refresh_token', this.refreshToken);
                 } catch (error) {
                   console.error(error);
                 }
+              }
+            },
+            async refreshAccessToken() {
+              if (this.refreshToken) {
+                try {
+                  const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                    client_id: this.clientId,
+                    grant_type: 'refresh_token',
+                    refresh_token: this.refreshToken,
+                    redirect_uri: this.redirectUrl
+                  }));
+                  this.accessToken = response.data.access_token;
+                  this.refreshToken = response.data.refresh_token;
+                  localStorage.setItem('refresh_token', this.refreshToken);
+                } catch (error) {
+                  console.error(error);
+                }
+              }
+            },
+            async handleAuthorize() {
+              if (this.refreshToken) {
+                await this.refreshAccessToken();
+              } else {
+                window.location.href = this.authorizeUrl;
               }
             },
             decodeAccess: function () {

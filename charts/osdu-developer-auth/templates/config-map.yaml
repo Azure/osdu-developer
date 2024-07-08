@@ -178,11 +178,16 @@ data:
             }
           },
           async beforeMount() {
-            this.codeVerifier = await generateCodeVerifier();
-            this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
-            localStorage.setItem('code_verifier', this.codeVerifier);
             const urlParams = new URLSearchParams(window.location.search);
             this.authorizationCode = urlParams.get('code');
+            
+            if (!this.authorizationCode) {
+              this.codeVerifier = await generateCodeVerifier();
+              this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
+              localStorage.setItem('code_verifier', this.codeVerifier);
+            } else {
+              this.codeVerifier = localStorage.getItem('code_verifier');
+            }
           }
         });
       </script>

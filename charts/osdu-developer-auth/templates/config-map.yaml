@@ -52,7 +52,7 @@ data:
             <div class="form-row">
               <div class="col-md-12 mb-1">
                 <a @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
-                <button @click="clearTokens" class="btn btn-danger float-left">Clear Tokens</button>
+                <button @click="resetTokens" class="btn btn-danger float-left">Reset</button>
               </div>
             </div>
           </div>
@@ -181,10 +181,12 @@ data:
                 window.location.href = this.authorizeUrl;
               }
             },
-            clearTokens: function () {
+            resetTokens: function () {
               this.accessToken = null;
               this.refreshToken = null;
+              this.authorizationCode = null;
               localStorage.removeItem('refresh_token');
+              window.location.href = window.location.origin + window.location.pathname;
             },
             decodeAccess: function () {
               var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;

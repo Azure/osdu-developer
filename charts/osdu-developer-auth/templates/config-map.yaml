@@ -218,6 +218,7 @@ data:
             this.refreshToken = localStorage.getItem('refresh_token');
             if (this.authorizationCode) {
               this.codeVerifier = localStorage.getItem('code_verifier');
+              history.replaceState({}, document.title, window.location.pathname); // Clear the authorization code from the URL
             }
           }
         });

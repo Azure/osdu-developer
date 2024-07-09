@@ -208,6 +208,9 @@ data:
           async beforeMount() {
             const urlParams = new URLSearchParams(window.location.search);
             this.authorizationCode = urlParams.get('code');
+            if (this.authorizationCode && this.accessToken && this.refreshToken) {
+              this.authorizationCode = null;
+            }
             if (this.authorizationCode) {
               this.codeVerifier = localStorage.getItem('code_verifier');
             }

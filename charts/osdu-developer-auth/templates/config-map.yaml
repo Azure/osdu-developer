@@ -152,6 +152,9 @@ data:
                 // Store refresh token in localStorage
                 localStorage.setItem('refresh_token', this.refreshToken);
                 localStorage.setItem('access_token', this.accessToken);
+
+                // Clear the authorization code from the URL
+                history.replaceState({}, document.title, window.location.pathname);
               } catch (error) {
                 console.error('Error exchanging authorization code for tokens:', error);
                 // Optionally, handle error and provide feedback to the user

@@ -172,6 +172,7 @@ data:
 
                 // Store refresh token in localStorage
                 localStorage.setItem('refresh_token', this.refreshToken);
+                localStorage.setItem('access_token', this.accessToken);
               } catch (error) {
                 console.error('Error refreshing access token:', error);
                 // Optionally, handle error and provide feedback to the user
@@ -199,6 +200,7 @@ data:
               this.refreshToken = null;
               this.authorizationCode = null;
               localStorage.removeItem('refresh_token');
+              localStorage.removeItem('access_token');
               window.location.href = window.location.origin + '/auth/';
             },
             decodeAccess: function () {
@@ -208,11 +210,13 @@ data:
           },
           async beforeMount() {
             const urlParams = new URLSearchParams(window.location.search);
-            this.authorizationCode = urlParams.get('code');
+            this.accessToken = response.data.access_token;
+            this.refreshToken = response.data.refresh_token;
             if (this.accessToken && this.refreshToken) {
+            {
               this.authorizationCode = null;
-            }
-            if (this.authorizationCode) {
+            } else {
+              this.authorizationCode = urlParams.get('code');
               this.codeVerifier = localStorage.getItem('code_verifier');
             }
           }

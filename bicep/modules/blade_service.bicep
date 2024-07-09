@@ -49,6 +49,9 @@ param kvUri string
 @description('The name of the Storage Account')
 param storageName string 
 
+@description('Specify the User Email.')
+param emailAddress string
+
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
@@ -584,6 +587,12 @@ var settings = [
   {
     name: 'keyvault_uri'
     value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
+    name: 'first_user_id'
+    value: emailAddress
     contentType: 'text/plain'
     label: 'configmap-services'
   }

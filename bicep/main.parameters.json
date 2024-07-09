@@ -11,6 +11,9 @@
     "applicationClientPrincipalOid": {
       "value": "${AZURE_CLIENT_PRINCIPAL_OID}"
     },
+    "emailAddress": {
+      "value": "${EMAIL_ADDRESS}"
+    },
     "enableManage": {
       "value": "${ENABLE_MANAGE}"
     },

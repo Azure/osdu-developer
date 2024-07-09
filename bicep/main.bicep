@@ -4,6 +4,9 @@ targetScope = 'resourceGroup'
 @description('Specify the Azure region to place the application definition.')
 param location string = resourceGroup().location
 
+@description('Specify the User Email.')
+param emailAddress string
+
 @description('Specify the Application Client Id. (This is the unique application ID of this application.)')
 param applicationClientId string
 
@@ -385,6 +388,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
 
     enableSoftwareLoad: clusterSoftware.enable
 
+    emailAddress: emailAddress
     applicationClientId: applicationClientId
     applicationClientPrincipalOid: applicationClientPrincipalOid
     workspaceResourceId: logAnalytics.outputs.resourceId

@@ -471,6 +471,22 @@ module federatedCredsElasticNamespace './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsOsduAuth './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-auth'
+  params: {
+    name: 'federated-ns_osdu-auth'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:osdu-auth:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsCacheNamespace
+  ]
+}
+
 
 
 module appRoleAssignments './app_assignments.bicep' = {

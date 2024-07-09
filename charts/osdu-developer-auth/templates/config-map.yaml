@@ -152,6 +152,8 @@ data:
                 localStorage.setItem('refresh_token', this.refreshToken);
                 localStorage.setItem('access_token', this.accessToken);
 
+                // Clear the URL
+                history.replaceState({}, document.title, window.location.pathname);
               } catch (error) {
                 console.error('Error exchanging authorization code for tokens:', error);
                 // Optionally, handle error and provide feedback to the user
@@ -215,8 +217,7 @@ data:
             this.refreshToken = localStorage.getItem('refresh_token');
 
             if (this.accessToken && this.refreshToken) {
-            // Clear the authorization code and the URL
-              history.replaceState({}, document.title, window.location.pathname);
+            // Clear the authorization code
               this.authorizationCode = null;
               localStorage.removeItem('code_verifier');
             }

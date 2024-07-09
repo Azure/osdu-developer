@@ -199,21 +199,7 @@ data:
             const urlParams = new URLSearchParams(window.location.search);
             this.authorizationCode = urlParams.get('code');
             
-            if (!this.authorizationCode) {
-              this.codeVerifier = await generateCodeVerifier();
-              this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
-              localStorage.setItem('code_verifier', this.codeVerifier);
-            } else {
-              this.codeVerifier = localStorage.getItem('code_verifier');
-            }
-          },
-          async mounted() {
-            // Ensure codeChallenge is generated before rendering the authorization URL
-            if (!this.authorizationCode) {
-              this.codeVerifier = await generateCodeVerifier();
-              this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
-              localStorage.setItem('code_verifier', this.codeVerifier);
-            } else {
+            if (this.authorizationCode) {
               this.codeVerifier = localStorage.getItem('code_verifier');
             }
           }

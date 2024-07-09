@@ -51,8 +51,9 @@ data:
             </div>
             <div class="form-row">
               <div class="col-md-12 mb-1">
-                <a @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
+                <a v-if="!authorizationCode && !refreshToken" @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
                 <button @click="resetTokens" class="btn btn-danger float-left">Reset</button>
+                <button v-if="authorizationCode || refreshToken" @click="exchangeToken" class="btn btn-success float-right">Get Tokens</button>
               </div>
             </div>
           </div>
@@ -71,11 +72,6 @@ data:
               <div class="col-md-4 mb-4">
                 <label class="float-left" for="refreshToken">Refresh Token</label>
                 <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="5"></textarea>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="col-md-12 mb-1">
-                <button @click="exchangeToken" class="btn btn-success float-right" v-if="authorizationCode">Get Tokens</button>
               </div>
             </div>
           </div>
@@ -113,7 +109,7 @@ data:
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
-            redirectUrl: window.location.origin + window.location.pathname,
+            redirectUrl: window.location.origin + '/auth/',
             scope: '{{ $clientId }}/.default openid profile offline_access',
             codeVerifier: '',
             codeChallenge: '',
@@ -138,13 +134,14 @@ data:
           },
           methods: {
             async exchangeToken() {
-              if (this.authorizationCode) {
+              if (this.authorizationCode || this.refreshToken) {
                 try {
                   const storedCodeVerifier = localStorage.getItem('code_verifier');
                   const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
                     client_id: this.clientId,
-                    grant_type: 'authorization_code',
+                    grant_type: this.authorizationCode ? 'authorization_code' : 'refresh_token',
                     code: this.authorizationCode,
+                    refresh_token: this.refreshToken,
                     redirect_uri: this.redirectUrl,
                     code_verifier: storedCodeVerifier
                   }));
@@ -157,26 +154,9 @@ data:
                 }
               }
             },
-            async refreshAccessToken() {
-              if (this.refreshToken) {
-                try {
-                  const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
-                    client_id: this.clientId,
-                    grant_type: 'refresh_token',
-                    refresh_token: this.refreshToken,
-                    redirect_uri: this.redirectUrl
-                  }));
-                  this.accessToken = response.data.access_token;
-                  this.refreshToken = response.data.refresh_token;
-                  localStorage.setItem('refresh_token', this.refreshToken);
-                } catch (error) {
-                  console.error(error);
-                }
-              }
-            },
             async handleAuthorize() {
               if (this.refreshToken) {
-                await this.refreshAccessToken();
+                await this.exchangeToken();
               } else {
                 window.location.href = this.authorizeUrl;
               }
@@ -186,7 +166,7 @@ data:
               this.refreshToken = null;
               this.authorizationCode = null;
               localStorage.removeItem('refresh_token');
-              window.location.href = window.location.origin + window.location.pathname;
+              window.location.href = window.location.origin + '/auth/';
             },
             decodeAccess: function () {
               var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;

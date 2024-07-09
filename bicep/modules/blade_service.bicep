@@ -483,7 +483,7 @@ module federatedCredsOsduAuth './federated_identity.bicep' = {
     subject: 'system:serviceaccount:osdu-auth:workload-identity-sa'
   }
   dependsOn: [
-    federatedCredsCacheNamespace
+    federatedCredsElasticNamespace
   ]
 }
 
@@ -504,6 +504,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsConfigMapsNamespace
     federatedCredsCacheNamespace
     federatedCredsElasticNamespace
+    federatedCredsOsduAuth
   ]
 }
 

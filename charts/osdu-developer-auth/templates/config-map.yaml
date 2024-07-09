@@ -52,8 +52,8 @@ data:
             <div class="form-row">
               <div class="col-md-12 mb-1">
                 <a v-if="!authorizationCode && !refreshToken" @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
-                <button @click="resetTokens" class="btn btn-danger float-left">Reset</button>
-                <button v-if="authorizationCode || refreshToken" @click="exchangeToken" class="btn btn-success float-right">Get Tokens</button>
+                <button @click="clearTokens" class="btn btn-danger float-left">Clear</button>
+                <button v-if="authorizationCode || refreshToken" @click="getTokens" class="btn btn-success float-right">Get Tokens</button>
               </div>
             </div>
           </div>
@@ -133,38 +133,54 @@ data:
             }
           },
           methods: {
-            async exchangeToken() {
-              if (this.authorizationCode || this.refreshToken) {
-                try {
-                  const params = new URLSearchParams();
-                  params.append('client_id', this.clientId);
-                  params.append('grant_type', this.authorizationCode ? 'authorization_code' : 'refresh_token');
-                  if (this.authorizationCode) {
-                    params.append('code', this.authorizationCode);
-                    params.append('code_verifier', localStorage.getItem('code_verifier'));
-                  } else {
-                    params.append('refresh_token', this.refreshToken);
-                  }
-                  params.append('redirect_uri', this.redirectUrl);
-
-                  const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', params);
-                  this.accessToken = response.data.access_token;
-                  this.refreshToken = response.data.refresh_token;
-                  this.authorizationCode = null;  // Clear the authorization code after exchange
-                  localStorage.setItem('refresh_token', this.refreshToken);
-                } catch (error) {
-                  console.error(error);
-                }
+            async getAuthCode() {
+              try {
+                const storedCodeVerifier = localStorage.getItem('code_verifier');
+                const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                  client_id: this.clientId,
+                  grant_type: 'authorization_code',
+                  code: this.authorizationCode,
+                  redirect_uri: this.redirectUrl,
+                  code_verifier: storedCodeVerifier
+                }));
+                this.accessToken = response.data.access_token;
+                this.refreshToken = response.data.refresh_token;
+                this.authorizationCode = null;  // Clear the authorization code after exchange
+                localStorage.setItem('refresh_token', this.refreshToken);
+              } catch (error) {
+                console.error(error);
+              }
+            },
+            async refreshAccessToken() {
+              try {
+                const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                  client_id: this.clientId,
+                  grant_type: 'refresh_token',
+                  refresh_token: this.refreshToken,
+                  redirect_uri: this.redirectUrl
+                }));
+                this.accessToken = response.data.access_token;
+                this.refreshToken = response.data.refresh_token;
+                localStorage.setItem('refresh_token', this.refreshToken);
+              } catch (error) {
+                console.error(error);
+              }
+            },
+            async getTokens() {
+              if (this.authorizationCode) {
+                await this.getAuthCode();
+              } else if (this.refreshToken) {
+                await this.refreshAccessToken();
               }
             },
             async handleAuthorize() {
               if (this.refreshToken) {
-                await this.exchangeToken();
+                await this.refreshAccessToken();
               } else {
                 window.location.href = this.authorizeUrl;
               }
             },
-            resetTokens: function () {
+            clearTokens: function () {
               this.accessToken = null;
               this.refreshToken = null;
               this.authorizationCode = null;

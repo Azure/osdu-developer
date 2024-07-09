@@ -143,12 +143,17 @@ data:
                   redirect_uri: this.redirectUrl,
                   code_verifier: storedCodeVerifier
                 }));
+
+                // Update tokens
                 this.accessToken = response.data.access_token;
                 this.refreshToken = response.data.refresh_token;
                 this.authorizationCode = null;  // Clear the authorization code after exchange
+
+                // Store refresh token in localStorage
                 localStorage.setItem('refresh_token', this.refreshToken);
               } catch (error) {
-                console.error(error);
+                console.error('Error exchanging authorization code for tokens:', error);
+                // Optionally, handle error and provide feedback to the user
               }
             },
             async refreshAccessToken() {
@@ -159,12 +164,16 @@ data:
                   refresh_token: this.refreshToken,
                   redirect_uri: this.redirectUrl
                 }));
+
+                // Update tokens
                 this.accessToken = response.data.access_token;
                 this.refreshToken = response.data.refresh_token;
+
+                // Store refresh token in localStorage
                 localStorage.setItem('refresh_token', this.refreshToken);
-                this.authorizationCode = null; // Ensure this is cleared
               } catch (error) {
-                console.error(error);
+                console.error('Error refreshing access token:', error);
+                // Optionally, handle error and provide feedback to the user
               }
             },
             async getTokens() {

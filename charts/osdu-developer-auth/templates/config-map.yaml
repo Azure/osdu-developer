@@ -60,16 +60,16 @@ data:
             <div class="form-row">
               <div class="col-md-4 mb-4">
                 <label class="float-left" for="authorizationCode">Authorization Code</label>
-                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="5" readonly></textarea>
+                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="5"></textarea>
               </div>
               <div class="col-md-4 mb-4">
                 <label class="float-left" for="accessToken">Access Token</label>
-                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="5" readonly></textarea>
+                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="5"></textarea>
                 <a @click="decodeAccess()" class="btn btn-info btn-sm float-right" v-if="accessToken">Decode</a>
               </div>
               <div class="col-md-4 mb-4">
                 <label class="float-left" for="refreshToken">Refresh Token</label>
-                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="5" readonly></textarea>
+                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="5"></textarea>
               </div>
             </div>
             <div class="form-row">
@@ -210,4 +210,4 @@ data:
         });
       </script>
     </body>
-    </html>
+   

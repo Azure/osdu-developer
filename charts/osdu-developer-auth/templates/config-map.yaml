@@ -197,7 +197,6 @@ data:
           },
           async beforeMount() {
             const urlParams = new URLSearchParams(window.location.search);
-            this.authorizationCode = urlParams.get('code');
             
             if (this.authorizationCode) {
               this.codeVerifier = localStorage.getItem('code_verifier');

@@ -151,6 +151,7 @@ data:
 
                 // Store refresh token in localStorage
                 localStorage.setItem('refresh_token', this.refreshToken);
+                localStorage.setItem('access_token', this.accessToken);
               } catch (error) {
                 console.error('Error exchanging authorization code for tokens:', error);
                 // Optionally, handle error and provide feedback to the user
@@ -208,7 +209,7 @@ data:
           async beforeMount() {
             const urlParams = new URLSearchParams(window.location.search);
             this.authorizationCode = urlParams.get('code');
-            if (this.authorizationCode && this.accessToken && this.refreshToken) {
+            if (this.accessToken && this.refreshToken) {
               this.authorizationCode = null;
             }
             if (this.authorizationCode) {

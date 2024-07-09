@@ -2,7 +2,7 @@ apiVersion: v2
 name: osdu-developer-auth
 type: application
 description: Installs the OSDU developer Auth UI
-version: 0.0.22
+version: 0.0.23
 appVersion: 0.0.1
 maintainers:
   - name: danielscholl

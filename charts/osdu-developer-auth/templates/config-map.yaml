@@ -177,6 +177,9 @@ data:
               if (this.refreshToken) {
                 await this.refreshAccessToken();
               } else {
+                this.codeVerifier = await generateCodeVerifier();
+                this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
+                localStorage.setItem('code_verifier', this.codeVerifier);
                 window.location.href = this.authorizeUrl;
               }
             },

@@ -213,7 +213,6 @@ data:
             this.accessToken = response.data.access_token;
             this.refreshToken = response.data.refresh_token;
             if (this.accessToken && this.refreshToken) {
-            {
               this.authorizationCode = null;
             } else {
               this.authorizationCode = urlParams.get('code');

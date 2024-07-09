@@ -162,6 +162,7 @@ data:
                 this.accessToken = response.data.access_token;
                 this.refreshToken = response.data.refresh_token;
                 localStorage.setItem('refresh_token', this.refreshToken);
+                this.authorizationCode = null; // Ensure this is cleared
               } catch (error) {
                 console.error(error);
               }
@@ -197,7 +198,7 @@ data:
           },
           async beforeMount() {
             const urlParams = new URLSearchParams(window.location.search);
-            
+            this.authorizationCode = urlParams.get('code');
             if (this.authorizationCode) {
               this.codeVerifier = localStorage.getItem('code_verifier');
             }

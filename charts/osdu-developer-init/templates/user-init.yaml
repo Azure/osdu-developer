@@ -63,8 +63,6 @@ data:
     set -euo pipefail
     set -o nounset
 
-    apk add --no-cache curl jq
-
     echo "=================================================================="
     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
     echo "=================================================================="

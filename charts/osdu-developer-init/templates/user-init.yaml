@@ -2,53 +2,55 @@
 {{- if .Values.jobs.userInit }}
 ---
 apiVersion: batch/v1
-kind: CronJob
+kind: Job
 metadata:
   name: user-init
   namespace: osdu-core  # Ensure the correct namespace
 spec:
-  schedule: "0 0 * * *"  # Adjust the schedule as needed
-  suspend: true  # Ensure the job is suspended until manually triggered
-  jobTemplate:
+  ttlSecondsAfterFinished: 120
+  template:
     spec:
-      ttlSecondsAfterFinished: 120
-      template:
-        spec:
-          volumes:
+      volumes:
+      - name: script
+        configMap:
+          name: user-init-script
+          defaultMode: 0500
+      initContainers:
+      - name: data-seed
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl jq && \
+          /script/init.sh
+        volumeMounts:
           - name: script
-            configMap:
-              name: user-init-script
-              defaultMode: 0500
-          initContainers:
-          - name: data-seed
-            image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-            command: ["/bin/sh"]
-            args:
-            - -c
-            - |
-              tdnf install -y curl jq && \
-              /script/init.sh
-            volumeMounts:
-              - name: script
-                mountPath: "/script"
-            env:
-              - name: AUTH_CODE
-                value: ""  # Placeholder value
-              - name: AZURE_TENANT_ID
-                value: {{ .Values.tenantId | quote }}
-              - name: AZURE_CLIENT_ID
-                value: {{ .Values.clientId | quote }}
-              - name: AZURE_CLIENT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .Values.clientSecret.name | quote }}
-                    key: {{ .Values.clientSecret.key | quote }}
-          containers:
-          - name: sleep
-            image: istio/base
-            command: ["/bin/sleep", "10"]
-          restartPolicy: Never
-      backoffLimit: 4
+            mountPath: "/script"
+        env:
+          - name: AUTH_CODE
+            value: ""  # Placeholder value
+          - name: AZURE_TENANT_ID
+            value: {{ .Values.tenantId | quote }}
+          - name: AZURE_CLIENT_ID
+            value: {{ .Values.clientId | quote }}
+          - name: EMAIL_ADDRESS
+            value: {{ .Values.emailAddress | quote }}
+          - name: AZURE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.clientSecret.name | quote }}
+                key: {{ .Values.clientSecret.key | quote }}
+          - name: PARTITION
+            value: {{ .Values.partition | quote }}
+          - name: AUTH_INGRESS
+            value: {{ .Values.authIngress | quote }}
+      containers:
+      - name: sleep
+        image: istio/base
+        command: ["/bin/sleep", "10"]
+      restartPolicy: Never
+  backoffLimit: 4
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -57,7 +59,84 @@ metadata:
   namespace: osdu-core  # Ensure the correct namespace
 data:
   init.sh: |
-    #!/bin/sh
-    echo "Hello, Kubernetes! The auth code is: $AUTH_CODE"
-    # Add your script logic here
+    #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
+
+    apk add --no-cache curl jq
+
+    echo "=================================================================="
+    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "=================================================================="
+    echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
+
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
+        --header "content-type: application/x-www-form-urlencoded" \
+        --data "grant_type=client_credentials" \
+        --data "client_id=${AZURE_CLIENT_ID}" \
+        --data "client_secret=${AZURE_CLIENT_SECRET}" \
+        --data "resource=${AZURE_CLIENT_ID}")
+
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
+
+    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi
+
+    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+
+    echo "=================================================================="
+    echo "  Adding the first user...                                        "
+    echo "=================================================================="
+
+    AUTH_USER="${EMAIL_ADDRESS}"
+    json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
+
+    OUTPUT=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
+        --insecure \
+        -H "Authorization: Bearer ${TOKEN}" \
+        -H "Accept: application/json" \
+        -H "data-partition-id: opendes" \
+        -H "Content-Type: application/json" \
+        -d "$json_payload")
+
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
+
+    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi
+
+    echo "Success: $(echo "$BODY" | jq .)"
+
+    echo "=================================================================="
+    echo "  Assigning the Ops role to the user...                           "
+    echo "=================================================================="
+
+    OUTPUT=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
+      --insecure \
+      -H "accept: application/json" \
+      -H "content-type: application/json" \
+      -H "authorization: Bearer ${TOKEN}" \
+      -H "data-partition-id: opendes" \
+      -d "$json_payload")
+
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
+
+    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi
+
+    echo "Success: $(echo "$BODY" | jq .)"
+
+    exit 0
 {{- end }}

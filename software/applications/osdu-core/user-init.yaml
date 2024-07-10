@@ -47,4 +47,4 @@ spec:
     - kind: ConfigMap
       name: configmap-services
       targetPath: emailAddress
-      valuesKey: first_user-id
+      valuesKey: first_user_id

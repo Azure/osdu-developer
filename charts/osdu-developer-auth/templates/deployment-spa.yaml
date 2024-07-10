@@ -2,7 +2,7 @@
 ---
 apiVersion: apps/v1
 metadata:
-  name: osdu-auth
+  name: osdu-auth-spa
   namespace: {{ $namespace }}
 kind: Deployment
 spec:

@@ -68,6 +68,10 @@ data:
     echo "=================================================================="
     echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
 
+    env
+
+    sleep 20000
+
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
         --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
         --header "content-type: application/x-www-form-urlencoded" \
@@ -87,7 +91,6 @@ data:
 
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
-    sleep 20000
     echo "=================================================================="
     echo "  Adding the first user...                                        "
     echo "=================================================================="

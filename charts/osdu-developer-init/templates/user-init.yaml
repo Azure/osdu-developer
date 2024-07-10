@@ -113,7 +113,7 @@ data:
     fi
 
     if [[ "$HTTP_STATUS_CODE" == "409" ]]; then
-      echo "Info: User already exists. Response body: $BODY"
+      echo "Info: User already exists. \n$(echo "$BODY" | jq .)"
     else
       echo "Success: $(echo "$BODY" | jq .)"
     fi
@@ -140,7 +140,7 @@ data:
     fi
 
     if [[ "$HTTP_STATUS_CODE" == "409" ]]; then
-      echo "Info: User already exists. Response body: $BODY"
+      echo "Info: User already exists. \n$(echo "$BODY" | jq .)"
     else
       echo "Success: $(echo "$BODY" | jq .)"
     fi

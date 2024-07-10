@@ -73,7 +73,7 @@ data:
 
     sleep 90000
 
-    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+    OUTPUT=$(curl -s -k -w "%{http_code}" --request POST \
         --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
         --header "content-type: application/x-www-form-urlencoded" \
         --data "grant_type=client_credentials" \
@@ -99,7 +99,7 @@ data:
     AUTH_USER="${EMAIL_ADDRESS}"
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
-    OUTPUT=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
+    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
         --insecure \
         -H "Authorization: Bearer ${TOKEN}" \
         -H "Accept: application/json" \
@@ -122,7 +122,7 @@ data:
     echo "  Assigning the Ops role to the user...                           "
     echo "=================================================================="
 
-    OUTPUT=$(curl -s -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
+    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
       --insecure \
       -H "accept: application/json" \
       -H "content-type: application/json" \

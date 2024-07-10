@@ -95,7 +95,7 @@ data:
     AUTH_USER="${EMAIL_ADDRESS}"
     json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
 
-    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
+    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://entitlements.{{ $namespace }}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
         --insecure \
         -H "Authorization: Bearer ${TOKEN}" \
         -H "Accept: application/json" \
@@ -118,7 +118,7 @@ data:
     echo "  Assigning the Ops role to the user...                           "
     echo "=================================================================="
 
-    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://${AUTH_INGRESS}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
+    OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://entitlements.{{ $namespace }}/api/entitlements/v2/groups/users.datalake.ops@opendes.dataservices.energy/members" \
       --insecure \
       -H "accept: application/json" \
       -H "content-type: application/json" \

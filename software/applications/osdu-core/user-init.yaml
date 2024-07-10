@@ -44,3 +44,7 @@ spec:
       name: configmap-services
       targetPath: tenantId
       valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: emailAddress
+      valuesKey: first_user-id

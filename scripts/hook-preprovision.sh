@@ -195,6 +195,13 @@ JSON_PAYLOAD=$(cat <<EOF
             "enableAccessTokenIssuance": true
         }
     },
+    "spa": {
+        "redirectUris": ["https://localhost:8080/spa"],
+        "implicitGrantSettings": {
+            "enableIdTokenIssuance": true,
+            "enableAccessTokenIssuance": true
+        }
+    },
     "requiredResourceAccess": [
         {
             "resourceAppId": "00000003-0000-0000-c000-000000000000",

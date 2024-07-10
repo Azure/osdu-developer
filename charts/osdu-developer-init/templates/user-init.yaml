@@ -69,14 +69,6 @@ data:
     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
     echo "=================================================================="
 
-    curl -s -w "%{http_code}" --request POST \
-        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-        --header "content-type: application/x-www-form-urlencoded" \
-        --data "grant_type=client_credentials" \
-        --data "client_id=${AZURE_CLIENT_ID}" \
-        --data "client_secret=${AZURE_CLIENT_SECRET}" \
-        --data "resource=${AZURE_CLIENT_ID}"
-
     echo "waiting...."
 
     sleep 90000

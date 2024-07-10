@@ -106,13 +106,17 @@ data:
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
     BODY=${OUTPUT%???}
 
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+    if [[ "$HTTP_STATUS_CODE" != "200" && "$HTTP_STATUS_CODE" != "409" ]]; then
       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
       echo "Response body: $BODY"
       exit 1
     fi
 
-    echo "Success: $(echo "$BODY" | jq .)"
+    if [[ "$HTTP_STATUS_CODE" == "409" ]]; then
+      echo "Info: User already exists. Response body: $BODY"
+    else
+      echo "Success: $(echo "$BODY" | jq .)"
+    fi
 
     echo "=================================================================="
     echo "  Assigning the Ops role to the user...                           "
@@ -129,13 +133,17 @@ data:
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
     BODY=${OUTPUT%???}
 
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+    if [[ "$HTTP_STATUS_CODE" != "200" && "$HTTP_STATUS_CODE" != "409" ]]; then
       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
       echo "Response body: $BODY"
       exit 1
     fi
 
-    echo "Success: $(echo "$BODY" | jq .)"
+    if [[ "$HTTP_STATUS_CODE" == "409" ]]; then
+      echo "Info: User already exists. Response body: $BODY"
+    else
+      echo "Success: $(echo "$BODY" | jq .)"
+    fi
 
     exit 0
 {{- end }}

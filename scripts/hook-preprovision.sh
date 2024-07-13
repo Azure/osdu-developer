@@ -197,10 +197,6 @@ JSON_PAYLOAD=$(cat <<EOF
     },
     "spa": {
         "redirectUris": ["https://localhost:8080/spa"],
-        "implicitGrantSettings": {
-            "enableIdTokenIssuance": true,
-            "enableAccessTokenIssuance": true
-        }
     },
     "requiredResourceAccess": [
         {

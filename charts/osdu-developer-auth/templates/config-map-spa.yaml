@@ -109,7 +109,7 @@ data:
           data: {
             tenantId: '{{ $tenantId }}',
             clientId: '{{ $clientId }}',
-            redirectUrl: window.location.origin + '/auth/',
+            redirectUrl: window.location.origin + '/auth/spa/',
             scope: '{{ $clientId }}/.default openid profile offline_access',
             codeVerifier: '',
             codeChallenge: '',

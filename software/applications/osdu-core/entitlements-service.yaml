@@ -53,15 +53,13 @@ spec:
         disable:
           - "/"
           - "*/index.html"
-          - "*/swagger-ui.html"
           - "*/actuator/health"
           - "*/health"
           - "*/configuration/ui"
           - "*/configuration/security"
           - "/api/entitlements/v2/info"
-          - "/api/entitlements/v2/swagger-ui/*"
+          - "/api/entitlements/v2/swagger*"
           - "/api/entitlements/v2/api-docs*"
-          - "/api/entitlements/v2/swagger-resources/*"
           - "/api/entitlements/v2/webjars/*"
       env:
       - name: AZURE_TENANT_ID

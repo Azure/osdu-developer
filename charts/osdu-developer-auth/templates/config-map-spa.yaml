@@ -204,7 +204,7 @@ data:
               this.authorizationCode = null;
               localStorage.removeItem('refresh_token');
               localStorage.removeItem('access_token');
-              window.location.href = window.location.origin + '/auth/';
+              window.location.href = window.location.origin + '/auth/spa/';
             },
             decodeAccess: function () {
               var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;

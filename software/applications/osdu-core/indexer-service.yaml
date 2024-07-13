@@ -55,6 +55,7 @@ spec:
           - '*/index.html'
           - "*/actuator/health"
           - "*/health"
+          - "/api/indexer/v2/info"
           - /api/indexer/v2/swagger*
           - /api/indexer/v2/api-docs*
           - '*/_ah/**'

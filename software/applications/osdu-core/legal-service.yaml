@@ -51,10 +51,9 @@ spec:
       keyvault: true
       auth:
         disable:
-          - "/"
-          - "*/index.html"
           - "*/actuator/health"
           - "*/health"
+          - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
           - "/api/legal/v1/info"

@@ -57,17 +57,15 @@ spec:
         memory: 4Gi
       auth:
         disable:
-          - "/"
-          - "*/index.html"
-          - "*/v2/api-docs"
-          - "*/swagger-resources"
-          - "*/swagger-ui.html"
-          - "*/configuration/ui"
-          - "*/configuration/security"
-          - "/api/storage/v2/swagger-resources/*"
-          - "/api/storage/v2/webjars/*"
           - "*/actuator/health"
           - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/storage/v2/info"
+          - "/api/storage/v2/swagger*"
+          - "/api/storage/v2/api-docs*"
+          - "/api/storage/v2/webjars/*"  
       env:
       - name: AZURE_TENANT_ID
         secret:

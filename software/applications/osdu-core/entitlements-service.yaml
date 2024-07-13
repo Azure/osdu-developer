@@ -56,6 +56,7 @@ spec:
           - "*/v2/api-docs"
           - "*/swagger-resources"
           - "*/swagger-ui.html"
+          - "*/swagger-ui"
           - "*/actuator/health"
           - "*/health"
           - "*/configuration/ui"

@@ -25,9 +25,9 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token
 &client_id={{CLIENT_ID}}
+&client_secret={{CLIENT_SECRET}}
 &refresh_token={{REFRESH_TOKEN}}
 &scope={{scopes}}
-&redirect_uri={{HOST}}/auth/
 
 
 # -----------------------

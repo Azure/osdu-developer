@@ -53,13 +53,10 @@ spec:
         disable:
           - /
           - '*/index.html'
-          - '*/v2/api-docs'
-          - '*/v2/api-docs.yaml'
-          - '*/swagger'
-          - /api/indexer/v2/swagger-ui/*
-          - /api/indexer/v2/api-docs/swagger-config
-          - '/api/indexer/v2/v3/api-docs/*'
-          - '*/actuator/health'
+          - "*/actuator/health"
+          - "*/health"
+          - /api/indexer/v2/swagger*
+          - /api/indexer/v2/api-docs*
           - '*/_ah/**'
           - '*/index-worker'
           - '*/_dps/task-handlers'

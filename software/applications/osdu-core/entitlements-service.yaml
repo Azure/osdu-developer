@@ -56,12 +56,12 @@ spec:
           - "*/v2/api-docs"
           - "*/swagger-resources"
           - "*/swagger-ui.html"
-          - "*/swagger-ui/*"
           - "*/actuator/health"
           - "*/health"
           - "*/configuration/ui"
           - "*/configuration/security"
           - "/api/entitlements/v2/info"
+          - "/api/entitlements/v2/swagger-ui/*"
           - "/api/entitlements/v2/swagger-resources/*"
           - "/api/entitlements/v2/webjars/*"
       env:

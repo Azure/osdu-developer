@@ -161,7 +161,7 @@ if [ ${#redirect_uris[@]} -gt 0 ]; then
     REDIRECT_URIS=$(printf '"%s",' "${redirect_uris[@]}")
     REDIRECT_URIS="${REDIRECT_URIS%,}" # Remove trailing comma
 
-    SHA_REDIRECT_URIS=$(printf '"%ssha/",' "${redirect_uris[@]}")
+    SHA_REDIRECT_URIS=$(printf '"%sspa/",' "${redirect_uris[@]}")
     SHA_REDIRECT_URIS="${SHA_REDIRECT_URIS%,}" # Remove trailing comma
 
     # Correctly format the JSON payload

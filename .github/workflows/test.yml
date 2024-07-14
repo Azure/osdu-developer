@@ -427,3 +427,53 @@ jobs:
             } else {
               Write-Error "CSI Secrets driver not set properly"}
           }
+
+  Cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [Validate, Deploy, Verify]
+    timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: Azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+          environment: azurecloud
+          allow-no-subscriptions: false
+
+      - name: Delete Resource Group
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            az group delete --name $RESOURCE_GROUP --yes
+
+      - name: Purge Deleted Key Vaults
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
+            for KV in $DELETED_KEY_VAULTS; do
+              az keyvault purge --name $KV
+              echo "Deleted key vault $KV purged."
+            done
+
+      - name: Purge Deleted App Configurations
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(properties.resourceGroup, '${RESOURCE_GROUP}')].name" -o tsv)
+            for AC in $DELETED_APP_CONFIGS; do
+              az appconfig purge --name $AC
+              echo "Deleted app configuration $AC purged."
+            done

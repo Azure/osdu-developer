@@ -462,7 +462,7 @@ jobs:
             RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
             DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
             for KV in $DELETED_KEY_VAULTS; do
-              az keyvault purge --name $KV
+              az keyvault purge --name $KV --yes
               echo "Deleted key vault $KV purged."
             done
 
@@ -472,8 +472,8 @@ jobs:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-            DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(properties.resourceGroup, '${RESOURCE_GROUP}')].name" -o tsv)
+            DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(configurationStoreId, '${RESOURCE_GROUP}')].name" -o tsv)
             for AC in $DELETED_APP_CONFIGS; do
-              az appconfig purge --name $AC
+              az appconfig purge --name $AC --yes
               echo "Deleted app configuration $AC purged."
             done

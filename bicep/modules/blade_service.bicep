@@ -49,6 +49,9 @@ param kvUri string
 @description('The name of the Storage Account')
 param storageName string 
 
+@description('Specify the User Email.')
+param emailAddress string
+
 @description('Specify the AD Application Client Id.')
 param applicationClientId string
 
@@ -468,6 +471,22 @@ module federatedCredsElasticNamespace './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsOsduAuth './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-auth'
+  params: {
+    name: 'federated-ns_osdu-auth'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:osdu-auth:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsElasticNamespace
+  ]
+}
+
 
 
 module appRoleAssignments './app_assignments.bicep' = {
@@ -485,6 +504,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsConfigMapsNamespace
     federatedCredsCacheNamespace
     federatedCredsElasticNamespace
+    federatedCredsOsduAuth
   ]
 }
 
@@ -584,6 +604,12 @@ var settings = [
   {
     name: 'keyvault_uri'
     value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
+    name: 'first_user_id'
+    value: emailAddress
     contentType: 'text/plain'
     label: 'configmap-services'
   }

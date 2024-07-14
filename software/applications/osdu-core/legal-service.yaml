@@ -51,17 +51,15 @@ spec:
       keyvault: true
       auth:
         disable:
-          - "/"
-          - "*/index.html"
-          - "*/v2/api-docs"
-          - "*/swagger-resources"
-          - "*/swagger-ui.html"
-          - "*/configuration/ui"
-          - "*/configuration/security"
-          - "/api/legal/v1/swagger-resources/*"
-          - "/api/legal/v1/webjars/*"
           - "*/actuator/health"
           - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/legal/v1/info"
+          - "/api/legal/v1/swagger*"
+          - "/api/legal/v1/api-docs*"
+          - "/api/legal/v1/webjars/*"          
       env:
       - name: AZURE_TENANT_ID
         secret:

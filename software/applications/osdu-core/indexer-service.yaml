@@ -51,16 +51,15 @@ spec:
       keyvault: true
       auth:
         disable:
-          - /
-          - '*/index.html'
-          - '*/v2/api-docs'
-          - '*/v2/api-docs.yaml'
-          - '*/swagger'
-          - /api/indexer/v2/swagger-ui/*
-          - /api/indexer/v2/api-docs/swagger-config
-          - '/api/indexer/v2/v3/api-docs/*'
-          - '*/actuator/health'
-          - '*/_ah/**'
+          - "*/actuator/health"
+          - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/indexer/v2/info"
+          - /api/indexer/v2/swagger*
+          - /api/indexer/v2/api-docs*
+          - "/api/indexer/v2/webjars/*"
           - '*/index-worker'
           - '*/_dps/task-handlers'
           - '*/reindex'

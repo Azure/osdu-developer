@@ -1,0 +1,31 @@
+{{- $namespace := .Release.Namespace }}
+---
+apiVersion: apps/v1
+metadata:
+  name: osdu-auth-spa
+  namespace: {{ $namespace }}
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      app: osdu-auth-spa
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: osdu-auth-spa
+    spec:    
+      restartPolicy: Always
+      containers:
+      - image: nginx:stable-alpine
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: index-volume
+          mountPath: /usr/share/nginx/html/auth/spa
+      volumes:
+      - name: index-volume
+        configMap:
+          name: osdu-auth-spa-html

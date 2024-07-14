@@ -136,7 +136,7 @@ node_resource_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query 
 # Fetch Public IP Address of the Load Balancer named 'kubernetes'
 public_ip=$(az network public-ip list -g "$node_resource_group" --query "[?contains(name, 'kubernetes')].ipAddress" -otsv)
 if [[ -n $public_ip ]]; then
-    echo "Adding Public Web Endpoint:"
+    echo "Adding Public Web Endpoint: ${public_ip}"
     redirect_uris+=("https://$public_ip/auth/")  # Add public ingress URI
 fi
 azd env set INGRESS_EXTERNAL https://$public_ip/auth/
@@ -144,15 +144,47 @@ azd env set INGRESS_EXTERNAL https://$public_ip/auth/
 # Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
 private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
 if [[ -n $private_ip ]]; then
-    echo "Adding Private Web Endpoint:"
+    echo "Adding Private Web Endpoint: ${private_ip}"
     redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
 fi
 azd env set INGRESS_INTERNAL https://$private_ip/auth/
 
+_oid=$(az ad app show --id $AZURE_CLIENT_ID --query id -o tsv)
+
 # Update Azure AD app only if there are URIs to add
 if [ ${#redirect_uris[@]} -gt 0 ]; then
     echo "=================================================================="
-    echo "Adding Web Direct URIs: ${redirect_uris[@]}"
+    echo "Adding Redirect URIs: ${redirect_uris[@]}"
     echo "=================================================================="
-    az ad app update --id $AZURE_CLIENT_ID --web-redirect-uris "${redirect_uris[@]}"
+    
+    # Prepare web and SPA redirect URIs JSON payload
+    REDIRECT_URIS=$(printf '"%s",' "${redirect_uris[@]}")
+    REDIRECT_URIS="${REDIRECT_URIS%,}" # Remove trailing comma
+
+    SHA_REDIRECT_URIS=$(printf '"%sspa/",' "${redirect_uris[@]}")
+    SHA_REDIRECT_URIS="${SHA_REDIRECT_URIS%,}" # Remove trailing comma
+
+    # Correctly format the JSON payload
+    JSON_PAYLOAD=$(cat <<EOF
+{
+    "web": {
+        "redirectUris": [${REDIRECT_URIS}],
+        "implicitGrantSettings": {
+            "enableAccessTokenIssuance": false,
+            "enableIdTokenIssuance": false
+        }
+    },
+    "spa": {
+        "redirectUris": [${SHA_REDIRECT_URIS}],
+    }
+}
+EOF
+)
+
+    # Update web and SPA redirect URIs with implicitGrantSettings
+    az rest \
+      --method "PATCH" \
+      --uri "https://graph.microsoft.com/v1.0/applications/${_oid}" \
+      --headers "Content-Type=application/json" \
+      --body "$JSON_PAYLOAD"
 fi

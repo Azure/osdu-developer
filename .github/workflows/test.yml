@@ -256,7 +256,7 @@ jobs:
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} '
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             echo $PARAMS
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
@@ -271,7 +271,7 @@ jobs:
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} '
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
             if [[ -f $WHATIFPATH ]]
             then
@@ -351,7 +351,7 @@ jobs:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
-            PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }}"
+            PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
             az stack group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --action-on-unmanage deleteResources --verbose
       
       - name: Azure Login Refresh Token

@@ -1,0 +1,234 @@
+{{- $namespace := .Release.Namespace }}
+{{- $clientId := .Values.azure.appId }}
+{{- $tenantId := .Values.azure.tenantId }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: osdu-auth-spa-html
+  namespace: {{ $namespace }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      <title>OAuth Login</title>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+      <style type="text/css">
+        textarea {
+          margin-bottom: 5px;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="app">
+        <form id="oauth-form" @submit.prevent="handleAuthorize" class="text-center border border-light p-5" action="#!">
+          <p class="h2 mb-4">Microsoft Identity Platform (v2.0)</p>
+          <div class="form-group">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label class="float-left" for="clientId">ClientId</label>
+                <input type="text" class="form-control" id="clientId" v-model="clientId" readonly>
+              </div>
+              <div class="form-group col-md-6">
+                <label class="float-left" for="tenantId">TenantId</label>
+                <input type="text" class="form-control" id="tenantId" v-model="tenantId" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-6 mb-3">
+                <label class="float-left" for="redirectUrl">RedirectUrl</label>
+                <input type="text" class="form-control" id="redirectUrl" v-model="redirectUrl" readonly>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="float-left" for="scope">Scope</label>
+                <input type="text" class="form-control" id="scope" v-model="scope" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-1">
+                <a v-if="!authorizationCode && !refreshToken" @click="handleAuthorize" class="btn btn-primary float-right">Authorize</a>
+                <button @click="clearTokens" class="btn btn-danger float-left">Clear</button>
+                <button v-if="authorizationCode || refreshToken" @click="getTokens" class="btn btn-success float-right">Get Tokens</button>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="form-group shadow-textarea">
+            <div class="form-row">
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="authorizationCode">Authorization Code</label>
+                <textarea id="authorizationCode" v-model="authorizationCode" class="form-control z-depth-1" rows="5"></textarea>
+              </div>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="accessToken">Access Token</label>
+                <textarea id="accessToken" v-model="accessToken" class="form-control z-depth-1" rows="5"></textarea>
+                <a @click="decodeAccess()" class="btn btn-info btn-sm float-right" v-if="accessToken">Decode</a>
+              </div>
+              <div class="col-md-4 mb-4">
+                <label class="float-left" for="refreshToken">Refresh Token</label>
+                <textarea id="refreshToken" v-model="refreshToken" class="form-control z-depth-1" rows="5"></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- SCRIPTS -->
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios script -->
+      <script>
+        function base64urlencode(source) {
+          // Encode the source string into base64url format
+          return btoa(String.fromCharCode.apply(null, new Uint8Array(source)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+        }
+
+        async function generateCodeVerifier() {
+          const array = new Uint8Array(32);
+          window.crypto.getRandomValues(array);
+          return base64urlencode(array);
+        }
+
+        async function generateCodeChallenge(verifier) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(verifier);
+          const digest = await window.crypto.subtle.digest('SHA-256', data);
+          return base64urlencode(digest);
+        }
+
+        var app = new Vue({
+          el: '#app',
+          data: {
+            tenantId: '{{ $tenantId }}',
+            clientId: '{{ $clientId }}',
+            redirectUrl: window.location.origin + '/auth/spa/',
+            scope: '{{ $clientId }}/.default openid profile offline_access',
+            codeVerifier: '',
+            codeChallenge: '',
+            authorizationCode: null,
+            accessToken: null,
+            refreshToken: localStorage.getItem('refresh_token') || null,
+          },
+          computed: {
+            authorizeUrl: function () {
+              return "https://login.microsoftonline.com/" + this.tenantId +
+                "/oauth2/v2.0/authorize?" +
+                "client_id=" + this.clientId +
+                "&response_type=code" +
+                "&redirect_uri=" + this.redirectUrl +
+                "&response_mode=query" +
+                "&scope=" + this.scope +
+                "&state=12345" +
+                "&nonce=dummy123" +
+                "&code_challenge=" + this.codeChallenge +
+                "&code_challenge_method=S256";
+            }
+          },
+          methods: {
+            async getAuthCode() {
+              try {
+                const storedCodeVerifier = localStorage.getItem('code_verifier');
+                const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                  client_id: this.clientId,
+                  grant_type: 'authorization_code',
+                  code: this.authorizationCode,
+                  redirect_uri: this.redirectUrl,
+                  code_verifier: storedCodeVerifier
+                }));
+
+                // Update tokens
+                this.accessToken = response.data.access_token;
+                this.refreshToken = response.data.refresh_token;
+                this.authorizationCode = null;  // Clear the authorization code after exchange
+
+                // Store refresh token in localStorage
+                localStorage.setItem('refresh_token', this.refreshToken);
+                localStorage.setItem('access_token', this.accessToken);
+
+                // Clear the authorization code from the URL
+                history.replaceState({}, document.title, window.location.pathname);
+              } catch (error) {
+                console.error('Error exchanging authorization code for tokens:', error);
+                // Optionally, handle error and provide feedback to the user
+              }
+            },
+            async refreshAccessToken() {
+              try {
+                const response = await axios.post('https://login.microsoftonline.com/' + this.tenantId + '/oauth2/v2.0/token', new URLSearchParams({
+                  client_id: this.clientId,
+                  grant_type: 'refresh_token',
+                  refresh_token: this.refreshToken,
+                  redirect_uri: this.redirectUrl
+                }));
+
+                // Update tokens
+                this.accessToken = response.data.access_token;
+                this.refreshToken = response.data.refresh_token;
+
+                // Store refresh token in localStorage
+                localStorage.setItem('refresh_token', this.refreshToken);
+                localStorage.setItem('access_token', this.accessToken);
+              } catch (error) {
+                console.error('Error refreshing access token:', error);
+                // Optionally, handle error and provide feedback to the user
+              }
+            },
+            async getTokens() {
+              if (this.authorizationCode) {
+                await this.getAuthCode();
+              } else if (this.refreshToken) {
+                await this.refreshAccessToken();
+              }
+            },
+            async handleAuthorize() {
+              if (this.refreshToken) {
+                await this.refreshAccessToken();
+              } else {
+                this.codeVerifier = await generateCodeVerifier();
+                this.codeChallenge = await generateCodeChallenge(this.codeVerifier);
+                localStorage.setItem('code_verifier', this.codeVerifier);
+                window.location.href = this.authorizeUrl;
+              }
+            },
+            clearTokens: function () {
+              this.accessToken = null;
+              this.refreshToken = null;
+              this.authorizationCode = null;
+              localStorage.removeItem('refresh_token');
+              localStorage.removeItem('access_token');
+              window.location.href = window.location.origin + '/auth/spa/';
+            },
+            decodeAccess: function () {
+              var decodeUrl = "https://jwt.ms/#id_token=" + this.accessToken;
+              window.open(decodeUrl, "_blank");
+            }
+          },
+          async beforeMount() {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.authorizationCode = urlParams.get('code');
+            this.accessToken = localStorage.getItem('access_token');
+            this.refreshToken = localStorage.getItem('refresh_token');
+
+            if (this.accessToken && this.refreshToken) {
+            // Clear the authorization code
+              this.authorizationCode = null;
+              localStorage.removeItem('code_verifier');
+              history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            if (this.authorizationCode) {
+              this.codeVerifier = localStorage.getItem('code_verifier');
+            }
+          }
+        });
+      </script>
+    </body>
+    </html>

@@ -195,6 +195,9 @@ JSON_PAYLOAD=$(cat <<EOF
             "enableAccessTokenIssuance": true
         }
     },
+    "spa": {
+        "redirectUris": ["https://localhost:8080/spa"],
+    },
     "requiredResourceAccess": [
         {
             "resourceAppId": "00000003-0000-0000-c000-000000000000",
@@ -236,4 +239,9 @@ fi
 if [[ -z $AZURE_CLIENT_SECRET ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_SECRET..."
   azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv)
+fi
+
+if [[ -z $EMAIL_ADDRESS ]]; then
+  PrintMessage "  Retrieving User Email Address..."
+  azd env set EMAIL_ADDRESS $(az ad signed-in-user show --query userPrincipalName -o tsv)
 fi

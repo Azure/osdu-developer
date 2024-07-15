@@ -201,7 +201,7 @@ data-partition-id: {{data_partition_id}}
 
 ###
 # @name getPartitions
-GET {{PARTITION_HOST}}/partitions/
+GET {{PARTITION_HOST}}/partitions
 Authorization: Bearer {{access_token}}
 Accept: application/json
 

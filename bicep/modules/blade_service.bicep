@@ -125,8 +125,8 @@ var serviceLayerConfig = {
     sku: 'Basic'
   }
   cluster: {
-    aksVersion: '1.29'
-    meshVersion: 'asm-1-19'
+    aksVersion: '1.30'
+    meshVersion: 'asm-1-22'
     networkPlugin: networkPlugin
   }
   gitops: {

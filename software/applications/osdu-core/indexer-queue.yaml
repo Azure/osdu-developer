@@ -27,14 +27,14 @@ spec:
   targetNamespace: osdu-core
   values:
     nameOverride: indexer-queue
-    subset: m22
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
     - service: indexer-queue
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-24
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-25
       tag: latest
       probe:
         path: /actuator/health

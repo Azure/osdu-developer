@@ -53,14 +53,14 @@ spec:
       retries: 3
   values:
     nameOverride: file
-    subset: m22
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
     - service: file
-      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-24
+      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-26
       tag: latest
       path: /api/file/*
       probe:

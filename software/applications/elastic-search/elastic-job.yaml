@@ -1,32 +1,32 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: elastic-search-init
-  namespace: elastic-search
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  targetNamespace: elastic-search
-  dependsOn:
-    - name: elasticsearch
-      namespace: elastic-search
-      kind: Elasticsearch
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-init
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  values:
-    jobs:
-      partitionInit: false
-      entitlementInit: false
-      userInit: false
-      schemaInit: false
-      elasticInit: true
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: elastic-search-init
+#   namespace: elastic-search
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   targetNamespace: elastic-search
+#   dependsOn:
+#     - name: elasticsearch
+#       namespace: elastic-search
+#       kind: Elasticsearch
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-init
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     jobs:
+#       partitionInit: false
+#       entitlementInit: false
+#       userInit: false
+#       schemaInit: false
+#       elasticInit: true

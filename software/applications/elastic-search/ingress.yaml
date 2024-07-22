@@ -1,4 +1,13 @@
 ---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: kibana
+  namespace: elastic-search
+spec:
+  mtls:
+    mode: PERMISSIVE
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:

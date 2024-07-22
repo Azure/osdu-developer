@@ -6,7 +6,7 @@ metadata:
   annotations:
     eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
-  version: 8.5.3
+  version: 8.14.3
   nodeSets:
     - name: default
       count: 3
@@ -91,7 +91,7 @@ metadata:
   name: kibana
   namespace: elastic-search
 spec:
-  version: 8.5.3
+  version: 8.14.3
   http:
     tls:
       selfSignedCertificate:

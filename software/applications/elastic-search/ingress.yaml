@@ -14,8 +14,6 @@ spec:
   - match:
     - uri:
         prefix: /kibana
-    rewrite:
-      uri: "/"
     route:
     - destination:
         host: kibana-kb-http.elastic-search.svc.cluster.local

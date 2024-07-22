@@ -45,8 +45,8 @@ spec:
                 secretKeyRef:
                   name: elasticsearch-credentials
                   key: key
-            # - name: SERVER_BASEPATH
-            #   value: "/kibana" 
+            - name: SERVER_BASEPATH
+              value: "/kibana" 
             - name: REGION
               valueFrom:
                 fieldRef:

@@ -7,6 +7,13 @@ metadata:
     eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
   version: 8.14.3
+  # http:
+  #   tls:
+  #     selfSignedCertificate:
+  #       disabled: true
+  #   service:
+  #     spec:
+  #       type: ClusterIP
   nodeSets:
     - name: default
       count: 3
@@ -77,13 +84,7 @@ spec:
                 matchLabels:
                   elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
                   elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-default
-  http:
-    tls:
-      selfSignedCertificate:
-        disabled: true
-    service:
-      spec:
-        type: ClusterIP
+
 # ---
 # apiVersion: kibana.k8s.elastic.co/v1
 # kind: Kibana

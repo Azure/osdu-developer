@@ -8,6 +8,9 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   targetNamespace: elastic-search
+  dependsOn:
+    - name: elastic-search
+      namespace: elastic-search
   chart:
     spec:
       chart: ./charts/osdu-developer-init

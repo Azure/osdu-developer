@@ -4,4 +4,3 @@ metadata:
   name: elastic-search
   labels:
     toolkit.fluxcd.io/tenant: dev-team
-    istio-injection: enabled

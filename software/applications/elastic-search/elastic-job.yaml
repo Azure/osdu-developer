@@ -9,8 +9,9 @@ metadata:
 spec:
   targetNamespace: elastic-search
   dependsOn:
-    - name: elastic-search
+    - name: elasticsearch
       namespace: elastic-search
+      kind: Elasticsearch
   chart:
     spec:
       chart: ./charts/osdu-developer-init

@@ -54,4 +54,13 @@ resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
+resource elasticKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: '${partitionName}-elastic-key'
+  parent: keyVault
+
+  properties: {
+    value: substring(uniqueString(keyVault.id, partitionName, subscription().id, resourceGroup().id), 0, 32)
+  }
+}
+
 output keyVaultName string = keyVault.name

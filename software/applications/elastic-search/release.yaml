@@ -31,6 +31,8 @@ spec:
             vaultSecret: opendes-elastic-username
           - key: password
             vaultSecret: opendes-elastic-password
+          - key: key
+            vaultSecret: opendes-elastic-key
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

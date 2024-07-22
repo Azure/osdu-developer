@@ -85,51 +85,68 @@ spec:
                   elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
                   elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-default
 
-# ---
-# apiVersion: kibana.k8s.elastic.co/v1
-# kind: Kibana
-# metadata:
-#   name: kibana
-#   namespace: elastic-search
-# spec:
-#   version: 8.14.3
-#   http:
-#     tls:
-#       selfSignedCertificate:
-#         disabled: true
-#   elasticsearchRef:
-#     name: "elasticsearch"
-#   count: 3
-#   podTemplate:
-#     spec:
-#       tolerations:
-#         - effect: NoSchedule
-#           key: app
-#           value: "cluster"
-#       affinity:
-#         nodeAffinity:
-#           requiredDuringSchedulingIgnoredDuringExecution:
-#             nodeSelectorTerms:
-#               - matchExpressions:
-#                   - key: agentpool
-#                     operator: In
-#                     values:
-#                       - poolz1
-#                       - poolz2
-#                       - poolz3
-#               - matchExpressions:
-#                   - key: topology.kubernetes.io/zone
-#                     operator: In
-#                     values:
-#                       - "$(REGION)-1"
-#                       - "$(REGION)-2"
-#                       - "$(REGION)-3"
-#       containers:
-#         - name: kibana
-#           env:
-#             - name: SERVER_BASEPATH
-#               value: "/kibana" 
-#             - name: REGION
-#               valueFrom:
-#                 fieldRef:
-#                   fieldPath: metadata.labels['topology.kubernetes.io/region']
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic-search
+spec:
+  version: 8.14.3
+  # http:
+  #   tls:
+  #     selfSignedCertificate:
+  #       disabled: true
+  elasticsearchRef:
+    name: "elasticsearch"
+  count: 3
+  podTemplate:
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - "$(REGION)-1"
+                      - "$(REGION)-2"
+                      - "$(REGION)-3"
+      containers:
+        - name: kibana
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "https://elasticsearch:9200"
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: username
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: password
+            - name: xpack.encryptedSavedObjects.encryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: key
+            # - name: SERVER_BASEPATH
+            #   value: "/kibana" 
+            - name: REGION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['topology.kubernetes.io/region']

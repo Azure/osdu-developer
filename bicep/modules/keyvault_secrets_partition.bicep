@@ -59,7 +59,7 @@ resource elasticKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
 
   properties: {
-    value: substring(uniqueString(keyVault.id, partitionName, subscription().id, resourceGroup().id), 0, 32)
+    value: uniqueString(keyVault.id, partitionName, subscription().id, resourceGroup().id)
   }
 }
 

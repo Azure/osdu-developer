@@ -7,13 +7,13 @@ metadata:
     eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
   version: 8.14.3
-  # http:
-  #   tls:
-  #     selfSignedCertificate:
-  #       disabled: true
-  #   service:
-  #     spec:
-  #       type: ClusterIP
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+    service:
+      spec:
+        type: ClusterIP
   nodeSets:
     - name: default
       count: 3

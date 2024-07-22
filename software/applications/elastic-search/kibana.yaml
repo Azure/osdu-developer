@@ -45,6 +45,8 @@ spec:
                 secretKeyRef:
                   name: elasticsearch-credentials
                   key: key
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch-es-http.elastic-search:9200"  # Adjust this URL to match your 
             - name: REGION
               valueFrom:
                 fieldRef:

@@ -27,6 +27,15 @@ resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = i
   }
 }
 
+resource serviceBusNamespace 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (serviceBusName != 'null') {
+  name: '${partitionName}-sb-namespace'
+  parent: keyVault
+
+  properties: {
+    value: serviceBus.name
+  }
+}
+
 resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: '${partitionName}-elastic-endpoint'
   parent: keyVault

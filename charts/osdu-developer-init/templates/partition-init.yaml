@@ -93,8 +93,8 @@ data:
               "value": "sb-connection"
           },
           "sb-namespace": {
-              "sensitive": false,
-              "value": "{{ .Values.SERVICE_BUS_NAME }}"
+              "sensitive": true,
+              "value": "sb-namespace"
           },
           "storage-account-key": {
               "sensitive": true,

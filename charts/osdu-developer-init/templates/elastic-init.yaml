@@ -27,7 +27,7 @@ spec:
         - |
           tdnf install -y curl jq && \
           while true; do
-            health_status=$(curl -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" -k -s "https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200/_cluster/health" | jq -r '.status')
+            health_status=$(curl -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" -k -s "http://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200/_cluster/health" | jq -r '.status')
             if [ "$health_status" = "green" ]; then
               echo "Cluster health is green."
               exit 0
@@ -98,7 +98,7 @@ data:
     USER_JSON="{\"password\":\"$NEW_PASSWORD\",\"roles\":[\"$CUSTOM_ELASTIC_ROLE\"]}"
 
     # Elasticsearch service URL
-    ES_SERVICE_URL="https://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200"
+    ES_SERVICE_URL="http://elasticsearch-es-http.${NAMESPACE}.svc.cluster.local:9200"
 
     # Check if the custom role already exists
     role_response=$(curl -s -k -o /dev/null -w "%{http_code}" -u "elastic:$(cat /mnt/elasticsearch-es-elastic-user/elastic)" \

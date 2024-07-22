@@ -10,13 +10,13 @@ spec:
     - name: azure-keyvault-credentials
       namespace: elastic-search
   version: 8.14.3
-  http:
-    tls:
-      selfSignedCertificate:
-        disabled: true
-    service:
-      spec:
-        type: ClusterIP
+  # http:
+  #   tls:
+  #     selfSignedCertificate:
+  #       disabled: true
+  #   service:
+  #     spec:
+  #       type: ClusterIP
   nodeSets:
     - name: default
       count: 3

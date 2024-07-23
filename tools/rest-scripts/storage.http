@@ -77,7 +77,7 @@ data-partition-id: {{DATA_PARTITION}}
       "US"
     ],
     "contractId": "A1234",
-    "expirationDate": "2023-12-31",
+    "expirationDate": "2025-12-31",
     "originator": "MyCompany",
     "dataType": "Transferred Data",
     "securityClassification": "Public",
@@ -98,16 +98,6 @@ data-partition-id: {{DATA_PARTITION}}
 # -----------------------
 # API: storage
 # -----------------------
-
-###
-# @name getRecordIdByKind
-GET {{STORAGE_HOST}}/query/records?kind={{kind}}
-Authorization: Bearer {{access_token}}
-Accept: application/json
-data-partition-id: {{DATA_PARTITION}}
-
-@id = {{getRecordIdByKind.response.body.results[0]}}
-
 
 ###
 # @name createRecord
@@ -158,6 +148,14 @@ data-partition-id: {{DATA_PARTITION}}
 
 @recordversion = {{getRecord.response.body.version}}
 
+###
+# @name getRecordIdByKind
+GET {{STORAGE_HOST}}/query/records?kind={{kind}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{DATA_PARTITION}}
+
+@id = {{getRecordIdByKind.response.body.results[0]}}
 
 ###
 # @name getRecordByVersion
@@ -198,9 +196,3 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-###
-# @name purgeRecord
-DELETE {{STORAGE_HOST}}/records/{{id}}
-Authorization: Bearer {{access_token}}
-Accept: application/json
-data-partition-id: {{DATA_PARTITION}}

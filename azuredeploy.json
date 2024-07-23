@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "8261979087033445772"
+      "version": "0.29.47.4906",
+      "templateHash": "7940373530352335736"
     }
   },
   "parameters": {
@@ -2705,8 +2705,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "2789661120370091872"
+              "version": "0.29.47.4906",
+              "templateHash": "15758492391386666349"
             }
           },
           "definitions": {
@@ -6416,8 +6416,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "18201758590927435101"
+              "version": "0.29.47.4906",
+              "templateHash": "18082533322780954434"
             }
           },
           "definitions": {
@@ -9770,8 +9770,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "11325737617477229095"
+                      "version": "0.29.47.4906",
+                      "templateHash": "14446374829066371704"
                     }
                   },
                   "parameters": {
@@ -9913,8 +9913,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "16641422191893011048"
+                      "version": "0.29.47.4906",
+                      "templateHash": "17474158009409821991"
                     },
                     "name": "SSH Key Pair",
                     "description": "This module creates a SSH Key Pair and stores it in an Azure Key Vault",
@@ -10156,8 +10156,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1865658267913010236"
+                      "version": "0.29.47.4906",
+                      "templateHash": "13423031650004179024"
                     },
                     "name": "Key Vault Certificate",
                     "description": "This module creates a Key Vault Certificate and stores it in an Azure Key Vault",
@@ -10539,8 +10539,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1416001105684815277"
+                      "version": "0.29.47.4906",
+                      "templateHash": "15436384105852111599"
                     }
                   },
                   "parameters": {
@@ -10719,8 +10719,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2392557439903708598"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1387341905440195071"
                             }
                           },
                           "parameters": {
@@ -10835,8 +10835,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8131199251869078818"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1223229375479334765"
                             }
                           },
                           "parameters": {
@@ -11029,7 +11029,7 @@
                   "storageAccountKeySecretName": {
                     "value": "tbl-storage-key"
                   },
-                  "storageAccountEndpointSecretName": {
+                  "storageAccountTableEndpointSecretName": {
                     "value": "tbl-storage-endpoint"
                   },
                   "isSystem": {
@@ -11042,8 +11042,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "14639094489346232099"
+                      "version": "0.29.47.4906",
+                      "templateHash": "6041202029025162391"
                     }
                   },
                   "parameters": {
@@ -11290,11 +11290,18 @@
                         "description": "Optional: To save storage account key into vault set the secret name."
                       }
                     },
-                    "storageAccountEndpointSecretName": {
+                    "storageAccountTableEndpointSecretName": {
                       "type": "string",
                       "defaultValue": "",
                       "metadata": {
-                        "description": "Optional: To save storage account endpoint into vault set the secret name."
+                        "description": "Optional: To save storage account table endpoint into vault set the secret name."
+                      }
+                    },
+                    "storageAccountBlobEndpointSecretName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional: To save storage account blob endpoint into vault set the secret name."
                       }
                     },
                     "storageAccountConnectionString": {
@@ -11610,8 +11617,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "6405652156744681418"
+                              "version": "0.29.47.4906",
+                              "templateHash": "14961931288832709297"
                             }
                           },
                           "parameters": {
@@ -11732,8 +11739,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -11822,8 +11829,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -11912,8 +11919,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12002,8 +12009,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12092,8 +12099,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12182,8 +12189,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12246,10 +12253,10 @@
                       ]
                     },
                     {
-                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountEndpointSecretName'))))]",
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountTableEndpointSecretName'))))]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}-secret-endpoint', deployment().name)]",
+                      "name": "[format('{0}-secret-table-endpoint', deployment().name)]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -12260,7 +12267,7 @@
                             "value": "[parameters('keyVaultName')]"
                           },
                           "name": {
-                            "value": "[parameters('storageAccountEndpointSecretName')]"
+                            "value": "[parameters('storageAccountTableEndpointSecretName')]"
                           },
                           "value": {
                             "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.table]"
@@ -12272,8 +12279,98 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
+                            }
+                          },
+                          "parameters": {
+                            "keyVaultName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment."
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. The name of the secret."
+                              }
+                            },
+                            "value": {
+                              "type": "securestring",
+                              "metadata": {
+                                "description": "Required. The value of the secret. NOTE: \"value\" will never be returned from the service, as APIs using this model are is intended for internal use in ARM deployments. Users should use the data-plane REST service for interaction with vault secrets."
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.KeyVault/vaults/secrets",
+                              "apiVersion": "2022-07-01",
+                              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
+                              "properties": {
+                                "value": "[parameters('value')]"
+                              }
+                            }
+                          ],
+                          "outputs": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the secret."
+                              },
+                              "value": "[parameters('name')]"
+                            },
+                            "resourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource ID of the secret."
+                              },
+                              "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]"
+                            },
+                            "resourceGroupName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the resource group the secret was created in."
+                              },
+                              "value": "[resourceGroup().name]"
+                            }
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountBlobEndpointSecretName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-secret-blob-endpoint', deployment().name)]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "keyVaultName": {
+                            "value": "[parameters('keyVaultName')]"
+                          },
+                          "name": {
+                            "value": "[parameters('storageAccountBlobEndpointSecretName')]"
+                          },
+                          "value": {
+                            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.blob]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12362,8 +12459,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12452,8 +12549,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -12577,8 +12674,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1416001105684815277"
+                      "version": "0.29.47.4906",
+                      "templateHash": "15436384105852111599"
                     }
                   },
                   "parameters": {
@@ -12757,8 +12854,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2392557439903708598"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1387341905440195071"
                             }
                           },
                           "parameters": {
@@ -12873,8 +12970,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8131199251869078818"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1223229375479334765"
                             }
                           },
                           "parameters": {
@@ -13097,8 +13194,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "13029399342813275761"
+                      "version": "0.29.47.4906",
+                      "templateHash": "17725191658349633612"
                     }
                   },
                   "parameters": {
@@ -13693,8 +13790,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "5859332024956633835"
+                              "version": "0.29.47.4906",
+                              "templateHash": "16556052908927640261"
                             }
                           },
                           "parameters": {
@@ -13788,8 +13885,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.28.1.47646",
-                                      "templateHash": "16179714415489771393"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "6045809023459510097"
                                     }
                                   },
                                   "parameters": {
@@ -13964,8 +14061,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8144230846296100954"
+                              "version": "0.29.47.4906",
+                              "templateHash": "8121458545745540774"
                             }
                           },
                           "parameters": {
@@ -14055,8 +14152,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.28.1.47646",
-                                      "templateHash": "8733330789537150546"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "5788108188261743535"
                                     }
                                   },
                                   "parameters": {
@@ -14213,8 +14310,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8130591353401266744"
+                              "version": "0.29.47.4906",
+                              "templateHash": "8764262835909021528"
                             }
                           },
                           "parameters": {
@@ -14358,8 +14455,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14448,8 +14545,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14538,8 +14635,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14628,8 +14725,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14718,8 +14815,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14808,8 +14905,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -14954,8 +15051,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1416001105684815277"
+                      "version": "0.29.47.4906",
+                      "templateHash": "15436384105852111599"
                     }
                   },
                   "parameters": {
@@ -15134,8 +15231,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2392557439903708598"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1387341905440195071"
                             }
                           },
                           "parameters": {
@@ -15250,8 +15347,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8131199251869078818"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1223229375479334765"
                             }
                           },
                           "parameters": {
@@ -17027,8 +17124,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "4137274680105894375"
+              "version": "0.29.47.4906",
+              "templateHash": "12345479266833750238"
             }
           },
           "definitions": {
@@ -18406,8 +18503,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "6193347593343138899"
+                      "version": "0.29.47.4906",
+                      "templateHash": "8935577803835489018"
                     }
                   },
                   "parameters": {
@@ -18734,8 +18831,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "3024427849686858787"
+              "version": "0.29.47.4906",
+              "templateHash": "16774756639400328115"
             }
           },
           "definitions": {
@@ -18865,6 +18962,7 @@
               "secrets": {
                 "storageAccountName": "storage",
                 "storageAccountKey": "storage-key",
+                "storageAccountBlob": "storage-account-blob-endpoint",
                 "cosmosConnectionString": "cosmos-connection",
                 "cosmosEndpoint": "cosmos-endpoint",
                 "cosmosPrimaryKey": "cosmos-primary-key"
@@ -19263,6 +19361,9 @@
                   },
                   "storageAccountKeySecretName": {
                     "value": "[format('{0}-{1}', parameters('partitions')[copyIndex()].name, variables('partitionLayerConfig').secrets.storageAccountKey)]"
+                  },
+                  "storageAccountBlobEndpointSecretName": {
+                    "value": "[format('{0}-{1}', parameters('partitions')[copyIndex()].name, variables('partitionLayerConfig').secrets.storageAccountBlob)]"
                   }
                 },
                 "template": {
@@ -19271,8 +19372,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "14639094489346232099"
+                      "version": "0.29.47.4906",
+                      "templateHash": "6041202029025162391"
                     }
                   },
                   "parameters": {
@@ -19519,11 +19620,18 @@
                         "description": "Optional: To save storage account key into vault set the secret name."
                       }
                     },
-                    "storageAccountEndpointSecretName": {
+                    "storageAccountTableEndpointSecretName": {
                       "type": "string",
                       "defaultValue": "",
                       "metadata": {
-                        "description": "Optional: To save storage account endpoint into vault set the secret name."
+                        "description": "Optional: To save storage account table endpoint into vault set the secret name."
+                      }
+                    },
+                    "storageAccountBlobEndpointSecretName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional: To save storage account blob endpoint into vault set the secret name."
                       }
                     },
                     "storageAccountConnectionString": {
@@ -19839,8 +19947,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "6405652156744681418"
+                              "version": "0.29.47.4906",
+                              "templateHash": "14961931288832709297"
                             }
                           },
                           "parameters": {
@@ -19961,8 +20069,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20051,8 +20159,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20141,8 +20249,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20231,8 +20339,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20321,8 +20429,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20411,8 +20519,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20475,10 +20583,10 @@
                       ]
                     },
                     {
-                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountEndpointSecretName'))))]",
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountTableEndpointSecretName'))))]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}-secret-endpoint', deployment().name)]",
+                      "name": "[format('{0}-secret-table-endpoint', deployment().name)]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -20489,7 +20597,7 @@
                             "value": "[parameters('keyVaultName')]"
                           },
                           "name": {
-                            "value": "[parameters('storageAccountEndpointSecretName')]"
+                            "value": "[parameters('storageAccountTableEndpointSecretName')]"
                           },
                           "value": {
                             "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.table]"
@@ -20501,8 +20609,98 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
+                            }
+                          },
+                          "parameters": {
+                            "keyVaultName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment."
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. The name of the secret."
+                              }
+                            },
+                            "value": {
+                              "type": "securestring",
+                              "metadata": {
+                                "description": "Required. The value of the secret. NOTE: \"value\" will never be returned from the service, as APIs using this model are is intended for internal use in ARM deployments. Users should use the data-plane REST service for interaction with vault secrets."
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.KeyVault/vaults/secrets",
+                              "apiVersion": "2022-07-01",
+                              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
+                              "properties": {
+                                "value": "[parameters('value')]"
+                              }
+                            }
+                          ],
+                          "outputs": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the secret."
+                              },
+                              "value": "[parameters('name')]"
+                            },
+                            "resourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource ID of the secret."
+                              },
+                              "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]"
+                            },
+                            "resourceGroupName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the resource group the secret was created in."
+                              },
+                              "value": "[resourceGroup().name]"
+                            }
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('storageAccountBlobEndpointSecretName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-secret-blob-endpoint', deployment().name)]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "keyVaultName": {
+                            "value": "[parameters('keyVaultName')]"
+                          },
+                          "name": {
+                            "value": "[parameters('storageAccountBlobEndpointSecretName')]"
+                          },
+                          "value": {
+                            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name'))), '2023-01-01').primaryEndpoints.blob]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20591,8 +20789,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20681,8 +20879,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -20807,8 +21005,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1416001105684815277"
+                      "version": "0.29.47.4906",
+                      "templateHash": "15436384105852111599"
                     }
                   },
                   "parameters": {
@@ -20987,8 +21185,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2392557439903708598"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1387341905440195071"
                             }
                           },
                           "parameters": {
@@ -21103,8 +21301,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8131199251869078818"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1223229375479334765"
                             }
                           },
                           "parameters": {
@@ -21307,8 +21505,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "13029399342813275761"
+                      "version": "0.29.47.4906",
+                      "templateHash": "17725191658349633612"
                     }
                   },
                   "parameters": {
@@ -21903,8 +22101,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "5859332024956633835"
+                              "version": "0.29.47.4906",
+                              "templateHash": "16556052908927640261"
                             }
                           },
                           "parameters": {
@@ -21998,8 +22196,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.28.1.47646",
-                                      "templateHash": "16179714415489771393"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "6045809023459510097"
                                     }
                                   },
                                   "parameters": {
@@ -22174,8 +22372,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8144230846296100954"
+                              "version": "0.29.47.4906",
+                              "templateHash": "8121458545745540774"
                             }
                           },
                           "parameters": {
@@ -22265,8 +22463,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.28.1.47646",
-                                      "templateHash": "8733330789537150546"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "5788108188261743535"
                                     }
                                   },
                                   "parameters": {
@@ -22423,8 +22621,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8130591353401266744"
+                              "version": "0.29.47.4906",
+                              "templateHash": "8764262835909021528"
                             }
                           },
                           "parameters": {
@@ -22568,8 +22766,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -22658,8 +22856,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -22748,8 +22946,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -22838,8 +23036,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -22928,8 +23126,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -23018,8 +23216,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "13962137402430719104"
+                              "version": "0.29.47.4906",
+                              "templateHash": "15502641388312312580"
                             }
                           },
                           "parameters": {
@@ -23165,8 +23363,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "1416001105684815277"
+                      "version": "0.29.47.4906",
+                      "templateHash": "15436384105852111599"
                     }
                   },
                   "parameters": {
@@ -23345,8 +23543,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2392557439903708598"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1387341905440195071"
                             }
                           },
                           "parameters": {
@@ -23461,8 +23659,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "8131199251869078818"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1223229375479334765"
                             }
                           },
                           "parameters": {
@@ -27807,8 +28005,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "5531877393053084967"
+                      "version": "0.29.47.4906",
+                      "templateHash": "2515165131604443405"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -28020,8 +28218,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "17114889831519177665"
+                      "version": "0.29.47.4906",
+                      "templateHash": "5377994249158521066"
                     }
                   },
                   "parameters": {
@@ -28058,6 +28256,15 @@
                       }
                     },
                     {
+                      "condition": "[not(equals(parameters('serviceBusName'), 'null'))]",
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2023-07-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), format('{0}-sb-namespace', parameters('partitionName')))]",
+                      "properties": {
+                        "value": "[parameters('serviceBusName')]"
+                      }
+                    },
+                    {
                       "type": "Microsoft.KeyVault/vaults/secrets",
                       "apiVersion": "2023-07-01",
                       "name": "[format('{0}/{1}', parameters('keyVaultName'), format('{0}-elastic-endpoint', parameters('partitionName')))]",
@@ -28079,6 +28286,14 @@
                       "name": "[format('{0}/{1}', parameters('keyVaultName'), format('{0}-elastic-password', parameters('partitionName')))]",
                       "properties": {
                         "value": "[substring(uniqueString(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), parameters('partitionName'), resourceGroup().id), 0, 8)]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2023-07-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), format('{0}-elastic-key', parameters('partitionName')))]",
+                      "properties": {
+                        "value": "[uniqueString(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), parameters('partitionName'), subscription().id, resourceGroup().id)]"
                       }
                     }
                   ],
@@ -28234,8 +28449,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "10395891361837883648"
+              "version": "0.29.47.4906",
+              "templateHash": "6628956245743335592"
             }
           },
           "definitions": {
@@ -28494,7 +28709,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.19.0"
+              "release": "v0.20.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -28502,8 +28717,8 @@
                 "sku": "Basic"
               },
               "cluster": {
-                "aksVersion": "1.29",
-                "meshVersion": "asm-1-19",
+                "aksVersion": "1.30",
+                "meshVersion": "asm-1-22",
                 "networkPlugin": "[parameters('networkPlugin')]"
               },
               "gitops": {
@@ -30825,8 +31040,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "9357095214984398246"
+                      "version": "0.29.47.4906",
+                      "templateHash": "5842342032885155142"
                     }
                   },
                   "parameters": {
@@ -31769,8 +31984,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "12718591541324786495"
+                      "version": "0.29.47.4906",
+                      "templateHash": "5967369737900020169"
                     }
                   },
                   "parameters": {
@@ -31957,8 +32172,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "12718591541324786495"
+                      "version": "0.29.47.4906",
+                      "templateHash": "5967369737900020169"
                     }
                   },
                   "parameters": {
@@ -32145,8 +32360,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "12718591541324786495"
+                      "version": "0.29.47.4906",
+                      "templateHash": "5967369737900020169"
                     }
                   },
                   "parameters": {
@@ -32314,8 +32529,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -32429,8 +32644,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -32545,8 +32760,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -32661,8 +32876,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -32777,8 +32992,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -32893,8 +33108,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -33009,8 +33224,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -33125,8 +33340,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "663270811232806628"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3716898257490923786"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -33233,8 +33448,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "9468618432521818946"
+                      "version": "0.29.47.4906",
+                      "templateHash": "14648755147209800152"
                     }
                   },
                   "parameters": {
@@ -33373,8 +33588,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "9468618432521818946"
+                      "version": "0.29.47.4906",
+                      "templateHash": "14648755147209800152"
                     }
                   },
                   "parameters": {
@@ -33522,8 +33737,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "9567599009198812117"
+                      "version": "0.29.47.4906",
+                      "templateHash": "3781367231783033192"
                     },
                     "name": "AKS Run Command Script",
                     "description": "An Azure CLI Deployment Script that allows you to run a command on a Kubernetes cluster.",
@@ -33772,8 +33987,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "8498958829699023230"
+                      "version": "0.29.47.4906",
+                      "templateHash": "7138978894681617658"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -34144,8 +34359,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "2542231306950833795"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1582536925854098559"
                             }
                           },
                           "parameters": {
@@ -34265,8 +34480,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.28.1.47646",
-                              "templateHash": "878038598555388076"
+                              "version": "0.29.47.4906",
+                              "templateHash": "12687607211502800271"
                             }
                           },
                           "parameters": {
@@ -34462,8 +34677,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "14714913331002345736"
+                      "version": "0.29.47.4906",
+                      "templateHash": "780456053083438046"
                     },
                     "name": "AKS Config Map",
                     "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",
@@ -34973,8 +35188,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "12418884776920467816"
+                      "version": "0.29.47.4906",
+                      "templateHash": "12298167673955976093"
                     }
                   },
                   "parameters": {
@@ -35507,8 +35722,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "4851787259821054400"
+                      "version": "0.29.47.4906",
+                      "templateHash": "13412644579535244032"
                     }
                   },
                   "parameters": {

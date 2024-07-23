@@ -25,7 +25,7 @@ spec:
       retries: 3
   values:
     nameOverride: entitlements
-    subset: m24
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP

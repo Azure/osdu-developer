@@ -125,8 +125,8 @@ metadata:
     fluxcd.io/retrigger: "initial" 
 spec:
   dependsOn:
-    - name: osdu-init-partition
-      namespace: osdu-core
+    - name: entitlements
+      namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

@@ -1,34 +1,8 @@
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: file
-  namespace: osdu-core
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - istio-system/internal-gateway
-  - istio-system/external-gateway
-  http:
-  - match:
-    - uri:
-        prefix: "/api/file/"
-    route:
-    - destination:
-        host: file.osdu-core.svc.cluster.local
-        subset: m23
-        port:
-          number: 80
-      weight: 100
-    retries:
-      attempts: 3
-      perTryTimeout: 2s
----
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: file-service
+  name: legal
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
@@ -36,7 +10,7 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
-  - name: osdu-init-partition
+  - name: partition
     namespace: osdu-core
   targetNamespace: osdu-core
   chart:
@@ -52,20 +26,28 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: file
+    nameOverride: legal
     subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: file
-      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-26
-      tag: latest
-      path: /api/file/*
+    - service: legal
+      path: /api/legal/v1/
+      hosts:
+        - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-release-0-25
+      tag: latest 
       probe:
-        path: /api/file/v2/readiness_check
-        port: http
+        path: /actuator/health
+        port: 8081
+        liveness:
+          delay: 250
+          seconds: 10
       keyvault: true
       auth:
         disable:
@@ -74,10 +56,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/file/info"
-          - "/api/file/swagger*"
-          - "/api/file/api-docs*"
-          - "/api/file/webjars/*"
+          - "/api/legal/v1/info"
+          - "/api/legal/v1/swagger*"
+          - "/api/legal/v1/api-docs*"
+          - "/api/legal/v1/webjars/*"          
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -91,14 +73,10 @@ spec:
         secret:
           name: active-directory
           key: principal-clientpassword
-      - name: KEYVAULT_URL
+      - name: KEYVAULT_URI
         secret:
           name: azure-resources
           key: keyvault-uri
-      - name: AZURE_AD_APP_RESOURCE_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
       - name: AAD_CLIENT_ID
         secret:
           name: active-directory
@@ -116,44 +94,32 @@ spec:
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
       - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/file/"
+        value: "/api/legal/v1/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: "file"
+        value: "legal"
       - name: SPRING_CONFIG_NAME
         value: "common,application"
       - name: LOG_PREFIX
-        value: file
-      - name: LOGGING_LEVEL
-        value: INFO
-      - name: APPLICATION_PORT
-        value: 80
+        value: "legal"
+      - name: AZURE_STORAGE_ENABLE_HTTPS
+        value: "true"
       - name: COSMOSDB_DATABASE
-        value: osdu-db
-      - name: OSDU_ENTITLEMENTS_APP_KEY
-        value: OBSOLETE
+        value: "osdu-db"
+      - name: AZURE_STORAGE_CONTAINER_NAME
+        value: "legal-service-azure-configuration"
+      - name: LEGAL_SERVICE_REGION
+        value: "us"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: "legaltags"
+      - name: REDIS_DATABASE
+        value: "2"
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
-      - name: OSDU_ENTITLEMENTS_URL
-        value: http://entitlements/api/entitlements/v2
-      - name: authorizeAPI
-        value: http://entitlements/api/entitlements/v2
-      - name: OSDU_STORAGE_URL
-        value: http://storage/api/storage/v2
-      - name: SEARCH_HOST
-        value: http://search/api/search/v2
-      - name: AZURE_PUBSUB_PUBLISH
-        value: "true"
-      - name: SERVICE_BUS_ENABLED_STATUS
-        value: "true"
-      - name: SERVICE_BUS_TOPIC_STATUS
-        value: "statuschangedtopic"
-      - name: BATCH_SIZE
-        value: "100"
-      - name: SEARCH_QUERY_LIMIT
-        value: "1000"
-      - name: FILE_CHECKSUM_CALCULATION_LIMIT
-        value: "5368709120L"
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://entitlements/api/entitlements/v2"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"

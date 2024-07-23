@@ -10,7 +10,7 @@ spec:
   dependsOn:
   - name: osdu-developer-base
     namespace: default
-  - name: osdu-init-schema
+  - name: osdu-init-entitlements
     namespace: osdu-core
   chart:
     spec:

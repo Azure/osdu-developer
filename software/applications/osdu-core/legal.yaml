@@ -11,7 +11,7 @@ spec:
   - name: osdu-developer-base
     namespace: default
   - name: partition
-    namespace: osdu-core
+    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

@@ -28,16 +28,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: file-service
+  name: file
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-entitlements
-    namespace: osdu-core
+  - name: legal
+    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

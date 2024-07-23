@@ -8,8 +8,6 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
   - name: partition
     namespace: flux-system
   targetNamespace: osdu-core

@@ -8,10 +8,8 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-entitlements
-    namespace: osdu-core
+  - name: legal
+    namespace: flux-system
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -144,10 +142,8 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-entitlements
-    namespace: osdu-core
+  - name: legal
+    namespace: flux-system
   chart:
     spec:
       chart: ./charts/osdu-developer-service

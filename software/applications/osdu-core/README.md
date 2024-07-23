@@ -2,35 +2,35 @@
 
 ```mermaid
 flowchart TD
-  osdu_developer_base("osdu-developer-base")
+  base("base")
   partition("partition")
-  osdu_init_partition("osdu-init-partition")
+  partition_init("partition-init")
   entitlements("entitlements")
-  osdu_init_entitlements("osdu-init-entitlements")
+  entitlements_init("entitlements-init")
   legal("legal")
-  indexer_service("indexer-service")
+  indexer("indexer")
   indexer_queue("indexer-queue")
-  osdu_init_users("osdu-init-users")
-  schema_service("schema-service")
-  osdu_init_schema("osdu-init-schema")
+  user_init("user-init")
+  schema("schema")
+  schema_init("schema-init")
   storage("storage")
   file("file")
   search("search")
 
-  osdu_developer_base-->partition
+  base-->partition
   partition-->entitlements
-  partition-->osdu_init_partition
-  entitlements-->osdu_init_entitlements
-  osdu_init_partition-->osdu_init_entitlements
-  osdu_init_entitlements-->legal
-  legal-->indexer_service
+  partition-->partition_init
+  entitlements-->entitlements_init
+  partition_init-->entitlements_init
+  entitlements_init-->legal
+  legal-->indexer
   legal-->indexer_queue
-  osdu_init_entitlements-->osdu_init_users
-  indexer_service-->schema_service
-  indexer_queue-->schema_service
-  schema_service-->osdu_init_schema
-  schema_service-->storage
-  schema_service-->file
+  entitlements_init-->user_init
+  indexer-->schema
+  indexer_queue-->schema
+  schema-->schema_init
+  schema-->storage
+  schema-->file
   storage-->search
   file-->search
 ```

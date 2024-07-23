@@ -9,6 +9,8 @@ spec:
   dependsOn:
     - name: schema-service
       namespace: flux-system
+    - name: indexer-service
+      namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:

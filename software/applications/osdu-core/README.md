@@ -10,10 +10,12 @@ flowchart TD
   legal("legal")
   indexer_service("indexer-service")
   indexer_queue("indexer-queue")
+  osdu_init_users("osdu-init-users")
+  schema_service("schema-service")
+  osdu_init_schema("osdu-init-schema")
   storage("storage")
   file("file")
   search("search")
-  osdu_init_users("osdu-init-users")
 
   osdu_developer_base-->partition
   partition-->entitlements
@@ -23,11 +25,12 @@ flowchart TD
   osdu_init_entitlements-->legal
   legal-->indexer_service
   legal-->indexer_queue
-  legal-->storage
-  legal-->file
-  indexer_service-->search
-  indexer_queue-->search
+  osdu_init_entitlements-->osdu_init_users
+  indexer_service-->schema_service
+  indexer_queue-->schema_service
+  schema_service-->osdu_init_schema
+  schema_service-->storage
+  schema_service-->file
   storage-->search
   file-->search
-  osdu_init_entitlements-->osdu_init_users
 ```

@@ -8,13 +8,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: indexer-service
-    namespace: flux-system
-  - name: indexer-queue
-    namespace: flux-system
-  - name: storage
-    namespace: flux-system
-  - name: file
+  - name: schema
     namespace: flux-system
   chart:
     spec:

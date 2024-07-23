@@ -34,7 +34,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: legal
+  - name: schema
     namespace: flux-system
   targetNamespace: osdu-core
   chart:

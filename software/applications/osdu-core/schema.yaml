@@ -8,10 +8,10 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-entitlements
-    namespace: osdu-core
+  - name: indexer-service
+    namespace: flux-system
+  - name: indexer-queue
+    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:
@@ -129,10 +129,6 @@ metadata:
 spec:
   dependsOn:
     - name: schema-service
-      namespace: flux-system
-    - name: indexer-service
-      namespace: flux-system
-    - name: indexer-queue
       namespace: flux-system
   targetNamespace: osdu-core
   chart:

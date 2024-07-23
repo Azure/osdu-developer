@@ -1,6 +1,3 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
 # ------- HTTP REST CLIENT -------
 # https://marketplace.visualstudio.com/items?itemName=humao.rest-client
 #
@@ -169,6 +166,7 @@ data-partition-id: {{DATA_PARTITION}}
 ###
 # @name searchRecord
 POST {{SEARCH_HOST}}/query
+# POST http://localhost:8080/api/search/v2/query
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{DATA_PARTITION}}

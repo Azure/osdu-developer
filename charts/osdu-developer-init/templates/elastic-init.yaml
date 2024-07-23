@@ -6,11 +6,16 @@ kind: Job
 metadata:
   name: init-elastic
   namespace: {{ $namespace }}
+  annotations:
+    sidecar.istio.io/inject: "false"  # Disable Istio sidecar injection
 spec:
   ttlSecondsAfterFinished: 120
   activeDeadlineSeconds: 600 # Timeout set to 10 minutes
   backoffLimit: 2            # Job will fail after 2 unsuccessful retries
   template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"  # Disable Istio sidecar injection
     spec:
       serviceAccountName: workload-identity-sa  # Specify the service account here
       initContainers:

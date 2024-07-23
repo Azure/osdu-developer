@@ -6,4 +6,3 @@ metadata:
   labels:
     toolkit.fluxcd.io/tenant: dev-team
     istio-injection: enabled
-  

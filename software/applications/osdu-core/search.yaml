@@ -2,15 +2,15 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: entitlements
+  name: search
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: partition
+  - name: storage
+    namespace: flux-system
+  - name: file
     namespace: flux-system
   targetNamespace: osdu-core
   chart:
@@ -26,21 +26,21 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: entitlements
-    subset: m24
+    nameOverride: search
+    subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: entitlements
-      path: /api/entitlements/v2/
+    - service: search
+      path: /api/search/v2/
       hosts:
-      - "*"
+        - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
+      repository: community.opengroup.org:5555/osdu/platform/system/search-service/search-service-release-0-26
       tag: latest
       probe:
         path: /actuator/health
@@ -49,6 +49,12 @@ spec:
           delay: 250
           seconds: 10
       keyvault: true
+      request:
+        cpu: 500m
+        memory: 1Gi
+      limit:
+        cpu: 1000m
+        memory: 4Gi
       auth:
         disable:
           - "*/actuator/health"
@@ -56,10 +62,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/entitlements/v2/info"
-          - "/api/entitlements/v2/swagger*"
-          - "/api/entitlements/v2/api-docs*"
-          - "/api/entitlements/v2/webjars/*"
+          - "/api/search/v2/info"
+          - "/api/search/v2/swagger*"
+          - "/api/search/v2/api-docs*"  
+          - "/api/search/v2/webjars/*"        
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -76,7 +82,7 @@ spec:
       - name: KEYVAULT_URI
         secret:
           name: azure-resources
-          key: keyvault-uri 
+          key: keyvault-uri
       - name: AAD_CLIENT_ID
         secret:
           name: active-directory
@@ -93,25 +99,35 @@ spec:
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
-      - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/entitlements/v2/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: "entitlements"
-      - name: SPRING_CONFIG_NAME
-        value: "common,application"
+        value: search
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: /api/search/v2/
       - name: LOG_PREFIX
-        value: "entitlements"
-      - name: LOGGING_LEVEL
+        value: "search"
+      - name: SEARCH_SERVICE_SPRING_LOGGING_LEVEL
         value: "DEBUG"
-      - name: SERVICE_DOMAIN_NAME
-        value: "dataservices.energy"
-      - name: ROOT_DATA_GROUP_QUOTA
-        value: "5000"
-      - name: REDIS_TTL_SECONDS
-        value: "1"
+      - name: COSMOSDB_DATABASE
+        value: "osdu-db"
+      - name: REDIS_DATABASE
+        value: "5"
+      - name: ENVIRONMENT
+        value: "evt"
+      - name: ELASTIC_CACHE_EXPIRATION
+        value: 1
+      - name: MAX_CACHE_VALUE_SIZE
+        value: 60
+      - name: SERVICE_POLICY_ENABLED
+        value: "false"
+      - name: SERVICE_POLICY_ENABLED
+        value: "false"
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://entitlements/api/entitlements/v2"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"

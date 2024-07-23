@@ -1,17 +1,42 @@
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: file
+#   namespace: osdu-core
+# spec:
+#   hosts:
+#   - "*"
+#   gateways:
+#   - istio-system/internal-gateway
+#   - istio-system/external-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: "/api/file/"
+#     route:
+#     - destination:
+#         host: file.osdu-core.svc.cluster.local
+#         subset: m23
+#         port:
+#           number: 80
+#       weight: 100
+#     retries:
+#       attempts: 3
+#       perTryTimeout: 2s
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: indexer-service
+  name: file
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-schema
-    namespace: osdu-core
+  - name: schema
+    namespace: flux-system
+  targetNamespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -24,23 +49,22 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-core
   values:
-    nameOverride: indexer
+    nameOverride: file
     subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: indexer
-      path: /api/indexer/v2/
+    - service: file
+      path: /api/file/*
       hosts:
         - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-release-0-26
+      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-26
       tag: latest
       probe:
         path: /actuator/health
@@ -56,13 +80,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/indexer/v2/info"
-          - /api/indexer/v2/swagger*
-          - /api/indexer/v2/api-docs*
-          - "/api/indexer/v2/webjars/*"
-          - '*/index-worker'
-          - '*/_dps/task-handlers'
-          - '*/reindex'
+          - "/api/file/info"
+          - "/api/file/swagger*"
+          - "/api/file/api-docs*"
+          - "/api/file/webjars/*"
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -76,10 +97,14 @@ spec:
         secret:
           name: active-directory
           key: principal-clientpassword
-      - name: KEYVAULT_URI
+      - name: KEYVAULT_URL
         secret:
           name: azure-resources
           key: keyvault-uri
+      - name: AZURE_AD_APP_RESOURCE_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
       - name: AAD_CLIENT_ID
         secret:
           name: active-directory
@@ -96,41 +121,45 @@ spec:
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/file/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
-      - name: SECURITY_HTTPS_CERTIFICATE_TRUST
-        value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: indexer
-      - name: SERVER_SERVLET_CONTEXTPATH
-        value: /api/indexer/v2/
+        value: "file"
+      - name: SPRING_CONFIG_NAME
+        value: "common,application"
+      - name: LOG_PREFIX
+        value: file
+      - name: LOGGING_LEVEL
+        value: INFO
+      - name: APPLICATION_PORT
+        value: 80
       - name: COSMOSDB_DATABASE
         value: osdu-db
-      - name: REDIS_DATABASE
-        value: "4"
-      - name: REDIS_TTL_SECONDS
-        value: "3600"
-      - name: SERVICEBUS_TOPIC_NAME
-        value: indexing-progress
-      - name: REINDEX_TOPIC_NAME
-        value: recordstopic
+      - name: OSDU_ENTITLEMENTS_APP_KEY
+        value: OBSOLETE
       - name: PARTITION_SERVICE_ENDPOINT
-        value: http://partition/api/partition/v1
-      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: OSDU_ENTITLEMENTS_URL
         value: http://entitlements/api/entitlements/v2
-      - name: ENTITLEMENTS_SERVICE_API_KEY
-        value: "OBSOLETE"
-      - name: SCHEMA_SERVICE_URL
-        value: http://schema/api/schema-service/v1
-      - name: STORAGE_SERVICE_URL
+      - name: authorizeAPI
+        value: http://entitlements/api/entitlements/v2
+      - name: OSDU_STORAGE_URL
         value: http://storage/api/storage/v2
-      - name: STORAGE_SCHEMA_HOST
-        value: http://storage/api/storage/v2/schemas
-      - name: STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST
-        value: http://storage/api/storage/v2/query/records:batch
-      - name: STORAGE_QUERY_RECORD_HOST
-        value: http://storage/api/storage/v2/query/records
-      - name: SEARCH_SERVICE_URL
+      - name: SEARCH_HOST
         value: http://search/api/search/v2
+      - name: AZURE_PUBSUB_PUBLISH
+        value: "true"
+      - name: SERVICE_BUS_ENABLED_STATUS
+        value: "true"
+      - name: SERVICE_BUS_TOPIC_STATUS
+        value: "statuschangedtopic"
+      - name: BATCH_SIZE
+        value: "100"
+      - name: SEARCH_QUERY_LIMIT
+        value: "1000"
+      - name: FILE_CHECKSUM_CALCULATION_LIMIT
+        value: "5368709120L"

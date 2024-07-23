@@ -2,16 +2,15 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: search-service
-  namespace: osdu-core
+  name: legal
+  namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-schema
+  - name: osdu-init-entitlements
     namespace: osdu-core
+  targetNamespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -24,24 +23,23 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-core
   values:
-    nameOverride: search
+    nameOverride: legal
     subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: search
-      path: /api/search/v2/
+    - service: legal
+      path: /api/legal/v1/
       hosts:
         - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/search-service/search-service-release-0-26
-      tag: latest
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-release-0-25
+      tag: latest 
       probe:
         path: /actuator/health
         port: 8081
@@ -49,12 +47,6 @@ spec:
           delay: 250
           seconds: 10
       keyvault: true
-      request:
-        cpu: 500m
-        memory: 1Gi
-      limit:
-        cpu: 1000m
-        memory: 4Gi
       auth:
         disable:
           - "*/actuator/health"
@@ -62,10 +54,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/search/v2/info"
-          - "/api/search/v2/swagger*"
-          - "/api/search/v2/api-docs*"  
-          - "/api/search/v2/webjars/*"        
+          - "/api/legal/v1/info"
+          - "/api/legal/v1/swagger*"
+          - "/api/legal/v1/api-docs*"
+          - "/api/legal/v1/webjars/*"          
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -99,32 +91,30 @@ spec:
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/legal/v1/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: search
-      - name: SERVER_SERVLET_CONTEXTPATH
-        value: /api/search/v2/
+        value: "legal"
+      - name: SPRING_CONFIG_NAME
+        value: "common,application"
       - name: LOG_PREFIX
-        value: "search"
-      - name: SEARCH_SERVICE_SPRING_LOGGING_LEVEL
-        value: "DEBUG"
+        value: "legal"
+      - name: AZURE_STORAGE_ENABLE_HTTPS
+        value: "true"
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
+      - name: AZURE_STORAGE_CONTAINER_NAME
+        value: "legal-service-azure-configuration"
+      - name: LEGAL_SERVICE_REGION
+        value: "us"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: "legaltags"
       - name: REDIS_DATABASE
-        value: "5"
-      - name: ENVIRONMENT
-        value: "evt"
-      - name: ELASTIC_CACHE_EXPIRATION
-        value: 1
-      - name: MAX_CACHE_VALUE_SIZE
-        value: 60
-      - name: SERVICE_POLICY_ENABLED
-        value: "false"
-      - name: SERVICE_POLICY_ENABLED
-        value: "false"
+        value: "2"
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
       - name: ENTITLEMENTS_SERVICE_ENDPOINT

@@ -49,8 +49,6 @@ Host: local.osdu-developer.com
 # API: Partition
 # -----------------------
 
-@sb_namespace = mybus
-
 ###
 # @name createPartition
 POST {{PARTITION_HOST}}/partitions/{{data_partition_id}}
@@ -92,8 +90,8 @@ data-partition-id: {{data_partition_id}}
             "value": "sb-connection"
         },
         "sb-namespace": {
-            "sensitive": false,
-            "value": "mybus"
+            "sensitive": true,
+           "value": "sb-namespace"
         },
         "storage-account-key": {
             "sensitive": true,

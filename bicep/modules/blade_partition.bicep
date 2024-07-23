@@ -72,6 +72,7 @@ var partitionLayerConfig = {
   secrets: {
     storageAccountName: 'storage'
     storageAccountKey: 'storage-key'
+    storageAccountBlob: 'storage-account-blob-endpoint'
     cosmosConnectionString: 'cosmos-connection'
     cosmosEndpoint: 'cosmos-endpoint'
     cosmosPrimaryKey: 'cosmos-primary-key'
@@ -469,6 +470,7 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
     keyVaultName: kvName
     storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
     storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
+    storageAccountBlobEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
   }
 }]
 

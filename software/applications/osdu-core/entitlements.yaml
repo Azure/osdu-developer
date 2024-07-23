@@ -2,16 +2,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: legal
+  name: entitlements
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: osdu-developer-base
-    namespace: default
-  - name: osdu-init-partition
-    namespace: osdu-core
+  - name: partition
+    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:
@@ -26,22 +24,22 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: legal
+    nameOverride: entitlements
     subset: m23
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: legal
-      path: /api/legal/v1/
+    - service: entitlements
+      path: /api/entitlements/v2/
       hosts:
-        - "*"
+      - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-release-0-25
-      tag: latest 
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-26
+      tag: latest
       probe:
         path: /actuator/health
         port: 8081
@@ -56,10 +54,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/legal/v1/info"
-          - "/api/legal/v1/swagger*"
-          - "/api/legal/v1/api-docs*"
-          - "/api/legal/v1/webjars/*"          
+          - "/api/entitlements/v2/info"
+          - "/api/entitlements/v2/swagger*"
+          - "/api/entitlements/v2/api-docs*"
+          - "/api/entitlements/v2/webjars/*"
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -76,7 +74,7 @@ spec:
       - name: KEYVAULT_URI
         secret:
           name: azure-resources
-          key: keyvault-uri
+          key: keyvault-uri 
       - name: AAD_CLIENT_ID
         secret:
           name: active-directory
@@ -94,32 +92,70 @@ spec:
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
         value: "false"
       - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/legal/v1/"
+        value: "/api/entitlements/v2/"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: "legal"
+        value: "entitlements"
       - name: SPRING_CONFIG_NAME
         value: "common,application"
       - name: LOG_PREFIX
-        value: "legal"
-      - name: AZURE_STORAGE_ENABLE_HTTPS
-        value: "true"
-      - name: COSMOSDB_DATABASE
-        value: "osdu-db"
-      - name: AZURE_STORAGE_CONTAINER_NAME
-        value: "legal-service-azure-configuration"
-      - name: LEGAL_SERVICE_REGION
-        value: "us"
-      - name: SERVICEBUS_TOPIC_NAME
-        value: "legaltags"
-      - name: REDIS_DATABASE
-        value: "2"
+        value: "entitlements"
+      - name: LOGGING_LEVEL
+        value: "DEBUG"
+      - name: SERVICE_DOMAIN_NAME
+        value: "dataservices.energy"
+      - name: ROOT_DATA_GROUP_QUOTA
+        value: "5000"
+      - name: REDIS_TTL_SECONDS
+        value: "1"
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
-      - name: ENTITLEMENTS_SERVICE_ENDPOINT
-        value: "http://entitlements/api/entitlements/v2"
-      - name: ENTITLEMENTS_SERVICE_API_KEY
-        value: "OBSOLETE"
+---
+# Retrigger:  kubectl annotate helmrelease osdu-init-entitlements fluxcd.io/retrigger=$(date +%s) -n osdu-core
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-init-entitlements
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial" 
+spec:
+  dependsOn:
+    - name: entitlements
+      namespace: flux-system
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    jobs:
+      partitionInit: false
+      entitlementInit: true
+      userInit: false
+      elasticInit: false
+      schemaInit: false
+    partition: opendes
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id

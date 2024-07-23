@@ -1,0 +1,49 @@
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic-search
+spec:
+  version: 7.17.22
+  elasticsearchRef:
+    name: "elasticsearch"
+  count: 3
+  podTemplate:
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - "$(REGION)-1"
+                      - "$(REGION)-2"
+                      - "$(REGION)-3"
+      containers:
+        - name: kibana
+          env:
+            - name: xpack.encryptedSavedObjects.encryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: key
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch-es-http.elastic-search:9200"  # Adjust this URL to match your 
+            - name: REGION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['topology.kubernetes.io/region']

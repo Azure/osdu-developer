@@ -27,6 +27,15 @@ resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = i
   }
 }
 
+resource serviceBusNamespace 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (serviceBusName != 'null') {
+  name: '${partitionName}-sb-namespace'
+  parent: keyVault
+
+  properties: {
+    value: serviceBus.name
+  }
+}
+
 resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: '${partitionName}-elastic-endpoint'
   parent: keyVault
@@ -51,6 +60,15 @@ resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 
   properties: {
     value: substring(uniqueString(keyVault.id, partitionName, resourceGroup().id), 0, 8)
+  }
+}
+
+resource elasticKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: '${partitionName}-elastic-key'
+  parent: keyVault
+
+  properties: {
+    value: uniqueString(keyVault.id, partitionName, subscription().id, resourceGroup().id)
   }
 }
 

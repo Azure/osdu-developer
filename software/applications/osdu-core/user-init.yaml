@@ -9,8 +9,6 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: osdu-init-partition
-      namespace: osdu-core
     - name: osdu-init-entitlements
       namespace: osdu-core
   targetNamespace: osdu-core

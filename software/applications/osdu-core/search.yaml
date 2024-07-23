@@ -8,7 +8,9 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: schema
+  - name: storage
+    namespace: flux-system
+  - name: file
     namespace: flux-system
   chart:
     spec:

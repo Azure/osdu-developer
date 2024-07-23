@@ -312,7 +312,7 @@ module configStorage './storage-account/main.bicep' = {
     keyVaultName: keyvault.outputs.name
     storageAccountSecretName: 'tbl-storage'
     storageAccountKeySecretName: 'tbl-storage-key'
-    storageAccountEndpointSecretName: 'tbl-storage-endpoint'
+    storageAccountTableEndpointSecretName: 'tbl-storage-endpoint'
 
     // Use as System Storage Account
     isSystem: true

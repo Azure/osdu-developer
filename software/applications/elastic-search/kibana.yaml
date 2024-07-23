@@ -5,11 +5,7 @@ metadata:
   name: kibana
   namespace: elastic-search
 spec:
-  version: 8.14.3
-  # http:
-  #   tls:
-  #     selfSignedCertificate:
-  #       disabled: true
+  version: 7.8.1
   elasticsearchRef:
     name: "elasticsearch"
   count: 3

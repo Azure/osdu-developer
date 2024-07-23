@@ -447,8 +447,11 @@ param storageAccountSecretName string = ''
 @description('Optional: To save storage account key into vault set the secret name.')
 param storageAccountKeySecretName string = ''
 
-@description('Optional: To save storage account endpoint into vault set the secret name.')
-param storageAccountEndpointSecretName string = ''
+@description('Optional: To save storage account table endpoint into vault set the secret name.')
+param storageAccountTableEndpointSecretName string = ''
+
+@description('Optional: To save storage account blob endpoint into vault set the secret name.')
+param storageAccountBlobEndpointSecretName string = ''
 
 @description('Optional: To save storage account connectionstring into vault set the secret name.')
 param storageAccountConnectionString string = ''
@@ -526,12 +529,21 @@ module secretStorageAccountKey '.bicep/keyvault_secrets.bicep' =  if (!empty(key
 }
 
 
-module secretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountEndpointSecretName)) {
-  name: '${deployment().name}-secret-endpoint'
+module secretStorageAccountTableEndpoint '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountTableEndpointSecretName)) {
+  name: '${deployment().name}-secret-table-endpoint'
   params: {
     keyVaultName: keyVaultName
-    name: storageAccountEndpointSecretName
+    name: storageAccountTableEndpointSecretName
     value: storage.properties.primaryEndpoints.table
+  }
+}
+
+module secretStorageAccountBlobEndpoint '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountBlobEndpointSecretName)) {
+  name: '${deployment().name}-secret-blob-endpoint'
+  params: {
+    keyVaultName: keyVaultName
+    name: storageAccountBlobEndpointSecretName
+    value: storage.properties.primaryEndpoints.blob
   }
 }
 

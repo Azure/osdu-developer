@@ -92,8 +92,8 @@ data-partition-id: {{data_partition_id}}
             "value": "sb-connection"
         },
         "sb-namespace": {
-            "sensitive": false,
-            "value": "mybus"
+            "sensitive": true,
+           "value": "sb-namespace"
         },
         "storage-account-key": {
             "sensitive": true,

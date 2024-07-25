@@ -54,10 +54,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/file/info"
-          - "/api/file/swagger*"
-          - "/api/file/api-docs*"
-          - "/api/file/webjars/*"
+          - "/api/file/v2/info"
+          - "/api/file/v2/swagger*"
+          - "/api/file/v2/api-docs*"
+          - "/api/file/v2/webjars/*"
       env:
       - name: AZURE_TENANT_ID
         secret:

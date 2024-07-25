@@ -45,6 +45,15 @@ grant_type=refresh_token
 
 
 # -----------------------
+# API: Version
+# -----------------------
+###
+# @name info
+GET {{LEGAL_HOST}}/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# -----------------------
 # API legal
 # -----------------------
 ###

@@ -28,7 +28,7 @@ GitOps uses Git as a single source of truth for declarative components and appli
 
 - __Azure Subscription__: An active Microsoft Azure subscription.
 
-- __Azure RBAC Role__: Ensure the `App Configuration Data Owner` role has been assigned on the desired Azure Subscription.
+- __Azure RBAC Role__: Ensure the `App Configuration Data Owner` role has been assigned on the desired Azure Subscription as explained [here](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#manage-azure-app-configuration-data-in-deployment).
 
 - __Azure CLI__: Install and configured on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 

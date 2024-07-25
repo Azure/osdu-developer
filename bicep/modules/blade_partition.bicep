@@ -148,13 +148,6 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'DataSetDetails'
-        kind: 'Hash'
-        paths: [
-          '/correlationId'
-        ]
-      }
-      {
         name: 'EntityType'
         kind: 'Hash'
         paths: [
@@ -162,7 +155,7 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'FileLocationInfo'
+        name: 'FileLocationEntity'
         kind: 'Hash'
         paths: [
           '/id'
@@ -218,6 +211,13 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'ReplayIndexStatus'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
         name: 'SchemaInfo'
         kind: 'Hash'
         paths: [
@@ -229,13 +229,6 @@ var partitionLayerConfig = {
         kind: 'Hash'
         paths: [
           '/id'
-        ]
-      }
-      {
-        name: 'Status'
-        kind: 'Hash'
-        paths: [
-          '/correlationId'
         ]
       }
       {
@@ -267,10 +260,31 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'Workflow'
+        kind: 'Hash'
+        paths: [
+          '/workflowId'
+        ]
+      }
+      {
         name: 'WorkflowCustomOperatorInfo'
         kind: 'Hash'
         paths: [
           '/operatorId'
+        ]
+      }
+      {
+        name: 'WorkflowCustomOperatorV2'
+        kind: 'Hash'
+        paths: [
+          '/operatorId'
+        ]
+      }
+      {
+        name: 'WorkflowRun'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
         ]
       }
       {

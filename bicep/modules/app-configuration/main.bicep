@@ -139,7 +139,7 @@ var diagnosticsMetrics = [for metric in metricsToEnable: {
 var identityType = systemAssignedIdentity ? 'SystemAssigned' : !empty(userAssignedIdentities) ? 'UserAssigned' : 'None'
 
 
-resource configStore 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+resource configStore 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' = {
   name: length(name) > 50 ? substring(name, 0, 50) : name
   location: location
   tags: tags
@@ -156,6 +156,10 @@ resource configStore 'Microsoft.AppConfiguration/configurationStores@2023-03-01'
   properties: {
     createMode: createMode
     disableLocalAuth: disableLocalAuth
+    dataPlaneProxy: disableLocalAuth ? {
+      authenticationMode: 'Pass-through'
+      privateLinkDelegation: 'Disabled'
+  } : null
     encryption: enableCMEK ? {
       keyVaultProperties: {
         identityClientId: cmekConfiguration.identityId

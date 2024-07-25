@@ -49,7 +49,7 @@ grant_type=refresh_token
 # -----------------------
 ###
 # @name info
-GET {{LEGAL_HOST}}/info
+GET {{FILE_HOST}}/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
 

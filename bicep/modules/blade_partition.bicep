@@ -141,10 +141,101 @@ var partitionLayerConfig = {
     backup: 'Continuous'
     containers: [
       {
+        name: 'Authority'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'DataSetDetails'
+        kind: 'Hash'
+        paths: [
+          '/correlationId'
+        ]
+      }
+      {
+        name: 'EntityType'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'FileLocationInfo'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'IngestionStrategy'
+        kind: 'Hash'
+        paths: [
+          '/workflowType'
+        ]
+      }
+      {
         name: 'LegalTag'
         kind: 'Hash'
         paths: [
           '/id'
+        ]
+      }
+      {
+        name: 'MappingInfo'
+        kind: 'Hash'
+        paths: [
+          '/sourceSchemaKind'
+        ]
+      }
+      {
+        name: 'RegisterAction'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterDdms'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterSubscription'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RelationshipStatus'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'SchemaInfo'
+        kind: 'Hash'
+        paths: [
+          '/partitionId'
+        ]
+      }
+      {
+        name: 'Source'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'Status'
+        kind: 'Hash'
+        paths: [
+          '/correlationId'
         ]
       }
       {
@@ -176,83 +267,6 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'Authority'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'EntityType'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'SchemaInfo'
-        kind: 'Hash'
-        paths: [
-          '/partitionId'
-        ]
-      }
-      {
-        name: 'Source'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'RegisterAction'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'RegisterDdms'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'RegisterSubscription'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'IngestionStrategy'
-        kind: 'Hash'
-        paths: [
-          '/workflowType'
-        ]
-      }
-      {
-        name: 'RelationshipStatus'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'MappingInfo'
-        kind: 'Hash'
-        paths: [
-          '/sourceSchemaKind'
-        ]
-      }
-      {
-        name: 'FileLocationInfo'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
         name: 'WorkflowCustomOperatorInfo'
         kind: 'Hash'
         paths: [
@@ -260,21 +274,7 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'WorkflowV2'
-        kind: 'Hash'
-        paths: [
-          '/partitionKey'
-        ]
-      }
-      {
         name: 'WorkflowRunV2'
-        kind: 'Hash'
-        paths: [
-          '/partitionKey'
-        ]
-      }
-      {
-        name: 'WorkflowCustomOperatorV2'
         kind: 'Hash'
         paths: [
           '/partitionKey'
@@ -288,17 +288,10 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'Status'
+        name: 'WorkflowV2'
         kind: 'Hash'
         paths: [
-          '/correlationId'
-        ]
-      }
-      {
-        name: 'DataSetDetails'
-        kind: 'Hash'
-        paths: [
-          '/correlationId'
+          '/partitionKey'
         ]
       }
     ]

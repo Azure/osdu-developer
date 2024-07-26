@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "7940373530352335736"
+      "templateHash": "4251524188599982873"
     }
   },
   "parameters": {
@@ -18832,7 +18832,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "16774756639400328115"
+              "templateHash": "12557442057621036251"
             }
           },
           "definitions": {
@@ -19031,7 +19031,91 @@
                 "backup": "Continuous",
                 "containers": [
                   {
+                    "name": "Authority",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "EntityType",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "FileLocationEntity",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "IngestionStrategy",
+                    "kind": "Hash",
+                    "paths": [
+                      "/workflowType"
+                    ]
+                  },
+                  {
                     "name": "LegalTag",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "MappingInfo",
+                    "kind": "Hash",
+                    "paths": [
+                      "/sourceSchemaKind"
+                    ]
+                  },
+                  {
+                    "name": "RegisterAction",
+                    "kind": "Hash",
+                    "paths": [
+                      "/dataPartitionId"
+                    ]
+                  },
+                  {
+                    "name": "RegisterDdms",
+                    "kind": "Hash",
+                    "paths": [
+                      "/dataPartitionId"
+                    ]
+                  },
+                  {
+                    "name": "RegisterSubscription",
+                    "kind": "Hash",
+                    "paths": [
+                      "/dataPartitionId"
+                    ]
+                  },
+                  {
+                    "name": "RelationshipStatus",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "ReplayIndexStatus",
+                    "kind": "Hash",
+                    "paths": [
+                      "/id"
+                    ]
+                  },
+                  {
+                    "name": "SchemaInfo",
+                    "kind": "Hash",
+                    "paths": [
+                      "/partitionId"
+                    ]
+                  },
+                  {
+                    "name": "Source",
                     "kind": "Hash",
                     "paths": [
                       "/id"
@@ -19066,80 +19150,10 @@
                     ]
                   },
                   {
-                    "name": "Authority",
+                    "name": "Workflow",
                     "kind": "Hash",
                     "paths": [
-                      "/id"
-                    ]
-                  },
-                  {
-                    "name": "EntityType",
-                    "kind": "Hash",
-                    "paths": [
-                      "/id"
-                    ]
-                  },
-                  {
-                    "name": "SchemaInfo",
-                    "kind": "Hash",
-                    "paths": [
-                      "/partitionId"
-                    ]
-                  },
-                  {
-                    "name": "Source",
-                    "kind": "Hash",
-                    "paths": [
-                      "/id"
-                    ]
-                  },
-                  {
-                    "name": "RegisterAction",
-                    "kind": "Hash",
-                    "paths": [
-                      "/dataPartitionId"
-                    ]
-                  },
-                  {
-                    "name": "RegisterDdms",
-                    "kind": "Hash",
-                    "paths": [
-                      "/dataPartitionId"
-                    ]
-                  },
-                  {
-                    "name": "RegisterSubscription",
-                    "kind": "Hash",
-                    "paths": [
-                      "/dataPartitionId"
-                    ]
-                  },
-                  {
-                    "name": "IngestionStrategy",
-                    "kind": "Hash",
-                    "paths": [
-                      "/workflowType"
-                    ]
-                  },
-                  {
-                    "name": "RelationshipStatus",
-                    "kind": "Hash",
-                    "paths": [
-                      "/id"
-                    ]
-                  },
-                  {
-                    "name": "MappingInfo",
-                    "kind": "Hash",
-                    "paths": [
-                      "/sourceSchemaKind"
-                    ]
-                  },
-                  {
-                    "name": "FileLocationInfo",
-                    "kind": "Hash",
-                    "paths": [
-                      "/id"
+                      "/workflowId"
                     ]
                   },
                   {
@@ -19150,45 +19164,17 @@
                     ]
                   },
                   {
-                    "name": "WorkflowV2",
+                    "name": "WorkflowRun",
                     "kind": "Hash",
                     "paths": [
                       "/partitionKey"
                     ]
                   },
                   {
-                    "name": "WorkflowRunV2",
+                    "name": "WorkflowRunStatus",
                     "kind": "Hash",
                     "paths": [
                       "/partitionKey"
-                    ]
-                  },
-                  {
-                    "name": "WorkflowCustomOperatorV2",
-                    "kind": "Hash",
-                    "paths": [
-                      "/partitionKey"
-                    ]
-                  },
-                  {
-                    "name": "WorkflowTasksSharingInfoV2",
-                    "kind": "Hash",
-                    "paths": [
-                      "/partitionKey"
-                    ]
-                  },
-                  {
-                    "name": "Status",
-                    "kind": "Hash",
-                    "paths": [
-                      "/correlationId"
-                    ]
-                  },
-                  {
-                    "name": "DataSetDetails",
-                    "kind": "Hash",
-                    "paths": [
-                      "/correlationId"
                     ]
                   }
                 ]
@@ -28450,7 +28436,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "6628956245743335592"
+              "templateHash": "11605122549445939861"
             }
           },
           "definitions": {
@@ -28709,7 +28695,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.20.0"
+              "release": "v0.21.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -33988,7 +33974,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "7138978894681617658"
+                      "templateHash": "9789947443230680447"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -34053,7 +34039,7 @@
                     },
                     "disableLocalAuth": {
                       "type": "bool",
-                      "defaultValue": false,
+                      "defaultValue": true,
                       "metadata": {
                         "description": "Optional. Disables all authentication methods other than AAD authentication."
                       }
@@ -34210,7 +34196,7 @@
                   "resources": [
                     {
                       "type": "Microsoft.AppConfiguration/configurationStores",
-                      "apiVersion": "2023-03-01",
+                      "apiVersion": "2023-08-01-preview",
                       "name": "[if(greater(length(variables('name')), 50), substring(variables('name'), 0, 50), variables('name'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
@@ -34221,6 +34207,7 @@
                       "properties": {
                         "createMode": "[parameters('createMode')]",
                         "disableLocalAuth": "[parameters('disableLocalAuth')]",
+                        "dataPlaneProxy": "[if(parameters('disableLocalAuth'), createObject('authenticationMode', 'Pass-through', 'privateLinkDelegation', 'Disabled'), null())]",
                         "encryption": "[if(variables('enableCMEK'), createObject('keyVaultProperties', createObject('identityClientId', parameters('cmekConfiguration').identityId, 'keyIdentifier', format('{0}/keys/{1}', parameters('cmekConfiguration').kvUrl, parameters('cmekConfiguration').keyName))), null())]"
                       }
                     },
@@ -34619,7 +34606,7 @@
                       "metadata": {
                         "description": "The endpoint of the azure app configuration service."
                       },
-                      "value": "[reference(resourceId('Microsoft.AppConfiguration/configurationStores', if(greater(length(variables('name')), 50), substring(variables('name'), 0, 50), variables('name'))), '2023-03-01').endpoint]"
+                      "value": "[reference(resourceId('Microsoft.AppConfiguration/configurationStores', if(greater(length(variables('name')), 50), substring(variables('name'), 0, 50), variables('name'))), '2023-08-01-preview').endpoint]"
                     }
                   }
                 }

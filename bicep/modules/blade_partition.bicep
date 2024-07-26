@@ -273,13 +273,6 @@ var partitionLayerConfig = {
           '/operatorId'
         ]
       }
-      // {
-      //   name: 'WorkflowCustomOperatorV2'
-      //   kind: 'Hash'
-      //   paths: [
-      //     '/operatorId'
-      //   ]
-      // }
       {
         name: 'WorkflowRun'
         kind: 'Hash'
@@ -287,13 +280,6 @@ var partitionLayerConfig = {
           '/partitionKey'
         ]
       }
-      // {
-      //   name: 'WorkflowRunV2'
-      //   kind: 'Hash'
-      //   paths: [
-      //     '/partitionKey'
-      //   ]
-      // }
       {
         name: 'WorkflowRunStatus'
         kind: 'Hash'
@@ -301,20 +287,6 @@ var partitionLayerConfig = {
           '/partitionKey'
         ]
       }
-      // {
-      //   name: 'WorkflowTasksSharingInfoV2'
-      //   kind: 'Hash'
-      //   paths: [
-      //     '/partitionKey'
-      //   ]
-      // }
-      // {
-      //   name: 'WorkflowV2'
-      //   kind: 'Hash'
-      //   paths: [
-      //     '/partitionKey'
-      //   ]
-      // }
     ]
   }
   servicebus: {

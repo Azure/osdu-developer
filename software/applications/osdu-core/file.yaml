@@ -1,29 +1,3 @@
-# ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: VirtualService
-# metadata:
-#   name: file
-#   namespace: osdu-core
-# spec:
-#   hosts:
-#   - "*"
-#   gateways:
-#   - istio-system/internal-gateway
-#   - istio-system/external-gateway
-#   http:
-#   - match:
-#     - uri:
-#         prefix: "/api/file/"
-#     route:
-#     - destination:
-#         host: file.osdu-core.svc.cluster.local
-#         subset: m23
-#         port:
-#           number: 80
-#       weight: 100
-#     retries:
-#       attempts: 3
-#       perTryTimeout: 2s
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -58,7 +32,7 @@ spec:
       port: 80
     configuration:
     - service: file
-      path: /api/file/*
+      path: /api/file/
       hosts:
         - "*"
       gateways:
@@ -80,15 +54,19 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/file/info"
-          - "/api/file/swagger*"
-          - "/api/file/api-docs*"
-          - "/api/file/webjars/*"
+          - "/api/file/v2/info"
+          - "/api/file/v2/swagger*"
+          - "/api/file/v2/api-docs*"
+          - "/api/file/v2/webjars/*"
       env:
       - name: AZURE_TENANT_ID
         secret:
           name: active-directory
           key: tenant-id
+      - name: AZURE_SUBSCRIPTION_ID
+        secret:
+          name: active-directory
+          key: subscription-id
       - name: AZURE_CLIENT_ID
         secret:
           name: active-directory

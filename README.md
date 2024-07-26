@@ -28,6 +28,8 @@ GitOps uses Git as a single source of truth for declarative components and appli
 
 - __Azure Subscription__: An active Microsoft Azure subscription.
 
+- __Azure RBAC Role__: Ensure the `App Configuration Data Owner` role has been assigned on the desired Azure Subscription as explained [here](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#manage-azure-app-configuration-data-in-deployment).
+
 - __Azure CLI__: Install and configured on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
 - __Azure Developer CLI__: Install and configured on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
@@ -38,6 +40,10 @@ GitOps uses Git as a single source of truth for declarative components and appli
     ```
 
 - __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download)
+
+- **Docker Desktop**: Install and configure on your local machine. You can download it [here](https://www.docker.com/products/docker-desktop).
+
+- **Optional**: Either **PowerShell Core** or a **Bash shell in WSL**. You can download PowerShell Core [here](https://github.com/PowerShell/PowerShell) and set up WSL [here](https://docs.microsoft.com/en-us/windows/wsl/install).
 
 
 ## Setup

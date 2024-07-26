@@ -69,6 +69,10 @@ spec:
         secret:
           name: active-directory
           key: tenant-id
+      - name: AZURE_SUBSCRIPTION_ID
+        secret:
+          name: active-directory
+          key: subscription-id
       - name: AZURE_CLIENT_ID
         secret:
           name: active-directory

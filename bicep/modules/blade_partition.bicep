@@ -141,7 +141,91 @@ var partitionLayerConfig = {
     backup: 'Continuous'
     containers: [
       {
+        name: 'Authority'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'EntityType'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'FileLocationEntity'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'IngestionStrategy'
+        kind: 'Hash'
+        paths: [
+          '/workflowType'
+        ]
+      }
+      {
         name: 'LegalTag'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'MappingInfo'
+        kind: 'Hash'
+        paths: [
+          '/sourceSchemaKind'
+        ]
+      }
+      {
+        name: 'RegisterAction'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterDdms'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RegisterSubscription'
+        kind: 'Hash'
+        paths: [
+          '/dataPartitionId'
+        ]
+      }
+      {
+        name: 'RelationshipStatus'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'ReplayIndexStatus'
+        kind: 'Hash'
+        paths: [
+          '/id'
+        ]
+      }
+      {
+        name: 'SchemaInfo'
+        kind: 'Hash'
+        paths: [
+          '/partitionId'
+        ]
+      }
+      {
+        name: 'Source'
         kind: 'Hash'
         paths: [
           '/id'
@@ -176,80 +260,10 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'Authority'
+        name: 'Workflow'
         kind: 'Hash'
         paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'EntityType'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'SchemaInfo'
-        kind: 'Hash'
-        paths: [
-          '/partitionId'
-        ]
-      }
-      {
-        name: 'Source'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'RegisterAction'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'RegisterDdms'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'RegisterSubscription'
-        kind: 'Hash'
-        paths: [
-          '/dataPartitionId'
-        ]
-      }
-      {
-        name: 'IngestionStrategy'
-        kind: 'Hash'
-        paths: [
-          '/workflowType'
-        ]
-      }
-      {
-        name: 'RelationshipStatus'
-        kind: 'Hash'
-        paths: [
-          '/id'
-        ]
-      }
-      {
-        name: 'MappingInfo'
-        kind: 'Hash'
-        paths: [
-          '/sourceSchemaKind'
-        ]
-      }
-      {
-        name: 'FileLocationInfo'
-        kind: 'Hash'
-        paths: [
-          '/id'
+          '/workflowId'
         ]
       }
       {
@@ -260,45 +274,17 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'WorkflowV2'
+        name: 'WorkflowRun'
         kind: 'Hash'
         paths: [
           '/partitionKey'
         ]
       }
       {
-        name: 'WorkflowRunV2'
+        name: 'WorkflowRunStatus'
         kind: 'Hash'
         paths: [
           '/partitionKey'
-        ]
-      }
-      {
-        name: 'WorkflowCustomOperatorV2'
-        kind: 'Hash'
-        paths: [
-          '/partitionKey'
-        ]
-      }
-      {
-        name: 'WorkflowTasksSharingInfoV2'
-        kind: 'Hash'
-        paths: [
-          '/partitionKey'
-        ]
-      }
-      {
-        name: 'Status'
-        kind: 'Hash'
-        paths: [
-          '/correlationId'
-        ]
-      }
-      {
-        name: 'DataSetDetails'
-        kind: 'Hash'
-        paths: [
-          '/correlationId'
         ]
       }
     ]

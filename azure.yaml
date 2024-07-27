@@ -30,38 +30,7 @@ hooks:
       interactive: false
       continueOnError: false
       shell: pwsh
-      run: |
-        # Check if Docker is installed
-        if (-Not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
-            Write-Host "Docker is not installed."
-            exit 1
-        }
-
-        # Fetch environment variables and format them for Docker, excluding empty values
-        $envVars = azd env get-values | ForEach-Object {
-            $pair = $_ -replace '"', ''
-            if ($pair -match "=") {
-                $key, $value = $pair -split "=", 2
-                if ($value) {
-                    "-e $key=$value"
-                }
-            }
-        } | Where-Object { $_ }
-
-        # Convert the array of environment variables to a single string
-        $envVarsString = $envVars -join " "
-
-        # Build Docker image
-        Write-Host "Building Docker Image"
-        docker buildx build --no-cache -f scripts/Dockerfile-provision -t azd-provision scripts
-
-        # Run Docker container with the necessary environment variables and volume mounts
-        $command = 'docker run --rm -v ${pwd}:/workspace -v "$env:USERPROFILE\.azure:/root/.azure" ' + $envVarsString + ' -e AZURE_CONFIG_DIR=/root/.azure azd-provision /usr/local/bin/preprovision.sh -s $env:AZURE_SUBSCRIPTION_ID'
-        Invoke-Expression $command
-
-        # Sleep for 5 seconds
-        Start-Sleep -Seconds 5
-
+      run: .\scripts\hook-preprovision.ps1
 
   postprovision:
     posix:

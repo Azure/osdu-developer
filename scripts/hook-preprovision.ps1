@@ -136,30 +136,35 @@ function Create-AzureADApplication {
         az rest --method post `
         --url https://graph.microsoft.com/v1.0/applications `
         --headers '{\"Content-Type\": \"application/json\"}' `
-        --body $jsonPayloadCleaned
+        --body $jsonPayloadCleaned -o none
         
         Start-Sleep -Seconds 30
 
-        $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
-        az ad sp create --id $azureClientId --only-show-errors
+        $global:azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
+        az ad sp create --id $global:azureClientId --only-show-errors
 
-        azd env set AZURE_CLIENT_ID $azureClientId
+        azd env set AZURE_CLIENT_ID $global:azureClientId
     } else {
-        Write-Output "Azure Client ID: $azureClientId"
+        Write-Output "Azure Client ID: $global:azureClientId"
     }
 }
 
 function Set-EnvironmentVariables {
 
+    Write-Output "`n=================================================================="
+    Write-Output " Retrieving Application: $global:azureClientId"
+    Write-Output "=================================================================="
+
     if (-not $env:AZURE_CLIENT_PRINCIPAL_OID) {
         Write-Output "Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
-        $azureClientPrincipalOid = az ad sp show --id $env:AZURE_CLIENT_ID --query "id" -o tsv
+        $azureClientPrincipalOid = az ad sp show --id $global:azureClientId --query "id" -o tsv
+        echo $azureClientPrincipalOid
         azd env set AZURE_CLIENT_PRINCIPAL_OID $azureClientPrincipalOid
     }
 
     if (-not $env:AZURE_CLIENT_SECRET) {
         Write-Output "Retrieving AZURE_CLIENT_SECRET..."
-        $azureClientSecret = az ad app credential reset --id $env:AZURE_CLIENT_ID --query password --only-show-errors -o tsv
+        $azureClientSecret = az ad app credential reset --id $global:azureClientId --query password --only-show-errors -o tsv
         azd env set AZURE_CLIENT_SECRET $azureClientSecret
     }
 

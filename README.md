@@ -58,7 +58,7 @@ The recommended approach is to use the Azure Developer CLI, which allows for cus
 
     ```bash
     # Login and set subscription
-    az login
+    az login --scope https://graph.microsoft.com//.default
     az account set --subscription <your_subscription_id>
     azd auth login
     ```

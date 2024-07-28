@@ -50,7 +50,7 @@ function Check-AzureCliVersion {
 
 function Ensure-AzureExtensions {
     # Check for required extensions
-    $requiredExtensions = @("aks-preview")
+    $requiredExtensions = @("k8s-configuration")
 
     Write-Output "`n=================================================================="
     Write-Output "Azure CLI Extensions: $requiredExtensions"
@@ -85,7 +85,10 @@ function Check-Login {
     } else {
         Write-Output "`n=================================================================="
         Write-Output "Azure CLI Login Required"
+        Write-Output "      az login --scope https://graph.microsoft.com//.default"
         Write-Output "=================================================================="
+        Write-Output "Failed to log in. Exiting."
+        exit 1
 
         az login --scope https://graph.microsoft.com//.default
 

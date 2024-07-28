@@ -12,7 +12,7 @@ hooks:
       interactive: false
       continueOnError: false
       shell: sh
-      run: .\scripts\hook-preprovision.sh
+      run: ./scripts/hook-preprovision.sh
     windows:
       interactive: false
       continueOnError: false
@@ -24,7 +24,7 @@ hooks:
       interactive: true
       continueOnError: false
       shell: sh
-      run: .\scripts\hook-postprovision.sh
+      run: ./scripts/hook-postprovision.sh
     windows:
       interactive: true
       continueOnError: false
@@ -36,7 +36,7 @@ hooks:
       interactive: false
       continueOnError: false
       shell: sh
-      run: .\scripts\hook-predeploy.sh
+      run: ./scripts/hook-predeploy.sh
     windows:
       interactive: false
       continueOnError: false

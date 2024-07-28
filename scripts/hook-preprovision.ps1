@@ -16,7 +16,7 @@
 param (
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
     [string]$AzureEnvName = $env:AZURE_ENV_NAME ? $env:AZURE_ENV_NAME : "dev",
-    [version]$RequiredCliVersion = [version]"2.60",
+    [version]$RequiredCliVersion = [version]"2.62",
     [switch]$Help
 )
 

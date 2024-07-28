@@ -71,21 +71,11 @@ if [[ -n "$account_info" ]]; then
 else
     echo -e "\n=================================================================="
     echo "Azure CLI Login Required"
+    echo "      az login --scope https://graph.microsoft.com//.default"
     echo "=================================================================="
 
-    az login --scope https://graph.microsoft.com//.default
-
-    # Recheck if the user is logged in
-    account_info=$(az account show -o json)
-    if [[ -n "$account_info" ]]; then
-        user_name=$(echo "$account_info" | jq -r '.user.name')
-        echo -e "\n=================================================================="
-        echo "Logged in as: $user_name"
-        echo "=================================================================="
-    else
-        echo "Failed to log in. Exiting."
-        exit 1
-    fi
+    echo "Failed to log in. Exiting."
+    exit 1
 fi
 
 # Ensure the subscription ID is set
@@ -131,22 +121,22 @@ PrintMessage "==================================================================
 PrintMessage "Ensuring Proper Features are enabled." 4
 PrintMessage "==================================================================" 4
 
-PrintMessage "  Checking [aks-preview] extension..."
-az extension show --name aks-preview &>/dev/null
+PrintMessage "  Checking [k8s-configuration] extension..."
+az extension show --name k8s-configuration &>/dev/null
 
 if [[ $? == 0 ]]; then
   PrintMessage "  Found and updating..."
-  az extension update --name aks-preview &>/dev/null
+  az extension update --name k8s-configuration &>/dev/null
 else
   PrintMessage "  Not Found and installing..."
 
-  # Install aks-preview extension
-  az extension add --name aks-preview 1>/dev/null
+  # Install k8s-configuration extension
+  az extension add --name k8s-configuration1>/dev/null
 
   if [[ $? == 0 ]]; then
-    PrintMessage "  [aks-preview] extension successfully installed"
+    PrintMessage "  [k8s-configuration extension successfully installed"
   else
-    PrintMessage "  Failed to install [aks-preview] extension"
+    PrintMessage "  Failed to install [k8s-configuration] extension"
     exit
   fi
 fi

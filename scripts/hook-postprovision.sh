@@ -188,3 +188,6 @@ EOF
       --headers "Content-Type=application/json" \
       --body "$JSON_PAYLOAD"
 fi
+
+sleep 30
+open "$(azd env get-values | grep INGRESS_EXTERNAL | cut -d'=' -f2 | tr -d ' ')"

@@ -2,59 +2,45 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 
-This is an [Azure Cloud](https://azure.microsoft.com/) developer sandbox to enable software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform.  It is not recommended for any production scenario.  For a fully managed implementation please see [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
+The [Azure Cloud](https://azure.microsoft.com/) developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
+Open the solution directly in a Github Codespace or clone it to a local machine.
 
-## Guiding Principles
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/osdu-developer)
 
-The developer sandbox is built using the following principles from the [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/what-is-well-architected-framework).
-
-
-1. **Cost Optimization** - Creating a cost-effective solution while balancing security.
-2. **Security** - Enhancing security within a development context, adhering to a zero trust model.
-3. **Operational Excellence** - Prioritizing DevOps standards with automation to ensure efficient operations and robust monitoring.
-
-
-**Bicep: Desired State Configuration**
-
-Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Azure infrastructure in code. Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
-
-**GitOps: Desired State Management**
-
-GitOps uses Git as a single source of truth for declarative components and applications. It ensures that the actual state of the components or application matches the desired state defined in the Git repository, automating updates through continuous monitoring and Git commits.
-
+```bash
+# Clone the repository
+git clone https://github.com/Azure/osdu-developer.git
+```
 
 ## Prerequisites
 
-- __Azure Subscription__: An active Microsoft Azure subscription.
+An active __Azure Subscription__ is required with the Azure App Configuration data plane permissions of `App Configuration Data Owner` assigned to the user at the subscription as explained [here](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#azure-app-configuration-authorization).
 
-- __Azure RBAC Role__: Ensure the `App Configuration Data Owner` role has been assigned on the desired Azure Subscription as explained [here](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#manage-azure-app-configuration-data-in-deployment).
+
+Local Machine usage requires the following.
+
+- __Shell Requirements__: 
+  - For Windows: PowerShell Core (pwsh) is required. You can download it [here](https://github.com/PowerShell/PowerShell).
+  - For Linux or Mac: A bash POSIX-compliant shell is required.
 
 - __Azure CLI__: Install and configure on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
 - __Azure Developer CLI__: Install and configure on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
     ```bash
-    # Enable Resource Group Scoped Deployment
+    # Enable Alpha Feature Resource Group Scoped Deployments
     azd config set alpha.resourceGroupDeployments on
     ```
 
 - __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).
 
-- __Shell Requirements__: 
-  - For Windows: PowerShell Core (pwsh) is required. You can download it [here](https://github.com/PowerShell/PowerShell).
-  - For Linux or Mac: A bash POSIX-compliant shell works fine.
 
 
 ## Setup
 
-The recommended approach is to use the Azure Developer CLI, which allows for customization and additional configuration. You can use the ARM Template Deployment, but will require additional manual configuration for establishment of the first user and intial access tokens.
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/osdu-developer)
-
-### AZD CLI Deployment (Recommended)
-
-1. Authentication
+1. Authenticate
 
     ```bash
     # Login and set subscription
@@ -63,27 +49,18 @@ The recommended approach is to use the Azure Developer CLI, which allows for cus
     azd auth login
     ```
 
-2. Provisioning
+2. Provision
 
-    ```bash
-    # Initialize a new environment
-    azd init -e dev
-    
+    ```bash    
     # Provision the solution
     azd provision
     ```
 
-3. Configuration
+3. Configure
 
-    Once the environment has been provisioned, retrieve the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code to use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code for use in getting a refresh token for calling APIs.
 
-    ```bash
-    # Open URL in browser (bash)
-    azd env get-values |grep INGRESS_EXTERNAL
-
-    # Open URL in browser (pwsh)
-    azd env get-values | Where-Object { $_ -match "INGRESS_EXTERNAL" }
-    
+    ```bash    
     # Set retrieved authorization code
     azd env set AUTH_CODE <your_auth_code>
     azd hooks run predeploy
@@ -94,9 +71,6 @@ The recommended approach is to use the Azure Developer CLI, which allows for cus
     ```bash
     # Remove all resources
     azd down --purge --force
-    
-    # Delete the environment
-    rm -rf .azure/<your_environment_name>
     ```
 
 
@@ -108,6 +82,9 @@ Environment settings can be overriden as necessary.
 # Override Default Subscription
 azd env set AZURE_SUBSCRIPTION_ID <your_subscription_id>
 
+# Override the Default Location
+azd env set AZURE_LOCATION <azure_region>
+
 # Override Client Id Creation
 azd env set AZURE_CLIENT_ID <your_client_id>
 
@@ -118,7 +95,7 @@ azd env set SOFTWARE_BRANCH <your_branch>
 
 ### ARM Template Deployment  (Alternative)
 
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
+Deploying the resources is also efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging if attempting customizations.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 

@@ -89,19 +89,6 @@ function Check-Login {
         Write-Output "=================================================================="
         Write-Output "Failed to log in. Exiting."
         exit 1
-
-        az login --scope https://graph.microsoft.com//.default
-
-        # Recheck if the user is logged in
-        $accountInfo = az account show -o json | ConvertFrom-Json
-        if ($accountInfo) {
-            Write-Output "`n=================================================================="
-            Write-Output "Logged in as: $($accountInfo.user.name)"
-            Write-Output "=================================================================="
-        } else {
-            Write-Output "Failed to log in. Exiting."
-            exit 1
-        }
     }
 
     # Ensure the subscription ID is set

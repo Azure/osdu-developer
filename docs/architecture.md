@@ -1,5 +1,20 @@
 # Architecture.
 
+Guiding Principles
+The developer sandbox is built using the following principles from the Azure Well-Architected Framework.
+
+Cost Optimization - Creating a cost-effective solution while balancing security.
+Security - Enhancing security within a development context, adhering to a zero trust model.
+Operational Excellence - Prioritizing DevOps standards with automation to ensure efficient operations and robust monitoring.
+Bicep: Desired State Configuration
+
+Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Azure infrastructure in code. Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
+
+GitOps: Desired State Management
+
+GitOps uses Git as a single source of truth for declarative components and applications. It ensures that the actual state of the components or application matches the desired state defined in the Git repository, automating updates through continuous monitoring and Git commits.
+
+
 # Sequence Diagram
 
 This diagram documents how the interactions work for the Azure CLI Developer Command Structures

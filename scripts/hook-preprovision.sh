@@ -61,12 +61,37 @@ while getopts ":hs:" opt; do
 done
 shift $((OPTIND -1))
 
+# Check if user is logged in and log in if necessary
+account_info=$(az account show -o json 2>/dev/null)
+if [[ -n "$account_info" ]]; then
+    user_name=$(echo "$account_info" | jq -r '.user.name')
+    echo -e "\n=================================================================="
+    echo "Logged in as: $user_name"
+    echo "=================================================================="
+else
+    echo -e "\n=================================================================="
+    echo "Azure CLI Login Required"
+    echo "      az login --scope https://graph.microsoft.com//.default"
+    echo "=================================================================="
+
+    echo "Failed to log in. Exiting."
+    exit 1
+fi
+
+# Ensure the subscription ID is set
+if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
+    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+fi
+echo -e "\n=================================================================="
+echo "Azure Subscription: $AZURE_SUBSCRIPTION_ID"
+echo "=================================================================="
+azd env set AZURE_SUBSCRIPTION_ID "$AZURE_SUBSCRIPTION_ID"
 
 # Check Azure CLI version.
-REQUIRED_AZ_CLI_VERSION="2.59.0"
+REQUIRED_AZ_CLI_VERSION="2.62.0"
 CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
 
-if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
+if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION" | sort -V | head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
   echo "This script requires Azure CLI version $REQUIRED_AZ_CLI_VERSION or higher. You have version $CURRENT_AZ_CLI_VERSION."
   exit 1
 fi
@@ -76,7 +101,6 @@ fi
 if [[ -f "$SCRIPT_DIR/functions.sh" ]]; then 
     source "$SCRIPT_DIR/functions.sh" 
 fi
-
 
 ###############################
 # Subscription Check
@@ -97,31 +121,28 @@ PrintMessage "==================================================================
 PrintMessage "Ensuring Proper Features are enabled." 4
 PrintMessage "==================================================================" 4
 
-PrintMessage "  Checking [aks-preview] extension..."
-az extension show --name aks-preview &>/dev/null
+PrintMessage "  Checking [k8s-configuration] extension..."
+az extension show --name k8s-configuration &>/dev/null
 
 if [[ $? == 0 ]]; then
   PrintMessage "  Found and updating..."
-  az extension update --name aks-preview &>/dev/null
+  az extension update --name k8s-configuration &>/dev/null
 else
   PrintMessage "  Not Found and installing..."
 
-  # Install aks-preview extension
-  az extension add --name aks-preview 1>/dev/null
+  # Install k8s-configuration extension
+  az extension add --name k8s-configuration1>/dev/null
 
   if [[ $? == 0 ]]; then
-    PrintMessage "  [aks-preview] extension successfully installed"
+    PrintMessage "  [k8s-configuration extension successfully installed"
   else
-    PrintMessage "  Failed to install [aks-preview] extension"
+    PrintMessage "  Failed to install [k8s-configuration] extension"
     exit
   fi
 fi
 
 # Registering AKS feature extensions
-aksExtensions=(
-
-)
-
+aksExtensions=()
 
 ok=0
 registeringExtensions=()
@@ -141,7 +162,6 @@ for aksExtension in ${aksExtensions[@]}; do
     PrintMessage "  [$aksExtension] extension is already registered."
   fi
 done
-
 
 PrintMessage $registeringExtensions
 delay=1
@@ -166,7 +186,6 @@ if [[ $ok == 1 ]]; then
   az provider register --namespace Microsoft.ContainerService
   PrintMessage "  Microsoft.ContainerService resource provider registration successfully refreshed"
 fi
-
 
 if [[ -z $AZURE_CLIENT_ID ]]; then
   
@@ -225,7 +244,6 @@ EOF
   PrintMessage "  Retrieving AZURE_CLIENT_ID.."
   azd env set AZURE_CLIENT_ID $AZURE_CLIENT_ID
 fi
-
 
 if [[ -z $AZURE_CLIENT_PRINCIPAL_OID ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."

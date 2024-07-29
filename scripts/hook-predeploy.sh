@@ -93,17 +93,8 @@ if [ -z $AKS_NAME ]; then
 fi
 
 
-# Check Azure CLI version.
-REQUIRED_AZ_CLI_VERSION="2.58.0"
-CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
-
-if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
-  echo "This script requires Azure CLI version $REQUIRED_AZ_CLI_VERSION or higher. You have version $CURRENT_AZ_CLI_VERSION."
-  exit 1
-fi
-
 if [[ ! -n $AZURE_TENANT_ID ]]; then
-  AZURE_TENANT_ID=$(az account show --query tenantId -o tsv)
+  AZURE_TENANT_ID=$(az account show --query tenantId -o tsv | tr -d '\r')
   azd env set AZURE_TENANT_ID $AZURE_TENANT_ID
 fi
 
@@ -115,9 +106,9 @@ if [[ ! -n $AUTH_INGRESS ]]; then
   # Fetch Node Resource Group from AKS Cluster
   node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
   if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
-      AUTH_INGRESS="$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv)"
+      AUTH_INGRESS="$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv | tr -d '\r')"
   else
-      AUTH_INGRESS="$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv)"
+      AUTH_INGRESS="$(az network public-ip list -g "$node_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv | tr -d '\r')"
   fi
 
   azd env set AUTH_INGRESS $AUTH_INGRESS

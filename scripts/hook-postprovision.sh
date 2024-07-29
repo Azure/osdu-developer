@@ -73,15 +73,6 @@ then
     exit 1
 fi
 
-# Check Azure CLI version.
-REQUIRED_AZ_CLI_VERSION="2.58.0"
-CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
-
-if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION"|sort -V|head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
-  echo "This script requires Azure CLI version $REQUIRED_AZ_CLI_VERSION or higher. You have version $CURRENT_AZ_CLI_VERSION."
-  exit 1
-fi
-
 if [ -z $AZURE_CLIENT_ID ]; then
   echo 'ERROR: AZURE_CLIENT_ID not provided'
   exit 1;
@@ -108,7 +99,7 @@ end=$((SECONDS+1200))  # 1200 seconds = 20 minutes
 # Loop to check Flux compliance every 30 seconds up to 10 minutes
 while [ $SECONDS -lt $end ]; do
     
-    compliance_state=$(az k8s-configuration flux show -t managedClusters -g $AZURE_RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -otsv)
+    compliance_state=$(az k8s-configuration flux show -t managedClusters -g $AZURE_RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv | tr -d '\r')
     
     echo "Current Software State: $compliance_state"
 
@@ -131,10 +122,10 @@ fi
 redirect_uris=()  # Initialize an empty array to hold the redirect URIs
 
 # Fetch Node Resource Group from AKS Cluster
-node_resource_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
+node_resource_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv | tr -d '\r')
 
 # Fetch Public IP Address of the Load Balancer named 'kubernetes'
-public_ip=$(az network public-ip list -g "$node_resource_group" --query "[?contains(name, 'kubernetes')].ipAddress" -otsv)
+public_ip=$(az network public-ip list -g "$node_resource_group" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv | tr -d '\r')
 if [[ -n $public_ip ]]; then
     echo "Adding Public Web Endpoint: ${public_ip}"
     redirect_uris+=("https://$public_ip/auth/")  # Add public ingress URI
@@ -142,14 +133,14 @@ fi
 azd env set INGRESS_EXTERNAL https://$public_ip/auth/
 
 # Fetch Private IP Address from the Load Balancer named 'kubernetes-internal'
-private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -otsv)
+private_ip=$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_resource_group" --query [].privateIPAddress -o tsv | tr -d '\r')
 if [[ -n $private_ip ]]; then
     echo "Adding Private Web Endpoint: ${private_ip}"
     redirect_uris+=("https://$private_ip/auth/")  # Add private ingress URI
 fi
 azd env set INGRESS_INTERNAL https://$private_ip/auth/
 
-_oid=$(az ad app show --id $AZURE_CLIENT_ID --query id -o tsv)
+_oid=$(az ad app show --id $AZURE_CLIENT_ID --query id -o tsv | tr -d '\r')
 
 # Update Azure AD app only if there are URIs to add
 if [ ${#redirect_uris[@]} -gt 0 ]; then

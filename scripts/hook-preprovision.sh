@@ -156,7 +156,7 @@ fi
 ###############################
 # Subscription Check
 if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
-    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv | tr -d '\r')
     printf "\n"
     PrintMessage "==================================================================" 4
     PrintMessage "Default Subscription: ${AZURE_SUBSCRIPTION_ID}" 4
@@ -223,13 +223,13 @@ EOF
   az rest --method POST \
           --uri "https://graph.microsoft.com/v1.0/applications" \
           --headers 'Content-Type=application/json' \
-          --body "$JSON_PAYLOAD" > /dev/null 2>&1
+          --body "$JSON_PAYLOAD" > /dev/null 2>&1 
 
   # Wait for the application to be fully created
-  sleep 45
+  sleep 30
 
   # Retrieve the application ID using az ad app list
-  AZURE_CLIENT_ID=$(az ad app list --display-name "$AZURE_CLIENT_NAME" --query "[0].appId" -o tsv)
+  AZURE_CLIENT_ID=$(az ad app list --display-name "$AZURE_CLIENT_NAME" --query "[0].appId" -o tsv | tr -d '\r')
   az ad sp create --id $AZURE_CLIENT_ID -o none
   
   PrintMessage "  Retrieving AZURE_CLIENT_ID.."
@@ -241,15 +241,15 @@ fi
 # Environment Variables
 if [[ -z $AZURE_CLIENT_PRINCIPAL_OID ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
-  azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp show --id $AZURE_CLIENT_ID --query "id" -otsv)
+  azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp show --id $AZURE_CLIENT_ID --query "id" -otsv | tr -d '\r')
 fi
 
 if [[ -z $AZURE_CLIENT_SECRET ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_SECRET..."
-  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv)
+  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv | tr -d '\r')
 fi
 
 if [[ -z $EMAIL_ADDRESS ]]; then
   PrintMessage "  Retrieving User Email Address..."
-  azd env set EMAIL_ADDRESS $(az ad signed-in-user show --query userPrincipalName -o tsv)
+  azd env set EMAIL_ADDRESS $(az ad signed-in-user show --query userPrincipalName -o tsv | tr -d '\r')
 fi

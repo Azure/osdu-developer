@@ -11,6 +11,8 @@
   .\hook-predeploy.ps1 -SubscriptionId <SubscriptionId>
 #>
 
+#Requires -Version 7.4
+
 param (
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
     [switch]$Help

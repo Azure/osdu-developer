@@ -11,6 +11,8 @@
   .\hook-postprovision.ps1 -SubscriptionId <SubscriptionId>
 #>
 
+#Requires -Version 7.4
+
 param (
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
     [switch]$Help
@@ -115,13 +117,16 @@ function Add-RedirectUris {
             'spa': {'redirectUris': $($spaUris)}
         }
 "@
+        if (-not $IsWindows) {
+            $jsonPayload = $jsonPayload -replace "'", '"'
+        }
         # Remove whitespaces
-        $jsonPayloadCleaned = $jsonPayload -replace '\s+', ''
+        $jsonPayload = $jsonPayload -replace '\s+', ''
 
         az rest --method PATCH `
             --url "https://graph.microsoft.com/v1.0/applications/$azureClientOid" `
             --headers '{\"Content-Type\": \"application/json\"}' `
-            --body $jsonPayloadCleaned
+            --body $jsonPayload
     }
 }
 

@@ -13,6 +13,8 @@
   .\hook-preprovision.ps1 -SubscriptionId <SubscriptionId> -AzureEnvName <AzureEnvName> -RequiredCliVersion "2.60"
 #>
 
+#Requires -Version 7.4
+
 param (
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
     [string]$AzureEnvName = $env:AZURE_ENV_NAME ? $env:AZURE_ENV_NAME : "dev",
@@ -110,7 +112,6 @@ function Create-AzureADApplication {
         Write-Output " Creating Application: $azureClientName"
         Write-Output "=================================================================="
         
-
         $jsonPayload = @"
         {
             'displayName': '$azureClientName',
@@ -120,14 +121,17 @@ function Create-AzureADApplication {
             'requiredResourceAccess': [{'resourceAppId': '00000003-0000-0000-c000-000000000000', 'resourceAccess': [{'id': 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', 'type': 'Scope'}]}]
         }
 "@
+
+        if (-not $IsWindows) {
+            $jsonPayload = $jsonPayload -replace "'", '"'
+        }
         # Remove whitespaces
-        $jsonPayloadCleaned = $jsonPayload -replace '\s+', ''
+        $jsonPayload = $jsonPayload -replace '\s+', ''
 
         az rest --method post `
         --url https://graph.microsoft.com/v1.0/applications `
-        --headers '{\"Content-Type\": \"application/json\"}' `
-        --body $jsonPayloadCleaned -o none
-        
+        --body $jsonPayload -o none
+      
         Start-Sleep -Seconds 30
 
         $global:azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv

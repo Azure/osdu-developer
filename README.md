@@ -120,11 +120,6 @@ To begin, simply click the button below:
 For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/archiecture.md).
 
 
-#### Customizations
-
-There are many ways to customize the deployment. For example, virtual network injection can be implemented. Details on how to perform such customizations can be found [here](docs/vnet-injection.md).
-
-
 #### Feature Flags
 
 Feature flags are leveraged to assist in major modifications to the solution, ensuring adherence to different policies and requirements. More information can be found [here](docs/feature-flags.md).

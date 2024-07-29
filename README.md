@@ -47,7 +47,7 @@ Alternatively, use a GitHub Codespace.
     azd config set auth.useAzCliAuth "true"
     ```
 
-2. Authenticate
+2. Login
 
     ```bash
     # Login and set subscription
@@ -77,7 +77,7 @@ Alternatively, use a GitHub Codespace.
     azd provision
     ```
 
-4. Integrate
+4. Authenticate
 
     Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code for use in getting a refresh token for calling APIs.
 

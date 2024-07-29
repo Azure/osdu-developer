@@ -135,7 +135,7 @@ function Create-AzureADApplication {
 
         azd env set AZURE_CLIENT_ID $global:azureClientId
     } else {
-        Write-Output "Azure Client ID: $global:azureClientId"
+        Write-Output "Azure Client ID: $azureClientId"
     }
 }
 

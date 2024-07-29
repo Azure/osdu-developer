@@ -9,12 +9,12 @@ infra:
 hooks:
   preprovision:
     posix:
-      interactive: false
+      interactive: true
       continueOnError: false
       shell: sh
       run: ./scripts/hook-preprovision.sh
     windows:
-      interactive: false
+      interactive: true
       continueOnError: false
       shell: pwsh
       run: .\scripts\hook-preprovision.ps1

@@ -52,7 +52,8 @@ Local Machine usage requires the following.
 2. Provision
 
     ```bash    
-    # Provision the solution
+    # Create Environment and provision the solution
+    azd init -e dev # Environment name as desired.
     azd provision
     ```
 

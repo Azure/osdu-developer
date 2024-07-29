@@ -67,8 +67,8 @@ function Check-FluxCompliance {
             Write-Output "Software has been installed."
             break
         } else {
-            Write-Output "Software still installing, retrying in 30 seconds."
-            Start-Sleep -Seconds 30
+            Write-Output "Software still installing, retrying in 1 minute."
+            Start-Sleep -Seconds 60
         }
     }
 

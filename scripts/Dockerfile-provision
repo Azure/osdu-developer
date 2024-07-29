@@ -1,3 +1,4 @@
+# NOTE: Hooks can run in a Docker Container but when using azure CLI has issues with MSAL Token Cache.
 FROM mcr.microsoft.com/azure-cli:latest
 
 # Install OS packages
@@ -20,7 +21,6 @@ RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel httpie \
     && pip3 install --no-cache-dir --force-reinstall pycryptodome
 
 # Copy the script into the container
-COPY functions.sh /usr/local/bin/functions.sh
 COPY hook-postprovision.sh /usr/local/bin/postprovision.sh
 COPY hook-preprovision.sh /usr/local/bin/preprovision.sh
 COPY hook-predeploy.sh /usr/local/bin/predeploy.sh

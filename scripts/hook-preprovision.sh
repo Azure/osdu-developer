@@ -61,51 +61,102 @@ while getopts ":hs:" opt; do
 done
 shift $((OPTIND -1))
 
-# Check if user is logged in and log in if necessary
-account_info=$(az account show -o json 2>/dev/null)
-if [[ -n "$account_info" ]]; then
-    user_name=$(echo "$account_info" | jq -r '.user.name')
-    echo -e "\n=================================================================="
-    echo "Logged in as: $user_name"
-    echo "=================================================================="
-else
-    echo -e "\n=================================================================="
-    echo "Azure CLI Login Required"
-    echo "      az login --scope https://graph.microsoft.com//.default"
-    echo "=================================================================="
+###############################
+# Common Functions
+PrintMessage(){
+  # Required Argument $1 = Message
 
-    echo "Failed to log in. Exiting."
-    exit 1
-fi
+  # +---------+---------+
+  # |  Color  |  Value  |
+  # +---------+---------+
+  # |  black  |    0    |
+  # |   red   |    1    |
+  # |  green  |    2    |
+  # | yellow  |    3    |
+  # |  blue   |    4    |
+  # | magenta |    5    |
+  # |  cyan   |    6    |
+  # |  white  |    7    |
 
-# Ensure the subscription ID is set
-if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
-    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-fi
-echo -e "\n=================================================================="
-echo "Azure Subscription: $AZURE_SUBSCRIPTION_ID"
-echo "=================================================================="
-azd env set AZURE_SUBSCRIPTION_ID "$AZURE_SUBSCRIPTION_ID"
+  local _color="${2:-2}"
 
-# Check Azure CLI version.
+  if [[ ! -z "$1" ]]; then
+    if [[ -t 1 ]]; then  # Check if stdout is a tty
+      tput setaf $_color; echo "    $1" ; tput sgr0
+    else
+      echo "    $1"
+    fi
+  fi
+}
+
+###############################
+# Version Check
 REQUIRED_AZ_CLI_VERSION="2.62.0"
 CURRENT_AZ_CLI_VERSION="$(az --version | head -n 1 | awk -F' ' '{print $2}')"
+
+printf "\n"
+PrintMessage "==================================================================" 4
+PrintMessage "Azure CLI Version: ${CURRENT_AZ_CLI_VERSION}" 4
+PrintMessage "==================================================================" 4
 
 if [[ $(echo -e "$REQUIRED_AZ_CLI_VERSION\n$CURRENT_AZ_CLI_VERSION" | sort -V | head -n1) != $REQUIRED_AZ_CLI_VERSION ]]; then
   echo "This script requires Azure CLI version $REQUIRED_AZ_CLI_VERSION or higher. You have version $CURRENT_AZ_CLI_VERSION."
   exit 1
 fi
 
+
 ###############################
-# Require Common Functions
-if [[ -f "$SCRIPT_DIR/functions.sh" ]]; then 
-    source "$SCRIPT_DIR/functions.sh" 
+# Extension Check
+required_extensions=("k8s-configuration")
+printf "\n"
+PrintMessage "==================================================================" 4
+PrintMessage "Azure CLI Extensions: ${required_extensions[*]}" 4
+PrintMessage "==================================================================" 4
+
+for extension in "${required_extensions[@]}"; do
+    az_version_output=$(az version --output json)
+    
+    if echo "$az_version_output" | jq -e ".extensions.\"$extension\"" > /dev/null; then
+        echo "  Found [$extension] extension. Updating..."
+        az extension update --name "$extension" --allow-preview true --only-show-errors
+    else
+        echo "  Not Found [$extension] extension. Installing..."
+        az extension add --name "$extension" --allow-preview true --only-show-errors
+
+        if [ $? -eq 0 ]; then
+            echo "  [$extension] extension successfully installed"
+        else
+            echo "  Failed to install [$extension] extension"
+            exit 1
+        fi
+    fi
+done
+
+
+###############################
+# Login Check
+account_info=$(az account show -o json 2>/dev/null)
+if [[ -n "$account_info" ]]; then
+    user_name=$(echo "$account_info" | jq -r '.user.name')
+    printf "\n"
+    PrintMessage "==================================================================" 4
+    PrintMessage "Logged in as: $user_name" 4
+    PrintMessage "==================================================================" 4
+else
+    printf "\n"
+    PrintMessage "==================================================================" 4
+    PrintMessage "Azure CLI Login Required" 1
+    PrintMessage "      az login --scope https://graph.microsoft.com//.default" 1
+    PrintMessage "==================================================================" 4
+
+    echo "Failed to log in. Exiting."
+    exit 1
 fi
 
 ###############################
 # Subscription Check
 if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
-    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+    AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv | tr -d '\r')
     printf "\n"
     PrintMessage "==================================================================" 4
     PrintMessage "Default Subscription: ${AZURE_SUBSCRIPTION_ID}" 4
@@ -114,79 +165,19 @@ if [[ -z "$AZURE_SUBSCRIPTION_ID" ]]; then
 fi
 
 ###############################
-## Feature Check             ##
+# Location Check
+if [[ -z "$AZURE_LOCATION" ]]; then
+    AZURE_LOCATION="eastus2"
+    printf "\n"
+    PrintMessage "==================================================================" 4
+    PrintMessage "Default Location: $AZURE_LOCATION" 4
+    PrintMessage "==================================================================" 4
+    azd env set AZURE_LOCATION $AZURE_LOCATION
+fi
+
+
 ###############################
-printf "\n"
-PrintMessage "==================================================================" 4
-PrintMessage "Ensuring Proper Features are enabled." 4
-PrintMessage "==================================================================" 4
-
-PrintMessage "  Checking [k8s-configuration] extension..."
-az extension show --name k8s-configuration &>/dev/null
-
-if [[ $? == 0 ]]; then
-  PrintMessage "  Found and updating..."
-  az extension update --name k8s-configuration &>/dev/null
-else
-  PrintMessage "  Not Found and installing..."
-
-  # Install k8s-configuration extension
-  az extension add --name k8s-configuration1>/dev/null
-
-  if [[ $? == 0 ]]; then
-    PrintMessage "  [k8s-configuration extension successfully installed"
-  else
-    PrintMessage "  Failed to install [k8s-configuration] extension"
-    exit
-  fi
-fi
-
-# Registering AKS feature extensions
-aksExtensions=()
-
-ok=0
-registeringExtensions=()
-for aksExtension in ${aksExtensions[@]}; do
-  
-  PrintMessage "  Checking if [$aksExtension] extension is already registered..."
-  extension=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/$aksExtension') && @.properties.state == 'Registered'].{Name:name}" --output tsv)
-
-  if [[ -z $extension ]]; then
-    PrintMessage "  [$aksExtension] extension is not registered."
-    PrintMessage "  Registering [$aksExtension] extension..."
-
-    az feature register --name $aksExtension --namespace Microsoft.ContainerService
-    registeringExtensions+=("$aksExtension")
-    ok=1
-  else
-    PrintMessage "  [$aksExtension] extension is already registered."
-  fi
-done
-
-PrintMessage $registeringExtensions
-delay=1
-
-for aksExtension in ${registeringExtensions[@]}; do
-  PrintMessage "  Checking if [$aksExtension] extension is already registered..."
-
-  while true; do
-    extension=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/$aksExtension') && @.properties.state == 'Registered'].{Name:name}" --output tsv)
-    if [[ -z $extension ]]; then
-      echo -n "."
-      sleep $delay
-    else
-      echo "."
-      break
-    fi
-  done
-done
-
-if [[ $ok == 1 ]]; then
-  PrintMessage "  Refreshing the registration of the Microsoft.ContainerService resource provider..."
-  az provider register --namespace Microsoft.ContainerService
-  PrintMessage "  Microsoft.ContainerService resource provider registration successfully refreshed"
-fi
-
+# Application Check
 if [[ -z $AZURE_CLIENT_ID ]]; then
   
   # Define the application name using the Azure subscription ID
@@ -194,9 +185,9 @@ if [[ -z $AZURE_CLIENT_ID ]]; then
 
   # Display the created application information
   printf "\n"
-  echo "=================================================================="
-  echo " Creating Application: ${AZURE_CLIENT_NAME}"
-  echo "=================================================================="
+  PrintMessage "==================================================================" 4
+  PrintMessage "Creating Application: ${AZURE_CLIENT_NAME}" 4
+  PrintMessage "==================================================================" 4
 
 # Correctly format the JSON payload and headers
 JSON_PAYLOAD=$(cat <<EOF
@@ -232,30 +223,33 @@ EOF
   az rest --method POST \
           --uri "https://graph.microsoft.com/v1.0/applications" \
           --headers 'Content-Type=application/json' \
-          --body "$JSON_PAYLOAD" > /dev/null 2>&1
+          --body "$JSON_PAYLOAD" > /dev/null 2>&1 
 
   # Wait for the application to be fully created
-  sleep 45
+  sleep 30
 
   # Retrieve the application ID using az ad app list
-  AZURE_CLIENT_ID=$(az ad app list --display-name "$AZURE_CLIENT_NAME" --query "[0].appId" -o tsv)
+  AZURE_CLIENT_ID=$(az ad app list --display-name "$AZURE_CLIENT_NAME" --query "[0].appId" -o tsv | tr -d '\r')
   az ad sp create --id $AZURE_CLIENT_ID -o none
   
   PrintMessage "  Retrieving AZURE_CLIENT_ID.."
   azd env set AZURE_CLIENT_ID $AZURE_CLIENT_ID
 fi
 
+
+###############################
+# Environment Variables
 if [[ -z $AZURE_CLIENT_PRINCIPAL_OID ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
-  azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp show --id $AZURE_CLIENT_ID --query "id" -otsv)
+  azd env set AZURE_CLIENT_PRINCIPAL_OID $(az ad sp show --id $AZURE_CLIENT_ID --query "id" -otsv | tr -d '\r')
 fi
 
 if [[ -z $AZURE_CLIENT_SECRET ]]; then
   PrintMessage "  Retrieving AZURE_CLIENT_SECRET..."
-  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv)
+  azd env set AZURE_CLIENT_SECRET $(az ad app credential reset --id $AZURE_CLIENT_ID --query password --only-show-errors -otsv | tr -d '\r')
 fi
 
 if [[ -z $EMAIL_ADDRESS ]]; then
   PrintMessage "  Retrieving User Email Address..."
-  azd env set EMAIL_ADDRESS $(az ad signed-in-user show --query userPrincipalName -o tsv)
+  azd env set EMAIL_ADDRESS $(az ad signed-in-user show --query userPrincipalName -o tsv | tr -d '\r')
 fi

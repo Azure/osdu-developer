@@ -22,7 +22,7 @@ Alternatively, use a GitHub Codespace.
 
 
 - __Shell Requirements__: 
-  - For Windows: PowerShell Core (pwsh). You can download it [here](https://github.com/PowerShell/PowerShell).
+  - For Windows: PowerShell Core (pwsh).
   - For Linux or Mac: A POSIX-compliant shell (bash/zsh).
 
 - __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).

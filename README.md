@@ -63,7 +63,7 @@ Alternatively, use a GitHub Codespace.
     ```bash    
     # Set retrieved authorization code
     azd env set AUTH_CODE <your_auth_code>
-    azd hooks run predeploy
+    azd hooks run token
     ```
 
 4. Cleanup

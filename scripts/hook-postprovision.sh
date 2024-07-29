@@ -48,7 +48,7 @@ while getopts ":hs:" opt; do
       exit 0
       ;;
     s )
-      AZURE_SUBSCRIPTION=$OPTARG
+      AZURE_SUBSCRIPTION_ID=$OPTARG
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -66,7 +66,7 @@ shift $((OPTIND -1))
 
 ###############################
 # Checks
-if [[ -z "$AZURE_SUBSCRIPTION" ]];
+if [[ -z "$AZURE_SUBSCRIPTION_ID" ]];
 then
     echo "Error: You must provide a SubscriptionId" >&2
     print_help
@@ -181,4 +181,12 @@ EOF
 fi
 
 sleep 30
-open "$(azd env get-values | grep INGRESS_EXTERNAL | cut -d'=' -f2 | tr -d ' ')"
+
+URL=$(azd env get-values | grep INGRESS_EXTERNAL | cut -d'=' -f2 | tr -d '"')
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  open "$URL"
+else
+  URL=$(echo "$URL" | sed 's/^https:/http:/')
+  powershell.exe /c start "$URL"
+fi

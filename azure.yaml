@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: osdu-developer
 metadata:
@@ -31,14 +30,14 @@ hooks:
       shell: pwsh
       run: .\scripts\hook-postprovision.ps1
 
-  predeploy:
+  token:
     posix:
       interactive: false
       continueOnError: false
       shell: sh
-      run: ./scripts/hook-predeploy.sh
+      run: ./scripts/hook-token.sh
     windows:
       interactive: false
       continueOnError: false
       shell: pwsh
-      run: .\scripts\hook-predeploy.ps1
+      run: .\scripts\hook-token.ps1

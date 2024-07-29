@@ -47,7 +47,7 @@ while getopts ":hs:" opt; do
       exit 0
       ;;
     s )
-      AZURE_SUBSCRIPTION=$OPTARG
+      AZURE_SUBSCRIPTION_ID=$OPTARG
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -65,7 +65,7 @@ shift $((OPTIND -1))
 
 ###############################
 # Checks
-if [[ -z "$AZURE_SUBSCRIPTION" ]];
+if [[ -z "$AZURE_SUBSCRIPTION_ID" ]];
 then
     echo "Error: You must provide a SubscriptionId" >&2
     print_help

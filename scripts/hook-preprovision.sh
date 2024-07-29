@@ -62,10 +62,32 @@ done
 shift $((OPTIND -1))
 
 ###############################
-# Require Common Functions
-if [[ -f "$SCRIPT_DIR/functions.sh" ]]; then 
-    source "$SCRIPT_DIR/functions.sh" 
-fi
+# Common Functions
+PrintMessage(){
+  # Required Argument $1 = Message
+
+  # +---------+---------+
+  # |  Color  |  Value  |
+  # +---------+---------+
+  # |  black  |    0    |
+  # |   red   |    1    |
+  # |  green  |    2    |
+  # | yellow  |    3    |
+  # |  blue   |    4    |
+  # | magenta |    5    |
+  # |  cyan   |    6    |
+  # |  white  |    7    |
+
+  local _color="${2:-2}"
+
+  if [[ ! -z "$1" ]]; then
+    if [[ -t 1 ]]; then  # Check if stdout is a tty
+      tput setaf $_color; echo "    $1" ; tput sgr0
+    else
+      echo "    $1"
+    fi
+  fi
+}
 
 ###############################
 # Version Check

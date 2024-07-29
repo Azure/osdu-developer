@@ -104,7 +104,7 @@ if [[ ! -n $AUTH_INGRESS ]]; then
   echo "Fetching Ingress IP Address..."
 
   # Fetch Node Resource Group from AKS Cluster
-  node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv)
+  node_group=$(az aks show -g $AZURE_RESOURCE_GROUP -n $AKS_NAME --query nodeResourceGroup -o tsv | tr -d '\r')
   if [[ -n "$INGRESS" && "$INGRESS" == 'internal' ]]; then
       AUTH_INGRESS="$(az network lb frontend-ip list --lb-name kubernetes-internal -g "$node_group" --query '[].privateIPAddress' -o tsv | tr -d '\r')"
   else

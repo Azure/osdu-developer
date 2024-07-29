@@ -88,6 +88,9 @@ if [ -z $AKS_NAME ]; then
   exit 1;
 fi
 
+if [ -z $AZURE_CLIENT_OID ]; then
+  AZURE_CLIENT_OID=$(az ad app show --id $AZURE_CLIENT_ID --query id -o tsv | tr -d '\r')
+fi
 
 ###############################
 # Checking Flux Compliance
@@ -96,7 +99,7 @@ echo "Checking Software Installation..."
 # Initialize timer
 end=$((SECONDS+1200))  # 1200 seconds = 20 minutes
 
-# Loop to check Flux compliance every 30 seconds up to 10 minutes
+# Loop to check Flux compliance every minute up to 20 minutes
 while [ $SECONDS -lt $end ]; do
     
     compliance_state=$(az k8s-configuration flux show -t managedClusters -g $AZURE_RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv | tr -d '\r')
@@ -107,8 +110,8 @@ while [ $SECONDS -lt $end ]; do
         echo "Software has been installed."
         break
     else
-        echo "Software still installing, retrying in 30 seconds."
-        sleep 30
+        echo "Software still installing, retrying in 1 minute."
+        sleep 60
     fi
 done
 
@@ -140,11 +143,11 @@ if [[ -n $private_ip ]]; then
 fi
 azd env set INGRESS_INTERNAL https://$private_ip/auth/
 
-_oid=$(az ad app show --id $AZURE_CLIENT_ID --query id -o tsv | tr -d '\r')
+
 
 # Update Azure AD app only if there are URIs to add
 if [ ${#redirect_uris[@]} -gt 0 ]; then
-    echo "=================================================================="
+    echo -e "\n=================================================================="
     echo "Adding Redirect URIs: ${redirect_uris[@]}"
     echo "=================================================================="
     
@@ -173,9 +176,12 @@ EOF
 )
 
     # Update web and SPA redirect URIs with implicitGrantSettings
+    echo -e "\n=================================================================="
+    echo "Patching AD Application: ${AZURE_CLIENT_OID}"
+    echo "=================================================================="
     az rest \
       --method "PATCH" \
-      --uri "https://graph.microsoft.com/v1.0/applications/${_oid}" \
+      --uri "https://graph.microsoft.com/v1.0/applications/${AZURE_CLIENT_OID}" \
       --headers "Content-Type=application/json" \
       --body "$JSON_PAYLOAD"
 fi

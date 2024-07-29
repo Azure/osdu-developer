@@ -71,6 +71,7 @@ then
     print_help
     exit 1
 fi
+az account set --subscription $AZURE_SUBSCRIPTION_ID
 
 if [ -z $AZURE_CLIENT_ID ]; then
   echo 'ERROR: AZURE_CLIENT_ID not provided'

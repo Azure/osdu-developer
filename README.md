@@ -42,9 +42,6 @@ Alternatively, use a GitHub Codespace.
     ```bash
     # Enable Alpha Feature Resource Group Scoped Deployments
     azd config set alpha.resourceGroupDeployments on
-
-    # Enable Azure CLI Token Authentication
-    azd config set auth.useAzCliAuth "true"
     ```
 
 2. Login
@@ -52,6 +49,7 @@ Alternatively, use a GitHub Codespace.
     ```bash
     # Login and set subscription
     az login --scope https://graph.microsoft.com//.default
+    azd auth login
     ```
 
 3. Provision
@@ -79,7 +77,7 @@ Alternatively, use a GitHub Codespace.
 
 4. Authenticate
 
-    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code for use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code for use in getting a refresh token for calling APIs.
 
     ```bash    
     # Set retrieved authorization code

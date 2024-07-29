@@ -33,6 +33,7 @@ if (-not $SubscriptionId) {
     Show-Help
     exit 1
 }
+az account set --subscription $SubscriptionId
 
 if (-not $env:AZURE_CLIENT_ID) {
     Write-Output 'ERROR: AZURE_CLIENT_ID not provided'

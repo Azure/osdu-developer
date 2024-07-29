@@ -53,7 +53,7 @@ function Check-Login {
     Write-Output "`n=================================================================="
     Write-Output "Azure Subscription: $($SubscriptionId)"
     Write-Output "=================================================================="
-
+    az account set --subscription $SubscriptionId
 }
 
 function Check-FluxCompliance {

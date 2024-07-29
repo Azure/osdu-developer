@@ -10,6 +10,9 @@ Clone the repository to a local machine.
 ```bash
 # Clone the repository
 git clone https://github.com/Azure/osdu-developer.git
+
+# Change to directory
+cd osdu-developer
 ```
 
 Alternatively, use a GitHub Codespace.
@@ -31,16 +34,17 @@ Alternatively, use a GitHub Codespace.
 
 - __Azure Developer CLI__: Installed on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
+
+## Setup
+
+1. Configure
+
     ```bash
     # Enable Alpha Feature Resource Group Scoped Deployments
     azd config set alpha.resourceGroupDeployments on
     ```
 
-
-## Setup
-
-
-1. Authenticate
+2. Login
 
     ```bash
     # Login and set subscription
@@ -48,7 +52,7 @@ Alternatively, use a GitHub Codespace.
     azd auth login
     ```
 
-2. Provision
+3. Provision
 
     ```bash    
     # Create Environment and provision the solution
@@ -71,9 +75,9 @@ Alternatively, use a GitHub Codespace.
     azd provision
     ```
 
-3. Configure
+4. Authenticate
 
-    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain an authorization code for use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code for use in getting a refresh token for calling APIs.
 
     ```bash    
     # Set retrieved authorization code
@@ -81,7 +85,7 @@ Alternatively, use a GitHub Codespace.
     azd hooks run token
     ```
 
-4. Cleanup
+5. Cleanup
 
     ```bash
     # Remove all resources

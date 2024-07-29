@@ -34,14 +34,6 @@ Alternatively, use a GitHub Codespace.
 
 - __Azure Developer CLI__: Installed on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
-    ```bash
-    # Enable Alpha Feature Resource Group Scoped Deployments
-    azd config set alpha.resourceGroupDeployments on
-
-    # Enable Azure CLI Token Authentication
-    azd config set auth.useAzCliAuth "true"
-    ```
-
 
 ## Setup
 

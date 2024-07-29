@@ -53,6 +53,21 @@ Alternatively, use a GitHub Codespace.
     ```bash    
     # Create Environment and provision the solution
     azd init -e dev # Environment name as desired.
+    
+    # (Optional) Override Default Subscription
+    azd env set AZURE_SUBSCRIPTION_ID <your_subscription_id>
+
+    # (Optional) Override Default Location
+    azd env set AZURE_LOCATION <azure_region>
+
+    # (Optional) Override Default Application
+    azd env set AZURE_CLIENT_ID <your_client_id>
+
+    # (Optional) Override Software Location
+    azd env set SOFTWARE_REPOSITORY <your_git_url>
+    azd env set SOFTWARE_BRANCH <your_branch>
+
+    # Provision the solution
     azd provision
     ```
 
@@ -72,26 +87,6 @@ Alternatively, use a GitHub Codespace.
     # Remove all resources
     azd down --purge --force
     ```
-
-
-#### Optional Overrides
-
-Environment settings can be overriden as necessary.
-
-```bash
-# Override Default Subscription
-azd env set AZURE_SUBSCRIPTION_ID <your_subscription_id>
-
-# Override the Default Location
-azd env set AZURE_LOCATION <azure_region>
-
-# Override Client Id Creation
-azd env set AZURE_CLIENT_ID <your_client_id>
-
-# Override Software Location
-azd env set SOFTWARE_REPOSITORY <your_git_url>
-azd env set SOFTWARE_BRANCH <your_branch>
-```
 
 ### ARM Template Deployment  (Alternative)
 

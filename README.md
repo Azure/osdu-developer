@@ -2,39 +2,39 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 
-The [Azure Cloud](https://azure.microsoft.com/) developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
+The developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. 
+> For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
-Open the solution directly in a Github Codespace or clone it to a local machine.
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/osdu-developer)
+Clone the repository to a local machine.
 
 ```bash
 # Clone the repository
 git clone https://github.com/Azure/osdu-developer.git
 ```
 
+Alternatively, use a GitHub Codespace.
+
+ [![GitHub Codespace](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/osdu-developer)
+
 ## Prerequisites
 
-An active __Azure Subscription__ is required with the Azure App Configuration data plane permissions of `App Configuration Data Owner` assigned to the user at the subscription as explained [here](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#azure-app-configuration-authorization).
+> The `App Configuration Data Owner` role __must__ be assigned to the user using this solution at the subscription level. For more information see [documentation](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#azure-app-configuration-authorization).
 
-
-Local Machine usage requires the following.
 
 - __Shell Requirements__: 
-  - For Windows: PowerShell Core (pwsh) is required. You can download it [here](https://github.com/PowerShell/PowerShell).
-  - For Linux or Mac: A bash POSIX-compliant shell is required.
+  - For Windows: PowerShell Core (pwsh). You can download it [here](https://github.com/PowerShell/PowerShell).
+  - For Linux or Mac: A POSIX-compliant shell (bash/zsh).
 
-- __Azure CLI__: Install and configure on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+- __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).
 
-- __Azure Developer CLI__: Install and configure on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
+- __Azure CLI__: Installed on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+
+- __Azure Developer CLI__: Installed on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
     ```bash
     # Enable Alpha Feature Resource Group Scoped Deployments
     azd config set alpha.resourceGroupDeployments on
     ```
-
-- __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).
-
 
 
 ## Setup
@@ -45,7 +45,6 @@ Local Machine usage requires the following.
     ```bash
     # Login and set subscription
     az login --scope https://graph.microsoft.com//.default
-    az account set --subscription <your_subscription_id>
     azd auth login
     ```
 
@@ -96,7 +95,7 @@ azd env set SOFTWARE_BRANCH <your_branch>
 
 ### ARM Template Deployment  (Alternative)
 
-Deploying the resources is also efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging if attempting customizations.
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging if using customizations.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 
@@ -107,7 +106,6 @@ The application expects an [OAuth 2.0 and OpenID Connect (OIDC)](https://learn.m
 During the deployment process, identity information is necessary and required to be provided in the deployment form:
 
 - `Email Address`: Specify a valid email address to be used as the first user.
-
 - `Application Client Id`: Specify the Application Client Id. (This is the unique application ID of this application.)
 - `Application Client Secret`: Specify the Application Client Secret. (A valid secret for the application client ID.)
 - `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)

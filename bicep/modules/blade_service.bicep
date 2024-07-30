@@ -645,7 +645,14 @@ module app_config './app-configuration/main.bicep' = {
     // Add Role Assignment
     roleAssignments: [
       {
-        roleDefinitionIdOrName: 'App Configuration Data Reader'
+        roleDefinitionIdOrName: 'App Configuration Data Owner'
+        principalIds: [
+          appIdentity.properties.principalId
+        ]
+        principalType: 'ServicePrincipal'
+      }
+      {
+        roleDefinitionIdOrName: 'Contributor'
         principalIds: [
           appIdentity.properties.principalId
         ]
@@ -827,6 +834,9 @@ module grafana 'aks_grafana.bicep' = if(enableMonitoring){
 
 @description('The name of the container registry.')
 output registryName string = registry.outputs.name
+
+@description('The name of the container registry.')
+output appConfigName string = app_config.outputs.name
 
 @description('The name of the cluster.')
 output clusterName string = cluster.outputs.aksClusterName

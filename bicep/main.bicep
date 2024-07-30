@@ -436,6 +436,43 @@ module serviceBlade 'modules/blade_service.bicep' = {
   ]
 }
 
+module deploymentScript 'br/public:avm/res/resources/deployment-script:0.2.4' = {
+  // THIS IS TO ENSURE LOCAL AUTH TURNED OFF AFTER CONFIGURATION.
+  name: '${configuration.name}-app-config-local-auth'
+  params: {
+    // Required parameters
+    name: rg_unique_id
+    location: location
+    enableTelemetry: enableTelemetry
+
+    // Required parameters
+    kind: 'AzureCLI'
+    azCliVersion: '2.45.0'
+    environmentVariables: {
+      secureList: [
+        { name: 'resourceGroup', value: resourceGroup().name }
+        { name: 'appConfig', value: serviceBlade.outputs.appConfigName }
+      ]
+    }
+
+    managedIdentities: {
+      userAssignedResourcesIds: [
+        stampIdentity.outputs.resourceId
+      ]
+    }
+
+    storageAccountResourceId: commonBlade.outputs.storageAccountResourceId
+  
+    timeout: 'PT15M'
+    retentionInterval: 'PT1H'
+    scriptContent: 'az appconfig update -g $resourceGroup -n $appConfig --disable-local-auth true'
+    
+  }
+  dependsOn: [
+    serviceBlade
+  ]
+}
+
 output ACR_NAME string = serviceBlade.outputs.registryName
 output AKS_NAME string = serviceBlade.outputs.clusterName
 

@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-  Pre Deploy Script
+  Token Setting Script
 .DESCRIPTION
-  This script performs pre-deployment tasks, including checking Azure CLI version, managing Azure AD applications, and setting environment variables.
+  This script performs the tasks of getting a Refresh Token and creatting the .vscode settings.json file.
 .PARAMETER SubscriptionId
   Specify a particular SubscriptionId to use.
 .PARAMETER Help
   Print help message and exit.
 .EXAMPLE
-  .\hook-predeploy.ps1 -SubscriptionId <SubscriptionId>
+  .\settings.ps1 -SubscriptionId <SubscriptionId>
 #>
 
 #Requires -Version 7.4
@@ -19,7 +19,7 @@ param (
 )
 
 function Show-Help {
-    Write-Output "Usage: .\hook-predeploy.ps1 [-SubscriptionId SUBSCRIPTION_ID]"
+    Write-Output "Usage: .\settings.ps1 [-SubscriptionId SUBSCRIPTION_ID]"
     Write-Output "Options:"
     Write-Output " -SubscriptionId : Specify a particular Subscription ID to use."
     Write-Output " -Help : Print this help message and exit"
@@ -63,6 +63,9 @@ if (-not $env:AZURE_TENANT_ID) {
 }
 
 if (-not $env:AUTH_INGRESS) {
+    Write-Output "`n=================================================================="
+    Write-Output "Azure Kubernetes Cluster: $env:AKS_NAME"
+    Write-Output "=================================================================="
     Write-Output "Fetching Ingress IP Address..."
 
     $nodeResourceGroup = az aks show -g $env:AZURE_RESOURCE_GROUP -n $env:AKS_NAME --query nodeResourceGroup -o tsv
@@ -79,6 +82,9 @@ if (-not $env:AUTH_REFRESH) {
         Write-Output "Error: Neither AUTH_CODE nor AUTH_REFRESH is available."
         exit 1
     } else {
+        Write-Output "`n=================================================================="
+        Write-Output "Azure Application: $env:AZURE_CLIENT_ID"
+        Write-Output "=================================================================="
         Write-Output "Getting a Refresh Token using the Authorization Code..."
 
         $body = @{

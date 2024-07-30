@@ -10,16 +10,16 @@ hooks:
     interactive: true
     continueOnError: false
     shell: pwsh
-    run: ./scripts/hook-preprovision.ps1
+    run: ./scripts/pre-provision.ps1
 
   postprovision:
     interactive: true
     continueOnError: false
     shell: pwsh
-    run: ./scripts/hook-postprovision.ps1
+    run: ./scripts/post-provision.ps1
 
-  token:
+  settings:
     interactive: false
     continueOnError: false
     shell: pwsh
-    run: ./scripts/hook-token.ps1
+    run: ./scripts/settings.ps1

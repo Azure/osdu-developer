@@ -38,7 +38,7 @@ param sku string = 'Standard'
 param createMode string = 'Default'
 
 @description('Optional. Disables all authentication methods other than AAD authentication.')
-param disableLocalAuth bool = true
+param disableLocalAuth bool = false
 
 @description('Optional. Enables system assigned managed identity on the resource.')
 param systemAssignedIdentity bool = false

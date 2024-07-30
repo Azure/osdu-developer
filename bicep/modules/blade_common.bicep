@@ -458,5 +458,6 @@ module redis 'br/public:avm/res/cache/redis:0.3.2' = {
 output keyvaultName string = keyvault.outputs.name
 output keyvaultUri string = keyvault.outputs.uri
 output storageAccountName string = configStorage.outputs.name
+output storageAccountResourceId string = configStorage.outputs.id
 output storageDNSZoneId string = storageDNSZone.id
 output cosmosDNSZoneId string = cosmosDNSZone.id

@@ -2,21 +2,24 @@
 .SYNOPSIS
   Pre Provision Script
 .DESCRIPTION
-  This script performs pre-provisioning tasks, including checking Azure CLI version, managing Azure extensions, and setting environment variables.
+  This script performs pre-provisioning tasks of ensuring an ad application is properly created.
 .PARAMETER SubscriptionId
   Specify a particular SubscriptionId to use. Defaults to the value of the AZURE_SUBSCRIPTION_ID environment variable if set, or null if not.
+.PARAMETER ApplicationId
+  Optionally specify an ApplicaitonId. Defaults to the value of the AZURE_CLIENT_ID environment variable if set, otherwise create one.
 .PARAMETER AzureEnvName
   Optionally specify an Azure environment name. Defaults to the value of the AZURE_ENV_NAME environment variable if set, or "dev" if not.
 .PARAMETER RequiredCliVersion
   Optionally specify the required Azure CLI version. Defaults to "2.60".
 .EXAMPLE
-  .\hook-preprovision.ps1 -SubscriptionId <SubscriptionId> -AzureEnvName <AzureEnvName> -RequiredCliVersion "2.60"
+  .\pre-provision.ps1 -SubscriptionId <SubscriptionId> -AzureEnvName <AzureEnvName> -RequiredCliVersion "2.60"
 #>
 
 #Requires -Version 7.4
 
 param (
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
+    [string]$ApplicationId = $env:AZURE_CLIENT_ID,
     [string]$AzureEnvName = $env:AZURE_ENV_NAME ? $env:AZURE_ENV_NAME : "dev",
     [version]$RequiredCliVersion = [version]"2.62",
     [switch]$Help
@@ -26,6 +29,7 @@ function Show-Help {
     Write-Output "Usage: .\hook-preprovision.ps1 [-SubscriptionId SUBSCRIPTION_ID] [-AzureEnvName AZURE_ENV_NAME] [-RequiredCliVersion REQUIRED_CLI_VERSION]"
     Write-Output "Options:"
     Write-Output " -SubscriptionId : Optionally specify a subscription ID to use. If not provided, defaults to the AZURE_SUBSCRIPTION_ID environment variable."
+    Write-Output " -ApplicationId : Optionally specify an application ID to use. If not provided, creates one."
     Write-Output " -AzureEnvName : Optionally specify an Azure environment name. Defaults to 'dev' if AZURE_ENV_NAME environment variable is not set."
     Write-Output " -RequiredCliVersion : Optionally specify the required Azure CLI version. Defaults to '2.60'."
     Write-Output " -Help : Print this help message and exit"
@@ -50,7 +54,7 @@ function Check-AzureCliVersion {
     }
 }
 
-function Ensure-AzureExtensions {
+function Update-AKSExtensions {
     # Check for required extensions
     $requiredExtensions = @("k8s-configuration")
 
@@ -79,37 +83,50 @@ function Ensure-AzureExtensions {
 
 function Check-Login {
     # Check if the user is logged in
+    $user = az ad signed-in-user show --query userPrincipalName -o tsv
     $accountInfo = az account show -o json 2>$null | ConvertFrom-Json
-    if ($accountInfo) {
+    if ($user) {
         Write-Output "`n=================================================================="
-        Write-Output "Logged in as: $($accountInfo.user.name)"
+        Write-Output "Logged in as: $user"
         Write-Output "=================================================================="
     } else {
         Write-Output "`n=================================================================="
         Write-Output "Azure CLI Login Required"
-        Write-Output "      az login --scope https://graph.microsoft.com//.default"
         Write-Output "=================================================================="
-        Write-Output "Failed to log in. Exiting."
-        exit 1
+
+        az login --scope https://graph.microsoft.com//.default
+
+        # Recheck if the user is logged in
+        $accountInfo = az account show -o json | ConvertFrom-Json
+        if ($accountInfo) {
+            Write-Output "`n=================================================================="
+            Write-Output "Logged in as: $($accountInfo.user.name)"
+            Write-Output "=================================================================="
+        } else {
+            Write-Output "Failed to log in. Exiting."
+            exit 1
+        }
     }
 
     # Ensure the subscription ID is set
-    if (-not $global:SubscriptionId) {
-        $global:SubscriptionId = az account show --query id -o tsv
+    if (-not $SubscriptionId) {
+        $SubscriptionId = az account show --query id -o tsv
+        azd env set AZURE_SUBSCRIPTION_ID $SubscriptionId
     }
+
     Write-Output "`n=================================================================="
-    Write-Output "Azure Subscription: $($global:SubscriptionId)"
+    Write-Output "Azure Subscription: $SubscriptionId"
     Write-Output "=================================================================="
-    azd env set AZURE_SUBSCRIPTION_ID $global:SubscriptionId
+    
 }
 
-function Create-AzureADApplication {
-    $azureClientName = "osdu-$AzureEnvName-$global:SubscriptionId"
-
+function Create-Application {
+    $azureClientName = "osdu-$AzureEnvName-$SubscriptionId"
     $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
+
     if (-not $azureClientId) {
         Write-Output "`n=================================================================="
-        Write-Output " Creating Application: $azureClientName"
+        Write-Output "Creating Application: $azureClientName"
         Write-Output "=================================================================="
         
         $jsonPayload = @"
@@ -134,31 +151,33 @@ function Create-AzureADApplication {
       
         Start-Sleep -Seconds 30
 
-        $global:azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
-        az ad sp create --id $global:azureClientId --only-show-errors
+        $ApplicationId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
+        az ad sp create --id $ApplicationId --only-show-errors
 
-        azd env set AZURE_CLIENT_ID $global:azureClientId
+        azd env set AZURE_CLIENT_ID $ApplicationId
     } else {
-        Write-Output "Azure Client ID: $azureClientId"
+        Write-Output "`n=================================================================="
+        Write-Output "Azure Application: $azureClientName"
+        Write-Output "=================================================================="
     }
 }
 
 function Set-EnvironmentVariables {
 
     Write-Output "`n=================================================================="
-    Write-Output " Retrieving Application: $global:azureClientId"
+    Write-Output "Retrieving Application: $ApplicationId"
     Write-Output "=================================================================="
 
     if (-not $env:AZURE_CLIENT_PRINCIPAL_OID) {
         Write-Output "Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
-        $azureClientPrincipalOid = az ad sp show --id $global:azureClientId --query "id" -o tsv
+        $azureClientPrincipalOid = az ad sp show --id $ApplicationId --query "id" -o tsv
         echo $azureClientPrincipalOid
         azd env set AZURE_CLIENT_PRINCIPAL_OID $azureClientPrincipalOid
     }
 
     if (-not $env:AZURE_CLIENT_SECRET) {
         Write-Output "Retrieving AZURE_CLIENT_SECRET..."
-        $azureClientSecret = az ad app credential reset --id $global:azureClientId --query password --only-show-errors -o tsv
+        $azureClientSecret = az ad app credential reset --id $ApplicationId --query password --only-show-errors -o tsv
         azd env set AZURE_CLIENT_SECRET $azureClientSecret
     }
 
@@ -176,7 +195,7 @@ if ($Help) {
 }
 
 Check-AzureCliVersion
-Ensure-AzureExtensions
+Update-AksExtensions
 Check-Login
-Create-AzureADApplication
+Create-Application
 Set-EnvironmentVariables

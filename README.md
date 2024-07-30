@@ -75,12 +75,12 @@ Alternatively, use a GitHub Codespace.
 
 4. Authenticate
 
-    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code for use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code prior to running the settings.
 
     ```bash    
     # Set retrieved authorization code
     azd env set AUTH_CODE <your_auth_code>
-    azd hooks run token
+    azd hooks run settings
     ```
 
 5. Cleanup

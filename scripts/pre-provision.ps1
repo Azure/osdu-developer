@@ -41,7 +41,7 @@ function Show-Help {
     Write-Host " -Help : Print this help message and exit"
 }
 
-function Check-AzureCliVersion {
+function Set-AzureCliVersion {
     try {
         # Get the version of the Azure CLI
         $azVersionOutput = az version --output json | ConvertFrom-Json
@@ -95,7 +95,7 @@ function Update-AksExtensions {
     }
 }
 
-function Check-Login {
+function Set-Login {
     try {
         # Check if the user is logged in
         $user = az ad signed-in-user show --query userPrincipalName -o tsv
@@ -135,12 +135,12 @@ function Check-Login {
     }
 }
 
-function Create-Application {
+function New-Application {
     try {
-        $azureClientName = "osdu-$AzureEnvName-$SubscriptionId"
-        $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
+        if (-not $ApplicationId) {
+            $azureClientName = "osdu-$AzureEnvName-$SubscriptionId"
+            $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
 
-        if (-not $azureClientId) {
             Write-Host "`n=================================================================="
             Write-Host "Creating Application: $azureClientName"
             Write-Host "=================================================================="
@@ -171,10 +171,6 @@ function Create-Application {
             az ad sp create --id $ApplicationId --only-show-errors
 
             azd env set AZURE_CLIENT_ID $ApplicationId
-        } else {
-            Write-Host "`n=================================================================="
-            Write-Host "Azure Application: $azureClientName"
-            Write-Host "=================================================================="
         }
     } catch {
         Write-Host "Error creating application: $_"
@@ -217,8 +213,8 @@ if ($Help) {
     exit 0
 }
 
-Check-AzureCliVersion
+Set-AzureCliVersion
 Update-AksExtensions
-Check-Login
-Create-Application
+Set-Login
+New-Application
 Set-EnvironmentVariables

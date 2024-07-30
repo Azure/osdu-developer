@@ -39,7 +39,7 @@ function Show-Help {
     Write-Host " -Help : Print this help message and exit"
 }
 
-function Check-Login {
+function Set-Login {
     try {
         # Check if the user is logged in
         $user = az ad signed-in-user show --query userPrincipalName -o tsv
@@ -99,7 +99,7 @@ function Get-AKSName {
     Write-Output "=================================================================="
 }
 
-function Check-Software {
+function Get-Software {
     $end = (Get-Date).AddMinutes(20)
     try {
         $complianceState = az k8s-configuration flux show -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
@@ -209,9 +209,9 @@ if (-not $ApplicationId) {
     exit 1
 }
 
-Check-Login
+Set-Login
 $AKS_NAME = Get-AKSName
-Check-Software
+Get-Software
 Update-Application
 
 Start-Sleep -Seconds 30

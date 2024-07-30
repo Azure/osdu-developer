@@ -126,7 +126,7 @@ function Get-RefreshToken {
     }
 }
 
-function Create-VSCodeSettings {
+function New-VSCodeSettings {
     Write-Host "`n=================================================================="
     Write-Host "Creating File: .vscode/settings.json"
     Write-Host "=================================================================="
@@ -203,4 +203,4 @@ Write-Host "=================================================================="
 $AKS_NAME = Get-AKSName
 Set-AuthIngress
 Get-RefreshToken
-Create-VSCodeSettings
+New-VSCodeSettings

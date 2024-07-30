@@ -724,7 +724,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
 */
 
 //--------------Flux Config---------------
-module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.4' = if(enableSoftwareLoad) {
   name: '${bladeConfig.sectionName}-cluster-gitops'
   params: {
     name: serviceLayerConfig.gitops.name

@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: partition
@@ -109,7 +109,7 @@ spec:
             value: "DEBUG"
 ---
 # Retrigger:  kubectl annotate helmrelease osdu-init-partition fluxcd.io/retrigger=$(date +%s) -n osdu-core
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: osdu-init-partition

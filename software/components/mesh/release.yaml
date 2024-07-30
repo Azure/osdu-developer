@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: istio-base
@@ -21,7 +21,7 @@ spec:
   values:
     defaultRevision: default
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: cert-manager-istio-csr
@@ -52,7 +52,7 @@ spec:
           kind: ClusterIssuer
           group: cert-manager.io
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: istiod
@@ -91,7 +91,7 @@ spec:
         K8S_INGRESS_NS: istio-ingress
         ENABLE_NATIVE_SIDECARS: true
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: istio-ingress-internal
@@ -132,7 +132,7 @@ spec:
         annotations: 
           service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: istio-ingress-external

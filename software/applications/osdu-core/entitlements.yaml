@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: entitlements
@@ -119,7 +119,7 @@ spec:
         value: "http://partition/api/partition/v1"
 ---
 # Retrigger:  kubectl annotate helmrelease osdu-init-entitlements fluxcd.io/retrigger=$(date +%s) -n osdu-core
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: osdu-init-entitlements

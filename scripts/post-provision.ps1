@@ -177,6 +177,7 @@ function Update-Application {
             $jsonPayload = $jsonPayload -replace '\s+', ''
             az rest --method PATCH `
                 --url "https://graph.microsoft.com/v1.0/applications/$azureClientOid" `
+                --headers 'Content-Type=application/json' `
                 --body $jsonPayload
         }
     } catch {

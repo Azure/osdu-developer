@@ -6,15 +6,39 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 > For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
 
-## Features
+## OSDU Services
 
-* OSDU Core Services - Partition, Entitlements, Legal, Indexer, Schema, Storage, Search, File
+Support for OSDU Core Services running Milestone 23 _(Release 0.26)_
+
+- [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)
+
+- [Entitlement Service](https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements)
+
+- [Legal Service](https://community.opengroup.org/osdu/platform/security-and-compliance/legal)
+
+- [Indexer Service](https://community.opengroup.org/osdu/platform/system/indexer-service) and [Indexer Queue](https://community.opengroup.org/osdu/platform/system/indexer-queue)
+
+- [Schema Service](https://community.opengroup.org/osdu/platform/system/schema-service)
+
+- [Storage Service](https://community.opengroup.org/osdu/platform/system/storage)
+
+- [Search Service](https://community.opengroup.org/osdu/platform/system/search-service)
+
+- [File Service](https://community.opengroup.org/osdu/platform/system/file)
+
+
+
+## Features
 
 * Internal and External Ingress 
 
 * Bring Your Own Virtual Network
 
 * Isolated Software Repository Locations
+
+* Well Known Schema Loaded
+
+* Initial User Configured
 
 
 ## Getting Started

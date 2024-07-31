@@ -5,94 +5,87 @@
 The developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. 
 > For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
-Clone the repository to a local machine.
 
-```bash
-# Clone the repository
-git clone https://github.com/Azure/osdu-developer.git
+## Features
 
-# Change to directory
-cd osdu-developer
-```
+* OSDU Core Services - Partition, Entitlements, Legal, Indexer, Schema, Storage, Search, File
 
-Alternatively, use a GitHub Codespace.
+* Internal and External Ingress 
 
- [![GitHub Codespace](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/osdu-developer)
+* Bring Your Own Virtual Network
 
-## Prerequisites
-
-> The `App Configuration Data Owner` role __must__ be assigned to the user using this solution at the subscription level. For more information see [documentation](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#azure-app-configuration-authorization).
+* Isolated Software Repository Locations
 
 
-- __PowerShell Core__: Installed on your local machine.  You can download it [here](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
+## Getting Started
+
+> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription**. 
+
+> **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as utilization of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
+
+
+### Prerequisites
+
+#### To Run Locally
 
 - __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).
+
+- __PowerShell Core__: Installed on your local machine.  You can download it [here](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
 
 - __Azure CLI__: Installed on your local machine. You can download it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
 - __Azure Developer CLI__: Installed on your local machine. You can download it [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
 
-## Setup
+#### To Run in GitHub Codespaces or VS Code Remote Containers
 
-1. Configure
+This solution can be run virtually by using GitHub Codespaces or VS Code Remote Containers _(Docker required)_.  Click on one of the buttons below to open this repo in one of those options. 
 
-    ```bash
-    # Enable Alpha Feature Resource Group Scoped Deployments
-    azd config set alpha.resourceGroupDeployments on
-    ```
+[![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure/osdu-developer)
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=742135816&ref=main&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=UsEast)
 
-2. Login
 
-    ```bash
-    # Login and set subscription
-    az login --scope https://graph.microsoft.com//.default
-    azd auth login
-    ```
 
-3. Provision
+### Installation
 
-    ```bash    
-    # Create Environment and provision the solution
-    azd init -e dev # Environment name as desired.
-    
-    # (Optional) Override Default Subscription
-    azd env set AZURE_SUBSCRIPTION_ID <your_subscription_id>
+#### Project Initialization
 
-    # (Optional) Override Default Location
-    azd env set AZURE_LOCATION <azure_region>
+1. Run `azd config set alpha.resourceGroupDeployments on` to enable Resource Group Scoped Deployments.
 
-    # (Optional) Override Default Application
-    azd env set AZURE_CLIENT_ID <your_client_id>
+1. Run `azd auth login` to login with your azure credentials.
 
-    # (Optional) Override Software Location
-    azd env set SOFTWARE_REPOSITORY <your_git_url>
-    azd env set SOFTWARE_BRANCH <your_branch>
+1. Run `azd init -e dev` to initialize a new environment. _(Environment name can be changed.)
 
-    # Provision the solution
-    azd provision
-    ```
+1. Run `az login --scope https://graph.microsoft.com//.default` - This is used to access information in Azure Active Directory and create an Application if necessary.
 
-4. Authenticate
+1. Check that you are logged in to the right subscription by running the command: `az account show --query "{SubscriptionName:name, SubscriptionId:id}"`. If you need to change to the right subscription then run `az account set --subscription <correct_subscription_id>`
 
-    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code prior to running the settings.
+1. Run `azd provision` - This will provision Azure resources and deploy this solution including installing software to the cluster and configuring the Application Identity.
 
-    ```bash    
-    # Set retrieved authorization code
-    azd env set AUTH_CODE <your_auth_code>
-    azd hooks run settings
-    ```
+1. After the application has been successfully deployed a browser should open to obtain a new OpenID Authorization Code.
 
-5. Cleanup
+1. Run `azd env set AUTH_CODE <new_authorization_code>`
 
-    ```bash
-    # Remove all resources
-    azd down --purge --force
-    ```
+1. Run `azd hooks run settings` to obtain OpenID refresh tokens and configure settings for Visual Studio Code.
+
+> NOTE: It may take over an hour for the application to be fully deployed. If you see an "Azure Login" page please reauthenticate the Azure CLI, and continue to wait.
+
+#### Optional Overrides
+
+1. Run `azd env set AZURE_CLIENT_ID {Name of existing Application Id}` to not create a new Application.
+1. Run `azd env set SOFTWARE_REPOSITORY {URL of Github Repository}` to isolate software installation to an alternate respository.
+1. Run `azd env set SOFTWARE_BRANCH {Name of Github Branch}` to isolate software installation to an alternate branch.
+
+#### Resource Removal
+
+1. Run `azd down --force --purge` to remove all Azure Resources.
+
+> NOTE: Manual removal of the resource group is also fine but requires manual purge of the KeyVault and App Configuration.
+
 
 ### ARM Template Deployment  (Alternative)
 
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging if using customizations.
+Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
 
 To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
 
@@ -121,6 +114,10 @@ To begin, simply click the button below:
 
 For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/archiecture.md).
 
+#### IDE Settings
+
+Services can be run locally in an IDE like IntelliJ.  Identified required environment variables to start the services can be found [here](docs/service-environments.md)
+
 
 #### Feature Flags
 
@@ -135,5 +132,4 @@ The repository is configured with Github Actions to automate the validation of p
 #### Customizations
 
 There are many things that can be done to customize the deployment. One example of this might be virtual network injection. More information can be found [here](docs/vnet-injection.md).
-
 

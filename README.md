@@ -56,9 +56,7 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 1. Run `azd init -e dev` to initialize a new environment.
 
-1. Run `az login --scope https://graph.microsoft.com//.default` - This is used to access information in Azure Active Directory and create an Application if necessary.
-
-1. Check that you are logged in to the right subscription by running the command: `az account show --query "{SubscriptionName:name, SubscriptionId:id}"`. If you need to change to the right subscription then run `az account set --subscription <correct_subscription_id>`
+1. Run `az login --scope https://graph.microsoft.com//.default` to create or access Application information in Azure Active Directory.
 
 1. Run `azd provision` - This will provision Azure resources and deploy this solution including installing software to the cluster and configuring the Application Identity.
 

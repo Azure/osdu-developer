@@ -24,9 +24,7 @@ Alternatively, use a GitHub Codespace.
 > The `App Configuration Data Owner` role __must__ be assigned to the user using this solution at the subscription level. For more information see [documentation](https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-deployment-overview?tabs=portal#azure-app-configuration-authorization).
 
 
-- __Shell Requirements__: 
-  - For Windows: PowerShell Core (pwsh).
-  - For Linux or Mac: A POSIX-compliant shell (bash/zsh).
+- __PowerShell Core__: Installed on your local machine.  You can download it [here](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
 
 - __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). You can download it [here](https://code.visualstudio.com/download).
 
@@ -77,12 +75,12 @@ Alternatively, use a GitHub Codespace.
 
 4. Authenticate
 
-    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code for use in getting a refresh token for calling APIs.
+    Once the environment has been provisioned, access the ingress URL `https://<your_ingress>/auth/` and obtain the authorization code prior to running the settings.
 
     ```bash    
     # Set retrieved authorization code
     azd env set AUTH_CODE <your_auth_code>
-    azd hooks run token
+    azd hooks run settings
     ```
 
 5. Cleanup

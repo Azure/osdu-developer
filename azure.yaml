@@ -7,37 +7,19 @@ infra:
   path: bicep
 hooks:
   preprovision:
-    posix:
-      interactive: true
-      continueOnError: false
-      shell: sh
-      run: ./scripts/hook-preprovision.sh
-    windows:
-      interactive: true
-      continueOnError: false
-      shell: pwsh
-      run: .\scripts\hook-preprovision.ps1
+    interactive: true
+    continueOnError: false
+    shell: pwsh
+    run: ./scripts/pre-provision.ps1
 
   postprovision:
-    posix:
-      interactive: true
-      continueOnError: false
-      shell: sh
-      run: ./scripts/hook-postprovision.sh
-    windows:
-      interactive: true
-      continueOnError: false
-      shell: pwsh
-      run: .\scripts\hook-postprovision.ps1
+    interactive: true
+    continueOnError: false
+    shell: pwsh
+    run: ./scripts/post-provision.ps1
 
-  token:
-    posix:
-      interactive: false
-      continueOnError: false
-      shell: sh
-      run: ./scripts/hook-token.sh
-    windows:
-      interactive: false
-      continueOnError: false
-      shell: pwsh
-      run: .\scripts\hook-token.ps1
+  settings:
+    interactive: false
+    continueOnError: false
+    shell: pwsh
+    run: ./scripts/settings.ps1

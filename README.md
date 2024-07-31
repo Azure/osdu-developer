@@ -8,7 +8,7 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 ## OSDU Services
 
-Support services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-23-is-now-released/)
+Supported services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-23-is-now-released/)
 
 - [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)
 
@@ -32,13 +32,15 @@ Support services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-
 
 * Internal and External Ingress 
 
-* Bring Your Own Virtual Network
+* Bring Your Own VNet
 
 * Isolated Software Repository Locations
 
 * Well Known Schema Loaded
 
 * Initial User Configured
+
+* Single Data Partition (opendes)
 
 
 ## Getting Started

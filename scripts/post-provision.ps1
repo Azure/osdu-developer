@@ -221,9 +221,10 @@ Start-Sleep -Seconds 30
 $os = ($PSVersionTable.OS).Split(' ')[0]
 $url = [string]((azd env get-values | Where-Object { $_ -match "INGRESS_EXTERNAL" }) -split '=')[1].Trim()
 $url = $url -replace '"', ''
-if ($os -ne "Darwin") {
-    $url = $url -replace '^https:', 'http:'
-}
+### --> This is the https hack.
+# if ($os -ne "Darwin") {
+#     $url = $url -replace '^https:', 'http:'
+# }
 if ($IsWindows) {
     Start-Process $url
 } else {

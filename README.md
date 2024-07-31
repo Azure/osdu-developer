@@ -129,10 +129,7 @@ During the deployment process, some information is required to be provided in th
 - `Application Client Secret`: Specify the Application Client Secret. (A valid secret for the application client ID.)
 - `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)
 
-
-Upon completing the deployment, the infrastructure and software components will be automatically provisioned. This includes loading the software configuration through a [GitOps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/gitops-aks/gitops-blueprint-aks) approach, enabled by AKS (Azure Kubernetes Service).
-
-
+Upon completing the deployment, the infrastructure and software components will be automatically provisioned. 
 
 
 ## Additional Information

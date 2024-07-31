@@ -28,13 +28,13 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 #### To Run Locally
 
-- __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). Download [here](https://code.visualstudio.com/download).
+- __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). [Download](https://code.visualstudio.com/download).
 
-- __PowerShell Core__: Installed on your local machine.  Download [here](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
+- __PowerShell Core__: Installed on your local machine.  [Download](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
 
-- __Azure CLI__: Installed on your local machine. Download [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+- __Azure CLI__: Installed on your local machine. [Download](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-- __Azure Developer CLI__: Installed on your local machine. Download [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
+- __Azure Developer CLI__: Installed on your local machine. [Download](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd).
 
 
 #### To Run in GitHub Codespaces or VS Code Remote Containers

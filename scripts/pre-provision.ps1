@@ -122,13 +122,16 @@ function Set-Login {
         }
         # Ensure the subscription ID is set
         if (-not $SubscriptionId) {
-            $SubscriptionId = az account show --query id -o tsv
-            azd env set AZURE_SUBSCRIPTION_ID $SubscriptionId
-        }
-
-        Write-Host "`n=================================================================="
-        Write-Host "Azure Subscription: $SubscriptionId"
-        Write-Host "=================================================================="
+            $global:SubscriptionId = az account show --query id -o tsv
+            azd env set AZURE_SUBSCRIPTION_ID $global:SubscriptionId
+            Write-Host "`n=================================================================="
+            Write-Host "Azure Subscription: $global:SubscriptionId"
+            Write-Host "=================================================================="
+        } else {
+            Write-Host "`n=================================================================="
+            Write-Host "Azure Subscription: $SubscriptionId"
+            Write-Host "=================================================================="
+        }        
     } catch {
         Write-Host "Error during login check: $_"
         exit 1
@@ -137,6 +140,9 @@ function Set-Login {
 
 function New-Application {
     try {
+        if (-not $SubscriptionId) {
+            $SubscriptionId = $global:SubscriptionId
+        }
         if (-not $ApplicationId) {
             $azureClientName = "osdu-$AzureEnvName-$SubscriptionId"
             $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
@@ -171,6 +177,7 @@ function New-Application {
             az ad sp create --id $ApplicationId --only-show-errors
 
             azd env set AZURE_CLIENT_ID $ApplicationId
+            $global:ApplicationId = $ApplicationId
         }
     } catch {
         Write-Host "Error creating application: $_"
@@ -179,6 +186,9 @@ function New-Application {
 }
 
 function Set-EnvironmentVariables {
+    if (-not $ApplicationId) {
+            $ApplicationId = $global:ApplicationId
+        }
     try {
         Write-Host "`n=================================================================="
         Write-Host "Retrieving Application: $ApplicationId"

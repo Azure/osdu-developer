@@ -40,7 +40,7 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 * Internal and External Ingress 
 
-* Bring Your Own VNet
+* Bring Your Own VNet (S2S VPN)
 
 * Istio Observability (Kiali)
 

@@ -122,7 +122,7 @@ Deploying the resources is efficient and straightforward using an ARM (Azure Res
 
 **Important Parameter Requirement:**
 
-During the deployment process, identity information is necessary and required to be provided in the deployment form:
+During the deployment process, some information is required to be provided in the deployment form:
 
 - `Email Address`: Specify a valid email address to be used as the first user.
 - `Application Client Id`: Specify the Application Client Id. (This is the unique application ID of this application.)

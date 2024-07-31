@@ -23,7 +23,7 @@
   "customizations": {
     "vscode": {
       "settings": {},
-      "extensions": ["mutantdino.resourcemonitor"]
+      "extensions": ["mutantdino.resourcemonitor", "humao.rest-client"]
     }
   }
 

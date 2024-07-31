@@ -227,7 +227,7 @@ if ($os -ne "Darwin") {
 if ($IsWindows) {
     Start-Process $url
 } else {
-    if ($os -eq "Darwin") {
+    if ($os -eq "Darwin" -or $os -eq "Ubuntu") {
         open $url
     } else {
         powershell.exe /c start "$url"

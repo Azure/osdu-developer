@@ -73,8 +73,8 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 #### Optional Overrides
 
 1. Run `azd env set AZURE_CLIENT_ID {Name of existing Application Id}` to not create a new Application.
-1. Run `azd env set SOFTWARE_REPOSITORY {URL of Github Repository}` to isolate software installation to an alternate respository.
-1. Run `azd env set SOFTWARE_BRANCH {Name of Github Branch}` to isolate software installation to an alternate branch.
+1. Run `azd env set SOFTWARE_REPOSITORY {URL of GitHub Repository}` to isolate software installation to an alternate respository.
+1. Run `azd env set SOFTWARE_BRANCH {Name of GitHub Branch}` to isolate software installation to an alternate branch.
 
 #### Resource Removal
 
@@ -124,9 +124,9 @@ Services can be run locally in an IDE like IntelliJ.  Identified required enviro
 Feature flags are leveraged to assist in major modifications to the solution, ensuring adherence to different policies and requirements. More information can be found [here](docs/feature-flags.md).
                           
 
-#### Github Actions
+#### GitHub Actions
 
-The repository is configured with Github Actions to automate the validation of pull requests.. The strategy for actions can be found [here](docs/pipelines.md).
+The repository is configured with GitHub Actions to automate the validation of pull requests.. The strategy for actions can be found [here](docs/pipelines.md).
 
 
 #### Customizations

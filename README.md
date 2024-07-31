@@ -34,10 +34,12 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 | Software Locations     | Utilizes Flux to direct the software loading process to private GitHub repositories and branches.                  |
 | Ingress                | Supports both public-facing and private network access points.                                                     |
 | Network Flexability    | Supports VNet injection and integration with existing networks, to easily allow for S2S Vpn access.                |
-| Mesh Observability     | Provides observability for the istio using Kiali dashboards to investigate latency, traffic, errors, and saturation. |
+| Mesh Observability     | Provides observability for istio using Kiali dashboards to investigate latency, traffic, errors, and saturation.   |
 | Elastic Tools          | Supports connectivity to Elastic Kibana for advanced devtools, search capabilities, and user management.           |
 | Application Logging    | Integrated with Application Insights for detailed service-level logging and metrics monitoring.                    |
 | Initial User           | Includes initial user setup and configuration for openid connect access.                                           |
+| Rest Scripts           | Integrated Sample Rest Scripts for easily executing API calls to test and explore functionality.                   |
+| Token Tools            | Integrated Access Token Tools for easy retrieval of Bearer Access Tokens for with Swagger Pages and docs.          |
 
 
 

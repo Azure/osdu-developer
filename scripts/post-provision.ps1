@@ -100,7 +100,7 @@ function Get-AKSName {
 }
 
 function Get-Software {
-    $end = (Get-Date).AddMinutes(20)
+    $end = (Get-Date).AddMinutes(35)
     try {
         $complianceState = az k8s-configuration flux show -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
         Write-Host "`n=================================================================="
@@ -110,7 +110,7 @@ function Get-Software {
         if ($complianceState -eq "Compliant") {
             return
         } else {
-            Write-Host "  Software installing, retry in 5 minutes."
+            Write-Host "  Software installing, retry in 10 minutes."
             Start-Sleep -Seconds 300
         }
         while ((Get-Date) -lt $end) {
@@ -120,12 +120,12 @@ function Get-Software {
                 Write-Host "  Software has been installed."
                 break
             } else {
-                Write-Host "  Software installing, retry in 1 minute."
-                Start-Sleep -Seconds 60
+                Write-Host "  Software installing, retry in 2 minute."
+                Start-Sleep -Seconds 120
             }
         }
         if ((Get-Date) -ge $end) {
-            Write-Host "  Software check timed out - 20 minutes."
+            Write-Host "  Software check timed out - 35 minutes."
         }
     } catch {
         Write-Host "Error during software check: $_"
@@ -226,5 +226,9 @@ if ($os -ne "Darwin") {
 if ($IsWindows) {
     Start-Process $url
 } else {
-    powershell.exe /c start "$url"
+    if ($os -eq "Darwin") {
+        open $url
+    } else {
+        powershell.exe /c start "$url"
+    }
 }

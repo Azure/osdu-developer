@@ -8,7 +8,7 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 ## OSDU Services
 
-Support for OSDU Core Services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-23-is-now-released/) _(Release 0.26)_
+Support services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-23-is-now-released/) _(Release 0.26)_
 
 - [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)
 

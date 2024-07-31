@@ -32,11 +32,11 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 * Single Data Partition (opendes)
 
-* Loaded Schemas
+* Loaded Schemas (wks)
 
-* Initial User Configured
+* Default User
 
-* Isolated Software Locations
+* Isolated Software Locations (flux)
 
 * Internal and External Ingress 
 

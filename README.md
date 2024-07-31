@@ -28,7 +28,7 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 #### To Run Locally
 
-- __Visual Studio Code__: Install and configure on your local machine with the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client). [Download](https://code.visualstudio.com/download).
+- __Visual Studio Code__: Install and configure with [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) on your local machine. [Download](https://code.visualstudio.com/download).
 
 - __PowerShell Core__: Installed on your local machine.  [Download](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
 

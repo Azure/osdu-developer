@@ -32,10 +32,10 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 | Data Partitions        | Supports a single data partition for managing and organizing data within the platform, named "opendes."            |
 | Schema Loading         | Automatically loads Well Known Schemas for efficient data management and validation.                               |
 | Software Locations     | Utilizes Flux to direct the software loading process to private GitHub repositories and branches.                  |
-| Public and Private Access | Supports both public-facing and internal private VNet Istio Ingress points for flexible access management.      |
-| Bring Your Own Network | Supports VNet injection and integration with pre-created networks, including configurations like Site-to-Site VPN. |
-| Mesh Observability     | Provides observability for service meshes using Istio, including Kiali dashboards for monitoring and network tracing. |
-| Elastic Search Observability | Supports connectivity to Elastic Kibana for advanced devtools, search capabilities, and snapshots.           |
+| Ingress                | Supports both public-facing and private network access points.                                                     |
+| Network Flexability    | Supports VNet injection and integration with existing networks, to easily allow for S2S Vpn access.                |
+| Mesh Observability     | Provides observability for the istio using Kiali dashboards to investigate latency, traffic, errors, and saturation. |
+| Elastic Tools          | Supports connectivity to Elastic Kibana for advanced devtools, search capabilities, and user management.           |
 | Application Logging    | Integrated with Application Insights for detailed service-level logging and metrics monitoring.                    |
 | Initial User           | Includes initial user setup and configuration for openid connect access.                                           |
 
@@ -51,6 +51,13 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 ### Prerequisites
 
+#### To Run in GitHub Codespaces or VS Code Remote Containers
+
+This solution can be run virtually by using GitHub Codespaces or VS Code Remote Containers _(Docker required)_.  Click on one of the buttons below to open this repo in one of those options. 
+
+[![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure/osdu-developer)
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=742135816&ref=main&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=UsEast)
+
 #### To Run Locally
 
 - __Visual Studio Code__: Install and configure with [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) on your local machine. [Download](https://code.visualstudio.com/download)
@@ -60,15 +67,6 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 - __Azure CLI__: Installed on your local machine. [Download](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 - __Azure Developer CLI__: Installed on your local machine. [Download](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
-
-
-#### To Run in GitHub Codespaces or VS Code Remote Containers
-
-This solution can be run virtually by using GitHub Codespaces or VS Code Remote Containers _(Docker required)_.  Click on one of the buttons below to open this repo in one of those options. 
-
-[![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure/osdu-developer)
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=742135816&ref=main&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=UsEast)
-
 
 
 ### Installation

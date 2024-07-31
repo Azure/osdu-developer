@@ -120,10 +120,6 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
 
-To facilitate a smooth deployment experience, we provide a "Deploy to Azure" button. Clicking this button will redirect you to the Azure portal, where the ARM template is pre-loaded for your convenience.
-
-The application expects an [OAuth 2.0 and OpenID Connect (OIDC)](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-implicit-grant-flow) capable Entra Application has been preconfigured with either a Web or SPA platform configuration with the required redirect URIs for the ingress.
-
 **Important Parameter Requirement:**
 
 During the deployment process, identity information is necessary and required to be provided in the deployment form:

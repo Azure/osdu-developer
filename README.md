@@ -21,7 +21,7 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 > **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription**. 
 
-> **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as utilization of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
+> **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as creation of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
 
 
 ### Prerequisites

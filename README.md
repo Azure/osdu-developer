@@ -46,7 +46,7 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 * Elastic Search (Kibana)
 
-* Application Insights
+* Integrated Logging (App Insights)
 
 
 

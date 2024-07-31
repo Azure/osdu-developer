@@ -10,43 +10,35 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 
 Supported services running [Milestone 23](https://osduforum.org/osdu-r3-milestone-23-is-now-released/)
 
-- [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)
+| **Service**                                                                                     | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)             | Manages data partitions to ensure efficient data management and scalability.                   |
+| [Entitlement Service](https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements) | Provides access control and permissions management for data within the OSDU platform.         |
+| [Legal Service](https://community.opengroup.org/osdu/platform/security-and-compliance/legal)   | Ensures that data compliance and legal requirements are met, including data privacy and governance. |
+| [Indexer Service](https://community.opengroup.org/osdu/platform/system/indexer-service)        | Indexes and categorizes data to enable efficient search and retrieval.                        |
+| [Indexer Queue](https://community.opengroup.org/osdu/platform/system/indexer-queue)            | Manages the queue for processing indexing tasks, ensuring data is indexed in a timely manner. |
+| [Schema Service](https://community.opengroup.org/osdu/platform/system/schema-service)          | Manages and provides access to data schemas that define the structure and format of data.     |
+| [Storage Service](https://community.opengroup.org/osdu/platform/system/storage)                | Provides scalable storage solutions for managing and retrieving large volumes of data.       |
+| [Search Service](https://community.opengroup.org/osdu/platform/system/search-service)          | Facilitates searching and querying across data stored within the OSDU platform.               |
+| [File Service](https://community.opengroup.org/osdu/platform/system/file)                      | Handles file operations such as storage, retrieval, and management of data files.             |
 
-- [Entitlement Service](https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements)
-
-- [Legal Service](https://community.opengroup.org/osdu/platform/security-and-compliance/legal)
-
-- [Indexer Service](https://community.opengroup.org/osdu/platform/system/indexer-service) and [Indexer Queue](https://community.opengroup.org/osdu/platform/system/indexer-queue)
-
-- [Schema Service](https://community.opengroup.org/osdu/platform/system/schema-service)
-
-- [Storage Service](https://community.opengroup.org/osdu/platform/system/storage)
-
-- [Search Service](https://community.opengroup.org/osdu/platform/system/search-service)
-
-- [File Service](https://community.opengroup.org/osdu/platform/system/file)
 
 
 
 ## Features
 
-* Single Data Partition (opendes)
+| **Feature**            | **Description**                                                                                                    |
+|------------------------|--------------------------------------------------------------------------------------------------------------------|
+| Data Partitions        | Supports a single data partition for managing and organizing data within the platform, named "opendes."            |
+| Schema Loading         | Automatically loads Well Known Schemas for efficient data management and validation.                               |
+| Software Locations     | Utilizes Flux to direct the software loading process to private GitHub repositories and branches.                  |
+| Public and Private Access | Supports both public-facing and internal private VNet Istio Ingress points for flexible access management.      |
+| Bring Your Own Network | Supports VNet injection and integration with pre-created networks, including configurations like Site-to-Site VPN. |
+| Mesh Observability     | Provides observability for service meshes using Istio, including Kiali dashboards for monitoring and network tracing. |
+| Elastic Search Observability | Supports connectivity to Elastic Kibana for advanced devtools, search capabilities, and snapshots.           |
+| Application Logging    | Integrated with Application Insights for detailed service-level logging and metrics monitoring.                    |
+| Initial User           | Includes initial user setup and configuration for openid connect access.                                           |
 
-* Loaded Schemas (wks)
-
-* Isolated Software Locations (flux)
-
-* Internal and External Ingress 
-
-* Bring Your Own VNet (S2S VPN)
-
-* Istio Observability (Kiali)
-
-* Elastic Search (Kibana)
-
-* Integrated Logging (App Insights)
-
-* Initial User
 
 
 

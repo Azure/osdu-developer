@@ -54,7 +54,7 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 1. Run `azd auth login` to login with your azure credentials.
 
-1. Run `azd init -e dev` to initialize a new environment. _(Environment name can be changed.)
+1. Run `azd init -e dev` to initialize a new environment.
 
 1. Run `az login --scope https://graph.microsoft.com//.default` - This is used to access information in Azure Active Directory and create an Application if necessary.
 

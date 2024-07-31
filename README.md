@@ -34,8 +34,6 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 * Loaded Schemas (wks)
 
-* Default User
-
 * Isolated Software Locations (flux)
 
 * Internal and External Ingress 
@@ -47,6 +45,8 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 * Elastic Search (Kibana)
 
 * Integrated Logging (App Insights)
+
+* Initial User
 
 
 

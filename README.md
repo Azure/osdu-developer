@@ -30,17 +30,24 @@ Supported services running [Milestone 23](https://osduforum.org/osdu-r3-mileston
 
 ## Features
 
+* Single Data Partition (opendes)
+
+* Loaded Schemas
+
+* Initial User Configured
+
+* Isolated Software Locations
+
 * Internal and External Ingress 
 
 * Bring Your Own VNet
 
-* Isolated Software Repository Locations
+* Istio Observability (Kiali)
 
-* Well Known Schema Loaded
+* Elastic Search (Kibana)
 
-* Initial User Configured
+* Application Insights
 
-* Single Data Partition (opendes)
 
 
 ## Getting Started

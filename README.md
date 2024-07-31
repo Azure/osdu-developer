@@ -81,7 +81,7 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 ### Installation
 
-#### Project Initialization
+#### Project Setup
 
 1. Run `azd config set alpha.resourceGroupDeployments on` to enable Resource Group Scoped Deployments.
 

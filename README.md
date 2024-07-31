@@ -60,7 +60,7 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 1. Run `azd provision` - This will provision Azure resources and deploy this solution including installing software to the cluster and configuring the Application Identity.
 
-1. After the application has been successfully deployed a browser should open to obtain a new OpenID Authorization Code.
+1. After the application has been successfully deployed a browser should open to obtain a new [OAuth2 Authorization Code](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow#applications-that-support-the-auth-code-flow).
 
 1. Run `azd env set AUTH_CODE <new_authorization_code>`
 

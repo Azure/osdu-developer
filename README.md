@@ -128,7 +128,7 @@ Upon completing the deployment, the infrastructure and software components will 
 
 #### Architecture
 
-For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/archiecture.md).
+For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/architecture.md).
 
 #### IDE Settings
 

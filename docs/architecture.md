@@ -91,4 +91,4 @@ Our GitOps configuration resides in this Git repository and uses a customized [r
 
 Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load.
 
-[0]: docs/images/architecture.png "Architecture Diagram"
+[0]: images/architecture.png "Architecture Diagram"

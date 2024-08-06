@@ -65,10 +65,10 @@ The architecture diagram below provides a visual representation of the infrastru
 
 ## Key Components Illustrated in the Diagram:
 
-1. Azure Virtual Network: Illustrates the network and how feature enablement changes the network structure and subnets.
-2. Azure Kubernetes Service (AKS): Demonstrates the Kubernetes clusters and an example of how software is set up along with interactions to other Azure services.
-3. Storage Resources: Illustrates the use of services such as Azure Storage Accounts and Azure Cosmos Databases and how they connect to the network.
-4. Optional Features: If enabled, features like the Bastion Host, Public Blob Access and Pod Subnet are represented, attempting to show their placement and role within the architecture.
+1. Azure Virtual Network: Illustrates the default network design.
+2. Kubernetes Node Pools: Illustrate the design of the cluster nodepools.
+3. Storage Resources: Illustrates how Storage Accounts and Cosmos Databases are connected to the network.
+4. Ingress Load Balancers: Illustrates how the Load Balancers created by Istio Gateways are to the network.
 
 ## Software Management with a Gitops Approach
 

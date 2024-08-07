@@ -17,7 +17,7 @@ Several resources exist that can help on planning networks for AKS and to unders
 
 __Default Solution__
 
-The default solution implented uses a simple Virtual Network with a kubernetes flat networking model using the Azure CNI Node Subnet plugin. One subnet which is provided to the AKS cluster is required, while additional subnets can be enabled for optional features.
+The default solution implemented uses a simple Virtual Network with a kubernetes flat networking model using the Azure CNI Node Subnet plugin. One subnet which is provided to the AKS cluster is required, while additional subnets can be enabled for optional features.
 
 - Virtual Network CIDR: `10.1.0.0/16`
 

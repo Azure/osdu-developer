@@ -17,27 +17,25 @@ Several resources exist that can help on planning networks for AKS and to unders
 
 __Default Solution__
 
-The default implementation uses a simple Virtual Network with a Kubenet plugin.  One subnet which is provided to the AKS cluster is required, and additional subnets can be enabled for Bastion.
+The default solution implemented uses a simple Virtual Network with a kubernetes flat networking model using the Azure CNI Node Subnet plugin. One subnet which is provided to the AKS cluster is required, while additional subnets can be enabled for optional features.
 
 - Virtual Network CIDR: `10.1.0.0/16`
 
 - Cluster Nodes Subnet CIDR: `10.1.0.0/20`
 
-- Gateway Subnet CIDR: `10.1.17.0/24`
+- Bastion Subnet CIDR: `10.1.16.0/24`           _(Optional: Feature)_
 
-- Bastion Subnet CIDR: `10.1.16.0/24`
+- Virtual Machine Subnet CIDR: `10.1.18.0/24`   _(Optional: Feature)_
 
-- Virtual Machine Subnet CIDR: `10.1.18.0/24`
+- Cluster Pod Subnet CIDR: `10.1.20.0/22`       _(Optional: Feature)_
 
 - AKS Service CIDR: `172.16.0.0/16`
 
 - AKS DNS Service IP: `172.16.0.10`
 
-- Docker Bridge CIDR: `172.17.0.1/16`
-
 __Custom Solution__
 
-This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the [Azure CNI for dynamic IP allocation](https://learn.microsoft.com/en-us/azure/aks/configure-azure-cni-dynamic-ip-allocation) network configuration.
+This custom configuration tutorial will use a pre-created network along with a dedicated Pod Subnet which activates the [Azure CNI for dynamic IP allocation](https://learn.microsoft.com/en-us/azure/aks/configure-azure-cni-dynamic-ip-allocation) network configuration instead.
 
 Things to considered when planning.
 
@@ -52,26 +50,26 @@ Things to considered when planning.
   - Must be smaller then /12
 
 
+
 __Network Details__
 
 For this example the following network details will be used.
 
-- Virtual Network CIDR: `172.18.0.0/22`
+![[0]][0]
 
-- Cluster Nodes Subnet CIDR: `172.18.0.0/24`
+- Virtual Network CIDR: `172.20.0.0/22`
 
-- Pod Subnet CIDR: `172.18.1.0/24`
+- Cluster Nodes Subnet CIDR: `172.20.0.0/24`
 
-- AKS Service CIDR: `172.16.0.0/16`
+- Pod Subnet CIDR: `172.20.4.0/22`
 
-- AKS DNS Service IP: `172.16.0.10`
-
-- Docker Bridge CIDR: `172.17.0.1/16`
 
 
 ## Prepare a virtual network
 
-This section outlines the steps for manually creating a virtual network outside of the solution.
+This section outlines the steps for manually creating a virtual network outside of the solution to simulate just the spoke network.
+
+> It is important to ensure that the network exists in the same location that the solution will be deployed in.  For this example the location to be used will be the eastus2 region.
 
 __Resource Group__
 
@@ -79,7 +77,7 @@ Use the following command to create a new resource group:
 
 ```bash
 NETWORK_GROUP='operations'
-AZURE_LOCATION='eastus'
+AZURE_LOCATION='eastus2'
 
 # resource_group
 az group create --name $NETWORK_GROUP \
@@ -126,13 +124,15 @@ Use the following commands set up the network with a required subnet for the clu
 
 ```bash
 NETWORK_NAME='custom-vnet'
-VNET_PREFIX='172.18.0.0/22'
+VNET_PREFIX='172.20.0.0/22'
 
 CLUSTER_SUBNET_NAME='cluster'
-CLUSTER_SUBNET_PREFIX='172.18.0.0/24'
+CLUSTER_SUBNET_PREFIX='172.20.0.0/24'
 
 POD_SUBNET_NAME='pods'
-POD_SUBNET_PREFIX='172.18.1.0/24'
+POD_SUBNET_PREFIX='172.20.1.0/24'
+
+
 
 # virtual_network
 az network vnet create --name $NETWORK_NAME \
@@ -153,6 +153,31 @@ az network vnet subnet create --name $POD_SUBNET_NAME \
 --vnet-name $NETWORK_NAME \
 --address-prefix $POD_SUBNET_PREFIX \
 --network-security-group $NSG_NAME
+
+# managed_identity
+az identity create --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--location $AZURE_LOCATION
+
+# managed_identity_principal_id
+IDENTITY_PID=$(az identity show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "principalId" --output tsv)
+
+# managed_identity_id
+NETWORK_IDENTITY=$(az identity show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "id" --output tsv)
+
+# network_id
+NETWORK_ID=$(az network vnet show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "id" -o tsv)
+
+# role_assignment
+az role assignment create --assignee $IDENTITY_ID \
+--role "Network Contributor" \
+--scope $NETWORK_ID
 ```
 
 
@@ -169,8 +194,8 @@ First, authenticate your session and then initialize a custom environment:
 # authenticate_session
 azd auth login
 
-# initialize_environment
-azd init -e custom
+# create_new_environment
+azd env new custom
 ```
 
 __Configure Environment Variables__
@@ -188,7 +213,6 @@ azd env set SOFTWARE_BRANCH main
 
 # enable_feature_toggles
 azd env set ENABLE_POD_SUBNET true
-azd env set ENABLE_VNET_INJECTION true
 
 # define_network_configuration
 azd env set VIRTUAL_NETWORK_GROUP $NETWORK_GROUP
@@ -198,6 +222,7 @@ azd env set AKS_SUBNET_NAME $CLUSTER_SUBNET_NAME
 azd env set AKS_SUBNET_PREFIX $CLUSTER_SUBNET_PREFIX
 azd env set POD_SUBNET_NAME $POD_SUBNET_NAME
 azd env set POD_SUBNET_PREFIX $POD_SUBNET_PREFIX
+azd env set VIRTUAL_NETWORK_IDENTITY $NETWORK_IDENTITY
 ```
 
 __Start the Deployment__
@@ -208,3 +233,5 @@ Initiate the deployment using the following command:
 # provision_solution
 azd provision
 ```
+
+[0]: images/network.png "Network Diagram"

@@ -26,7 +26,6 @@ __Details:__ Typically, internal solutions require a preconfigured network due t
 __How To Enable:__
 
 ```bash
-azd env set ENABLE_VNET_INJECTION true
 azd env set VIRTUAL_NETWORK_GROUP <your_network_group>
 azd env set VIRTUAL_NETWORK_NAME <your_network_name>
 azd env set VIRTUAL_NETWORK_PREFIX <your_network_prefix>

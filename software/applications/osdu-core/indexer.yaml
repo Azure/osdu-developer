@@ -170,7 +170,7 @@ spec:
       port: 80
     configuration:
     - service: indexer-queue
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-25
       tag: latest
       probe:
         path: /actuator/health

@@ -224,6 +224,10 @@ spec:
         value: recordstopicsubscription
       - name: AZURE_REINDEX_TOPIC_SUBSCRIPTION
         value: reindextopicsubscription
+      - name: AZURE_SCHEMACHANGED_TOPIC_NAME
+        value: schemachangedtopic
+      - name: AZURE_SCHEMACHANGED_TOPIC_SUBSCRIPTION
+        value: schemachangedtopiceg
       - name: MAX_CONCURRENT_CALLS
         value: "32"
       - name: MAX_DELIVERY_COUNT

@@ -50,9 +50,12 @@ Things to considered when planning.
   - Must be smaller then /12
 
 
+
 __Network Details__
 
 For this example the following network details will be used.
+
+![[0]][0]
 
 - Virtual Network CIDR: `172.20.0.0/22`
 
@@ -64,7 +67,7 @@ For this example the following network details will be used.
 
 ## Prepare a virtual network
 
-This section outlines the steps for manually creating a virtual network outside of the solution.
+This section outlines the steps for manually creating a virtual network outside of the solution to simulate just the spoke network.
 
 > It is important to ensure that the network exists in the same location that the solution will be deployed in.  For this example the location to be used will be the eastus2 region.
 
@@ -129,6 +132,8 @@ CLUSTER_SUBNET_PREFIX='172.20.0.0/24'
 POD_SUBNET_NAME='pods'
 POD_SUBNET_PREFIX='172.20.1.0/24'
 
+
+
 # virtual_network
 az network vnet create --name $NETWORK_NAME \
 --resource-group $NETWORK_GROUP \
@@ -148,6 +153,31 @@ az network vnet subnet create --name $POD_SUBNET_NAME \
 --vnet-name $NETWORK_NAME \
 --address-prefix $POD_SUBNET_PREFIX \
 --network-security-group $NSG_NAME
+
+# managed_identity
+az identity create --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--location $AZURE_LOCATION
+
+# managed_identity_principal_id
+IDENTITY_PID=$(az identity show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "principalId" --output tsv)
+
+# managed_identity_id
+NETWORK_IDENTITY=$(az identity show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "id" --output tsv)
+
+# network_id
+NETWORK_ID=$(az network vnet show --name $NETWORK_NAME \
+--resource-group $NETWORK_GROUP \
+--query "id" -o tsv)
+
+# role_assignment
+az role assignment create --assignee $IDENTITY_ID \
+--role "Network Contributor" \
+--scope $NETWORK_ID
 ```
 
 
@@ -192,6 +222,7 @@ azd env set AKS_SUBNET_NAME $CLUSTER_SUBNET_NAME
 azd env set AKS_SUBNET_PREFIX $CLUSTER_SUBNET_PREFIX
 azd env set POD_SUBNET_NAME $POD_SUBNET_NAME
 azd env set POD_SUBNET_PREFIX $POD_SUBNET_PREFIX
+azd env set VIRTUAL_NETWORK_IDENTITY $NETWORK_IDENTITY
 ```
 
 __Start the Deployment__
@@ -202,3 +233,5 @@ Initiate the deployment using the following command:
 # provision_solution
 azd provision
 ```
+
+[0]: images/network.png "Network Diagram"

@@ -47,7 +47,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-01-01' existing = 
   name: AksName
 }
 
-resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-11-01' = {
+resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2024-04-02-preview' = {
   parent: aks
   name: PoolName
   properties: {
@@ -61,6 +61,7 @@ resource nodepool 'Microsoft.ContainerService/managedClusters/agentPools@2023-11
     osDiskType: osDiskType
     osDiskSizeGB: osDiskSizeGB
     osType: osType
+    osSKU: osType == 'Linux' ? 'AzureLinux' : null
     maxPods: maxPods
     type: 'VirtualMachineScaleSets'
     vnetSubnetID: !empty(subnetId) ? subnetId : null

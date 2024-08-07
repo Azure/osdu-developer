@@ -394,6 +394,7 @@ var systemPoolProfile = {
   name: 'default'
   mode: 'System'
   osType: 'Linux'
+  osSKU: 'AzureLinux'
   type: 'VirtualMachineScaleSets'
   osDiskType: systemPoolPresets[clusterSize].osDiskType
   osDiskSizeGB: systemPoolPresets[clusterSize].osDiskSize
@@ -460,6 +461,7 @@ var userPoolProfile = {
   name: nodePoolName
   mode: 'User'
   osType: 'Linux'
+  osSKU: 'AzureLinux'
   type: 'VirtualMachineScaleSets'
   osDiskType: userPoolPresets[clusterSize].osDiskType
   osDiskSizeGB: userPoolPresets[clusterSize].osDiskSize

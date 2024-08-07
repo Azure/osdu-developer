@@ -190,10 +190,10 @@ param logsToEnable array = [
 
 @description('Optional. The name of metrics that will be streamed.')
 @allowed([
-  'Requests'
+  'AllMetrics'
 ])
 param metricsToEnable array = [
-  'Requests'
+  'AllMetrics'
 ]
 
 @description('Optional. Customer Managed Encryption Key.')

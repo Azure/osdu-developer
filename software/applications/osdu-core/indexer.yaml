@@ -170,7 +170,7 @@ spec:
       port: 80
     configuration:
     - service: indexer-queue
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-25
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-27
       tag: latest
       probe:
         path: /actuator/health
@@ -240,3 +240,5 @@ spec:
         value: http://partition/api/partition/v1
       - name: INDEXER_WORKER_URL
         value: http://indexer/api/indexer/v2/_dps/task-handlers/index-worker
+      - name: schema_worker_url
+        value: http://indexer-service/api/indexer/v2/_dps/task-handlers/schema-worker

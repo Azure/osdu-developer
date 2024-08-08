@@ -25,7 +25,7 @@ spec:
   targetNamespace: osdu-core
   values:
     nameOverride: storage
-    subset: m23
+    subset: m24
     replicaCount: 1
     service:
       type: ClusterIP

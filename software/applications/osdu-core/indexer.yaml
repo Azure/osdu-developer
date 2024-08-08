@@ -38,7 +38,7 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-release-0-26
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-service/indexer-service-release-0-27
       tag: latest
       probe:
         path: /actuator/health
@@ -170,7 +170,7 @@ spec:
       port: 80
     configuration:
     - service: indexer-queue
-      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-25
+      repository: community.opengroup.org:5555/osdu/platform/system/indexer-queue/indexer-queue-release-0-27
       tag: latest
       probe:
         path: /actuator/health
@@ -224,6 +224,10 @@ spec:
         value: recordstopicsubscription
       - name: AZURE_REINDEX_TOPIC_SUBSCRIPTION
         value: reindextopicsubscription
+      - name: AZURE_SCHEMACHANGED_TOPIC_NAME
+        value: schemachangedtopic
+      - name: AZURE_SCHEMACHANGED_TOPIC_SUBSCRIPTION
+        value: schemachangedtopiceg
       - name: MAX_CONCURRENT_CALLS
         value: "32"
       - name: MAX_DELIVERY_COUNT
@@ -236,3 +240,5 @@ spec:
         value: http://partition/api/partition/v1
       - name: INDEXER_WORKER_URL
         value: http://indexer/api/indexer/v2/_dps/task-handlers/index-worker
+      - name: schema_worker_url
+        value: http://indexer-service/api/indexer/v2/_dps/task-handlers/schema-worker

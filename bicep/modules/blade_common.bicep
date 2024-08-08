@@ -341,6 +341,50 @@ module storageEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) 
   ]
 }
 
+module unitShareUpload './script-share-upload/main.bicep' = {
+  name: '${bladeConfig.sectionName}-storage-share-upload-unit'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    shareName: 'unit'
+    filename: 'unit_catalog_v2.json'
+    fileurl: 'https://community.opengroup.org/osdu/platform/system/reference/unit-service/-/raw/master/data/unit_catalog_v2.json'
+    useExistingManagedIdentity: true
+    managedIdentityName: deploymentScriptIdentity
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}
+
+module catalogShareUpload './script-share-upload/main.bicep' = {
+  name: '${bladeConfig.sectionName}-storage-share-upload-catalog'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    shareName: 'crs'
+    filename: 'crs_catalog_v2.json'
+    fileurl: 'https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service/-/raw/master/data/crs_catalog_v2.json'
+    useExistingManagedIdentity: true
+    managedIdentityName: deploymentScriptIdentity
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}
+
+module conversionShareUpload './script-share-upload/main.bicep' = {
+  name: '${bladeConfig.sectionName}-storage-share-upload-conversion'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    shareName: 'crs-conversion'
+    filename: 'apachesis_setup'
+    fileurl: 'https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service/-/archive/master/crs-conversion-service-master.tar.gz'
+    useExistingManagedIdentity: true
+    managedIdentityName: deploymentScriptIdentity
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}
 
 /*
   _______ .______          ___      .______    __    __  

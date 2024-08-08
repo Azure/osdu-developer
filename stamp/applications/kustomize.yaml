@@ -26,26 +26,26 @@ spec:
 ######################
 ## Dev Sample App
 ######################
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: application-devsample
-  namespace: flux-system
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/applications/dev-sample
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: Deployment
-      name: env-debug
-      namespace: dev-sample
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: application-devsample
+#   namespace: flux-system
+# spec:
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/applications/dev-sample
+#   prune: true
+#   wait: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: env-debug
+#       namespace: dev-sample
 
 
 ######################
@@ -77,7 +77,32 @@ spec:
 
 
 ######################
-## OSDU App
+## OSDU Auth
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-osdu-auth
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/osdu-auth
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: osdu-auth
+      namespace: osdu-auth
+
+
+######################
+## OSDU Core
 ######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
@@ -123,26 +148,29 @@ spec:
       name: search
       namespace: osdu-core
 
+
 ######################
-## OSDU Auth
+## OSDU Rerference
 ######################
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: application-osdu-auth
+  name: application-osdu-reference
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: application-osdu-core
   interval: 1h
   retryInterval: 1m
   timeout: 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/applications/osdu-auth
+  path: ./software/applications/osdu-reference
   prune: true
   wait: true
   healthChecks:
     - kind: Deployment
-      name: osdu-auth
-      namespace: osdu-auth
+      name: unit
+      namespace: osdu-reference

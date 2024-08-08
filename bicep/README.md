@@ -17,6 +17,7 @@ graph TD
   ScriptSshKey["scriptSshKey"]
   ScriptCertificates["scriptCertificates"]
   CommonStorage["commonStorage"]
+  ScriptFileShares["scriptFileShares"]
   CommonDatabase["commonDatabase"]
   RedisCache["redisCache"]
   ManageResources["Manage Resources"]
@@ -43,7 +44,7 @@ graph TD
   FluxConfiguration["fluxConfiguration"]
   Prometheus["prometheus"]
   Grafana["grafana"]
-  DeploymentScript["Deployment Script: scriptAppConfigAuth"]
+  DeploymentScript["scriptAppConfigAuth"]
   IdentityResources --> MonitoringResources
   MonitoringResources --> ConditionalNetwork
   ConditionalNetwork -->|"!vnetInjection"| ClusterNSG
@@ -60,6 +61,7 @@ graph TD
   KeyVault --> ScriptSshKey
   KeyVault --> ScriptCertificates
   KeyVault --> CommonStorage
+  CommonStorage --> ScriptFileShares
   KeyVault --> CommonDatabase
   CommonResources --> RedisCache
   CommonResources --> ManageResources

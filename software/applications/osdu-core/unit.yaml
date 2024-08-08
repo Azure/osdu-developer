@@ -100,10 +100,12 @@ spec:
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: unit
+        value: "unit"
       - name: SERVER_SERVLET_CONTEXTPATH
-        value: /api/unit/
+        value: "/api/unit/"
       - name: unit_service_spring_logging_level
-        value: INFO
+        value: "INFO"
       - name: PARTITION_SERVICE_ENDPOINT
-        value: http://partition/api/partition/v1      
+        value: "http://partition/api/partition/v1"
+      - name: ENTITLEMENT_URL
+        value: "http://entitlements/api/entitlements/v2"   

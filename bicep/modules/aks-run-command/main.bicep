@@ -88,9 +88,9 @@ resource runAksCommand 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.35.0'
-    timeout: 'PT10M'
-    retentionInterval: 'P1D'
+    azCliVersion: '2.62.0'
+    timeout: 'PT15M'
+    retentionInterval: 'PT1H'
     environmentVariables: [
       { name: 'RG', value: resourceGroup().name }
       { name: 'aksName', value: aksName }

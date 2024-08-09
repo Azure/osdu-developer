@@ -466,7 +466,7 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.2.4' = 
     timeout: 'PT15M'
     retentionInterval: 'PT1H'
     scriptContent: 'az appconfig update -g $resourceGroup -n $appConfig --disable-local-auth true'
-    
+    cleanupPreference: 'OnSuccess'
   }
   dependsOn: [
     serviceBlade

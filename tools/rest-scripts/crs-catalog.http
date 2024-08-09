@@ -44,7 +44,7 @@ grant_type=refresh_token
 
 ###
 # @name info
-GET {{SERVICE_HOST}}/v3/info
+GET {{SERVICE_HOST}}/v2/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}

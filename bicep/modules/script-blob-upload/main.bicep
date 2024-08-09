@@ -75,7 +75,7 @@ resource uploadFile 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   dependsOn: [ rbac ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.62.0'
+    azCliVersion: '2.61.0'
     timeout: 'PT15M'
     retentionInterval: 'PT1H'
     environmentVariables: [

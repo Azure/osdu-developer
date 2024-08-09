@@ -88,7 +88,7 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDe
 }]
 
 
-resource runAksCommand 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource runAksCommand 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'script-${aks.name}-${deployment().name}'
   location: location
   identity: {
@@ -103,7 +103,7 @@ resource runAksCommand 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.62.0'
+    azCliVersion: '2.61.0'
     timeout: 'PT15M'
     retentionInterval: 'PT1H'
     environmentVariables: [

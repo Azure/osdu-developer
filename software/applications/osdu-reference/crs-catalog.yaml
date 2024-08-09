@@ -38,8 +38,8 @@ spec:
       repository: community.opengroup.org:5555/osdu/platform/system/reference/crs-catalog-service/crs-catalog-service-release-0-27
       tag: latest
       probe:
-        path: /actuator/health
-        port: 8081
+        path: /api/crs/catalog/swagger-ui/index.html
+        port: http
         liveness:
           delay: 250
           seconds: 10

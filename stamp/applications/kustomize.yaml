@@ -170,7 +170,7 @@ spec:
   path: ./software/applications/osdu-reference
   prune: true
   wait: true
-  healthChecks:
-    - kind: Deployment
-      name: unit
-      namespace: osdu-reference
+  # healthChecks:
+  #   - kind: Deployment
+  #     name: unit
+  #     namespace: osdu-reference

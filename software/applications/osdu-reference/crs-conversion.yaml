@@ -37,12 +37,12 @@ spec:
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/system/reference/crs-conversion-service/crs-conversion-service-release-0-27
       tag: latest
-      # probe:
-      #   path: /api/crs/converter/swagger-ui/index.html
-      #   port: http
-      #   liveness:
-      #     delay: 250
-      #     seconds: 10
+      probe:
+        path: /api/crs/converter/swagger-ui/index.html
+        port: http
+        liveness:
+          delay: 250
+          seconds: 10
       keyvault: true
       auth:
         disable:
@@ -51,7 +51,7 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/crs/converter/info"
+          - "/api/crs/converter/v3/info"
           - "/api/crs/converter/swagger*"
           - "/api/crs/converter/api-docs*"
           - "/api/crs/converter/webjars/*"

@@ -47,6 +47,9 @@ spec:
           delay: 250
           seconds: 10
       keyvault: true
+      request:
+        cpu: 1000m
+        memory: 1Gi
       auth:
         disable:
           - "*/actuator/health"

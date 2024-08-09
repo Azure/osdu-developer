@@ -29,5 +29,5 @@ spec:
     resourceLimits:
       defaultCpuRequests: "0.5"
       defaultMemoryRequests: "1Gi"
-      defaultCpuLimits: "1"
-      defaultMemoryLimits: "2Gi"
+      # defaultCpuLimits: "1"
+      # defaultMemoryLimits: "2Gi"

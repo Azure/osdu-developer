@@ -48,11 +48,11 @@ spec:
           seconds: 10
       keyvault: true
       request:
-        cpu: 500m
+        cpu: 800m
         memory: 1Gi
-      limit:
-        cpu: 1000m
-        memory: 4Gi
+      # limit:
+      #   cpu: 1000m
+      #   memory: 4Gi
       auth:
         disable:
           - "*/actuator/health"

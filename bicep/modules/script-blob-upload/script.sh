@@ -4,6 +4,9 @@ set -e
 echo "Waiting on Identity RBAC replication ($initialDelay)"
 sleep $initialDelay
 
+# Installing curl
+apk add --no-cache curl
+
 echo "$CONTENT" > ${FILE_NAME}
 
 # Upload the blob, overwriting if it exists

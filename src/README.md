@@ -41,9 +41,18 @@ Once `gita` is installed, navigate to the appropriate subdirectory (e.g., `lib`,
 Here's an example:
 
 ```bash
-cd src/core
-gita clone -f repos
-gita group add osdu-core
+# Clone OSDU Repositories
+(cd src/lib && gita clone -f repos)
+(cd src/core && gita clone -f repos)
+(cd src/reference && gita clone -f repos)
+
+# Create the Groups
+gita add -a lib && gita group rename lib osdu-lib
+gita add -a core && gita group rename core osdu-core
+gita add -a reference && gita group rename reference osdu-reference
+
+# Set the Auto Context
+gita context auto
 ```
 
 Repeat the above steps for each directory, ensuring they are placed in the correct subdirectory.

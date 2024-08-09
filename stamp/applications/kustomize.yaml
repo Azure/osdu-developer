@@ -159,8 +159,6 @@ metadata:
   name: application-osdu-reference
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: application-osdu-core
   interval: 1h
   retryInterval: 1m
   timeout: 5m
@@ -170,7 +168,7 @@ spec:
   path: ./software/applications/osdu-reference
   prune: true
   wait: true
-  # healthChecks:
-  #   - kind: Deployment
-  #     name: unit
-  #     namespace: osdu-reference
+  healthChecks:
+    - kind: Deployment
+      name: unit
+      namespace: osdu-reference

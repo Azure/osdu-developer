@@ -38,8 +38,8 @@ spec:
       repository: community.opengroup.org:5555/osdu/platform/system/reference/unit-service/unit-service-release-0-27
       tag: latest
       probe:
-        path: /actuator/health
-        port: 8081
+        path: /api/unit/_ah/readiness_check
+        port: http
         liveness:
           delay: 250
           seconds: 10

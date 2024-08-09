@@ -420,7 +420,7 @@ var userPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
   CostOptimised : {
     vmSize: 'Standard_B4ms'
-    minCount: 2
+    minCount: 3
     maxCount: 8
     availabilityZones: []
     osDiskType: 'Managed'

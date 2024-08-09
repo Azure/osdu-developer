@@ -420,7 +420,7 @@ var userPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
   CostOptimised : {
     vmSize: 'Standard_B4ms'
-    minCount: 4
+    minCount: 2
     maxCount: 8
     availabilityZones: []
     osDiskType: 'Managed'
@@ -444,7 +444,7 @@ var userPoolPresets = {
   // 8 vCPU, 32 GiB RAM, 300 GiB Temp Disk, (77000) IOPS, Ephermial Disk
   HighSpec : {
     vmSize: 'Standard_D8ds_v4'
-    minCount: 8
+    minCount: 4
     maxCount: 20
     availabilityZones: [
       '1'

@@ -302,8 +302,8 @@ module pool1 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz1'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '1'
     ]
@@ -322,8 +322,8 @@ module pool2 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz2'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '2'
     ]
@@ -342,8 +342,8 @@ module pool3 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz3'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '3'
     ]

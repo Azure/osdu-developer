@@ -1,3 +1,4 @@
+{{- if .Values.enableRequestAuthentication }}
 {{- $tenantId := .Values.azure.tenantId -}}
 {{- $appId := .Values.azure.appId -}}
 apiVersion: security.istio.io/v1beta1
@@ -25,5 +26,4 @@ spec:
     fromHeaders:
       - name: Authorization
         prefix: "Bearer "
-
-
+{{- end }}

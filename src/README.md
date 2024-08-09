@@ -53,6 +53,10 @@ gita add -a reference && gita group rename reference osdu-reference
 
 # Set the Auto Context
 gita context auto
+
+# Switch to the release branch and pull code
+gita super release/0.27
+gita pull
 ```
 
 Repeat the above steps for each directory, ensuring they are placed in the correct subdirectory.

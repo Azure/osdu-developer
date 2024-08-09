@@ -35,7 +35,7 @@ grant_type=refresh_token
 # -----------------------
 ###
 @access_token = {{refresh.response.body.access_token}}
-@UNIT_HOST = {{HOST}}/api/unit
+@SERVICE_HOST = {{HOST}}/api/unit
 @data_partition_id = opendes
 
 # -----------------------
@@ -44,7 +44,7 @@ grant_type=refresh_token
 
 ###
 # @name info
-GET {{UNIT_HOST}}/v3/info
+GET {{SERVICE_HOST}}/v3/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
@@ -54,7 +54,7 @@ Accept: application/json
 
 ###
 # @name getUnit
-GET {{UNIT_HOST}}/v3/unit
+GET {{SERVICE_HOST}}/v3/unit
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
@@ -62,28 +62,28 @@ data-partition-id: {{data_partition_id}}
 
 ###
 # @name getCatalog
-GET {{UNIT_HOST}}/v3/catalog
+GET {{SERVICE_HOST}}/v3/catalog
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
 
 ###
 # @name getMeasurement
-GET {{UNIT_HOST}}/v3/measurement/list
+GET {{SERVICE_HOST}}/v3/measurement/list
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
 
 ###
 # @name getUnitMaps
-GET {{UNIT_HOST}}/v3/unit/maps
+GET {{SERVICE_HOST}}/v3/unit/maps
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
 
 ###
 # @name getUnitSystems
-GET {{UNIT_HOST}}/v3/unitsystem/list
+GET {{SERVICE_HOST}}/v3/unitsystem/list
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}

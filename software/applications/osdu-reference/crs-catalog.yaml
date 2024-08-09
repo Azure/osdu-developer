@@ -35,11 +35,11 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/reference/unit-service/unit-service-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/reference/crs-catalog-service/crs-catalog-service-release-0-27
       tag: latest
       probe:
-        path: /api/unit/_ah/readiness_check
-        port: http
+        path: /actuator/health
+        port: 8081
         liveness:
           delay: 250
           seconds: 10

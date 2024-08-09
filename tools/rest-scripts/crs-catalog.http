@@ -26,7 +26,7 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=refresh_token
 &client_id={{CLIENT_ID}}
 &client_secret={{CLIENT_SECRET}}
-&refresh_token={{INITIAL_TOKEN}}
+&refresh_token={{REFRESH_TOKEN}}
 &scope={{scopes}}
 
 # -----------------------
@@ -34,10 +34,20 @@ grant_type=refresh_token
 # -----------------------
 ###
 @access_token = {{refresh.response.body.access_token}}
-@ENDPOINT = https://{{OSDU_HOST}}
-@UNIT_HOST = {{ENDPOINT}}/api/crs/catalog
+@SERVICE_HOST = {{HOST}}/api/crs/catalog
 @data_partition_id = opendes
 
+
+# -----------------------
+# API: Version
+# -----------------------
+
+###
+# @name info
+GET {{SERVICE_HOST}}/v3/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
+data-partition-id: {{data_partition_id}}
 
 # -----------------------
 # API: crs-catalog
@@ -45,21 +55,21 @@ grant_type=refresh_token
 
 ###
 # @name getArea
-GET {{UNIT_HOST}}/v2/area
+GET {{SERVICE_HOST}}/v2/area
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
 
 ###
 # @name getCatalog
-GET {{UNIT_HOST}}/v2/catalog
+GET {{SERVICE_HOST}}/v2/catalog
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}
 
 ###
 # @name getCrs
-GET {{UNIT_HOST}}/v2/crs
+GET {{SERVICE_HOST}}/v2/crs
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{data_partition_id}}

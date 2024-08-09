@@ -26,7 +26,7 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=refresh_token
 &client_id={{CLIENT_ID}}
 &client_secret={{CLIENT_SECRET}}
-&refresh_token={{INITIAL_TOKEN}}
+&refresh_token={{REFRESH_TOKEN}}
 &scope={{scopes}}
 
 
@@ -35,9 +35,18 @@ grant_type=refresh_token
 # -----------------------
 ###
 @access_token = {{refresh.response.body.access_token}}
-@ENDPOINT = https://{{OSDU_HOST}}
-@UNIT_HOST = {{ENDPOINT}}/api/unit
+@UNIT_HOST = {{HOST}}/api/unit
 @data_partition_id = opendes
+
+# -----------------------
+# API: Version
+# -----------------------
+
+###
+# @name info
+GET {{UNIT_HOST}}/v3/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
 
 # -----------------------
 # API: unit

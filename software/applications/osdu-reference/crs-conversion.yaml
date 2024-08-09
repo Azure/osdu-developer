@@ -113,6 +113,6 @@ spec:
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
       - name: ENTITLEMENT_URL
-        value: "http://entitlements.osdu-core..svc.cluster.local/api/entitlements/v2"   
+        value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"   
       - name: STORAGE_URL
         value: http://storage.osdu-core.svc.cluster.local/api/storage/v2 

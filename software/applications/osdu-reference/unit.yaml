@@ -29,7 +29,7 @@ spec:
       port: 80
     configuration:
     - service: unit
-      path: /api/unit/*
+      path: /api/unit/
       hosts:
         - "*"
       gateways:

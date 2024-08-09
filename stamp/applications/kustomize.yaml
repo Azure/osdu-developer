@@ -172,3 +172,9 @@ spec:
     - kind: Deployment
       name: unit
       namespace: osdu-reference
+    - kind: Deployment
+      name: crs-catalog
+      namespace: osdu-reference
+    - kind: Deployment
+      name: crs-conversion
+      namespace: osdu-reference

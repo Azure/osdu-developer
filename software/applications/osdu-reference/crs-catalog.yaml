@@ -29,7 +29,7 @@ spec:
       port: 80
     configuration:
     - service: crs-catalog
-      path: /api/crs/catalog/*
+      path: /api/crs/catalog/
       hosts:
         - "*"
       gateways:

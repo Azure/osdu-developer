@@ -27,7 +27,7 @@ spec:
     azure:
       enabled: true
     resourceLimits:
-      defaultCpuRequests: "0.4"
+      defaultCpuRequests: "0.1"
       defaultMemoryRequests: "500Mi"
       # defaultCpuLimits: "1"
       # defaultMemoryLimits: "2Gi"

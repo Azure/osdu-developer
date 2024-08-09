@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: unit
+  name: crs-conversion
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
@@ -21,28 +21,28 @@ spec:
     remediation:
       retries: 3
   values:
-    nameOverride: unit
+    nameOverride: crs-conversion
     subset: m24
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: unit
-      path: /api/unit/*
+    - service: crs-conversion
+      path: /api/crs/converter/
       hosts:
         - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/reference/unit-service/unit-service-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/reference/crs-catalog-service/crs-catalog-service-release-0-27
       tag: latest
-      probe:
-        path: /api/unit/_ah/readiness_check
-        port: http
-        liveness:
-          delay: 250
-          seconds: 10
+      # probe:
+      #   path: /api/crs/converter/swagger-ui/index.html
+      #   port: http
+      #   liveness:
+      #     delay: 250
+      #     seconds: 10
       keyvault: true
       auth:
         disable:
@@ -51,16 +51,16 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/unit/v3/info"
-          - "/api/unit/swagger*"
-          - "/api/unit/api-docs*"
-          - "/api/unit/webjars/*"
+          - "/api/crs/catalog/v3/info"
+          - "/api/crs/catalog/swagger*"
+          - "/api/crs/catalog/api-docs*"
+          - "/api/crs/catalog/webjars/*"
       pvc:
-      - name: unit
+      - name: crs-conversion
         volume: shared-data
       mount:
       - name: shared-data
-        path: /mnt/unit_catalogs
+        path: /mnt/crs_conversion
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -103,13 +103,16 @@ spec:
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: "unit"
+        value: "crs-conversion-service"
       - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/unit/"
-      - name: unit_service_spring_logging_level
-        value: "INFO"
+        value: "/api/crs/converter/"
+      - name: SERVICE_DOMAIN_NAME
+        value: "dataservices.energy"
+      - name: SIS_DATA
+        value: /apachesis_setup/SIS_DATA
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
       - name: ENTITLEMENT_URL
-        value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
-       
+        value: "http://entitlements.osdu-core..svc.cluster.local/api/entitlements/v2"   
+      - name: STORAGE_URL
+        value: http://storage.osdu-core.svc.cluster.local/api/storage/v2 

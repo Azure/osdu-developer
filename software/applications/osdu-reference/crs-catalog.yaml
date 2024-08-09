@@ -51,7 +51,7 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/crs/catalog/v3/info"
+          - "/api/crs/catalog/info"
           - "/api/crs/catalog/swagger*"
           - "/api/crs/catalog/api-docs*"
           - "/api/crs/catalog/webjars/*"

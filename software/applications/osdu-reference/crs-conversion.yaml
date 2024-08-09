@@ -51,10 +51,10 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/crs/catalog/v3/info"
-          - "/api/crs/catalog/swagger*"
-          - "/api/crs/catalog/api-docs*"
-          - "/api/crs/catalog/webjars/*"
+          - "/api/crs/converter/info"
+          - "/api/crs/converter/swagger*"
+          - "/api/crs/converter/api-docs*"
+          - "/api/crs/converter/webjars/*"
       pvc:
       - name: crs-conversion
         volume: shared-data

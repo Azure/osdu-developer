@@ -15,7 +15,7 @@ spec:
   accessModes:
     - ReadOnlyMany
   azureFile:
-    secretName: airflow
+    secretName: azure-resources
     shareName: {{ .name }}
   volumeMode: Filesystem
   mountOptions:

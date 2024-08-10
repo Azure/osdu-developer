@@ -120,9 +120,9 @@ resource createImportCerts 'Microsoft.Resources/deploymentScripts@2020-10-01' = 
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.35.0'
-    timeout: 'PT10M'
-    retentionInterval: 'P1D'
+    azCliVersion: '2.61.0'
+    timeout: 'PT15M'
+    retentionInterval: 'PT1H'
     environmentVariables: [
       { name: 'akvName', value: kvName }
       { name: 'certName', value: certificateName }

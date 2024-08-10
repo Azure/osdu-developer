@@ -25,7 +25,7 @@ spec:
   targetNamespace: osdu-core
   values:
     nameOverride: indexer
-    subset: m23
+    subset: m24
     replicaCount: 1
     service:
       type: ClusterIP
@@ -163,7 +163,7 @@ spec:
   targetNamespace: osdu-core
   values:
     nameOverride: indexer-queue
-    subset: m23
+    subset: m24
     replicaCount: 1
     service:
       type: ClusterIP

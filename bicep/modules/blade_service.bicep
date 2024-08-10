@@ -302,8 +302,8 @@ module pool1 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz1'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '1'
     ]
@@ -322,8 +322,8 @@ module pool2 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz2'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '2'
     ]
@@ -342,8 +342,8 @@ module pool3 './aks_agent_pool.bicep' = {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz3'
     agentVMSize: elasticPoolPresets[clusterSize].vmSize
-    agentCount: 2
-    agentCountMax: 4
+    agentCount: 1
+    agentCountMax: 3
     availabilityZones: [
       '3'
     ]
@@ -487,6 +487,22 @@ module federatedCredsOsduAuth './federated_identity.bicep' = {
   ]
 }
 
+module federatedCredsOsduReference './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-reference'
+  params: {
+    name: 'federated-ns_osdu-reference'
+    audiences: [
+      'api://AzureADTokenExchange'
+    ]
+    issuer: cluster.outputs.aksOidcIssuerUrl
+    userAssignedIdentityName: appIdentity.name
+    subject: 'system:serviceaccount:osdu-reference:workload-identity-sa'
+  }
+  dependsOn: [
+    federatedCredsOsduAuth
+  ]
+}
+
 
 
 module appRoleAssignments './app_assignments.bicep' = {
@@ -505,6 +521,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsCacheNamespace
     federatedCredsElasticNamespace
     federatedCredsOsduAuth
+    federatedCredsOsduReference
   ]
 }
 
@@ -517,6 +534,7 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
   dependsOn: [
     federatedCredsDefaultNamespace
     federatedCredsOsduCoreNamespace
+    federatedCredsOsduReference
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
   ]

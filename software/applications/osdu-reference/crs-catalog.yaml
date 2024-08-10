@@ -2,14 +2,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: storage
+  name: crs-catalog
   namespace: flux-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  dependsOn:
-  - name: schema
-    namespace: flux-system
+  targetNamespace: osdu-reference
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -22,37 +20,30 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-core
   values:
-    nameOverride: storage
+    nameOverride: crs-catalog
     subset: m24
     replicaCount: 1
     service:
       type: ClusterIP
       port: 80
     configuration:
-    - service: storage
-      path: /api/storage/v2/
+    - service: crs-catalog
+      path: /api/crs/catalog/
       hosts:
         - "*"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/reference/crs-catalog-service/crs-catalog-service-release-0-27
       tag: latest
       probe:
-        path: /actuator/health
-        port: 8081
+        path: /api/crs/catalog/swagger-ui/index.html
+        port: http
         liveness:
           delay: 250
           seconds: 10
       keyvault: true
-      request:
-        cpu: 800m
-        memory: 1Gi
-      # limit:
-      #   cpu: 1000m
-      #   memory: 4Gi
       auth:
         disable:
           - "*/actuator/health"
@@ -60,10 +51,16 @@ spec:
           - "*/_ah/**"
           - "*/configuration/ui"
           - "*/configuration/security"
-          - "/api/storage/v2/info"
-          - "/api/storage/v2/swagger*"
-          - "/api/storage/v2/api-docs*"
-          - "/api/storage/v2/webjars/*"  
+          - "/api/crs/catalog/v3/info"
+          - "/api/crs/catalog/swagger*"
+          - "/api/crs/catalog/api-docs*"
+          - "/api/crs/catalog/webjars/*"
+      pvc:
+      - name: crs
+        volume: shared-data
+      mount:
+      - name: shared-data
+        path: /mnt/crs_catalogs
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -106,43 +103,10 @@ spec:
       - name: ACCEPT_HTTP
         value: "true"
       - name: SPRING_APPLICATION_NAME
-        value: storage
+        value: "crs-catalog-service"
       - name: SERVER_SERVLET_CONTEXTPATH
-        value: /api/storage/v2/
-      - name: COSMOSDB_DATABASE
-        value: osdu-db
-      - name: AZURE_EVENTGRID_ENABLED
-        value: "false"
-      - name: AZURE_SERVICEBUS_ENABLED
-        value: "true" 
-      - name: SERVICEBUS_TOPIC_NAME
-        value: recordstopic
-      - name: SERVICEBUS_V2_TOPIC_NAME
-        value: recordstopic-v2
-      - name: REDIS_DATABASE
-        value: "4"
+        value: "/api/crs/catalog/"
       - name: PARTITION_SERVICE_ENDPOINT
-        value: http://partition/api/partition/v1
-      - name: ENTITLEMENTS_SERVICE_ENDPOINT
-        value: http://entitlements/api/entitlements/v2
-      - name: ENTITLEMENTS_SERVICE_API_KEY
-        value: "OBSOLETE"
-      - name: LEGAL_SERVICE_ENDPOINT
-        value: http://legal/api/legal/v1
-      - name: LEGAL_SERVICE_REGION
-        value: southcentralus
-      - name: LEGAL_SERVICEBUS_TOPIC_NAME
-        value: legaltagschangedtopiceg
-      - name: LEGAL_SERVICEBUS_TOPIC_SUBSCRIPTION
-        value: eg_sb_legaltagchangedsubscription
-      - name: CRS_CONVERSION_SERVICE_ENDPOINT
-        value: http://crs-conversion/api/crs/converter/v2
-      - name: POLICY_SERVICE_ENDPOINT
-        value: http://policy/api/policy/v1
-      - name: OPA_ENABLED
-        value: "false"
-      - name: REDIS_HOST_KEY
-        value: redis-hostname
-      - name: REDIS_PASSWORD_KEY
-        value: redis-password
-      
+        value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+      - name: ENTITLEMENT_URL
+        value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"

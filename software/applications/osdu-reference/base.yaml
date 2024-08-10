@@ -2,12 +2,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: osdu-developer-base-core
+  name: osdu-developer-base-reference
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  targetNamespace: osdu-core
+  targetNamespace: osdu-reference
   chart:
     spec:
       chart: ./charts/osdu-developer-base
@@ -24,11 +24,10 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
-    enableRequestAuthentication: true
     azure:
       enabled: true
     resourceLimits:
-      defaultCpuRequests: "0.5"
-      defaultMemoryRequests: "1Gi"
+      defaultCpuRequests: "0.1"
+      defaultMemoryRequests: "500Mi"
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"

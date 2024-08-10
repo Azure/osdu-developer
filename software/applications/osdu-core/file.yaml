@@ -25,7 +25,7 @@ spec:
       retries: 3
   values:
     nameOverride: file
-    subset: m23
+    subset: m24
     replicaCount: 1
     service:
       type: ClusterIP
@@ -47,6 +47,9 @@ spec:
           delay: 250
           seconds: 10
       keyvault: true
+      request:
+        cpu: 1000m
+        memory: 1Gi
       auth:
         disable:
           - "*/actuator/health"

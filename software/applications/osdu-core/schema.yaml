@@ -27,7 +27,7 @@ spec:
       retries: 3
   values:
     nameOverride: schema
-    subset: m23
+    subset: m24
     replicaCount: 1
     service:
       type: ClusterIP

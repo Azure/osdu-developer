@@ -1,0 +1,9 @@
+https://community.opengroup.org/osdu/platform/system/partition.git,partition,.
+https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements.git,entitlements,.
+https://community.opengroup.org/osdu/platform/security-and-compliance/legal.git,legal,.
+https://community.opengroup.org/osdu/platform/system/schema-service.git,schema,.
+https://community.opengroup.org/osdu/platform/system/indexer-service.git,indexer,.
+https://community.opengroup.org/osdu/platform/system/indexer-queue.git,indexer-queue,.
+https://community.opengroup.org/osdu/platform/system/storage.git,storage,.
+https://community.opengroup.org/osdu/platform/system/search-service.git,search,.
+https://community.opengroup.org/osdu/platform/system/file.git,file,.

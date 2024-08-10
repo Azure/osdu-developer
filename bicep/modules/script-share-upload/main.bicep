@@ -1,36 +1,39 @@
-metadata name = 'SSH Key Pair'
-metadata description = 'This module creates a SSH Key Pair and stores it in an Azure Key Vault'
+metadata name = 'Blob Upload'
+metadata description = 'This module uploads a file to a blob storage account'
 metadata owner = 'azure-global-energy'
 
-@description('The name of the Azure Key Vault')
-param kvName string
+@description('Desired name of the storage account')
+param storageAccountName string = uniqueString(resourceGroup().id, deployment().name, 'blob')
 
-@description('The location of the Key Vault and where to deploy the module resources to')
+@description('Name of the file share')
+param shareName string = 'sample-share'
+
+@description('Name of the file as it is stored in the share')
+param filename string = 'sample.json'
+
+@description('Name of the file as it is stored in the share')
+param fileurl string = 'https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md'
+
+@description('The location of the Storage Account and where to deploy the module resources to')
 param location string = resourceGroup().location
 
 @description('How the deployment script should be forced to execute')
 param forceUpdateTag string = utcNow()
 
-@description('Azure RoleId that are required for the DeploymentScript resource to import images')
-param rbacRoleNeeded string = 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7' //Key Vault Secrets officer is needed to create secrets in the Key Vault
+@description('Azure RoleId that are required for the DeploymentScript resource to upload blobs')
+param rbacRoleNeeded string = '' //Storage File Contributor is needed to upload
 
 @description('Does the Managed Identity already exists, or should be created')
 param useExistingManagedIdentity bool = false
 
 @description('Name of the Managed Identity resource')
-param managedIdentityName string = 'id-keyvault-ssh-${location}'
+param managedIdentityName string = 'id-storage-share-${location}'
 
 @description('For an existing Managed Identity, the Subscription Id it is located in')
 param existingManagedIdentitySubId string = subscription().subscriptionId
 
 @description('For an existing Managed Identity, the Resource Group it is located in')
 param existingManagedIdentityResourceGroupName string = resourceGroup().name
-
-@description('''
-The name of the SSH Key to be created.
-if name is my-virtual-machine-ssh then the private key will be named my-virtual-machine-sshprivate and the public key will be named my-virtual-machine-sshpublic.
-''')
-param sshKeyName string
 
 @description('A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate')
 param initialScriptDelay string = '30s'
@@ -39,11 +42,9 @@ param initialScriptDelay string = '30s'
 @description('When the script resource is cleaned up')
 param cleanupPreference string = 'OnSuccess'
 
-var privateKeySecretName = '${sshKeyName}private'
-var publicKeySecretName = '${sshKeyName}public'
 
-resource akv 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
-  name: kvName
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' existing = {
+  name: storageAccountName
 }
 
 resource newDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (!useExistingManagedIdentity) {
@@ -57,8 +58,8 @@ resource existingDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2
 }
 
 resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(rbacRoleNeeded)) {
-  name: guid(akv.id, rbacRoleNeeded, useExistingManagedIdentity ? existingDepScriptId.id : newDepScriptId.id)
-  scope: akv
+  name: guid(storageAccount.id, rbacRoleNeeded, useExistingManagedIdentity ? existingDepScriptId.id : newDepScriptId.id)
+  scope: storageAccount
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', rbacRoleNeeded)
     principalId: useExistingManagedIdentity ? existingDepScriptId.properties.principalId : newDepScriptId.properties.principalId
@@ -66,8 +67,8 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(
   }
 }
 
-resource createSshKeyPair 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'script-${akv.name}-${replace(replace(sshKeyName, ':', ''), '/', '-')}'
+resource uploadFile 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'script-${storageAccount.name}-${replace(replace(filename, ':', ''), '/', '-')}'
   location: location
   identity: {
     type: 'UserAssigned'
@@ -81,9 +82,11 @@ resource createSshKeyPair 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
     timeout: 'PT15M'
     retentionInterval: 'PT1H'
     environmentVariables: [
-      { name: 'keyVaultName', value: akv.name }
-      { name: 'sshKeyNamePrivate', value: privateKeySecretName }
-      { name: 'sshKeyNamePublic', value: publicKeySecretName }
+      { name: 'AZURE_STORAGE_ACCOUNT', value: storageAccount.name }
+      { name: 'AZURE_STORAGE_KEY', value: storageAccount.listKeys().keys[0].value }
+      { name: 'FILE', value: filename }
+      { name: 'URL', value: fileurl }
+      { name: 'SHARE', value: shareName }
       { name: 'initialDelay', value: initialScriptDelay }
     ]
     scriptContent: loadTextContent('script.sh')
@@ -91,12 +94,3 @@ resource createSshKeyPair 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   }
 }
 
-@description('The URI of the public key secret in the Key Vault')
-output publicKeyUri string = createSshKeyPair.properties.outputs.secretUris.public
-@description('The URI of the private key secret in the Key Vault')
-output privateKeyUri string = createSshKeyPair.properties.outputs.secretUris.private
-
-@description('The name of the public key secret in the Key Vault')
-output publicKeySecretName string = publicKeySecretName
-@description('The name of the private key secret in the Key Vault')
-output privateKeySecretName string = privateKeySecretName

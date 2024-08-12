@@ -158,6 +158,26 @@ function New-VSCodeSettings {
           "REFRESH_TOKEN": "${AUTH_REFRESH}",
           "DATA_PARTITION": "opendes"
         }
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "src/lib/os-core-common": true,
+      "src/lib/os-core-lib-azure": true,
+      "src/lib/os-core-lib-azure-spring-6": true,
+      "src/core/partition": true,
+      "src/core/entitlements": true,
+      "src/core/legal": true,
+      "src/core/schema-service": true,
+      "src/core/indexer-service": true,
+      "src/core/indexer-queue": true,
+      "src/core/storage": true,
+      "src/core/search-service": true,
+      "src/core/file": true,
+      "src/reference/unit-service": true,
+      "src/reference/crs-catalog-service": true,
+      "src/reference/crs-conversion-service": true
     }
 }
 "@ > .vscode/settings.json

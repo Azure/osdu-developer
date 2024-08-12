@@ -475,6 +475,7 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.2.4' = 
 
 output ACR_NAME string = serviceBlade.outputs.registryName
 output AKS_NAME string = serviceBlade.outputs.clusterName
-output INSTRUMENTATION_KEY string = commonBlade.outputs.instrumentationKey 
+output INSTRUMENTATION_KEY string = commonBlade.outputs.instrumentationKey
+output COMMON_NAME string = commonBlade.outputs.storageAccountName
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme

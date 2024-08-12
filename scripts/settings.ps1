@@ -90,7 +90,6 @@ function Set-AuthIngress {
 }
 
 function Get-RefreshToken {
-
     if (-not $env:AUTH_REFRESH) {
         if (-not $env:AUTH_CODE) {
             Write-Output "Error: Neither AUTH_CODE nor AUTH_REFRESH is available."
@@ -124,6 +123,41 @@ function Get-RefreshToken {
             }
         }
     }
+}
+
+function New-EnvFile {
+    Write-Host "`n=================================================================="
+    Write-Host "Creating File: ../src/.envrc"
+    Write-Host "=================================================================="
+
+    $templatePath = "./scripts/envrc_template"
+    $outputPath = "./src/.envrc"
+
+    if (-not (Test-Path $templatePath)) {
+        Write-Host "Error: Template file not found at $templatePath"
+        exit 1
+    }
+
+    $content = Get-Content $templatePath -Raw
+
+    $variablePattern = '%(\w+)%'
+    $foundMatches = [regex]::Matches($content, $variablePattern)
+
+    foreach ($match in $foundMatches) {
+        $variableName = $match.Groups[1].Value
+        $environmentValue = [Environment]::GetEnvironmentVariable($variableName)
+
+        if ($null -eq $environmentValue) {
+            Write-Host "Warning: Environment variable $variableName not found. Leaving as is in the output."
+        } else {
+            $content = $content -replace "%$variableName%", $environmentValue
+        }
+    }
+
+    New-Item -Path (Split-Path $outputPath) -ItemType Directory -Force | Out-Null
+    $content | Out-File -FilePath $outputPath -Encoding utf8
+
+    Write-Host "File created successfully at $outputPath"
 }
 
 function New-VSCodeSettings {
@@ -223,4 +257,5 @@ Write-Host "=================================================================="
 $AKS_NAME = Get-AKSName
 Set-AuthIngress
 Get-RefreshToken
+New-EnvFile
 New-VSCodeSettings

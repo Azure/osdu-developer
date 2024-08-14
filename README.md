@@ -45,11 +45,9 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 | Token Tools            | Integrated Access Token Tools for easy retrieval of Bearer Access Tokens for with Swagger Pages and docs.          |
 
 
-
-
 ## Getting Started
 
-> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription**. 
+> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](./docs/resource-providers.md) registered. 
 
 > **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as creation of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
 

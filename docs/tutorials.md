@@ -9,7 +9,7 @@ Persistant files in Azure Cloud Shell is recommended for non-ephermal sessions.
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
 
-Create a PowerShell profile for use with the helper functions then restart the shell.
+Create a PowerShell profile for use with helper functions and restart the session.
 
 ```powershell
 # Create a Profile
@@ -90,7 +90,7 @@ azd config set alpha.resourceGroupDeployments on
 azd init -e <your_env_name>
 azd provision
 ```
-![Clone Repository](./images/tutorial_2.png)
+![Clone Repository](./images/tutorial_3.png)
 
 A successful deployment will result in an Identity Provider web page to open. Retrieve an Authorization Code and save it to the enviroment.
 

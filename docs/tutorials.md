@@ -6,10 +6,10 @@ This tutorial describe how to deploy OSDU and then test OSDU services using the 
 
 This tutorial requires the use of Azure Cloud Shell with persistant files in the cloud-drive.
 
-1. [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
-2. [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
+- [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
+- [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
 
-Create a PowerShell profile for use with the helper functions.
+1. Create a PowerShell profile for use with the helper functions then restart the shell.
 
 ```powershell
 # Create a Profile
@@ -65,7 +65,6 @@ function Invoke-Envrc {
 New-Alias direnv Invoke-Envrc
 New-Alias env Show-Env
 ```
-Restart the Shell
 
 ![Create Profile](./images/tutorial_1.png)
 

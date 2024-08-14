@@ -136,3 +136,22 @@ mvn test
 cd src/core/entitilements/testing/entitlements-v2-azure
 mvn test
 ```
+
+### 6. Remove services and cleanup (Optional)
+
+After a deployment remove environment and delete the Azure Application that was created in Microsoft Entra.
+
+```powershell
+# Remove the resources
+azd down --force --purge
+
+# Remove the environment
+rm .azure/<your_env_name>
+```
+
+> Additionally the environment can be manually removed by the following process.
+
+- Remove the Azure Resource Group
+- Purge any Key Vaults or App Configuration Services
+- Delete the Azure Application from Microsoft Entra
+- Remove the cloned repository.

@@ -1,10 +1,10 @@
 # How to deploy and test with Azure Cloud Shell
 
-This tutorial describe how to deploy and test the OSDU services using the Azure Cloud Shell.
+This tutorial describe how to deploy and test OSDU services using the Azure Cloud Shell.
 
 ### 1. Prepare your Cloud Shell Environment
 
-Persistant files in Azure Cloud Shell is recommended for non-ephermal sessions.
+It is recommended to use persistent files in Azure Cloud Shell for non-ephemeral sessions.
 
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
@@ -68,9 +68,9 @@ New-Alias env Show-Env
 
 ![Create Profile](./images/tutorial_1.png)
 
-### 1. Clone the solution to the CloudDrive
+### 1. Clone the solution
 
-Using a new cloudshell session clone the solution to the persistent clouddrive.
+Using a new cloudshell session clone the repository.
 
 ```powershell
 cd clouddrive
@@ -80,9 +80,9 @@ git clone https://github.com/Azure/osdu-developer.git
 ![Clone Repository](./images/tutorial_2.png)
 
 
-### 3. Deploy OSDU into the subscription
+### 3. Deploy the solution
 
-Using azd command deploy the solution to your subscription choosing a location and resource group name.
+Deploy the solution to your subscription answering any questions that may be presented.
 
 ```powershell
 cd clouddrive/osdu-developer
@@ -95,16 +95,16 @@ azd provision
 A successful deployment will result in an Identity Provider web page to open. Retrieve an Authorization Code and save it to the enviroment.
 
 
-### 4. Generate the Settings
+### 4. Generate the settings
 
 ```powershell
 azd env set AUTH_CODE=<your_auth_code>
 azd hooks run settings
 ```
 
-### 5. Execute integration tests against the environment
+### 5. Clone the services and execute tests
 
-Clone the OSDU Services to the persistent clouddrive
+Clone the OSDU Services
 
 ```powershell
 # Install the git repo manager tool

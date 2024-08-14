@@ -58,6 +58,7 @@ spec:
             - "/api/partition/v1/swagger*"
             - "/api/partition/v1/api-docs*"
             - "/api/partition/v1/webjars/*"
+            - "/api/partition/v1/liveness_check*"
         env:
           - name: AZURE_TENANT_ID
             secret:

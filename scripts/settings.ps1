@@ -21,6 +21,7 @@
 
 #Requires -Version 7.4
 
+
 param (
     [ValidateNotNullOrEmpty()]
     [string]$SubscriptionId = $env:AZURE_SUBSCRIPTION_ID,
@@ -90,7 +91,6 @@ function Set-AuthIngress {
 }
 
 function Get-RefreshToken {
-
     if (-not $env:AUTH_REFRESH) {
         if (-not $env:AUTH_CODE) {
             Write-Output "Error: Neither AUTH_CODE nor AUTH_REFRESH is available."
@@ -126,6 +126,41 @@ function Get-RefreshToken {
     }
 }
 
+function New-EnvFile {
+    Write-Host "`n=================================================================="
+    Write-Host "Creating File: ../src/.envrc"
+    Write-Host "=================================================================="
+
+    $templatePath = "./scripts/envrc_template"
+    $outputPath = "./src/.envrc"
+
+    if (-not (Test-Path $templatePath)) {
+        Write-Host "Error: Template file not found at $templatePath"
+        exit 1
+    }
+
+    $content = Get-Content $templatePath -Raw
+
+    $variablePattern = '%(\w+)%'
+    $foundMatches = [regex]::Matches($content, $variablePattern)
+
+    foreach ($match in $foundMatches) {
+        $variableName = $match.Groups[1].Value
+        $environmentValue = [Environment]::GetEnvironmentVariable($variableName)
+
+        if ($null -eq $environmentValue) {
+            Write-Host "Warning: Environment variable $variableName not found. Leaving as is in the output."
+        } else {
+            $content = $content -replace "%$variableName%", $environmentValue
+        }
+    }
+
+    New-Item -Path (Split-Path $outputPath) -ItemType Directory -Force | Out-Null
+    $content | Out-File -FilePath $outputPath -Encoding utf8
+
+    Write-Host "File created successfully at $outputPath"
+}
+
 function New-VSCodeSettings {
     Write-Host "`n=================================================================="
     Write-Host "Creating File: .vscode/settings.json"
@@ -158,9 +193,155 @@ function New-VSCodeSettings {
           "REFRESH_TOKEN": "${AUTH_REFRESH}",
           "DATA_PARTITION": "opendes"
         }
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "src/lib/os-core-common": true,
+      "src/lib/os-core-lib-azure": true,
+      "src/lib/os-core-lib-azure-spring-6": true,
+      "src/core/partition": true,
+      "src/core/entitlements": true,
+      "src/core/legal": true,
+      "src/core/schema-service": true,
+      "src/core/indexer-service": true,
+      "src/core/indexer-queue": true,
+      "src/core/storage": true,
+      "src/core/search-service": true,
+      "src/core/file": true,
+      "src/reference/unit-service": true,
+      "src/reference/crs-catalog-service": true,
+      "src/reference/crs-conversion-service": true
     }
 }
 "@ > .vscode/settings.json
+}
+
+function New-YamlFile {
+    Write-Host "`n=================================================================="
+    Write-Host "Processing YAML file: ./scripts/template.yaml"
+    Write-Host "=================================================================="
+
+    # Read the YAML file
+    $yamlContent = Get-Content "./scripts/template.yaml" -Raw
+
+    # Find all levels of nodes using regex
+    $nodeMatches = [regex]::Matches($yamlContent, '(?m)^(\s*)(\w+):(.*)')
+
+    # Initialize variables
+    $currentLevel = -1
+    $nodePath = @()
+    $osduGroupNode = ""
+    $serviceNameNode = ""  # This will hold the service name (e.g., partition, entitlements, unit)
+    $projectTaskNode = ""  # This will be RUN or TEST
+    $contentBuffer = @()
+    $captureContent = $false
+
+    # Function to write buffered content to file
+    function WriteBufferToFile {
+        if ($captureContent -and $contentBuffer.Count -gt 0) {
+            # Changed the order here: project task first, then service name
+            $outputFileName = "${projectTaskNode}_${serviceNameNode}.yaml".ToLower()
+            $outputPath = Join-Path $outputDirectory $outputFileName
+            $contentBuffer | Out-File -FilePath $outputPath -Encoding utf8
+            $contentBuffer.Clear()
+        }
+    }
+
+    # Function to replace environment variable placeholders
+    function Replace-EnvironmentVariables($value) {
+        return [regex]::Replace($value, '%(\w+)%', {
+            param($match)
+            $envVar = $match.Groups[1].Value
+            $envValue = [Environment]::GetEnvironmentVariable($envVar)
+            if ($null -ne $envValue) {
+                return $envValue
+            }
+            return $match.Value  # Return original value if environment variable not found
+        })
+    }
+
+    # Process each line in the YAML file
+    foreach ($match in $nodeMatches) {
+        $indent = $match.Groups[1].Value.Length / 2  # Convert indent to level
+        $nodeName = $match.Groups[2].Value  # Keep original case
+        $nodeValue = $match.Groups[3].Value.Trim()
+
+        # Process top-level categories in the YAML (e.g., CORE, REFERENCE)
+        if ($indent -eq 0) {
+            WriteBufferToFile  # Write any existing buffer
+            $currentLevel = 0
+            $nodePath = @($nodeName)
+            $osduGroupNode = $nodeName
+            
+            # Create output directory for the new OSDU group node
+            $outputDirectory = "./src/$osduGroupNode".ToLower()
+            New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
+
+            $captureContent = $false
+        }
+        # Process node at a deeper level than current
+        elseif ($indent -gt $currentLevel) {
+            if ($indent -eq 1) {
+                # This is where services (partition, entitlements, unit, etc.) are parsed
+                $serviceNameNode = $nodeName
+            }
+            elseif ($indent -eq 2) {
+                WriteBufferToFile  # Write any existing buffer
+                $projectTaskNode = $nodeName  # This will be RUN or TEST
+                $captureContent = $true  # Start capturing content for this node
+            }
+            $currentLevel = $indent
+            $nodePath += $nodeName
+        }
+        # Process node at the same level
+        elseif ($indent -eq $currentLevel) {
+            if ($indent -eq 1) {
+                # This is also where services are parsed when moving to a new service at the same level
+                WriteBufferToFile  # Write any existing buffer
+                $serviceNameNode = $nodeName
+            }
+            elseif ($indent -eq 2) {
+                WriteBufferToFile  # Write any existing buffer
+                $projectTaskNode = $nodeName  # This will be RUN or TEST
+                $captureContent = $true  # Start capturing content for this node
+            }
+            $nodePath[-1] = $nodeName
+        }
+        # Process node at a higher level (less indented)
+        else {
+            WriteBufferToFile  # Write any existing buffer
+            $nodePath = $nodePath[0..$indent] + @($nodeName)
+            $currentLevel = $indent
+            if ($currentLevel -eq 1) {
+                # This is where services are parsed when moving back up to the service level
+                $serviceNameNode = $nodeName
+            }
+            elseif ($currentLevel -eq 2) {
+                $projectTaskNode = $nodeName  # This will be RUN or TEST
+                $captureContent = $true  # Start capturing content for this node
+            }
+            else {
+                $captureContent = $false
+            }
+        }
+
+        # Capture content for child nodes of RUN and TEST (indent level 3)
+        if ($captureContent -and $indent -eq 3) {
+            # This is where individual environment settings (key-value pairs) are processed
+            # These are the actual environment settings that will be written to the file
+            if ($nodeValue -ne "") {
+                $replacedValue = Replace-EnvironmentVariables $nodeValue
+                $contentBuffer += "{0}: {1}" -f $nodeName, $replacedValue
+            } else {
+                $contentBuffer += "{0}:" -f $nodeName
+            }
+        }
+    }
+
+    # Write the last file if there's content in the buffer
+    WriteBufferToFile
 }
 
 if ($Help) {
@@ -203,4 +384,6 @@ Write-Host "=================================================================="
 $AKS_NAME = Get-AKSName
 Set-AuthIngress
 Get-RefreshToken
+New-EnvFile
+New-YamlFile
 New-VSCodeSettings

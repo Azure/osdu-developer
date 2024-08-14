@@ -1,6 +1,6 @@
 # How to deploy and test with Azure Cloud Shell
 
-This tutorial describe how to deploy OSDU and then test OSDU services using the Azure Cloud Shell
+This tutorial describe how to deploy and test the OSDU services using the Azure Cloud Shell.
 
 ### 1. Prepare your Cloud Shell Environment
 

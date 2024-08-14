@@ -94,7 +94,9 @@ azd provision
 ```
 ![Clone Repository](./images/tutorial_3.png)
 
-A successful deployment will result in an Identity Provider web page to open. Retrieve an Authorization Code and save it to the enviroment.
+![Clone Repository](./images/tutorial_4.png)
+
+A successful deployment will result in a web page opening for the Identity Provider. Retrieve a one time use Authorization Code and set it for the environment.
 
 
 ### 4. Generate the settings
@@ -104,7 +106,7 @@ azd env set AUTH_CODE=<your_auth_code>
 azd hooks run settings
 ```
 
-### 5. Clone the services and execute tests
+### 5. Clone the services and test
 
 Clone the OSDU Services
 
@@ -120,7 +122,7 @@ Load the environment variables necessary for successful test execution of your e
 
 ```powershell
 cd src
-direnv  # Execute the powershell function to loadup the environment values
+direnv  # Execute the powershell function to initialize the environment values
 ```
 
 Change to service directories and execute integration tests.

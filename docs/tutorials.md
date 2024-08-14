@@ -2,14 +2,14 @@
 
 This tutorial describe how to deploy OSDU and then test OSDU services using the Azure Cloud Shell
 
-### Prepare your Cloud Shell Environment
+### 1. Prepare your Cloud Shell Environment
 
 This tutorial requires the use of Azure Cloud Shell with persistant files in the cloud-drive.
 
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
 
-1. Create a PowerShell profile for use with the helper functions then restart the shell.
+Create a PowerShell profile for use with the helper functions then restart the shell.
 
 ```powershell
 # Create a Profile
@@ -68,7 +68,7 @@ New-Alias env Show-Env
 
 ![Create Profile](./images/tutorial_1.png)
 
-### Clone the solution to the CloudDrive
+### 1. Clone the solution to the CloudDrive
 
 Using a new cloudshell session clone the solution to the persistent clouddrive.
 
@@ -77,12 +77,12 @@ cd clouddrive
 git clone https://github.com/Azure/osdu-developer.git
 ```
 
-[![Clone Repository](./images/tutorial_2.png)]
+![Clone Repository](./images/tutorial_2.png)
 
 
-### Deploy OSDU in the subscription
+### 3. Deploy OSDU into the subscription
 
-Using the Azure Developer CLI deploy the solution to your subscription after selected desired location and resource group name.
+Using azd command deploy the solution to your subscription choosing a location and resource group name.
 
 ```powershell
 cd clouddrive/osdu-developer
@@ -90,16 +90,19 @@ azd config set alpha.resourceGroupDeployments on
 azd init -e <your_env_name>
 azd provision
 ```
-
+![Clone Repository](./images/tutorial_2.png)
 
 A successful deployment will result in an Identity Provider web page to open. Retrieve an Authorization Code and save it to the enviroment.
+
+
+### 4. Generate the Settings
 
 ```powershell
 azd env set AUTH_CODE=<your_auth_code>
 azd hooks run settings
 ```
 
-### Execute integration tests against the environment
+### 5. Execute integration tests against the environment
 
 Clone the OSDU Services to the persistent clouddrive
 

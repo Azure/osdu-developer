@@ -4,7 +4,7 @@ This tutorial describe how to deploy and test the OSDU services using the Azure 
 
 ### 1. Prepare your Cloud Shell Environment
 
-This tutorial requires the use of Azure Cloud Shell with persistant files in the cloud-drive.
+Persistant files in Azure Cloud Shell is recommended for non-ephermal sessions.
 
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)

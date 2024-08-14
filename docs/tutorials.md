@@ -68,7 +68,7 @@ New-Alias env Show-Env
 
 ![Create Profile](./images/tutorial_1.png)
 
-### 1. Clone the solution
+### 2. Clone the solution
 
 Using a new cloudshell session clone the repository.
 

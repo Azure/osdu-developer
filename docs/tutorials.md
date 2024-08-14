@@ -67,7 +67,7 @@ New-Alias env Show-Env
 ```
 Restart the Shell
 
-[![Create Profile](./images/tutorial_1.png)]
+![Create Profile](./images/tutorial_1.png)
 
 ### Clone the solution to the CloudDrive
 

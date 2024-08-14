@@ -70,7 +70,7 @@ New-Alias env Show-Env
 
 ### 2. Clone the solution
 
-Using a new cloudshell session clone the repository.
+Use a new cloudshell session and clone the repository.
 
 ```powershell
 cd clouddrive

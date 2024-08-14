@@ -84,6 +84,8 @@ git clone https://github.com/Azure/osdu-developer.git
 
 Deploy the solution to your subscription answering any questions that may be presented.
 
+> Deployment time can exceed 1 hour.
+
 ```powershell
 cd clouddrive/osdu-developer
 azd config set alpha.resourceGroupDeployments on

@@ -1,4 +1,4 @@
-# How to deploy and test osdu using Azure Cloud Shell
+# How to deploy and test with Azure Cloud Shell
 
 This tutorial describe how to deploy OSDU and then test OSDU services using the Azure Cloud Shell
 

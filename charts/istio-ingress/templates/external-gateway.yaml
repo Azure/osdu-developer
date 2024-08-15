@@ -1,4 +1,4 @@
-{{- if .Values.externalGateway.enabled }}
+{{- if .Values.ingress.externalGateway.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -13,14 +13,14 @@ spec:
         number: 80
         protocol: HTTP2
       hosts:
-        - {{ .Values.externalGateway.hosts | join ", " }}
+        - {{ .Values.ingress.externalGateway.hosts | join ", " }}
     - port:
         name: https
         number: 443
         protocol: HTTPS
       hosts:
-        - {{ .Values.externalGateway.hosts | join ", " }}
+        - {{ .Values.ingress.externalGateway.hosts | join ", " }}
       tls:
-        mode: {{ .Values.externalGateway.tls.mode }}
-        credentialName: {{ .Values.externalGateway.tls.credentialName }}
+        mode: {{ .Values.ingress.externalGateway.tls.mode }}
+        credentialName: {{ .Values.ingress.externalGateway.tls.credentialName }}
 {{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.internalGateway.enabled }}
+{{- if .Values.ingress.internalGateway.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -13,8 +13,8 @@ spec:
         number: 80
         protocol: HTTP2
       hosts:
-        - {{ .Values.internalGateway.hosts | join ", " }}
-      {{- if .Values.internalGateway.tls }}
+        - {{ .Values.ingress.internalGateway.hosts | join ", " }}
+      {{- if .Values.ingress.internalGateway.tls }}
       tls:
         httpsRedirect: true # sends 301 redirect for http requests
       {{- end }}
@@ -23,10 +23,10 @@ spec:
         number: 443
         protocol: HTTPS
       hosts:
-        - {{ .Values.internalGateway.hosts | join ", " }}
-      {{- if .Values.internalGateway.tls }}
+        - {{ .Values..ingress.internalGateway.hosts | join ", " }}
+      {{- if .Values.ingress.internalGateway.tls }}
       tls:
-        mode: {{ .Values.internalGateway.tls.mode }}
-        credentialName: {{ .Values.internalGateway.tls.credentialName }}
+        mode: {{ .Values.ingress.internalGateway.tls.mode }}
+        credentialName: {{ .Values.ingress.internalGateway.tls.credentialName }}
       {{- end }}
 {{- end }}

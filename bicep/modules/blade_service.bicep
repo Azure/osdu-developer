@@ -708,6 +708,11 @@ values.yaml: |
     keyvaultName: {4}
     appId: {5}
     appOid: {6}
+  ingress:
+    internalGateway:
+      enabled: {7}
+    externalGateway:
+      enabled: {8}
   '''
 }
 
@@ -733,7 +738,9 @@ module appConfigMap './aks-config-map/main.bicep' = {
              kvUri,
              kvName,
              applicationClientId,
-             applicationClientPrincipalOid)
+             applicationClientPrincipalOid,
+             clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
+             clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false')
     ]
   }
 }

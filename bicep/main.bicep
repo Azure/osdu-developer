@@ -395,7 +395,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableTelemetry: enableTelemetry
 
     enableSoftwareLoad: clusterSoftware.enable
-    ingressType: ingressType
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

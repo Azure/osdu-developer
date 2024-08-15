@@ -135,7 +135,7 @@ cd src/core/partition/testing/partition-test-azure
 mvn test
 
 # Test Entitlement Service
-cd src/core/entitilements/testing/entitlements-v2-azure
+cd src/core/entitilements/testing/entitlements-v2-test-azure
 mvn test
 ```
 

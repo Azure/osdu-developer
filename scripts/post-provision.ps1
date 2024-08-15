@@ -100,6 +100,19 @@ function Get-AKSName {
 }
 
 function Get-Software {
+    try {
+        $complianceState = az k8s-configuration flux show -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+        Write-Host "`n=================================================================="
+        Write-Host "Software Installation: $complianceState"
+        Write-Host "=================================================================="
+        return $complianceState
+    } catch {
+        Write-Host "Error during software check: $_"
+        exit 1
+    }
+}
+
+function Get-Software-Original {
     $end = (Get-Date).AddMinutes(35)
     try {
         $complianceState = az k8s-configuration flux show -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
@@ -210,11 +223,18 @@ if (-not $ApplicationId) {
     exit 1
 }
 
-Set-Login
-$AKS_NAME = Get-AKSName
-Get-Software
-Update-Application
+do {
+    Set-Login
+    $AKS_NAME = Get-AKSName
+    $complianceState = Get-Software
 
+    if ($complianceState -ne "Compliant") {
+        Write-Host "  Software is not compliant yet. Retrying in 5 minutes."
+        Start-Sleep -Seconds 300
+    }
+} while ($complianceState -ne "Compliant")
+
+Update-Application
 Start-Sleep -Seconds 30
 
 # Open the web browser

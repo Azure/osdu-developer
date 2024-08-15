@@ -1,0 +1,26 @@
+{{- if .Values.externalGateway.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: external-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingress-external
+  servers:
+    - port:
+        name: http2
+        number: 80
+        protocol: HTTP2
+      hosts:
+        - {{ .Values.externalGateway.hosts | join ", " }}
+    - port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      hosts:
+        - {{ .Values.externalGateway.hosts | join ", " }}
+      tls:
+        mode: {{ .Values.externalGateway.tls.mode }}
+        credentialName: {{ .Values.externalGateway.tls.credentialName }}
+{{- end }}

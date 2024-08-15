@@ -1,51 +1,76 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
 metadata:
-  name: internal-gateway
-  namespace: istio-system
+  name: istio-ingress
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  selector:
-    istio: ingress-internal
-  servers:
-    - port:
-        name: http2
-        number: 80
-        protocol: HTTP2
-      hosts:
-        - "*"
-      # tls:
-      #   httpsRedirect: true # sends 301 redirect for http requests
-    - port:
-        name: https
-        number: 443
-        protocol: HTTPS
-      hosts:
-        - "*"
-      tls:
-        mode: SIMPLE
-        credentialName: wild-card-tls
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: external-gateway
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingress-external
-  servers:
-    - port:
-        name: http2
-        number: 80
-        protocol: HTTP2
-      hosts:
-        - "*"
-    - port:
-        name: https
-        number: 443
-        protocol: HTTPS
-      hosts:
-        - "*"
-      tls:
-        mode: SIMPLE
-        credentialName: wild-card-tls
+  targetNamespace: istio-system
+  chart:
+    spec:
+      chart: ./charts/istio-ingress
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: Gateway
+# metadata:
+#   name: internal-gateway
+#   namespace: istio-system
+# spec:
+#   selector:
+#     istio: ingress-internal
+#   servers:
+#     - port:
+#         name: http2
+#         number: 80
+#         protocol: HTTP2
+#       hosts:
+#         - "*"
+#       # tls:
+#       #   httpsRedirect: true # sends 301 redirect for http requests
+#     - port:
+#         name: https
+#         number: 443
+#         protocol: HTTPS
+#       hosts:
+#         - "*"
+#       tls:
+#         mode: SIMPLE
+#         credentialName: wild-card-tls
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: Gateway
+# metadata:
+#   name: external-gateway
+#   namespace: istio-system
+# spec:
+#   selector:
+#     istio: ingress-external
+#   servers:
+#     - port:
+#         name: http2
+#         number: 80
+#         protocol: HTTP2
+#       hosts:
+#         - "*"
+#     - port:
+#         name: https
+#         number: 443
+#         protocol: HTTPS
+#       hosts:
+#         - "*"
+#       tls:
+#         mode: SIMPLE
+#         credentialName: wild-card-tls

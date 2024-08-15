@@ -1,0 +1,18 @@
+nameOverride: ""
+fullnameOverride: ""
+
+internalGateway:
+  enabled: false
+  hosts:
+    - "*"
+  tls:
+    mode: SIMPLE
+    credentialName: wild-card-tls
+
+externalGateway:
+  enabled: true
+  hosts:
+    - "*"
+  tls:
+    mode: SIMPLE
+    credentialName: wild-card-tls

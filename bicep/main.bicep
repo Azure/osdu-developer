@@ -25,6 +25,14 @@ param applicationClientPrincipalOid string
 @description('The size of the solution')
 param tier string = 'CostOptimised'
 
+@allowed([
+  'External'
+  'Internal'
+  'Both'
+])
+@description('Specify the Ingress type for the cluster.')
+param ingressType string = 'External'
+
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
 
@@ -387,6 +395,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableTelemetry: enableTelemetry
 
     enableSoftwareLoad: clusterSoftware.enable
+    ingressType: ingressType
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId
@@ -405,7 +414,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterSize: tier
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress 
+    clusterIngress: ingressType 
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin

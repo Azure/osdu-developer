@@ -26,8 +26,6 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 | [CRS Conversion Service](https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service)  | Enables the conversion of coordinates from one coordinate reference system (CRS) to another. |
 
 
-
-
 ## Features
 
 | **Feature**            | **Description**                                                                                                    |
@@ -45,14 +43,13 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 | Token Tools            | Integrated Access Token Tools for easy retrieval of Bearer Access Tokens for with Swagger Pages and docs.          |
 
 
-
-
 ## Getting Started
 
-> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription**. 
+> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](./docs/resource-providers.md) registered. 
 
 > **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as creation of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
 
+Follow this [tutorial](./docs/tutorials.md) for a quick overview from the Azure Cloud Shell.
 
 ### Prerequisites
 

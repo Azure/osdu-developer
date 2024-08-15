@@ -1,0 +1,61 @@
+{{- define "gateway" -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .name | default (printf "%s-gateway" .gatewayType) }}
+  namespace: istio-system
+spec:
+  selector:
+    {{- .selector | default (dict "istio" (printf "ingress-%s" .gatewayType)) | toYaml | nindent 4 }}
+  servers:
+    - port:
+        name: http2
+        number: 80
+        protocol: HTTP2
+      hosts:
+        {{- if .hosts }}
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+        {{- else }}
+        - "*"
+        {{- end }}
+    - port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      hosts:
+        {{- if .hosts }}
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+        {{- else }}
+        - "*"
+        {{- end }}
+      {{- if .requireSSL }}
+      tls:
+        httpsRedirect: true # sends 301 redirect for http requests
+      {{- end }}
+      {{- with .tls }}
+      tls:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+
+{{- if .Values.ingress }}
+  {{- if hasKey .Values.ingress "internalGateway" }}
+    {{- if .Values.ingress.internalGateway.enabled }}
+---
+{{- $internalGateway := merge (dict "gatewayType" "internal") .Values.ingress.internalGateway -}}
+{{ include "gateway" $internalGateway }}
+    {{- end }}
+  {{- end }}
+
+  {{- if hasKey .Values.ingress "externalGateway" }}
+    {{- if .Values.ingress.externalGateway.enabled }}
+---
+{{- $externalGateway := merge (dict "gatewayType" "external") .Values.ingress.externalGateway -}}
+{{ include "gateway" $externalGateway }}
+    {{- end }}
+  {{- end }}
+{{- end }}

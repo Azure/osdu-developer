@@ -3,7 +3,8 @@ fullnameOverride: ""
 
 ingress:
   internalGateway:
-    enabled: false
+    enabled: true
+    requireSSL: true
     hosts:
       - "*"
     tls:

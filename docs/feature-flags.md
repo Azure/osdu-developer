@@ -7,7 +7,7 @@ Customize your resources by enabling these optional features based on your speci
 
 __Purpose:__ Specify software load options.
 
-__Details:__ There are situations in which partial selection of software to install is helpful. Software loads can be disabled as well as catagories of OSDU services can be selectively enabled/disabled from loading.
+__Details:__ There are situations in which partial selection of software to install is helpful. Software loads can be disabled as well as categories of OSDU services can be selectively enabled/disabled from loading.
 
 __How To Enable:__
 

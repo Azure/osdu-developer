@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "9255680846927275102"
+      "templateHash": "5554436989160572648"
     }
   },
   "parameters": {
@@ -50,6 +50,18 @@
       ],
       "metadata": {
         "description": "The size of the solution"
+      }
+    },
+    "ingressType": {
+      "type": "string",
+      "defaultValue": "External",
+      "allowedValues": [
+        "External",
+        "Internal",
+        "Both"
+      ],
+      "metadata": {
+        "description": "Specify the Ingress type for the cluster."
       }
     },
     "enableBlobPublicAccess": {
@@ -112,12 +124,14 @@
       "type": "object",
       "defaultValue": {
         "enable": true,
+        "osduCore": true,
+        "osduReference": true,
         "repository": "",
         "branch": "",
         "tag": ""
       },
       "metadata": {
-        "description": "(Optional) Software Load Override - {enable} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main"
+        "description": "(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main"
       }
     },
     "clusterNetwork": {
@@ -6417,7 +6431,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "2703736437042476724"
+              "templateHash": "1432460502819309476"
             }
           },
           "definitions": {
@@ -16207,6 +16221,15 @@
                   "skuName": {
                     "value": "Basic"
                   },
+                  "capacity": {
+                    "value": 1
+                  },
+                  "replicasPerMaster": {
+                    "value": 1
+                  },
+                  "replicasPerPrimary": {
+                    "value": 1
+                  },
                   "zoneRedundant": {
                     "value": false
                   },
@@ -17750,6 +17773,10 @@
             "cosmosDNSZoneId": {
               "type": "string",
               "value": "[resourceId('Microsoft.Network/privateDnsZones', variables('cosmosDnsZoneName'))]"
+            },
+            "instrumentationKey": {
+              "type": "string",
+              "value": "[reference('insights').outputs.instrumentationKey.value]"
             }
           }
         }
@@ -29057,9 +29084,9 @@
           "enableTelemetry": {
             "value": "[variables('enableTelemetry')]"
           },
-          "enableSoftwareLoad": {
-            "value": "[parameters('clusterSoftware').enable]"
-          },
+          "enableSoftwareLoad": "[if(equals(parameters('clusterSoftware').enable, ''), createObject('value', true()), createObject('value', parameters('clusterSoftware').enable))]",
+          "enableOsduCore": "[if(equals(parameters('clusterSoftware').osduCore, ''), createObject('value', true()), createObject('value', parameters('clusterSoftware').osduCore))]",
+          "enableOsdureference": "[if(equals(parameters('clusterSoftware').osduReference, ''), createObject('value', true()), createObject('value', parameters('clusterSoftware').osduReference))]",
           "emailAddress": {
             "value": "[parameters('emailAddress')]"
           },
@@ -29101,7 +29128,9 @@
           "clusterAdminIds": {
             "value": "[parameters('clusterAdminIds')]"
           },
-          "clusterIngress": "[if(equals(parameters('clusterNetwork').ingress, ''), createObject('value', 'Both'), createObject('value', parameters('clusterNetwork').ingress))]",
+          "clusterIngress": {
+            "value": "[parameters('ingressType')]"
+          },
           "serviceCidr": "[if(equals(parameters('clusterNetwork').serviceCidr, ''), createObject('value', '172.16.0.0/16'), createObject('value', parameters('clusterNetwork').serviceCidr))]",
           "dnsServiceIP": "[if(equals(parameters('clusterNetwork').dnsServiceIP, ''), createObject('value', '172.16.0.10'), createObject('value', parameters('clusterNetwork').v))]",
           "networkPlugin": "[if(parameters('enablePodSubnet'), createObject('value', 'azure'), createObject('value', parameters('clusterNetworkPlugin')))]",
@@ -29139,7 +29168,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "12599053198558600737"
+              "templateHash": "5306624347196734433"
             }
           },
           "definitions": {
@@ -29286,6 +29315,7 @@
             },
             "clusterIngress": {
               "type": "string",
+              "defaultValue": "External",
               "allowedValues": [
                 "Internal",
                 "External",
@@ -29293,6 +29323,26 @@
               ],
               "metadata": {
                 "description": "The Cluster Ingress Mode"
+              }
+            },
+            "enableSoftwareLoad": {
+              "type": "bool",
+              "metadata": {
+                "description": "Feature Flag to Load Software."
+              }
+            },
+            "enableOsduCore": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Feature Flag to Load OSDU Core."
+              }
+            },
+            "enableOsdureference": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Feature Flag to Load OSDU Reference."
               }
             },
             "clusterAdminIds": {
@@ -29354,12 +29404,6 @@
                 "description": "The name of the partition service bus namespaces"
               }
             },
-            "enableSoftwareLoad": {
-              "type": "bool",
-              "metadata": {
-                "description": "Feature Flag to Load Software."
-              }
-            },
             "enableMonitoring": {
               "type": "bool",
               "defaultValue": false,
@@ -29398,7 +29442,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.23.0"
+              "release": "v0.24.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -29456,8 +29500,22 @@
                 "label": "configmap-common-values"
               }
             ],
+            "osdu_applications": [
+              {
+                "name": "OSDU_CORE_ENABLED",
+                "value": "[string(parameters('enableOsduCore'))]",
+                "contentType": "text/plain",
+                "label": "configmap-osdu-applications"
+              },
+              {
+                "name": "OSDU_REFERENCE_ENABLED",
+                "value": "[string(parameters('enableOsdureference'))]",
+                "contentType": "text/plain",
+                "label": "configmap-osdu-applications"
+              }
+            ],
             "configMaps": {
-              "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n    appId: {5}\n    appOid: {6}\n  "
+              "appConfigTemplate": "values.yaml: |\n  serviceAccount:\n    create: false\n    name: \"workload-identity-sa\"\n  azure:\n    tenantId: {0}\n    clientId: {1}\n    configEndpoint: {2}\n    keyvaultUri: {3}\n    keyvaultName: {4}\n    appId: {5}\n    appOid: {6}\n  ingress:\n    internalGateway:\n      enabled: {7}\n    externalGateway:\n      enabled: {8}\n  "
             },
             "name": "[format('amw{0}{1}', replace(parameters('bladeConfig').sectionName, '-', ''), uniqueString(resourceGroup().id, parameters('bladeConfig').sectionName))]"
           },
@@ -31730,7 +31788,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15625098077449215906"
+                      "templateHash": "12383921361260796104"
                     }
                   },
                   "parameters": {
@@ -31899,7 +31957,7 @@
                     },
                     "networkPluginMode": {
                       "type": "string",
-                      "defaultValue": "",
+                      "defaultValue": "Overlay",
                       "allowedValues": [
                         "",
                         "Overlay"
@@ -31910,7 +31968,7 @@
                     },
                     "networkPolicy": {
                       "type": "string",
-                      "defaultValue": "",
+                      "defaultValue": "cilium",
                       "allowedValues": [
                         "",
                         "azure",
@@ -31919,17 +31977,6 @@
                       ],
                       "metadata": {
                         "description": "The network policy to use."
-                      }
-                    },
-                    "ebpfDataplane": {
-                      "type": "string",
-                      "defaultValue": "",
-                      "allowedValues": [
-                        "",
-                        "cilium"
-                      ],
-                      "metadata": {
-                        "description": "Use Cilium dataplane (requires azure networkPlugin)"
                       }
                     },
                     "podCidr": {
@@ -32196,17 +32243,6 @@
                         "description": "Specifies whether ImageCleaner scanning interval in hours."
                       }
                     },
-                    "restrictionLevelNodeResourceGroup": {
-                      "type": "string",
-                      "defaultValue": "Unrestricted",
-                      "allowedValues": [
-                        "ReadOnly",
-                        "Unrestricted"
-                      ],
-                      "metadata": {
-                        "description": "The restriction level applied to the cluster node resource group"
-                      }
-                    },
                     "serviceMeshProfile": {
                       "type": "string",
                       "defaultValue": "",
@@ -32424,7 +32460,7 @@
                         }
                       }
                     },
-                    "aksProperties": "[union(createObject('kubernetesVersion', parameters('aksVersion'), 'enableRBAC', true(), 'dnsPrefix', parameters('dnsPrefix'), 'aadProfile', if(parameters('enable_aad'), createObject('managed', true(), 'enableAzureRBAC', parameters('enableAzureRBAC'), 'tenantID', parameters('aad_tenant_id'), 'adminGroupObjectIDs', if(empty(parameters('admin_ids')), null(), parameters('admin_ids'))), null()), 'apiServerAccessProfile', if(not(empty(parameters('authorizedIPRanges'))), createObject('authorizedIPRanges', parameters('authorizedIPRanges')), createObject('enablePrivateCluster', parameters('enablePrivateCluster'), 'privateDNSZone', if(parameters('enablePrivateCluster'), variables('aksPrivateDnsZone'), ''), 'enablePrivateClusterPublicFQDN', and(parameters('enablePrivateCluster'), equals(parameters('privateClusterDnsMethod'), 'none')))), 'agentPoolProfiles', variables('agentPoolProfiles'), 'workloadAutoScalerProfile', createObject('keda', createObject('enabled', parameters('kedaEnabled'))), 'networkProfile', createObject('loadBalancerSku', 'standard', 'networkPlugin', parameters('networkPlugin'), 'networkPolicy', parameters('networkPolicy'), 'networkPluginMode', if(equals(parameters('networkPlugin'), 'azure'), parameters('networkPluginMode'), ''), 'podCidr', if(or(or(equals(parameters('networkPlugin'), 'kubenet'), equals(parameters('networkPluginMode'), 'Overlay')), parameters('cniDynamicIpAllocation')), parameters('podCidr'), null()), 'serviceCidr', parameters('serviceCidr'), 'dnsServiceIP', parameters('dnsServiceIP'), 'outboundType', variables('outboundTrafficType'), 'ebpfDataplane', if(equals(parameters('networkPlugin'), 'azure'), parameters('ebpfDataplane'), '')), 'disableLocalAccounts', and(parameters('AksDisableLocalAccounts'), parameters('enable_aad')), 'autoUpgradeProfile', createObject('upgradeChannel', parameters('upgradeChannel')), 'addonProfiles', variables('aks_addons'), 'autoScalerProfile', if(variables('autoScale'), parameters('AutoscaleProfile'), createObject()), 'oidcIssuerProfile', createObject('enabled', parameters('oidcIssuer')), 'securityProfile', createObject('workloadIdentity', createObject('enabled', parameters('workloadIdentityEnabled')), 'defender', createObject('logAnalyticsWorkspaceResourceId', if(parameters('defenderEnabled'), parameters('workspaceId'), null()), 'securityMonitoring', createObject('enabled', parameters('defenderEnabled'))), 'imageCleaner', createObject('enabled', parameters('enableImageCleaner'), 'intervalHours', parameters('imageCleanerIntervalHours'))), 'ingressProfile', createObject('webAppRouting', createObject('enabled', parameters('warIngressNginx'))), 'storageProfile', createObject('blobCSIDriver', createObject('enabled', parameters('blobCSIDriver')), 'diskCSIDriver', createObject('enabled', parameters('diskCSIDriver')), 'fileCSIDriver', createObject('enabled', parameters('fileCSIDriver'))), 'nodeResourceGroupProfile', createObject('restrictionLevel', parameters('restrictionLevelNodeResourceGroup'))), if(equals(variables('outboundTrafficType'), 'managedNATGateway'), variables('managedNATGatewayProfile'), createObject()), if(parameters('defenderEnabled'), variables('azureDefenderSecurityProfile'), createObject()), if(not(empty(parameters('managedNodeResourceGroup'))), createObject('nodeResourceGroup', parameters('managedNodeResourceGroup')), createObject()), if(not(empty(parameters('serviceMeshProfile'))), createObject('serviceMeshProfile', variables('serviceMeshProfileObj')), createObject()))]",
+                    "aksProperties": "[union(createObject('kubernetesVersion', parameters('aksVersion'), 'enableRBAC', true(), 'dnsPrefix', parameters('dnsPrefix'), 'aadProfile', if(parameters('enable_aad'), createObject('managed', true(), 'enableAzureRBAC', parameters('enableAzureRBAC'), 'tenantID', parameters('aad_tenant_id'), 'adminGroupObjectIDs', if(empty(parameters('admin_ids')), null(), parameters('admin_ids'))), null()), 'apiServerAccessProfile', if(not(empty(parameters('authorizedIPRanges'))), createObject('authorizedIPRanges', parameters('authorizedIPRanges')), createObject('enablePrivateCluster', parameters('enablePrivateCluster'), 'privateDNSZone', if(parameters('enablePrivateCluster'), variables('aksPrivateDnsZone'), ''), 'enablePrivateClusterPublicFQDN', and(parameters('enablePrivateCluster'), equals(parameters('privateClusterDnsMethod'), 'none')))), 'agentPoolProfiles', variables('agentPoolProfiles'), 'workloadAutoScalerProfile', createObject('keda', createObject('enabled', parameters('kedaEnabled'))), 'networkProfile', createObject('loadBalancerSku', 'standard', 'networkPlugin', parameters('networkPlugin'), 'networkPolicy', parameters('networkPolicy'), 'networkPluginMode', if(equals(parameters('networkPlugin'), 'azure'), parameters('networkPluginMode'), ''), 'networkDataplane', if(equals(parameters('networkPolicy'), 'cilium'), parameters('networkPolicy'), ''), 'podCidr', if(or(or(equals(parameters('networkPlugin'), 'kubenet'), equals(parameters('networkPluginMode'), 'Overlay')), parameters('cniDynamicIpAllocation')), parameters('podCidr'), null()), 'serviceCidr', parameters('serviceCidr'), 'dnsServiceIP', parameters('dnsServiceIP'), 'outboundType', variables('outboundTrafficType')), 'disableLocalAccounts', and(parameters('AksDisableLocalAccounts'), parameters('enable_aad')), 'autoUpgradeProfile', createObject('upgradeChannel', parameters('upgradeChannel')), 'addonProfiles', variables('aks_addons'), 'autoScalerProfile', if(variables('autoScale'), parameters('AutoscaleProfile'), createObject()), 'oidcIssuerProfile', createObject('enabled', parameters('oidcIssuer')), 'securityProfile', createObject('workloadIdentity', createObject('enabled', parameters('workloadIdentityEnabled')), 'defender', createObject('logAnalyticsWorkspaceResourceId', if(parameters('defenderEnabled'), parameters('workspaceId'), null()), 'securityMonitoring', createObject('enabled', parameters('defenderEnabled'))), 'imageCleaner', createObject('enabled', parameters('enableImageCleaner'), 'intervalHours', parameters('imageCleanerIntervalHours'))), 'ingressProfile', createObject('webAppRouting', createObject('enabled', parameters('warIngressNginx'))), 'storageProfile', createObject('blobCSIDriver', createObject('enabled', parameters('blobCSIDriver')), 'diskCSIDriver', createObject('enabled', parameters('diskCSIDriver')), 'fileCSIDriver', createObject('enabled', parameters('fileCSIDriver')))), if(equals(variables('outboundTrafficType'), 'managedNATGateway'), variables('managedNATGatewayProfile'), createObject()), if(parameters('defenderEnabled'), variables('azureDefenderSecurityProfile'), createObject()), if(not(empty(parameters('managedNodeResourceGroup'))), createObject('nodeResourceGroup', parameters('managedNodeResourceGroup')), createObject()), if(not(empty(parameters('serviceMeshProfile'))), createObject('serviceMeshProfile', variables('serviceMeshProfileObj')), createObject()))]",
                     "ingressModes": {
                       "external": {
                         "enabled": true,
@@ -32442,7 +32478,7 @@
                   "resources": [
                     {
                       "type": "Microsoft.ContainerService/managedClusters",
-                      "apiVersion": "2023-11-01",
+                      "apiVersion": "2024-02-01",
                       "name": "[if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
@@ -32561,7 +32597,7 @@
                     },
                     "aksOidcIssuerUrl": {
                       "type": "string",
-                      "value": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-11-01').oidcIssuerProfile.issuerURL, '')]"
+                      "value": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2024-02-01').oidcIssuerProfile.issuerURL, '')]"
                     },
                     "userNodePoolName": {
                       "type": "string",
@@ -32577,11 +32613,11 @@
                     },
                     "privateFQDN": {
                       "type": "string",
-                      "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-11-01').privateFQDN, '')]"
+                      "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2024-02-01').privateFQDN, '')]"
                     },
                     "aksPrivateDnsZoneName": {
                       "type": "string",
-                      "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), join(skip(split(reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-11-01').privateFQDN, '.'), 1), '.'), '')]"
+                      "value": "[if(and(parameters('enablePrivateCluster'), not(equals(parameters('privateClusterDnsMethod'), 'none'))), join(skip(split(reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2024-02-01').privateFQDN, '.'), 1), '.'), '')]"
                     },
                     "aksOidcFedIdentityProperties": {
                       "type": "object",
@@ -32589,7 +32625,7 @@
                         "description": "This output can be directly leveraged when creating a ManagedId Federated Identity"
                       },
                       "value": {
-                        "issuer": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-11-01').oidcIssuerProfile.issuerURL, '')]",
+                        "issuer": "[if(parameters('oidcIssuer'), reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2024-02-01').oidcIssuerProfile.issuerURL, '')]",
                         "audiences": [
                           "api://AzureADTokenExchange"
                         ],
@@ -32601,7 +32637,7 @@
                       "metadata": {
                         "description": "The name of the managed resource group AKS uses"
                       },
-                      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2023-11-01').nodeResourceGroup]"
+                      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', if(greater(length(variables('name')), 63), substring(variables('name'), 0, 63), variables('name'))), '2024-02-01').nodeResourceGroup]"
                     },
                     "aksResourceId": {
                       "type": "string",
@@ -34797,7 +34833,7 @@
                     ]
                   },
                   "keyValues": {
-                    "value": "[concat(union(parameters('appSettings'), createArray(createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-devsample'), createObject('name', 'tenant_id', 'value', subscription().tenantId, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'azure_msi_client_id', 'value', reference('appIdentity').clientId, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'keyvault_uri', 'value', reference('keyVault').vaultUri, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'first_user_id', 'value', parameters('emailAddress'), 'contentType', 'text/plain', 'label', 'configmap-services')), variables('partitionStorageSettings'), variables('partitionBusSettings'), variables('common_helm_values')))]"
+                    "value": "[concat(union(parameters('appSettings'), createArray(createObject('name', 'Settings:Message', 'value', 'Hello from App Configuration', 'contentType', 'text/plain', 'label', 'configmap-devsample'), createObject('name', 'tenant_id', 'value', subscription().tenantId, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'azure_msi_client_id', 'value', reference('appIdentity').clientId, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'keyvault_uri', 'value', reference('keyVault').vaultUri, 'contentType', 'text/plain', 'label', 'configmap-services'), createObject('name', 'first_user_id', 'value', parameters('emailAddress'), 'contentType', 'text/plain', 'label', 'configmap-services')), variables('partitionStorageSettings'), variables('partitionBusSettings'), variables('osdu_applications'), variables('common_helm_values')))]"
                   }
                 },
                 "template": {
@@ -35487,7 +35523,7 @@
                   },
                   "fileData": {
                     "value": [
-                      "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference('appIdentity').clientId, reference('app_config').outputs.endpoint.value, parameters('kvUri'), parameters('kvName'), parameters('applicationClientId'), parameters('applicationClientPrincipalOid'))]"
+                      "[format(variables('configMaps').appConfigTemplate, subscription().tenantId, reference('appIdentity').clientId, reference('app_config').outputs.endpoint.value, parameters('kvUri'), parameters('kvName'), parameters('applicationClientId'), parameters('applicationClientPrincipalOid'), if(or(equals(parameters('clusterIngress'), 'Internal'), equals(parameters('clusterIngress'), 'Both')), 'true', 'false'), if(or(equals(parameters('clusterIngress'), 'External'), equals(parameters('clusterIngress'), 'Both')), 'true', 'false'))]"
                     ]
                   }
                 },
@@ -37351,6 +37387,14 @@
     "AKS_NAME": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'service-blade'), '2022-09-01').outputs.clusterName.value]"
+    },
+    "INSTRUMENTATION_KEY": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.instrumentationKey.value]"
+    },
+    "COMMON_NAME": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.storageAccountName.value]"
     }
   }
 }

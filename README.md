@@ -5,6 +5,23 @@
 The developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. 
 > For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
+__Concepts__
+
+- [Architecture](docs/architecture.md)
+- [Subscription Requirements](docs/resource-providers.md)
+
+__Tutorials__
+
+- [CLI Deployment](./docs/tutorial_cli.md)
+- [One Click Deployment](./docs/tutorial_click.md)
+- [Vnet Injection](./docs/vnet-injection.md)
+
+__Additional Information__
+
+- [Feature Flags](docs/feature-flags.md)
+- [Working with Services](docs/service-environments.md)
+- [Github Actions](docs/pipelines.md)
+
 
 ## OSDU Services
 
@@ -122,30 +139,4 @@ During the deployment process, some information is required to be provided in th
 - `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)
 
 Upon completing the deployment, the infrastructure and software components will be automatically provisioned. 
-
-
-## Additional Information
-
-#### Architecture
-
-For further understanding of the interactions of the Azure Developer CLI and the architecture of the solution, please refer to the Architecture Documentation which can be found [here](docs/architecture.md).
-
-#### IDE Settings
-
-Services can be run locally in an IDE like IntelliJ.  Identified required environment variables to start the services can be found [here](docs/service-environments.md)
-
-
-#### Feature Flags
-
-Feature flags are leveraged to assist in major modifications to the solution, ensuring adherence to different policies and requirements. More information can be found [here](docs/feature-flags.md).
-                          
-
-#### GitHub Actions
-
-The repository is configured with GitHub Actions to automate the validation of pull requests.. The strategy for actions can be found [here](docs/pipelines.md).
-
-
-#### Customizations
-
-There are many things that can be done to customize the deployment. One example of this might be virtual network injection. More information can be found [here](docs/vnet-injection.md).
 

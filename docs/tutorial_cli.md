@@ -1,6 +1,8 @@
-# How to deploy and test with Azure Cloud Shell
+# How to deploy using the Azure Developer CLI
 
-Follow this tutorial to deploy and test OSDU services from the Azure Cloud Shell.
+The process for working with the solution using the Azure Developer CLI is the recommended way for deployent offering the most flexability.  This process can be used if working directly with the solution on a computer, working in a Visual Studio Code remote container, or using a cloud environment like Github Codespaces.
+
+For ease of use this tutorial will leverage a cloud environment shell using Azure Cloud Shell.
 
 It is recommended to use persistent files in Azure Cloud Shell for non-ephemeral sessions.
 
@@ -84,10 +86,11 @@ git clone https://github.com/Azure/osdu-developer.git
 
 Deploy the solution to your subscription answering any questions that may be presented.
 
-> Deployment time can exceed 1 hour.
+> Deployment will exceed 1 hour.  It is common for a cloud session to timeout due to lack of activity. If a session times out executing `azd provision` again will continue the process.
 
 ```powershell
 cd clouddrive/osdu-developer
+az account set <your_subscription>
 azd config set alpha.resourceGroupDeployments on
 azd init -e <your_env_name>
 azd provision

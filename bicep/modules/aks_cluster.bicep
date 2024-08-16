@@ -141,13 +141,6 @@ param networkPluginMode string = 'Overlay'
 @description('The network policy to use.')
 param networkPolicy string = 'cilium'
 
-@allowed([
-  ''
-  'cilium'
-])
-@description('Use Cilium dataplane (requires azure networkPlugin)')
-param ebpfDataplane string = ''
-
 @minLength(9)
 @maxLength(18)
 @description('The address range to use for pods')
@@ -292,14 +285,6 @@ param enableImageCleaner bool = false
 
 @description('Specifies whether ImageCleaner scanning interval in hours.')
 param imageCleanerIntervalHours int = 24
-
-// Preview feature requires: az feature register --namespace "Microsoft.ContainerService" --name "NRGLockdownPreview"
-@allowed([
-  'ReadOnly'
-  'Unrestricted'
-])
-@description('The restriction level applied to the cluster node resource group')
-param restrictionLevelNodeResourceGroup string = 'Unrestricted'
 
 // Preview feature requires: az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
 @allowed(['', 'Istio'])
@@ -575,7 +560,6 @@ var aksProperties = union({
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
     outboundType: outboundTrafficType
-    ebpfDataplane: networkPlugin=='azure' ? ebpfDataplane : ''
   }
   disableLocalAccounts: AksDisableLocalAccounts && enable_aad
   autoUpgradeProfile: {upgradeChannel: upgradeChannel}
@@ -614,9 +598,6 @@ var aksProperties = union({
     fileCSIDriver: {
       enabled: fileCSIDriver
     }
-  }
-  nodeResourceGroupProfile: {
-    restrictionLevel: restrictionLevelNodeResourceGroup
   }
 },
 outboundTrafficType == 'managedNATGateway' ? managedNATGatewayProfile : {},

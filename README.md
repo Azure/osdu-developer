@@ -20,6 +20,7 @@ __Additional Information__
 
 - [Feature Flags](docs/feature-flags.md)
 - [Working with Services](docs/service-environments.md)
+- [Executing REST Scripts](docs/tutorial_rest.md)
 - [Github Actions](docs/pipelines.md)
 
 

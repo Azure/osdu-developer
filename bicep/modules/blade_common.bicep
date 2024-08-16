@@ -493,7 +493,7 @@ module redis 'br/public:avm/res/cache/redis:0.3.2' = {
   params: {
     name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
-    skuName: 'Standard' 
+    skuName: 'Basic' 
     capacity: 1
     replicasPerMaster: 1
     replicasPerPrimary: 1

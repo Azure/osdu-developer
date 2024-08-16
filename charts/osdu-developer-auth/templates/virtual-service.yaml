@@ -12,6 +12,12 @@ spec:
   http:
     - match:
         - uri:
+            prefix: {{ .Values.path }}spa/
+      route:
+        - destination:
+            host: osdu-auth-spa.{{ $namespace }}.svc.cluster.local
+    - match:
+        - uri:
             prefix: {{ .Values.path }}
       route:
         - destination:

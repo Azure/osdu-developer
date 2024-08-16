@@ -42,7 +42,7 @@ function Show-Help {
 function Set-Login {
     try {
         # Check if the user is logged in
-        $user = az ad signed-in-user show --query mail -o tsv
+        $user = az ad signed-in-user show --query userPrincipalName -o tsv
         $accountInfo = az account show -o json 2>$null | ConvertFrom-Json
         if ($user) {
             Write-Host "`n=================================================================="

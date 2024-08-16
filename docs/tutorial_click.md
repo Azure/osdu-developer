@@ -18,7 +18,7 @@ Create a new client secret to use and note the following IDs for the application
 ![Client Id](./images/tutorial_click_2.png)
 ![Principal Id](./images/tutorial_click_3.png)
 
-### 2. Open and fill out the template parameters
+### 2. Deploy the solution
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
@@ -39,4 +39,43 @@ The following fields are mandatory fields to complete.
 
 Additional fields are all optional changes.  Please see feature flags for further details.
 
+> Deployment will exceed 1 hour.
+
 ![Principal Id](./images/tutorial_click_4.png)
+
+### 3. Validate completion
+
+Deployment is broken up into 2 parts, Infrastructure and Software.
+
+Infrastructure deployment can be validated by investigating the deployments on the resource group. Success can be seen by having the main deployment details green.
+
+Software deployment occurs after successful infrastructure and be seen by looking at the Azure Kubernetes Service gitops blade and observing software compliance.
+
+![Infrastructure Deployment](./images/tutorial_click_5.png)
+![Software Deployment](./images/tutorial_click_6.png)
+
+
+### 3. Set the Application SPA platform redirect URL
+
+Lookup the ingress IP address that has been configured under the kubernetes service `services and ingresses` blade and add the redirect uri to a spa platform on the application authentication blade.
+
+![Ingress](./images/tutorial_click_7.png)
+![Redirect](./images/tutorial_click_8.png)
+
+
+### 3. Retrieve an access token
+
+Using the form located at `https://<ip_address>/auth/spa/` retrieve a valid access token by clicking the Authorize button which will return an authorization code, then clicking the Get Tokens button which will retrieve a limited use access token.
+
+
+![Page](./images/tutorial_click_9a.png)
+![Auth](./images/tutorial_click_9b.png)
+![Token](./images/tutorial_click_9c.png)
+
+
+### 4. Using an api service swagger page execute api calls.
+
+OSDU Services have swagger pages that are available.  Using the retrieved bearer token authenticate and execute API calls as desired.
+
+![Authenticate](./images/tutorial_click_10a.png)
+![Execute](./images/tutorial_click_10b.png)

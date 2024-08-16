@@ -98,7 +98,7 @@ function Update-AksExtensions {
 function Set-Login {
     try {
         # Check if the user is logged in
-        $user = az ad signed-in-user show --query mail -o tsv
+        $user = az ad signed-in-user show --query userPrincipalName -o tsv
         $accountInfo = az account show -o json 2>$null | ConvertFrom-Json
         if ($user) {
             Write-Host "`n=================================================================="
@@ -209,7 +209,7 @@ function Set-EnvironmentVariables {
 
         if (-not $env:EMAIL_ADDRESS) {
             Write-Host "  Retrieving User Email Address..."
-            $emailAddress = az ad signed-in-user show --query mail -o tsv
+            $emailAddress = az ad signed-in-user show --query userPrincipalName -o tsv
             azd env set EMAIL_ADDRESS $emailAddress
         }
     } catch {

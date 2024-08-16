@@ -130,7 +130,7 @@ param networkPlugin string = 'azure'
   'Overlay'
 ])
 @description('The network plugin type')
-param networkPluginMode string = ''
+param networkPluginMode string = 'Overlay'
 
 @allowed([
   ''
@@ -139,7 +139,7 @@ param networkPluginMode string = ''
   'cilium'
 ])
 @description('The network policy to use.')
-param networkPolicy string = ''
+param networkPolicy string = 'cilium'
 
 @allowed([
   ''
@@ -570,6 +570,7 @@ var aksProperties = union({
     #disable-next-line BCP036 //Disabling validation of this parameter to cope with empty string to indicate no Network Policy required.
     networkPolicy: networkPolicy
     networkPluginMode: networkPlugin=='azure' ? networkPluginMode : ''
+    networkDataplane: networkPolicy=='cilium' ? networkPolicy : ''
     podCidr: networkPlugin=='kubenet' || networkPluginMode=='Overlay' || cniDynamicIpAllocation ? podCidr : null
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP

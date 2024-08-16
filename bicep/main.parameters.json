@@ -49,7 +49,9 @@
     },
     "clusterSoftware": {
       "value": {
-        "enable": true,
+        "enable": "${ENABLE_SOFTWARE}",
+        "osduCore": "${ENABLE_OSDU_CORE}",
+        "osduReference": "${ENABLE_OSDU_REFERENCE}",
         "repository": "${SOFTWARE_REPOSITORY}",
         "branch": "${SOFTWARE_BRANCH}",
         "tag": "${SOFTWARE_TAG}"

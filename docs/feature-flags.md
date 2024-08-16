@@ -3,6 +3,21 @@
 Customize your resources by enabling these optional features based on your specific requirements:
 
 
+### Feature: Software Options
+
+__Purpose:__ Specify software load options.
+
+__Details:__ There are situations in which partial selection of software to install is helpful. Software loads can be disabled as well as catagories of OSDU services can be selectively enabled/disabled from loading.
+
+__How To Enable:__
+
+```bash
+azd env set ENABLE_SOFTWARE true/false
+azd env set ENABLE_OSDU_CORE true/false
+azd env set ENABLE_OSDU_REFERENCE true/false
+```
+
+
 ### Feature: Pod Subnet
 
 __Purpose:__ Enhances network configuration for Kubernetes Pods.

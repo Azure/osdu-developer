@@ -70,9 +70,11 @@ param vnetConfiguration object = {
   }
 }
 
-@description('(Optional) Software Load Override - {enable} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
+@description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
+  osduCore: true
+  osduReference: true
   repository: ''
   branch: ''
   tag: ''
@@ -394,7 +396,9 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    enableSoftwareLoad: clusterSoftware.enable
+    enableSoftwareLoad: clusterSoftware.enable == '' ? true : clusterSoftware.enable
+    enableOsduCore: clusterSoftware.osduCore == '' ? true : clusterSoftware.osduCore
+    enableOsdureference: clusterSoftware.osduReference == '' ? true : clusterSoftware.osduReference
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

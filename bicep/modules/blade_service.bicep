@@ -73,7 +73,16 @@ param softwareTag string = ''
   'Both'
 ])
 @description('The Cluster Ingress Mode')
-param clusterIngress string
+param clusterIngress string = 'External'
+
+@description('Feature Flag to Load Software.')
+param enableSoftwareLoad bool
+
+@description('Feature Flag to Load OSDU Core.')
+param enableOsduCore bool = true
+
+@description('Feature Flag to Load OSDU Reference.')
+param enableOsdureference bool = true
 
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array
@@ -106,8 +115,7 @@ param partitionStorageNames string[]
 @description('The name of the partition service bus namespaces')
 param partitionServiceBusNames string[]
 
-@description('Feature Flag to Load Software.')
-param enableSoftwareLoad bool
+
 
 @description('Feature Flag to Enable Managed Observability.')
 param enableMonitoring bool = false
@@ -600,6 +608,21 @@ var common_helm_values = [
   }
 ]
 
+var osdu_applications = [
+  {
+    name: 'OSDU_CORE_ENABLED'
+    value: string(enableOsduCore)
+    contentType: 'text/plain'
+    label: 'configmap-osdu-applications'
+  }
+  {
+    name: 'OSDU_REFERENCE_ENABLED'
+    value: string(enableOsdureference)
+    contentType: 'text/plain'
+    label: 'configmap-osdu-applications'
+  }
+]
+
 var settings = [
   {
     name: 'Settings:Message'
@@ -679,7 +702,7 @@ module app_config './app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, common_helm_values))
+    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, osdu_applications, common_helm_values))
   }
   dependsOn: [
     appRoleAssignments
@@ -708,6 +731,11 @@ values.yaml: |
     keyvaultName: {4}
     appId: {5}
     appOid: {6}
+  ingress:
+    internalGateway:
+      enabled: {7}
+    externalGateway:
+      enabled: {8}
   '''
 }
 
@@ -733,7 +761,9 @@ module appConfigMap './aks-config-map/main.bicep' = {
              kvUri,
              kvName,
              applicationClientId,
-             applicationClientPrincipalOid)
+             applicationClientPrincipalOid,
+             clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
+             clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false')
     ]
   }
 }

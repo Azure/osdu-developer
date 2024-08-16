@@ -1,0 +1,19 @@
+nameOverride: ""
+fullnameOverride: ""
+
+ingress:
+  internalGateway:
+    enabled: true
+    requireSSL: true
+    hosts:
+      - "*"
+    tls:
+      mode: SIMPLE
+      credentialName: wild-card-tls
+  externalGateway:
+    enabled: true
+    hosts:
+      - "*"
+    tls:
+      mode: SIMPLE
+      credentialName: wild-card-tls

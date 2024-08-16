@@ -251,6 +251,10 @@ if ($IsWindows) {
     if ($os -eq "Darwin" -or $os -eq "Ubuntu") {
         open $url
     } else {
-        powershell.exe /c start "$url"
+        if (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+            powershell.exe /c start "$url"
+        } else {
+            Write-Host "Please manually open the URL: $url"
+        }
     }
 }

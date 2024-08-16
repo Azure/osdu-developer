@@ -130,7 +130,7 @@ param networkPlugin string = 'azure'
   'Overlay'
 ])
 @description('The network plugin type')
-param networkPluginMode string = ''
+param networkPluginMode string = 'Overlay'
 
 @allowed([
   ''
@@ -139,7 +139,7 @@ param networkPluginMode string = ''
   'cilium'
 ])
 @description('The network policy to use.')
-param networkPolicy string = ''
+param networkPolicy string = 'cilium'
 
 @allowed([
   ''
@@ -570,6 +570,7 @@ var aksProperties = union({
     #disable-next-line BCP036 //Disabling validation of this parameter to cope with empty string to indicate no Network Policy required.
     networkPolicy: networkPolicy
     networkPluginMode: networkPlugin=='azure' ? networkPluginMode : ''
+    networkDataplane: networkPolicy=='cilium' ? networkPolicy : ''
     podCidr: networkPlugin=='kubenet' || networkPluginMode=='Overlay' || cniDynamicIpAllocation ? podCidr : null
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
@@ -645,7 +646,7 @@ var ingressModes = {
 | _| `._____||_______|_______/     \______/   \______/  | _| `._____| \______||_______|_______/    
 */
 
-resource aks 'Microsoft.ContainerService/managedClusters@2023-11-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2024-02-01' = {
   name: length(name) > 63 ? substring(name, 0, 63) : name
   location: location
   tags: tags
@@ -656,6 +657,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-11-01' = {
       '${identityId}': {}
     }
   }
+
 
   properties: aksProperties
 

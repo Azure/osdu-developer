@@ -25,6 +25,14 @@ param applicationClientPrincipalOid string
 @description('The size of the solution')
 param tier string = 'CostOptimised'
 
+@allowed([
+  'External'
+  'Internal'
+  'Both'
+])
+@description('Specify the Ingress type for the cluster.')
+param ingressType string = 'External'
+
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
 
@@ -62,9 +70,11 @@ param vnetConfiguration object = {
   }
 }
 
-@description('(Optional) Software Load Override - {enable} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
+@description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
+  osduCore: true
+  osduReference: true
   repository: ''
   branch: ''
   tag: ''
@@ -386,7 +396,9 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    enableSoftwareLoad: clusterSoftware.enable
+    enableSoftwareLoad: clusterSoftware.enable == '' ? true : clusterSoftware.enable
+    enableOsduCore: clusterSoftware.osduCore == '' ? true : clusterSoftware.osduCore
+    enableOsdureference: clusterSoftware.osduReference == '' ? true : clusterSoftware.osduReference
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId
@@ -405,7 +417,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterSize: tier
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: clusterNetwork.ingress == '' ? 'Both' : clusterNetwork.ingress 
+    clusterIngress: ingressType 
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin

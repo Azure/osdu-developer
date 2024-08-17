@@ -709,7 +709,7 @@ resource aks_policies 'Microsoft.Authorization/policyAssignments@2023-04-01' = i
       }
     }
     metadata: {
-      assignedBy: 'Aks Construction'
+      assignedBy: 'OSDU Developer'
     }
     displayName: 'Kubernetes cluster pod security ${azurePolicyInitiative} standards for Linux-based workloads'
     description: 'As per: https://github.com/Azure/azure-policy/blob/master/built-in-policies/policySetDefinitions/Kubernetes/'

@@ -1,6 +1,6 @@
 # OSDU Developer Sandbox
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![Test](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)
 
 The developer sandbox solution enables software development for the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. 
 > For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).

@@ -22,7 +22,7 @@ on:
 
   schedule:
     # At 11:00pm, every Wednesday week
-    - cron: "0 23 * * 3"
+    - cron: "0 23 * * *"
 
   workflow_dispatch:
     inputs:

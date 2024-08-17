@@ -52,7 +52,7 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 | Schema Loading         | Automatically loads Well Known Schemas for efficient data management and validation.                               |
 | Software Locations     | Utilizes Flux to direct the software loading process to private GitHub repositories and branches.                  |
 | Ingress                | Supports both public-facing and private network access points.                                                     |
-| Network Flexability    | Supports VNet injection and integration with existing networks, to easily allow for S2S Vpn access.                |
+| Network flexibility    | Supports VNet injection and integration with existing networks, to easily allow for S2S Vpn access.                |
 | Mesh Observability     | Provides observability for istio using Kiali dashboards to investigate latency, traffic, errors, and saturation.   |
 | Elastic Tools          | Supports connectivity to Elastic Kibana for advanced devtools, search capabilities, and user management.           |
 | Application Logging    | Integrated with Application Insights for detailed service-level logging and metrics monitoring.                    |

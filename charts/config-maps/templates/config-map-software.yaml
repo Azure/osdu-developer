@@ -16,13 +16,13 @@ spec:
     workloadIdentity:
       managedIdentityClientId: {{ .Values.azure.clientId }}
   configuration:
-     selectors:
-        - keyFilter: "*"
-          labelFilter: "configmap-osdu-applications"
-      refresh:
-        enabled: true
-        interval: 1m
-        monitoring:
-          keyValues:
-            - key: refesh
-              label: configmap
+    selectors:
+      - keyFilter: "*"
+        labelFilter: "configmap-osdu-applications"
+    refresh:
+      enabled: true
+      interval: 1m
+      monitoring:
+        keyValues:
+          - key: refesh
+            label: configmap

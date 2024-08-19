@@ -526,8 +526,8 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsOduInitNamespace
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
-    federatedCredsCacheNamespace
     federatedCredsElasticNamespace
+    federatedCredsOsduSystem
     federatedCredsOsduAuth
     federatedCredsOsduReference
   ]

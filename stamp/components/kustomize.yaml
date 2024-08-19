@@ -75,7 +75,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: component-configuration
+  name: component-osdu-config
   namespace: flux-system
 spec:
   interval: 1h
@@ -84,7 +84,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/configuration
+  path: ./software/components/osdu-config
   prune: true
   wait: true
 
@@ -100,7 +100,7 @@ metadata:
 spec:
   dependsOn:
     - name: component-certs-ca-issuer
-    - name: component-configuration
+    - name: component-osdu-config
   interval: 1h
   retryInterval: 1m
   timeout: 5m

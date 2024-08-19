@@ -100,7 +100,7 @@ metadata:
 spec:
   dependsOn:
     - name: component-certs-ca-issuer
-    - name: component-configmap
+    - name: component-configuration
   interval: 1h
   retryInterval: 1m
   timeout: 5m

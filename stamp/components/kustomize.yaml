@@ -107,22 +107,35 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/middleware-components
+  path: ./software/components/osdu-system
   prune: true
   wait: true
   # healthChecks:
   #   - kind: Deployment
-  #     name: reloader-reloader-reloader
+  #     name: stakater-reloader
   #     namespace: reloader
-  #   - kind: StatefulSet
-  #     name: redis-master
-  #     namespace: redis-cluster
-  #   - kind: StatefulSet
-  #     name: redis-replicas
-  #     namespace: redis-cluster
   #   - kind: StatefulSet
   #     name: elastic-system
   #     namespace: elastic-operator
+  #   - kind: Deployment
+  #     name: postgresql-operator-cloudnative-pg
+  #     namespace: cnpg-system
+  #   - kind: Deployment
+  #     name: istiod
+  #     namespace: istio-system
+  #   - kind: Deployment
+  #     name: istio-ingress-internal
+  #     namespace: istio-system
+  #   - kind: Deployment
+  #     name: istio-ingress-external
+  #     namespace: istio-system
+    # - kind: StatefulSet
+    #   name: redis-master
+    #   namespace: redis-cluster
+    # - kind: StatefulSet
+    #   name: redis-replicas
+    #   namespace: redis-cluster
+    
 
 
 

@@ -1,12 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: elastic-system
-  labels:
-    istio-injection: disabled
-    toolkit.fluxcd.io/tenant: component
----
 apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: GitRepository
 metadata:
@@ -28,7 +20,7 @@ metadata:
   name: elastic-operator
   namespace: flux-system
 spec:
-  targetNamespace: elastic-system
+  targetNamespace: osdu-system
   releaseName: elastic-operator
   chart:
     spec:

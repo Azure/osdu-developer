@@ -1,0 +1,167 @@
+---
+# Create Certificate for Redis
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: redis-tls
+  namespace: osdu-system
+spec:
+  secretName: redis-tls-secret
+  dnsNames:
+  - redis-master.osdu-system.svc.cluster.local
+  issuerRef:
+    name: root-ca-cluster-issuer
+    kind: ClusterIssuer
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: redis
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: azure-keyvault-cache
+  namespace: default            # This has to go in the default namespace to retrieve the configmap
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: osdu-system
+  chart:
+    spec:
+      chart: ./charts/keyvault-secrets
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    secrets:
+      - secretName: keyvault-secrets 
+        data:
+          - key: redis-password
+            vaultSecret: redis-password
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: redis
+  namespace: flux-system
+spec:
+  targetNamespace: osdu-system
+  chart:
+    spec:
+      chart: redis
+      sourceRef:
+        kind: HelmRepository
+        name: redis
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  interval: 10m0s
+  releaseName: redis
+  values:
+    cluster:
+      enabled: true
+      slaveCount: 3
+    auth:
+      enabled: true
+      existingSecret: keyvault-secrets  # Reference the Kubernetes secret
+      existingSecretPasswordKey: redis-password  # Key within the secret that contains the password
+    tls:
+      enabled: true
+      authClients: false
+      existingSecret: "redis-tls-secret"
+      certFilename: "tls.crt"
+      certKeyFilename: "tls.key"
+      certCAFilename: "ca.crt"
+    master:
+      containerPorts:
+        redis: 6380  # Change container port to 6380
+      service:
+        type: ClusterIP
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 5
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - eastus2-1
+                      - eastus2-2
+                      - eastus2-3
+      persistence:
+        enabled: true
+        size: 8Gi
+        accessModes:
+        - ReadWriteOnce
+      replicaCount: 1
+    replica:
+      containerPorts:
+        redis: 6380  # Change container port to 6380
+      persistence:
+        enabled: true
+        size: 8Gi
+        accessModes:
+        - ReadWriteOnce
+      replicaCount: 1
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          value: "cluster"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - poolz1
+                      - poolz2
+                      - poolz3
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - "$(REGION)-1"
+                      - "$(REGION)-2"
+                      - "$(REGION)-3"

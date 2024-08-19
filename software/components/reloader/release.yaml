@@ -11,7 +11,7 @@ spec:
       chart: reloader
       sourceRef:
         kind: HelmRepository
-        name: stakater-charts
+        name: stakater
         namespace: reloader
   interval: 5m0s
   install:

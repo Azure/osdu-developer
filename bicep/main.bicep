@@ -33,6 +33,16 @@ param tier string = 'CostOptimised'
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
 
+@allowed([
+  '0.24'
+  '0.25'
+  '0.26'
+  '0.27'
+  'master'
+])
+@description('Specify the OSDU version.')
+param osduVersion string = '0.27'
+
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
 

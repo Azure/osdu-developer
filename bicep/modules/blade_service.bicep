@@ -84,6 +84,16 @@ param enableOsduCore bool = true
 @description('Feature Flag to Load OSDU Reference.')
 param enableOsdureference bool = true
 
+@allowed([
+  '0.24'
+  '0.25'
+  '0.26'
+  '0.27'
+  'master'
+])
+@description('Specify the OSDU version.')
+param osduVersion string = '0.27'
+
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array
 
@@ -618,6 +628,12 @@ var osdu_applications = [
   {
     name: 'OSDU_REFERENCE_ENABLED'
     value: string(enableOsdureference)
+    contentType: 'text/plain'
+    label: 'configmap-osdu-applications'
+  }
+  {
+    name: 'OSDU_VERSION'
+    value: string(osduVersion)
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }

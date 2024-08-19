@@ -132,6 +132,8 @@ param enableMonitoring bool = false
 
 param appSettings appConfigItem[]
 
+param dateStamp string = utcNow()
+
 /////////////////////////////////
 // Configuration 
 /////////////////////////////////
@@ -640,6 +642,12 @@ var osdu_applications = [
 ]
 
 var settings = [
+  {
+    name: 'refresh'
+    value: dateStamp
+    contentType: 'text/plain'
+    label: 'configmap'
+  }
   {
     name: 'Settings:Message'
     value: 'Hello from App Configuration'

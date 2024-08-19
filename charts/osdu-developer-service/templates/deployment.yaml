@@ -8,7 +8,7 @@
 {{- $subset := .Values.subset}}
 {{- $podAnnotations := .Values.podAnnotations}}
 {{- $configMap := .Values.configMap -}}
-{{- $version := .Chart.AppVersion -}}
+{{- $version := .Values.OSDU_VERSION | default .Chart.AppVersion -}}
 {{- $selectorLabels := include "osdu-developer-service.selectorLabels" . | nindent 8 }}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
@@ -89,7 +89,7 @@ spec:
       serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
-          image: {{ .repository }}{{ .branch }}:{{ .tag | default $version }}
+          image: {{ .repository }}{{ .version }}:{{ .tag | default latest }}
           imagePullPolicy: {{ $pullPolicy | default "Always" }}
           ports:
             - name: http

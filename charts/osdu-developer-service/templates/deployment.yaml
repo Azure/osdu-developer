@@ -89,7 +89,7 @@ spec:
       serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
-          image: {{ .repository }}{{ .version }}:{{ .tag | default latest }}
+          image: {{ .repository }}{{ .version }}:{{ .tag }}
           imagePullPolicy: {{ $pullPolicy | default "Always" }}
           ports:
             - name: http

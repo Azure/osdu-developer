@@ -48,7 +48,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-base
-  namespace: flux-system
+  namespace: istio-system
 spec:
   targetNamespace: istio-system
   releaseName: istio-base
@@ -70,7 +70,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: cert-manager-istio-csr
-  namespace: flux-system
+  namespace: istio-system
 spec:
   targetNamespace: cert-manager
   releaseName: cert-manager-isito-csr
@@ -108,7 +108,6 @@ spec:
       namespace: istio-system
     - name: cert-manager-istio-csr
       namespace: istio-system
-  - targetNamespace: istio-system
   chart:
     spec:
       chart: istiod

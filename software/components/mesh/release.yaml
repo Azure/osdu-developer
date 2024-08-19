@@ -28,7 +28,7 @@ metadata:
   namespace: istio-system
 spec:
   targetNamespace: cert-manager
-  releaseName: cert-manager-isito-csr
+  releaseName: cert-manager-istio-csr
   dependsOn:
     - name: istio-base
       namespace: istio-system

@@ -18,6 +18,20 @@ spec:
   # type: oci
   # url: oci://registry-1.docker.io/bitnamicharts/redis
 ---
+# Create Certificate for Redis
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: redis-tls
+  namespace: redis-cluster
+spec:
+  secretName: redis-tls-secret
+  dnsNames:
+  - redis-master.redis-cluster.svc.cluster.local
+  issuerRef:
+    name: root-ca-cluster-issuer
+    kind: ClusterIssuer
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:

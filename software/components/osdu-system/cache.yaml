@@ -60,6 +60,9 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: osdu-system
+  dependsOn:
+    - name: azure-keyvault-cache
+      namespace: default
   chart:
     spec:
       chart: redis

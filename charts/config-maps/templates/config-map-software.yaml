@@ -1,6 +1,6 @@
 {{- $namespace := .Release.Namespace }}
 apiVersion: azconfig.io/v1
-kind: 
+kind: AzureAppConfigurationProvider
 metadata:
   name: {{ include "config-maps.fullname" . }}-software
   namespace: {{ $namespace }}

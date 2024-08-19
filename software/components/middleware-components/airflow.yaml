@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: airflow
+  labels:
+    istio-injection: disabled
+    toolkit.fluxcd.io/tenant: component
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: airflow
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://airflow.apache.org

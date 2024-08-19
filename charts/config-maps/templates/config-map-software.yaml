@@ -1,6 +1,6 @@
 {{- $namespace := .Release.Namespace }}
 apiVersion: azconfig.io/v1
-kind: AzureAppConfigurationProvider
+kind: 
 metadata:
   name: {{ include "config-maps.fullname" . }}-software
   namespace: {{ $namespace }}
@@ -19,3 +19,10 @@ spec:
      selectors:
         - keyFilter: "*"
           labelFilter: "configmap-osdu-applications"
+      refresh:
+        enabled: true
+        interval: 1m
+        monitoring:
+          keyValues:
+            - key: refesh
+              label: configmap

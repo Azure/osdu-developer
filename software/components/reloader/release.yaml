@@ -5,16 +5,6 @@ metadata:
   name: reloader
   namespace: reloader
 spec:
-  interval: 5m
-  chart:
-    spec:
-      chart: reloader
-      version: 1.0.69
-      sourceRef:
-        kind: HelmRepository
-        name: stakater-charts
-        namespace: reloader
-spec:
   targetNamespace: reloader
   chart:
     spec:

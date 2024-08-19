@@ -110,19 +110,19 @@ spec:
   path: ./software/components/middleware-components
   prune: true
   wait: true
-  healthChecks:
-    - kind: Deployment
-      name: reloader-reloader-reloader
-      namespace: reloader
-    - kind: StatefulSet
-      name: redis-master
-      namespace: redis-cluster
-    - kind: StatefulSet
-      name: redis-replicas
-      namespace: redis-cluster
-    - kind: StatefulSet
-      name: elastic-system
-      namespace: elastic-operator
+  # healthChecks:
+  #   - kind: Deployment
+  #     name: reloader-reloader-reloader
+  #     namespace: reloader
+  #   - kind: StatefulSet
+  #     name: redis-master
+  #     namespace: redis-cluster
+  #   - kind: StatefulSet
+  #     name: redis-replicas
+  #     namespace: redis-cluster
+  #   - kind: StatefulSet
+  #     name: elastic-system
+  #     namespace: elastic-operator
 
 
 

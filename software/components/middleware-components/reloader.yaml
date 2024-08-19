@@ -23,6 +23,7 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: reloader
+  releaseName: stakater-reloader
   chart:
     spec:
       chart: reloader

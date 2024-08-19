@@ -73,7 +73,7 @@ metadata:
   namespace: istio-system
 spec:
   targetNamespace: cert-manager
-  releaseName: cert-manager-isito-csr
+  releaseName: istio-cert-manager-csr
   dependsOn:
     - name: istio-base
       namespace: istio-system
@@ -103,6 +103,8 @@ metadata:
   name: istiod
   namespace: istio-system
 spec:
+  targetNamespace: istio-system
+  releaseName: istiod
   dependsOn:
     - name: istio-base
       namespace: istio-system
@@ -142,6 +144,8 @@ metadata:
   name: istio-ingress-internal
   namespace: istio-system
 spec:
+  targetNamespace: istio-system
+  releaseName: istio-ingress-internal
   dependsOn:
     - name: istio-base
       namespace: istio-system
@@ -183,6 +187,8 @@ metadata:
   name: istio-ingress-external
   namespace: istio-system
 spec:
+  targetNamespace: istio-system
+  releaseName: istio-ingress-external
   dependsOn:
     - name: istio-base
       namespace: istio-system

@@ -20,7 +20,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: reloader
-  namespace: reloader
+  namespace: flux-system
 spec:
   targetNamespace: reloader
   chart:

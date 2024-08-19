@@ -48,7 +48,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-base
-  namespace: istio-system
+  namespace: flux-system
 spec:
   targetNamespace: istio-system
   releaseName: istio-base
@@ -70,7 +70,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: cert-manager-istio-csr
-  namespace: istio-system
+  namespace: flux-system
 spec:
   targetNamespace: cert-manager
   releaseName: cert-manager-isito-csr
@@ -101,13 +101,14 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istiod
-  namespace: istio-system
+  namespace: flux-system
 spec:
   dependsOn:
     - name: istio-base
       namespace: istio-system
     - name: cert-manager-istio-csr
       namespace: istio-system
+  - targetNamespace: istio-system
   chart:
     spec:
       chart: istiod
@@ -140,13 +141,14 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-ingress-internal
-  namespace: istio-system
+  namespace: flux-system
 spec:
   dependsOn:
     - name: istio-base
       namespace: istio-system
     - name: istiod
       namespace: istio-system
+  - targetNamespace: istio-system
   chart:
     spec:
       chart: gateway
@@ -181,13 +183,14 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-ingress-external
-  namespace: istio-system
+  namespace: flux-system
 spec:
   dependsOn:
     - name: istio-base
       namespace: istio-system
     - name: istiod
       namespace: istio-system
+  - targetNamespace: istio-system
   chart:
     spec:
       chart: gateway

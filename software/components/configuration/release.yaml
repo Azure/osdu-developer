@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: configuration
-  namespace: default   ## Have to install here so we can get the configmap values
+  namespace: default   ## <--- Have to install here so we can get the configmap values
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:

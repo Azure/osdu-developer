@@ -26,7 +26,7 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software
-      valuesKey: values.yaml
+      valuesKey: value.yaml
   values:
     nameOverride: partition
     subset: m24

@@ -101,7 +101,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istiod
-  namespace: flux-system
+  namespace: istio-system
 spec:
   dependsOn:
     - name: istio-base
@@ -141,14 +141,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-ingress-internal
-  namespace: flux-system
+  namespace: istio-system
 spec:
   dependsOn:
     - name: istio-base
       namespace: istio-system
     - name: istiod
       namespace: istio-system
-  - targetNamespace: istio-system
   chart:
     spec:
       chart: gateway
@@ -183,14 +182,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: istio-ingress-external
-  namespace: flux-system
+  namespace: istio-system
 spec:
   dependsOn:
     - name: istio-base
       namespace: istio-system
     - name: istiod
       namespace: istio-system
-  - targetNamespace: istio-system
   chart:
     spec:
       chart: gateway

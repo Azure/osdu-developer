@@ -68,7 +68,25 @@ spec:
   prune: true
   wait: true
 
-
+######################
+## Config Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-configmap
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/configmap
+  prune: true
+  wait: true
 
 ######################
 ## Middleware Components
@@ -82,6 +100,7 @@ metadata:
 spec:
   dependsOn:
     - name: component-certs-ca-issuer
+    - name: component-configmap
   interval: 1h
   retryInterval: 1m
   timeout: 5m
@@ -104,6 +123,106 @@ spec:
     - kind: StatefulSet
       name: elastic-system
       namespace: elastic-operator
+
+
+
+
+# ######################
+# ## Elastic Component
+# ######################
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: component-elastic-storage
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: component-middleware
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/elastic-storage
+#   prune: true
+
+
+# ######################
+# ## Mesh Component
+# ######################
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: component-mesh-ingress
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: component-middleware
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/mesh-ingress
+#   prune: true
+#   wait: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: istio-ingress-internal
+#       namespace: istio-system
+#     - kind: Deployment
+#       name: istio-ingress-external
+#       namespace: istio-system
+
+
+# ######################
+# ## Observability Component
+# ######################
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: component-observability
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: component-mesh-ingress
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/observability
+#   prune: true
+#   wait: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: prometheus
+#       namespace: istio-system
+#     - kind: Deployment
+#       name: grafana
+#       namespace: istio-system
+#     - kind: Deployment
+#       name: jaeger
+#       namespace: istio-system
+#     - kind: Service
+#       name: loki
+#       namespace: istio-system
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -228,23 +347,23 @@ spec:
 #     - kind: StatefulSet
 #       name: elastic-system
 #       namespace: elastic-operator
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: component-elastic-storage
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: component-middleware
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/elastic-storage
-  prune: true
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: component-elastic-storage
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: component-middleware
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/elastic-storage
+#   prune: true
 
 
 ######################
@@ -272,64 +391,30 @@ spec:
 #     - kind: Deployment
 #       name: istiod
 #       namespace: istio-system
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: component-mesh-ingress
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: component-middleware
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/mesh-ingress
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: Deployment
-      name: istio-ingress-internal
-      namespace: istio-system
-    - kind: Deployment
-      name: istio-ingress-external
-      namespace: istio-system
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+# kind: Kustomization
+# metadata:
+#   name: component-mesh-ingress
+#   namespace: flux-system
+# spec:
+#   dependsOn:
+#     - name: component-middleware
+#   interval: 1h
+#   retryInterval: 1m
+#   timeout: 5m
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#   path: ./software/components/mesh-ingress
+#   prune: true
+#   wait: true
+#   healthChecks:
+#     - kind: Deployment
+#       name: istio-ingress-internal
+#       namespace: istio-system
+#     - kind: Deployment
+#       name: istio-ingress-external
+#       namespace: istio-system
 
 
-######################
-## Observability Component
-######################
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: component-observability
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: component-mesh-ingress
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./software/components/observability
-  prune: true
-  wait: true
-  healthChecks:
-    - kind: Deployment
-      name: prometheus
-      namespace: istio-system
-    - kind: Deployment
-      name: grafana
-      namespace: istio-system
-    - kind: Deployment
-      name: jaeger
-      namespace: istio-system
-    - kind: Service
-      name: loki
-      namespace: istio-system

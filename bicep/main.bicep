@@ -34,14 +34,14 @@ param tier string = 'CostOptimised'
 param ingressType string = 'External'
 
 @allowed([
-  'release-0.24'
-  'release-0.25'
-  'release-0.26'
-  'release-0.27'
+  'release-0-24'
+  'release-0-25'
+  'release-0-26'
+  'release-0-27'
   'master'
 ])
 @description('Specify the OSDU version.')
-param osduVersion string = 'release-0.27'
+param osduVersion string = 'release-0-27'
 
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false

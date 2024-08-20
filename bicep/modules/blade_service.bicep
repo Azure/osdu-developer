@@ -85,14 +85,14 @@ param enableOsduCore bool = true
 param enableOsdureference bool = true
 
 @allowed([
-  'release-0.24'
-  'release-0.25'
-  'release-0.26'
-  'release-0.27'
+  'release-0-24'
+  'release-0-25'
+  'release-0-26'
+  'release-0-27'
   'master'
 ])
 @description('Specify the OSDU version.')
-param osduVersion string = 'release-0.27'
+param osduVersion string = 'release-0-27'
 
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array

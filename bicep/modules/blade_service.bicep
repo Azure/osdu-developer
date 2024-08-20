@@ -623,13 +623,13 @@ var common_helm_values = [
 var osdu_applications = [
   {
     name: 'osduCoreEnabled'
-    value: string(enableOsduCore)
+    value: enableOsduCore
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }
   {
     name: 'osduReferenceEnabled'
-    value: string(enableOsdureference)
+    value: enableOsdureference
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }

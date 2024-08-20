@@ -41,7 +41,7 @@ param ingressType string = 'External'
   'master'
 ])
 @description('Specify the OSDU version.')
-param osduVersion string = 'release-0-27'
+param osduVersion string = 'release-0-26'
 
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false

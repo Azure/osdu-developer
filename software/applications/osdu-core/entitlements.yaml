@@ -3,13 +3,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: entitlements
-  namespace: flux-system
+  namespace: osdu-system
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
   - name: partition
-    namespace: flux-system
+    namespace: default
   targetNamespace: osdu-core
   chart:
     spec:
@@ -23,6 +23,10 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: entitlements
     subset: m24

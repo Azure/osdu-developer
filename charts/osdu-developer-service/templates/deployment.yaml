@@ -1,5 +1,5 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace }}
-{{- $enabled := .Values.enabled | default true -}}
 {{- $pullPolicy := .Values.pullPolicy -}}
 {{- $servicePort := .Values.service.port -}}
 {{- $replicaCount := .Values.replicaCount -}}
@@ -14,7 +14,7 @@
 {{- $selectorLabels := include "osdu-developer-service.selectorLabels" . | nindent 8 }}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
-{{- if or .service .scaledObject }}
+{{- if and $enabled (or .service .scaledObject) }}
 ---
 apiVersion: apps/v1
 kind: Deployment

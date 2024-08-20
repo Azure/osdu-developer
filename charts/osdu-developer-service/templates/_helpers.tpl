@@ -61,3 +61,25 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Determine if the installation type is enabled
+*/}}
+{{- define "osdu-developer-service.isEnabled" -}}
+  {{- $installationType := .Values.installationType | default "osduCore" -}}
+  {{- if eq $installationType "osduReference" -}}
+    {{- if hasKey .Values "osduReferenceEnabled" -}}
+      {{- if .Values.osduReferenceEnabled }}1{{else}}0{{end -}}
+    {{- else -}}
+      {{- 0 -}}
+    {{- end -}}
+  {{- else if eq $installationType "osduCore" -}}
+    {{- if hasKey .Values "osduCoreEnabled" -}}
+      {{- if .Values.osduCoreEnabled }}1{{else}}0{{end -}}
+    {{- else -}}
+      {{- 0 -}}
+    {{- end -}}
+  {{- else -}}
+    {{- 0 -}}
+  {{- end -}}
+{{- end }}

@@ -1,7 +1,7 @@
-{{- $enabled := .Values.enabled | default true -}}
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
-{{- if .pvc }}
+{{- if and $enabled .pvc }}
 {{- range .pvc }}
 ---
 apiVersion: v1

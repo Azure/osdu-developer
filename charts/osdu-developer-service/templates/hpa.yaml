@@ -1,6 +1,6 @@
-{{- $enabled := .Values.enabled | default true -}}
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
-{{- if .Values.autoscale }}
+{{- if and $enabled .Values.autoscale }}
 {{- $minReplicas := .Values.autoscale.minReplicas -}}
 {{- $maxReplicas := .Values.autoscale.maxReplicas -}}
 {{- $targetCPU := .Values.autoscale.targetUtilization -}}

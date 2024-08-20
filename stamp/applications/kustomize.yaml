@@ -120,33 +120,33 @@ spec:
   path: ./software/applications/osdu-core
   prune: true
   wait: true
-  healthChecks:
-    - kind: Deployment
-      name: partition
-      namespace: osdu-core
-    - kind: Deployment
-      name: entitlements
-      namespace: osdu-core
-    - kind: Deployment
-      name: legal
-      namespace: osdu-core
-    - kind: Deployment
-      name: schema
-      namespace: osdu-core
-    - kind: Deployment
-      name: storage
-      namespace: osdu-core
-    - kind: Deployment
-      name: indexer
-    - kind: Deployment
-      name: indexer-queue
-      namespace: osdu-core
-    - kind: Deployment
-      name: file
-      namespace: osdu-core
-    - kind: Deployment
-      name: search
-      namespace: osdu-core
+  # healthChecks:
+  #   - kind: Deployment
+  #     name: partition
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: entitlements
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: legal
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: schema
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: storage
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: indexer
+  #   - kind: Deployment
+  #     name: indexer-queue
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: file
+  #     namespace: osdu-core
+  #   - kind: Deployment
+  #     name: search
+  #     namespace: osdu-core
 
 
 ######################

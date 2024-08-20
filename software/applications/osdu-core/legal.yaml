@@ -1,127 +1,128 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: legal
-#   namespace: flux-system
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#   - name: osdu-init-entitlements
-#     namespace: osdu-core
-#   targetNamespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     nameOverride: legal
-#     subset: m24
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: legal
-#       path: /api/legal/v1/
-#       hosts:
-#         - "*"
-#       gateways:
-#         - istio-system/internal-gateway
-#         - istio-system/external-gateway
-#       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-
-#       tag: latest 
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#         liveness:
-#           delay: 250
-#           seconds: 10
-#       keyvault: true
-#       auth:
-#         disable:
-#           - "*/actuator/health"
-#           - "*/health"
-#           - "*/_ah/**"
-#           - "*/configuration/ui"
-#           - "*/configuration/security"
-#           - "/api/legal/v1/info"
-#           - "/api/legal/v1/swagger*"
-#           - "/api/legal/v1/api-docs*"
-#           - "/api/legal/v1/webjars/*"          
-#       env:
-#       - name: AZURE_TENANT_ID
-#         secret:
-#           name: active-directory
-#           key: tenant-id
-#       - name: AZURE_SUBSCRIPTION_ID
-#         secret:
-#           name: active-directory
-#           key: subscription-id
-#       - name: AZURE_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AZURE_CLIENT_SECRET
-#         secret:
-#           name: active-directory
-#           key: principal-clientpassword
-#       - name: KEYVAULT_URI
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
-#       - name: AAD_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: APPINSIGHTS_KEY
-#         secret:
-#           name: azure-resources
-#           key: insights-key
-#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-#         secret:
-#           name: azure-resources
-#           key: insights-connection
-#       - name: AZURE_ISTIOAUTH_ENABLED
-#         value: "true"
-#       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-#         value: "false"
-#       - name: SERVER_SERVLET_CONTEXTPATH
-#         value: "/api/legal/v1/"
-#       - name: SERVER_PORT
-#         value: "80"
-#       - name: ACCEPT_HTTP
-#         value: "true"
-#       - name: SPRING_APPLICATION_NAME
-#         value: "legal"
-#       - name: SPRING_CONFIG_NAME
-#         value: "common,application"
-#       - name: LOG_PREFIX
-#         value: "legal"
-#       - name: AZURE_STORAGE_ENABLE_HTTPS
-#         value: "true"
-#       - name: COSMOSDB_DATABASE
-#         value: "osdu-db"
-#       - name: AZURE_STORAGE_CONTAINER_NAME
-#         value: "legal-service-azure-configuration"
-#       - name: LEGAL_SERVICE_REGION
-#         value: "us"
-#       - name: SERVICEBUS_TOPIC_NAME
-#         value: "legaltags"
-#       - name: REDIS_DATABASE
-#         value: "2"
-#       - name: PARTITION_SERVICE_ENDPOINT
-#         value: "http://partition/api/partition/v1"
-#       - name: ENTITLEMENTS_SERVICE_ENDPOINT
-#         value: "http://entitlements/api/entitlements/v2"
-#       - name: ENTITLEMENTS_SERVICE_API_KEY
-#         value: "OBSOLETE"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-legal
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+  values:
+    nameOverride: legal
+    subset: m24
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: legal
+      path: /api/legal/v1/
+      hosts:
+        - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-
+      tag: latest 
+      probe:
+        path: /actuator/health
+        port: 8081
+        liveness:
+          delay: 250
+          seconds: 10
+      keyvault: true
+      auth:
+        disable:
+          - "*/actuator/health"
+          - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/legal/v1/info"
+          - "/api/legal/v1/swagger*"
+          - "/api/legal/v1/api-docs*"
+          - "/api/legal/v1/webjars/*"          
+      env:
+      - name: AZURE_TENANT_ID
+        secret:
+          name: active-directory
+          key: tenant-id
+      - name: AZURE_SUBSCRIPTION_ID
+        secret:
+          name: active-directory
+          key: subscription-id
+      - name: AZURE_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: AAD_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+        value: "false"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/legal/v1/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: "legal"
+      - name: SPRING_CONFIG_NAME
+        value: "common,application"
+      - name: LOG_PREFIX
+        value: "legal"
+      - name: AZURE_STORAGE_ENABLE_HTTPS
+        value: "true"
+      - name: COSMOSDB_DATABASE
+        value: "osdu-db"
+      - name: AZURE_STORAGE_CONTAINER_NAME
+        value: "legal-service-azure-configuration"
+      - name: LEGAL_SERVICE_REGION
+        value: "us"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: "legaltags"
+      - name: REDIS_DATABASE
+        value: "2"
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://entitlements/api/entitlements/v2"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"

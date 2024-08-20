@@ -98,7 +98,6 @@ data:
     else
       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
       echo "Response body: $BODY"
-      sleep 100000
       exit 1
     fi
 

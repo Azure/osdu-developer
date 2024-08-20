@@ -1,4 +1,4 @@
-{{- $enabled := .Values.enabled | "true" -}}
+{{- $enabled := .Values.enabled | default true -}}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
 {{- if .pvc }}

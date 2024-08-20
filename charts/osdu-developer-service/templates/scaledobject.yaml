@@ -1,4 +1,4 @@
-{{- $enabled := .Values.enabled | "true" -}}
+{{- $enabled := .Values.enabled | default true -}}
 {{- range .Values.configuration }}
 {{- if .scaledObject }}
 ---

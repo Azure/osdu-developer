@@ -1,4 +1,4 @@
-{{- $enabled := .Values.enabled | "true" -}}
+{{- $enabled := .Values.enabled | default true -}}
 {{- $namespace := .Release.Namespace }}
 {{- $subset := .Values.subset}}
 {{- range .Values.configuration }}

@@ -1,5 +1,5 @@
 {{- $namespace := .Release.Namespace }}
-{{- $enabled := .Values.enabled | "true" -}}
+{{- $enabled := .Values.enabled | default true -}}
 {{- $subset := .Values.subset}}
 {{- range .Values.configuration }}
 {{- if and .service .hosts .gateways }}

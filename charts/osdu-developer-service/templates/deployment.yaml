@@ -1,5 +1,5 @@
 {{- $namespace := .Release.Namespace }}
-{{- $enabled := .Values.enabled | "true" -}}
+{{- $enabled := .Values.enabled | default true -}}
 {{- $pullPolicy := .Values.pullPolicy -}}
 {{- $servicePort := .Values.service.port -}}
 {{- $replicaCount := .Values.replicaCount -}}

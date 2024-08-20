@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: unit
-  namespace: flux-system
+  name: osdu-unit
+  namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
@@ -20,6 +20,10 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: unit
     subset: m24

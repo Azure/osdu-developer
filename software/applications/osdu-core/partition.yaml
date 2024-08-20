@@ -43,7 +43,6 @@ spec:
           - istio-system/internal-gateway
           - istio-system/external-gateway
         repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-
-        branch: release-0-26
         tag: latest
         probe:
           path: /actuator/health

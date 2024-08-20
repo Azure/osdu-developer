@@ -1,3 +1,4 @@
+{{- $enabled := .Values.enabled | "true" -}}
 {{- $namespace := .Release.Namespace }}
 {{- $subset := .Values.subset}}
 {{- range .Values.configuration }}

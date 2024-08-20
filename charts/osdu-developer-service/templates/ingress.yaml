@@ -1,4 +1,4 @@
-
+{{- $enabled := .Values.enabled | "true" -}}
 {{- $svcPort := .Values.service.port -}}
 {{- if .Values.ingress }}
 apiVersion: networking.k8s.io/v1beta1

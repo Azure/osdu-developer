@@ -643,10 +643,8 @@ var osdu_applications = [
 
 var settings = [
   {
-    name: 'refresh'
+    name: 'osdu_sentinel'
     value: dateStamp
-    contentType: 'text/plain'
-    label: 'configmap'
   }
   {
     name: 'Settings:Message'

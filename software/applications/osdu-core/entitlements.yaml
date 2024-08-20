@@ -29,6 +29,7 @@ spec:
       valuesKey: value.yaml
   values:
     nameOverride: entitlements
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:

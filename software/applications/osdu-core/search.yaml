@@ -26,6 +26,7 @@ spec:
       valuesKey: value.yaml
   values:
     nameOverride: search
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:

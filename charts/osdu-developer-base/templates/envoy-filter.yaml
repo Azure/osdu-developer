@@ -59,15 +59,15 @@ spec:
                         end
 
                     elseif string.find(payload["iss"], "login.microsoftonline.com") then
-                        -- Set Well Known Header with an order of preference: azd, oid
-                        if payload["azd"] then
-                            request_handle:headers():add("x-user-id", payload["azd"])
-                            request_handle:logWarn("x-user-id set from 'azd' claim: " .. payload["azd"])
+                        -- Set Well Known Header with an order of preference: azp, oid
+                        if payload["azp"] then
+                            request_handle:headers():add("x-user-id", payload["azp"])
+                            request_handle:logWarn("x-user-id set from 'azp' claim: " .. payload["azp"])
                         elseif payload["oid"] then
                             request_handle:headers():add("x-user-id", payload["oid"])
                             request_handle:logWarn("x-user-id set from 'oid' claim: " .. payload["oid"])
                         else
-                            request_handle:logError("No valid user ID claim (azd, oid) found for login.microsoftonline.com")
+                            request_handle:logError("No valid user ID claim (azp, oid) found for login.microsoftonline.com")
                         end
                     else
                         request_handle:logError("Issuer does not match known issuers")

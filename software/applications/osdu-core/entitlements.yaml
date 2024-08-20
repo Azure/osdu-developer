@@ -133,8 +133,8 @@ metadata:
     fluxcd.io/retrigger: "initial" 
 spec:
   dependsOn:
-    - name: entitlements
-      namespace: flux-system
+    - name: osdu-entitlements
+      namespace: default
   targetNamespace: osdu-core
   chart:
     spec:

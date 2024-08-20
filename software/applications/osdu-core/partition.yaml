@@ -124,8 +124,8 @@ metadata:
     fluxcd.io/retrigger: "initial"  # Update this to a new value each time
 spec:
   dependsOn:
-    - name: partition
-      namespace: flux-system
+    - name: osdu-partition
+      namespace: default
   targetNamespace: osdu-core
   chart:
     spec:

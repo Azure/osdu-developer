@@ -1,172 +1,176 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: schema
-#   namespace: flux-system
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#   - name: indexer-service
-#     namespace: flux-system
-#   - name: indexer-queue
-#     namespace: flux-system
-#   targetNamespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     nameOverride: schema
-#     subset: m24
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: schema
-#       path: /api/schema-service/v1/
-#       hosts:
-#         - "*"
-#       gateways:
-#         - istio-system/internal-gateway
-#         - istio-system/external-gateway
-#       repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-
-#       tag: latest
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#       keyvault: true
-#       auth:
-#         disable:
-#         - "*/actuator/health"
-#         - "*/health"
-#         - "*/_ah/**"
-#         - "*/configuration/ui"
-#         - "*/configuration/security"
-#         - "/api/schema-service/v1/info"
-#         - "/api/schema-service/v1/swagger*"
-#         - "/api/schema-service/v1/api-docs*"
-#         - "/api/schema-service/v2/webjars/*"
-#       env:
-#       - name: AZURE_TENANT_ID
-#         secret:
-#           name: active-directory
-#           key: tenant-id
-#       - name: AZURE_SUBSCRIPTION_ID
-#         secret:
-#           name: active-directory
-#           key: subscription-id
-#       - name: AZURE_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AZURE_CLIENT_SECRET
-#         secret:
-#           name: active-directory
-#           key: principal-clientpassword
-#       - name: KEYVAULT_URI
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
-#       - name: AAD_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: APPINSIGHTS_KEY
-#         secret:
-#           name: azure-resources
-#           key: insights-key
-#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-#         secret:
-#           name: azure-resources
-#           key: insights-connection
-#       - name: AZURE_ISTIOAUTH_ENABLED
-#         value: "true"
-#       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-#         value: "false"
-#       - name: SERVER_SERVLET_CONTEXTPATH
-#         value: "/api/schema-service/v1/"
-#       - name: SERVER_PORT
-#         value: "80"
-#       - name: ACCEPT_HTTP
-#         value: "true"
-#       - name: SPRING_APPLICATION_NAME
-#         value: "schema"
-#       - name: COSMOSDB_DATABASE
-#         value: "osdu-db"
-#       - name: LOG_PREFIX
-#         value: "schema"
-#       - name: AZURE_SYSTEM_STORAGECONTAINERNAME
-#         value: "system"
-#       - name: SERVICEBUS_TOPIC_NAME
-#         value: "schemachangedtopic"
-#       - name: EVENT_GRID_ENABLED
-#         value: 'false'
-#       - name: EVENT_GRID_TOPIC
-#         value: "schemachangedtopic"
-#       - name: SERVICE_BUS_ENABLED
-#         value: 'true'
-#       - name: PARTITION_SERVICE_ENDPOINT
-#         value: "http://partition/api/partition/v1"
-#       - name: ENTITLEMENTS_SERVICE_ENDPOINT
-#         value: "http://entitlements/api/entitlements/v2"
-#       - name: ENTITLEMENTS_SERVICE_API_KEY
-#         value: "OBSOLETE"
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: osdu-init-schema
-#   namespace: osdu-core
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#     - name: schema
-#       namespace: flux-system
-#   targetNamespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-init
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     jobs:
-#       partitionInit: false
-#       entitlementInit: false
-#       userInit: false
-#       schemaInit: true
-#       elasticInit: false
-#     partition: opendes
-#     clientSecret:
-#       name: active-directory
-#       key: principal-clientpassword
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: clientId
-#       valuesKey: client_id
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: tenantId
-#       valuesKey: tenant_id
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: serviceBus
-#       valuesKey: partition_servicebus_name_0   ## This is the first data partition service bus name
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-schema
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+  - name: osdu-indexer-service
+    namespace: default
+  - name: osdu-indexer-queue
+    namespace: default
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+  values:
+    nameOverride: schema
+    subset: m24
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: schema
+      path: /api/schema-service/v1/
+      hosts:
+        - "*"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-
+      tag: latest
+      probe:
+        path: /actuator/health
+        port: 8081
+      keyvault: true
+      auth:
+        disable:
+        - "*/actuator/health"
+        - "*/health"
+        - "*/_ah/**"
+        - "*/configuration/ui"
+        - "*/configuration/security"
+        - "/api/schema-service/v1/info"
+        - "/api/schema-service/v1/swagger*"
+        - "/api/schema-service/v1/api-docs*"
+        - "/api/schema-service/v2/webjars/*"
+      env:
+      - name: AZURE_TENANT_ID
+        secret:
+          name: active-directory
+          key: tenant-id
+      - name: AZURE_SUBSCRIPTION_ID
+        secret:
+          name: active-directory
+          key: subscription-id
+      - name: AZURE_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AZURE_CLIENT_SECRET
+        secret:
+          name: active-directory
+          key: principal-clientpassword
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: AAD_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+        value: "false"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/schema-service/v1/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: "schema"
+      - name: COSMOSDB_DATABASE
+        value: "osdu-db"
+      - name: LOG_PREFIX
+        value: "schema"
+      - name: AZURE_SYSTEM_STORAGECONTAINERNAME
+        value: "system"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: "schemachangedtopic"
+      - name: EVENT_GRID_ENABLED
+        value: 'false'
+      - name: EVENT_GRID_TOPIC
+        value: "schemachangedtopic"
+      - name: SERVICE_BUS_ENABLED
+        value: 'true'
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: "http://entitlements/api/entitlements/v2"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-init-schema
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: osdu-schema
+      namespace: default
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    jobs:
+      partitionInit: false
+      entitlementInit: false
+      userInit: false
+      schemaInit: true
+      elasticInit: false
+    partition: opendes
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: serviceBus
+      valuesKey: partition_servicebus_name_0   ## This is the first data partition service bus name

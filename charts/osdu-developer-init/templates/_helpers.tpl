@@ -50,3 +50,25 @@ Selector labels
 app.kubernetes.io/name: {{ include "osdu-developer-init.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Determine if the installation type is enabled
+*/}}
+{{- define "osdu-developer-init.isEnabled" -}}
+  {{- $installationType := .Values.installationType | default "osduCore" -}}
+  {{- if eq $installationType "osduReference" -}}
+    {{- if hasKey .Values "osduReferenceEnabled" -}}
+      {{- if eq .Values.osduReferenceEnabled "true" }}1{{else}}0{{end -}}
+    {{- else -}}
+      {{- 0 -}}
+    {{- end -}}
+  {{- else if eq $installationType "osduCore" -}}
+    {{- if hasKey .Values "osduCoreEnabled" -}}
+      {{- if eq .Values.osduCoreEnabled "true" }}1{{else}}0{{end -}}
+    {{- else -}}
+      {{- 0 -}}
+    {{- end -}}
+  {{- else -}}
+    {{- 0 -}}
+  {{- end -}}
+{{- end }}

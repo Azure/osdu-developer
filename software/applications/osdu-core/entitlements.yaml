@@ -149,6 +149,7 @@ spec:
     remediation:
       retries: 3
   values:
+    installationType: osduCore
     jobs:
       partitionInit: false
       entitlementInit: true
@@ -160,6 +161,9 @@ spec:
       name: active-directory
       key: principal-clientpassword
   valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
     - kind: ConfigMap
       name: configmap-services
       targetPath: clientId

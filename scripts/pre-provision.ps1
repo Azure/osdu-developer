@@ -217,7 +217,10 @@ function Set-EnvironmentVariables {
     }
 }
 
-function Set-LocalAuth {    
+function Set-LocalAuth { 
+    if (-not $env:AZURE_RESOURCE_GROUP) {
+        return
+    }  
     try {
         $appConfig = az appconfig list -g $env:AZURE_RESOURCE_GROUP --query '[0].name' -o tsv
 

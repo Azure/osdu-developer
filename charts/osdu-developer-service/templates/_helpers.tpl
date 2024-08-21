@@ -69,13 +69,13 @@ Determine if the installation type is enabled
   {{- $installationType := .Values.installationType | default "osduCore" -}}
   {{- if eq $installationType "osduReference" -}}
     {{- if hasKey .Values "osduReferenceEnabled" -}}
-      {{- if .Values.osduReferenceEnabled }}1{{else}}0{{end -}}
+      {{- if eq .Values.osduReferenceEnabled "true" }}1{{else}}0{{end -}}
     {{- else -}}
       {{- 0 -}}
     {{- end -}}
   {{- else if eq $installationType "osduCore" -}}
     {{- if hasKey .Values "osduCoreEnabled" -}}
-      {{- if .Values.osduCoreEnabled }}1{{else}}0{{end -}}
+      {{- if eq .Values.osduCoreEnabled "true" }}1{{else}}0{{end -}}
     {{- else -}}
       {{- 0 -}}
     {{- end -}}

@@ -33,15 +33,9 @@ param tier string = 'CostOptimised'
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
 
-@allowed([
-  'release-0-24'
-  'release-0-25'
-  'release-0-26'
-  'release-0-27'
-  'master'
-])
-@description('Specify the OSDU version.')
-param osduVersion string = 'release-0-26'
+
+@description('Specify the OSDU version. (release-0-27, master)')
+param osduVersion string = 'release-0-27'
 
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
@@ -406,10 +400,10 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    osduVersion: osduVersion
-    enableSoftwareLoad: clusterSoftware.enable == '' ? true : clusterSoftware.enable
-    enableOsduCore: clusterSoftware.osduCore == '' ? true : clusterSoftware.osduCore
-    enableOsdureference: clusterSoftware.osduReference == '' ? true : clusterSoftware.osduReference
+    osduVersion: osduVersion == '' ? 'release-0-27' : osduVersion
+    enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
+    enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
+    enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

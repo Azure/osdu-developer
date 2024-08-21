@@ -76,7 +76,7 @@ param softwareTag string = ''
 param clusterIngress string = 'External'
 
 @description('Feature Flag to Load Software.')
-param enableSoftwareLoad bool
+param enableSoftwareLoad bool = true
 
 @description('Feature Flag to Load OSDU Core.')
 param enableOsduCore bool = true
@@ -623,13 +623,13 @@ var common_helm_values = [
 var osdu_applications = [
   {
     name: 'osduCoreEnabled'
-    value: enableOsduCore
+    value: string(enableOsduCore)
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }
   {
     name: 'osduReferenceEnabled'
-    value: enableOsdureference
+    value: string(enableOsdureference)
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }

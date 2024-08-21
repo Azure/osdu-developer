@@ -1,5 +1,6 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- range .Values.configuration }}
-{{- if .scaledObject }}
+{{- if and $enabled .scaledObject }}
 ---
 apiVersion: keda.k8s.io/v1alpha1
 kind: ScaledObject

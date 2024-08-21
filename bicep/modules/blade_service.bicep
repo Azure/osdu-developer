@@ -76,13 +76,23 @@ param softwareTag string = ''
 param clusterIngress string = 'External'
 
 @description('Feature Flag to Load Software.')
-param enableSoftwareLoad bool
+param enableSoftwareLoad bool = true
 
 @description('Feature Flag to Load OSDU Core.')
 param enableOsduCore bool = true
 
 @description('Feature Flag to Load OSDU Reference.')
 param enableOsdureference bool = true
+
+@allowed([
+  'release-0-24'
+  'release-0-25'
+  'release-0-26'
+  'release-0-27'
+  'master'
+])
+@description('Specify the OSDU version.')
+param osduVersion string = 'release-0-27'
 
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array
@@ -121,6 +131,8 @@ param partitionServiceBusNames string[]
 param enableMonitoring bool = false
 
 param appSettings appConfigItem[]
+
+param dateStamp string = utcNow()
 
 /////////////////////////////////
 // Configuration 
@@ -447,16 +459,16 @@ module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
   ]
 }
 
-module federatedCredsCacheNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_redis-cluster'
+module federatedCredsOsduSystem './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-system'
   params: {
-    name: 'federated-ns_redis-cluster'
+    name: 'federated-ns_osdu-system'
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:redis-cluster:workload-identity-sa'
+    subject: 'system:serviceaccount:osdu-system:workload-identity-sa'
   }
   dependsOn: [
     federatedCredsConfigMapsNamespace
@@ -475,7 +487,7 @@ module federatedCredsElasticNamespace './federated_identity.bicep' = {
     subject: 'system:serviceaccount:elastic-search:workload-identity-sa'
   }
   dependsOn: [
-    federatedCredsCacheNamespace
+    federatedCredsOsduSystem
   ]
 }
 
@@ -526,8 +538,8 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsOduInitNamespace
     federatedCredsDevSampleNamespace
     federatedCredsConfigMapsNamespace
-    federatedCredsCacheNamespace
     federatedCredsElasticNamespace
+    federatedCredsOsduSystem
     federatedCredsOsduAuth
     federatedCredsOsduReference
   ]
@@ -610,20 +622,31 @@ var common_helm_values = [
 
 var osdu_applications = [
   {
-    name: 'OSDU_CORE_ENABLED'
-    value: string(enableOsduCore)
+    name: 'osduCoreEnabled'
+    value: toLower(string(enableOsduCore))
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }
   {
-    name: 'OSDU_REFERENCE_ENABLED'
-    value: string(enableOsdureference)
+    name: 'osduReferenceEnabled'
+    value: toLower(string(enableOsdureference))
+    contentType: 'text/plain'
+    label: 'configmap-osdu-applications'
+  }
+  {
+    name: 'osduVersion'
+    value: toLower(string(osduVersion))
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }
 ]
 
 var settings = [
+  {
+    name: 'osdu_sentinel'
+    value: dateStamp
+    label: 'common'
+  }
   {
     name: 'Settings:Message'
     value: 'Hello from App Configuration'

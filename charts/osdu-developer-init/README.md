@@ -24,5 +24,7 @@ Install the helm chart.
 ```bash
 # Create Namespace
 NAMESPACE=osdu-core
+helm template osdu-core -f custom_values.yaml .
+
 helm upgrade --install osdu-core . -n $NAMESPACE -f custom_values.yaml
 ```

@@ -1,3 +1,4 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace }}
 {{- $pullPolicy := .Values.pullPolicy -}}
 {{- $servicePort := .Values.service.port -}}
@@ -8,11 +9,12 @@
 {{- $subset := .Values.subset}}
 {{- $podAnnotations := .Values.podAnnotations}}
 {{- $configMap := .Values.configMap -}}
-{{- $version := .Chart.AppVersion -}}
+{{- $osduVersion := .Values.osduVersion -}}
+{{- $version := .Chart.AppVersion | default .Chart.AppVersion -}}
 {{- $selectorLabels := include "osdu-developer-service.selectorLabels" . | nindent 8 }}
 {{- $labels := include "osdu-developer-service.labels" . | nindent 4 }}
 {{- range .Values.configuration }}
-{{- if or .service .scaledObject }}
+{{- if and $enabled (or .service .scaledObject) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,6 +22,7 @@ metadata:
   name: {{ or .service .scaledObject }}
   labels: {{ $labels }}
     app: {{ or .service .scaledObject }}
+    appVersion: {{ $osduVersion }}
 spec:
 {{- if not .autoscale }}
   replicas: {{ .replicaCount | default $replicaCount }}
@@ -89,7 +92,7 @@ spec:
       serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
-          image: {{ .repository }}:{{ .tag | default $version }}
+          image: {{ if hasSuffix "-" .repository }}{{ .repository }}{{ $osduVersion }}:{{ .tag }}{{ else }}{{ .repository }}:{{ .tag }}{{ end }}
           imagePullPolicy: {{ $pullPolicy | default "Always" }}
           ports:
             - name: http

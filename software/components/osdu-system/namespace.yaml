@@ -2,6 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: istio-system
+  name: osdu-system
   labels:
+    istio-injection: disabled
     toolkit.fluxcd.io/tenant: component

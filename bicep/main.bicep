@@ -33,6 +33,10 @@ param tier string = 'CostOptimised'
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
 
+
+@description('Specify the OSDU version. (release-0-27, master)')
+param osduVersion string = 'release-0-27'
+
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
 
@@ -396,9 +400,10 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    enableSoftwareLoad: clusterSoftware.enable == '' ? true : clusterSoftware.enable
-    enableOsduCore: clusterSoftware.osduCore == '' ? true : clusterSoftware.osduCore
-    enableOsdureference: clusterSoftware.osduReference == '' ? true : clusterSoftware.osduReference
+    osduVersion: osduVersion == '' ? 'release-0-27' : osduVersion
+    enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
+    enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
+    enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId
@@ -445,43 +450,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
     networkBlade
     commonBlade
     partitionBlade
-  ]
-}
-
-module deploymentScript 'br/public:avm/res/resources/deployment-script:0.2.4' = {
-  // THIS IS TO ENSURE LOCAL AUTH TURNED OFF AFTER CONFIGURATION.
-  name: '${configuration.name}-app-config-local-auth'
-  params: {
-    // Required parameters
-    name: rg_unique_id
-    location: location
-    enableTelemetry: enableTelemetry
-
-    // Required parameters
-    kind: 'AzureCLI'
-    azCliVersion: '2.45.0'
-    environmentVariables: {
-      secureList: [
-        { name: 'resourceGroup', value: resourceGroup().name }
-        { name: 'appConfig', value: serviceBlade.outputs.appConfigName }
-      ]
-    }
-
-    managedIdentities: {
-      userAssignedResourcesIds: [
-        stampIdentity.outputs.resourceId
-      ]
-    }
-
-    storageAccountResourceId: commonBlade.outputs.storageAccountResourceId
-  
-    timeout: 'PT15M'
-    retentionInterval: 'PT1H'
-    scriptContent: 'az appconfig update -g $resourceGroup -n $appConfig --disable-local-auth true'
-    cleanupPreference: 'OnSuccess'
-  }
-  dependsOn: [
-    serviceBlade
   ]
 }
 

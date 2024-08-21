@@ -409,24 +409,80 @@ jobs:
           $AKS_NAME='${{ needs.Deploy.outputs.AKS_NAME }}'
           $paramFilePath="${{ env.ParamFilePath }}"
           $params = Get-Content $paramFilePath | ConvertFrom-Json
-          Write-Output "Checking for User Assigned Identity"
-          if($params.parameters.custom_vnet.value -eq $true) {
-            $aksId=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "identity.type" -o tsv
-            write-output $aksId
-            if($aksId -eq "UserAssigned"){
-              Write-Output "UAI set correctly"
-            } else {
-              Write-Error "UAI not set properly"}
+
+          # Check for Flux compliance and timing logic
+          Write-Output "Checking for Flux compliance"
+          $end = (Get-Date).AddMinutes(35)
+          try {
+              # Check if the Flux configuration exists
+              $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
+
+              if (-not $fluxExists) {
+                  Write-Host "`n=================================================================="
+                  Write-Host "Software Installation: disabled"
+                  Write-Host "=================================================================="
+                  exit 0
+              }
+
+              $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+              Write-Host "`n=================================================================="
+              Write-Host "Software Installation: $complianceState"
+              Write-Host "=================================================================="
+
+              # If compliant right away, skip the while loop; otherwise, wait initially for 5 minutes
+              if ($complianceState -eq "Compliant") {
+                  return
+              } else {
+                  Write-Host "  Software installing, retry in 10 minutes."
+                  Start-Sleep -Seconds 300
+              }
+
+              while ((Get-Date) -lt $end) {
+                  $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+                  Write-Host "  Current Software State: $complianceState"
+                  if ($complianceState -eq "Compliant") {
+                      Write-Host "  Software has been installed."
+                      break
+                  } else {
+                      Write-Host "  Software installing, retry in 2 minutes."
+                      Start-Sleep -Seconds 120
+                  }
+              }
+
+              if ((Get-Date) -ge $end) {
+                  Write-Host "  Software check timed out - 35 minutes."
+                  exit 1
+              }
+          } catch {
+              Write-Host "Error during software check: $_"
+              exit 1
           }
-          Write-Output "Checking for CSI Secrets driver"
-          if($params.parameters.keyVaultAksCSI.value -eq $true) {
-            $csiEnabled=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "addonProfiles.omsagent.enabled" -o tsv
-            write-output $csiEnabled
-            if($csiEnabled -eq "true"){
-              Write-Output "CSI Secrets driver set correctly"
-            } else {
-              Write-Error "CSI Secrets driver not set properly"}
-          }
+
+      # - name: Test Deployment
+      #   shell: pwsh
+      #   run: |
+      #     $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
+      #     $AKS_NAME='${{ needs.Deploy.outputs.AKS_NAME }}'
+      #     $paramFilePath="${{ env.ParamFilePath }}"
+      #     $params = Get-Content $paramFilePath | ConvertFrom-Json
+      #     Write-Output "Checking for User Assigned Identity"
+      #     if($params.parameters.custom_vnet.value -eq $true) {
+      #       $aksId=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "identity.type" -o tsv
+      #       write-output $aksId
+      #       if($aksId -eq "UserAssigned"){
+      #         Write-Output "UAI set correctly"
+      #       } else {
+      #         Write-Error "UAI not set properly"}
+      #     }
+      #     Write-Output "Checking for CSI Secrets driver"
+      #     if($params.parameters.keyVaultAksCSI.value -eq $true) {
+      #       $csiEnabled=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "addonProfiles.omsagent.enabled" -o tsv
+      #       write-output $csiEnabled
+      #       if($csiEnabled -eq "true"){
+      #         Write-Output "CSI Secrets driver set correctly"
+      #       } else {
+      #         Write-Error "CSI Secrets driver not set properly"}
+      #     }
 
   Cleanup:
     name: Cleanup

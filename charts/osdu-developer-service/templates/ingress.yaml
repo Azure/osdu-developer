@@ -1,6 +1,6 @@
-
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- $svcPort := .Values.service.port -}}
-{{- if .Values.ingress }}
+{{- if and $enabled .Values.ingress }}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:

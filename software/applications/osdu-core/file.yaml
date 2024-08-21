@@ -2,14 +2,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: file
-  namespace: flux-system
+  name: osdu-file
+  namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  dependsOn:
-  - name: schema
-    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:
@@ -23,8 +20,13 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: file
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:
@@ -38,7 +40,8 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/file/file-release-0-26
+      repository: community.opengroup.org:5555/osdu/platform/system/file/file-
+      branch: release-0-26
       tag: latest
       probe:
         path: /actuator/health

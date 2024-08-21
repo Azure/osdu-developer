@@ -1,5 +1,6 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
 {{- range .Values.configuration }}
-{{- if .map }}
+{{- if and $enabled .map }}
 ---
 apiVersion: v1
 kind: ConfigMap

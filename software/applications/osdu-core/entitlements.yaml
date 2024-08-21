@@ -2,14 +2,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: entitlements
-  namespace: flux-system
+  name: osdu-entitlements
+  namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-  - name: partition
-    namespace: flux-system
+  - name: osdu-partition
+    namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:
@@ -23,8 +23,13 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: entitlements
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:
@@ -38,7 +43,7 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-
       tag: latest
       probe:
         path: /actuator/health
@@ -129,8 +134,8 @@ metadata:
     fluxcd.io/retrigger: "initial" 
 spec:
   dependsOn:
-    - name: entitlements
-      namespace: flux-system
+    - name: osdu-entitlements
+      namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:
@@ -144,6 +149,7 @@ spec:
     remediation:
       retries: 3
   values:
+    installationType: osduCore
     jobs:
       partitionInit: false
       entitlementInit: true
@@ -155,6 +161,9 @@ spec:
       name: active-directory
       key: principal-clientpassword
   valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
     - kind: ConfigMap
       name: configmap-services
       targetPath: clientId

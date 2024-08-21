@@ -23,6 +23,9 @@
     "enableBlobPublicAccess": {
       "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
     },
+    "osduVersion": {
+      "value": "${SOFTWARE_VERSION}"
+    },
     "vnetConfiguration": {
       "value": {
         "group": "${VIRTUAL_NETWORK_GROUP}",

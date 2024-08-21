@@ -2,16 +2,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: search
-  namespace: flux-system
+  name: osdu-search
+  namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  dependsOn:
-  - name: storage
-    namespace: flux-system
-  - name: file
-    namespace: flux-system
   targetNamespace: osdu-core
   chart:
     spec:
@@ -25,8 +20,13 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: search
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:
@@ -40,7 +40,7 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/search-service/search-service-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/search-service/search-service-
       tag: latest
       probe:
         path: /actuator/health

@@ -503,7 +503,7 @@ var aks_addons = union({
 @description('Sets the private dns zone id if provided')
 var aksPrivateDnsZone = privateClusterDnsMethod=='privateDnsZone' ? (!empty(dnsApiPrivateZoneId) ? dnsApiPrivateZoneId : 'system') : privateClusterDnsMethod
 
-@description('Needing to seperately declare and union this because of https://github.com/Azure/AKS-Construction/issues/344')
+@description('Needing to separately declare and union this because of https://github.com/Azure/AKS-Construction/issues/344')
 var managedNATGatewayProfile =  {
   natGatewayProfile : {
     managedOutboundIPProfile: {
@@ -513,7 +513,7 @@ var managedNATGatewayProfile =  {
   }
 }
 
-@description('Needing to seperately declare and union this because of https://github.com/Azure/AKS/issues/2774')
+@description('Needing to separately declare and union this because of https://github.com/Azure/AKS/issues/2774')
 var azureDefenderSecurityProfile = {
   securityProfile : {
     defender: {

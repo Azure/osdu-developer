@@ -28,6 +28,9 @@ __Additional Information__
 - [Executing REST Scripts](docs/tutorial_rest.md)
 - [Github Actions](docs/pipelines.md)
 
+__Roadmap__
+
+Check out what is on the [roadmap](https://github.com/orgs/Azure/projects/696/views/2) and what the team is currently working on.
 
 ## OSDU Services
 

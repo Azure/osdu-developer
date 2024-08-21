@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: crs-catalog
-  namespace: flux-system
+  name: osdu-crs-catalog
+  namespace: osdu-reference
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
@@ -20,8 +20,13 @@ spec:
   install:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: crs-catalog
+    installationType: osduReference
     subset: m24
     replicaCount: 1
     service:

@@ -2,14 +2,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: storage
-  namespace: flux-system
+  name: osdu-storage
+  namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  dependsOn:
-  - name: schema
-    namespace: flux-system
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -23,8 +20,13 @@ spec:
     remediation:
       retries: 3
   targetNamespace: osdu-core
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
   values:
     nameOverride: storage
+    installationType: osduCore
     subset: m24
     replicaCount: 1
     service:
@@ -38,7 +40,7 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-release-0-27
+      repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-
       tag: latest
       probe:
         path: /actuator/health

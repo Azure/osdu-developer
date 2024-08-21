@@ -1,0 +1,28 @@
+{{- $namespace := .Release.Namespace }}
+apiVersion: azconfig.io/v1
+kind: AzureAppConfigurationProvider
+metadata:
+  name: {{ include "osdu-developer.fullname" . }}-software
+  namespace: {{ $namespace }}
+spec:
+  endpoint: {{ .Values.azure.configEndpoint }}
+  target:
+    configMapName: configmap-software
+    configMapData:
+      type: yaml
+      key: value.yaml
+      separator: "."
+  auth:
+    workloadIdentity:
+      managedIdentityClientId: {{ .Values.azure.clientId }}
+  configuration:
+    selectors:
+      - keyFilter: "*"
+        labelFilter: "configmap-osdu-applications"
+    refresh:
+      enabled: true
+      interval: 1m
+      monitoring:
+        keyValues:
+          - key: "osdu_sentinel"
+            label: "common"

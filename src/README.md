@@ -42,9 +42,9 @@ Here's an example:
 
 ```bash
 # Clone OSDU Repositories
-(cd src/lib && gita clone -f repos)
-(cd src/core && gita clone -f repos)
-(cd src/reference && gita clone -f repos)
+(cd lib && gita clone -f repos)
+(cd core && gita clone -f repos)
+(cd reference && gita clone -f repos)
 
 # Create the Groups
 gita add -a lib && gita group rename lib osdu-lib
@@ -55,7 +55,7 @@ gita add -a reference && gita group rename reference osdu-reference
 gita context auto
 
 # Switch to the release branch and pull code
-gita super release/0.27
+gita super switch release/0.27
 gita pull
 ```
 

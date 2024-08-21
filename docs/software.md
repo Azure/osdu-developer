@@ -52,7 +52,7 @@ The stamp layout is organized as follows:
 
 - components/kustomize.yaml: This file specifies the Kustomization for the middleware components that support the applications.
 
-By structuring our Kustomizations in this manner, we ensure clarity and separation of concerns, making it easier to manage and scale seperately both components and applications.
+By structuring our Kustomizations in this manner, we ensure clarity and separation of concerns, making it easier to manage and scale separately both components and applications.
 
 ### Components Structure
 

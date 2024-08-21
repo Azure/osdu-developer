@@ -145,7 +145,7 @@ function New-Application {
         }
         if (-not $ApplicationId) {
             $azureClientName = "osdu-$AzureEnvName-$SubscriptionId"
-            $azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
+            #$azureClientId = az ad app list --display-name $azureClientName --query "[0].appId" -o tsv
 
             Write-Host "`n=================================================================="
             Write-Host "Creating Application: $azureClientName"
@@ -197,7 +197,6 @@ function Set-EnvironmentVariables {
         if (-not $env:AZURE_CLIENT_PRINCIPAL_OID) {
             Write-Host "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
             $azureClientPrincipalOid = az ad sp show --id $ApplicationId --query "id" -o tsv
-            echo $azureClientPrincipalOid
             azd env set AZURE_CLIENT_PRINCIPAL_OID $azureClientPrincipalOid
         }
 
@@ -218,6 +217,21 @@ function Set-EnvironmentVariables {
     }
 }
 
+function Set-LocalAuth {    
+    try {
+        $appConfig = az appconfig list -g $env:AZURE_RESOURCE_GROUP --query '[0].name' -o tsv
+
+        Write-Host "`n=================================================================="
+        Write-Host "Disabling Local Authentication for App Configuration: $appConfig"
+        Write-Host "=================================================================="
+
+        az appconfig update -g $env:AZURE_RESOURCE_GROUP -n $appConfig --disable-local-auth false -o none
+    } catch {
+        Write-Host "Error disabling local authentication: $_"
+        exit 1
+    }
+}
+
 if ($Help) {
     Show-Help
     exit 0
@@ -228,3 +242,4 @@ Update-AksExtensions
 Set-Login
 New-Application
 Set-EnvironmentVariables
+Set-LocalAuth

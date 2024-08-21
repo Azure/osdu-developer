@@ -75,6 +75,8 @@ function Set-Login {
     }
 }
 
+
+
 function Get-AKSName {
     try {
         # Check if AKS_NAME is provided, if not retrieve it
@@ -99,8 +101,33 @@ function Get-AKSName {
     Write-Output "=================================================================="
 }
 
+function Set-LocalAuth {    
+    try {
+        $appConfig = az appconfig list -g $ResourceGroup --query '[0].name' -o tsv
+
+        Write-Host "`n=================================================================="
+        Write-Host "Enabling Local Authentication for App Configuration: $appConfig"
+        Write-Host "=================================================================="
+
+        az appconfig update -g $ResourceGroup -n $appConfig --disable-local-auth true -o none
+    } catch {
+        Write-Host "Error enabling local authentication: $_"
+        exit 1
+    }
+}
+
 function Get-Software {
     try {
+        # Check if the Flux configuration exists
+        $fluxExists = az k8s-configuration flux list -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
+
+        if (-not $fluxExists) {
+            Write-Host "`n=================================================================="
+            Write-Host "Software Installation: disabled"
+            Write-Host "=================================================================="
+            exit 0
+        }
+
         $complianceState = az k8s-configuration flux show -t managedClusters -g $ResourceGroup --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
         Write-Host "`n=================================================================="
         Write-Host "Software Installation: $complianceState"
@@ -226,14 +253,22 @@ if (-not $ApplicationId) {
 do {
     Set-Login
     $AKS_NAME = Get-AKSName
+
     $complianceState = Get-Software
+    $elapsedTime = 0
+
+    while ($complianceState -ne "Compliant" -and $elapsedTime -lt 300) {
+        Start-Sleep -Seconds 30
+        $complianceState = Get-Software
+        $elapsedTime += 30
+    }
 
     if ($complianceState -ne "Compliant") {
         Write-Host "  Software is not compliant yet. Retrying in 5 minutes."
-        Start-Sleep -Seconds 300
     }
 } while ($complianceState -ne "Compliant")
 
+Set-LocalAuth
 Update-Application
 Start-Sleep -Seconds 30
 

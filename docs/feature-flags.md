@@ -2,34 +2,16 @@
 
 Customize your resources by enabling these optional features based on your specific requirements:
 
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_SOFTWARE           | Disables loading of all software when set to false (True by default)        |
+| ENABLE_OSDU_CORE          | Disables loading of the osdu core services (True by default)                |
+| ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
+| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
+| ENABLE_POD_SUBNET         | Enables a Subnet for Pods and uses network configuration Azure CNI Pod Subnet |
+| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
 
-### Feature: Software Options
-
-__Purpose:__ Specify software load options.
-
-__Details:__ There are situations in which partial selection of software to install is helpful. Software loads can be disabled as well as categories of OSDU services can be selectively enabled/disabled from loading.
-
-__How To Enable:__
-
-```bash
-azd env set ENABLE_SOFTWARE true/false
-azd env set ENABLE_OSDU_CORE true/false
-azd env set ENABLE_OSDU_REFERENCE true/false
-```
-
-
-### Feature: Pod Subnet
-
-__Purpose:__ Enhances network configuration for Kubernetes Pods.
-
-__Details:__ Typically, with kubenet in Kubernetes, nodes are assigned IP addresses from the Azure virtual network subnet. Enabling the Pod Subnet feature allows Pods to receive IP addresses from a different address space, separate from the subnet of the nodes. This separation alters the network flows.
-
-
-__How To Enable:__
-
-```bash
-azd env set ENABLE_POD_SUBNET true
-```
+Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
 
 
 ### Feature: Vnet Injection
@@ -54,26 +36,3 @@ azd env set POD_SUBNET_PREFIX <your_subnet_prefix>
 ```
 
 
-### Feature: Manage
-
-__Purpose:__ Facilitates secure access to internal network resources.
-
-__Details:__ Internal ingress configurations can sometimes make it challenging to access network resources. The Bastion feature addresses this by creating a bastion host and a virtual machine. These components act as a secure gateway, allowing you to communicate with and manage resources within the private network, even if they're not exposed to the public internet.
-
-__How To Enable:__
-
-```bash
-azd env set ENABLE_MANAGE true
-```
-
-### Feature: Public Blob Access
-
-__Purpose:__ Control public access to Blob Storage.
-
-__Details:__ The Storage accounts have public access points that can be enabled or disabled to enhance security.
-
-__How to Disable:__
-
-```bash
-azd env set ENABLE_BLOB_PUBLIC_ACCESS false
-```

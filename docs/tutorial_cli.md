@@ -90,7 +90,7 @@ Deploy the solution to your subscription answering any questions that may be pre
 
 ```powershell
 cd clouddrive/osdu-developer
-az account set <your_subscription>
+az account set -s <your_subscription>
 azd config set alpha.resourceGroupDeployments on
 azd init -e <your_env_name>
 azd provision

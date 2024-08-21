@@ -2,7 +2,7 @@
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
-  name: {{ include "config-maps.fullname" . }}-software
+  name: {{ include "osdu-developer.fullname" . }}-software
   namespace: {{ $namespace }}
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}

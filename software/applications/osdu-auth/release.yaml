@@ -33,7 +33,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: osdu-auth
+  name: osdu-developer-auth
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"

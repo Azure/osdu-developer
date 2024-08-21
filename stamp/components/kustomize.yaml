@@ -187,6 +187,28 @@ spec:
       name: elasticsearch-ha-es-coordinating
       namespace: elastic-search
 
+######################
+## Postgresql Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-postgresql
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: component-osdu-system
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/database
+  prune: true
+  wait: true
+
 
 ######################
 ## Mesh Component

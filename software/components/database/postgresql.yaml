@@ -1,0 +1,24 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: airflow-cluster
+  namespace: airflow
+spec:
+  imageName: 'ghcr.io/cloudnative-pg/postgresql:16'
+  instances: 3
+  storage:
+    size: 1Gi
+  replicationSlots:
+    highAvailability:
+      enabled: true
+  postgresql:
+    pg_hba:
+      - host airflow-db airflow all password
+  bootstrap:
+    initdb:
+      database: airflow-db
+      owner: airflow
+      secret:
+        name: postgresql-credentials
+  superuserSecret:
+    name: postgresql-credentials

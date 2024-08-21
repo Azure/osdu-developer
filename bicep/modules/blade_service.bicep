@@ -645,6 +645,7 @@ var settings = [
   {
     name: 'osdu_sentinel'
     value: dateStamp
+    label: 'common'
   }
   {
     name: 'Settings:Message'

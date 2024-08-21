@@ -13,6 +13,7 @@ The developer sandbox solution enables software development for the [OSDU™](ht
 __Concepts__
 
 - [Architecture](docs/architecture.md)
+- [Software](docs/software.md)
 - [Subscription Requirements](docs/resource-providers.md)
 
 __Tutorials__
@@ -24,8 +25,8 @@ __Tutorials__
 __Additional Information__
 
 - [Feature Flags](docs/feature-flags.md)
-- [Working with Services](docs/service-environments.md)
 - [Executing REST Scripts](docs/tutorial_rest.md)
+- [Working with OSDU Services](src/README.md)
 - [Github Actions](docs/pipelines.md)
 
 __Roadmap__

@@ -176,7 +176,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/applications/elastic-search
+  path: ./software/components/elastic-search
   prune: true
   wait: true
   healthChecks:

@@ -14,6 +14,10 @@ spec:
   replicationSlots:
     highAvailability:
       enabled: true
+  tolerations:
+  - effect: NoSchedule
+    key: app
+    value: "cluster"
   topologySpreadConstraints:
   - maxSkew: 1
     topologyKey: topology.kubernetes.io/zone

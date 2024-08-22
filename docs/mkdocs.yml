@@ -1,0 +1,22 @@
+site_name: OSDU Developer
+site_author: Microsoft Azure Energy
+docs_dir: src
+
+theme: readthedocs
+
+extra_css:
+  - css/override.css
+
+markdown_extensions:
+  - admonition
+  - def_list
+  - attr_list
+
+plugins:
+  - search
+  - mermaid2
+
+nav:
+  - index.md
+  - before_you_start.md
+  - architecture.md

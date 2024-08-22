@@ -14,6 +14,13 @@ spec:
   replicationSlots:
     highAvailability:
       enabled: true
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        cnpg.io/cluster: airflow-cluster
   postgresql:
     pg_hba:
       - host airflow-db airflow all password

@@ -17,13 +17,13 @@ spec:
       enabled: true
     updateInterval: 30
 
-  topologySpreadConstraints:
-  - maxSkew: 1
-    topologyKey: topology.kubernetes.io/zone
-    whenUnsatisfiable: DoNotSchedule
-    labelSelector:
-      matchLabels:
-        cnpg.io/cluster: airflow-cluster
+  # topologySpreadConstraints:
+  # - maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       cnpg.io/cluster: airflow-cluster
 
   bootstrap:
     initdb:

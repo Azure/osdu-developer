@@ -1,16 +1,6 @@
 # Software Management with a GitOps Approach
 
-In this workspace, we utilize a **GitOps** approach for efficient and reliable software management. This method leverages this Git repository as the source of truth for defining and updating the software configurations and deployments within our infrastructure.
-
-## GitOps Configuration
-
-Our GitOps configuration resides in this Git repository and employs a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) pattern. This repository includes:
-
-- **Configuration Files**: YAML files that define the desired state of our components and applications.
-  
-- **Charts**: Helm charts used for defining, installing, and upgrading Kubernetes applications.
-
-## Advantages of GitOps
+In this solution, we utilize a **GitOps** approach for efficient and reliable software management. This method leverages a git repository as the source of truth for defining and updating the software within the cluster and comes with some distinct advantages.
 
 - **Consistency and Standardization**: Ensures consistent configurations across different environments, minimizing discrepancies.
   
@@ -20,26 +10,29 @@ Our GitOps configuration resides in this Git repository and employs a customized
   
 - **Enhanced Security**: Changes are reviewed through pull requests, increasing security and promoting collaboration among team members.
 
-## Simplified Deployment Process
+Software definitions are defined in this repository alongside the IaC and employ a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) pattern along with customized Helm charts.
 
-Our GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update configurations. It also provides a configurable way to leverage other software configurations by pointing to alternate repositories that host additional configurations. This extensibility ensures our deployments can include not only the default software load but also any additional components required by our architecture.
+- **Configuration Files**: YAML files that define the desired state of our components and applications.
+  
+- **Charts**: Helm charts used for defining, installing, and upgrading Kubernetes applications.
 
-## Kustomizations
+Our GitOps approach not only standardizes and secures the software management process but also **simplifies the deployment process**. By making it easier to maintain and update configurations, this approach ensures that deployments are both efficient and flexible. It allows for seamless integration of additional software configurations by pointing to alternate repositories that host these configurations. This extensibility enables our deployments to include not just the default software load but also any additional components required by our architecture.
 
-In our software architecture design, we have two primary Kustomizations that describe a **stamp**:
-
-1. **Components**: This includes middleware layers that provide essential services to the platform. Examples of components are:
-   - Certificate Manager
-   - Istio
-   - Operators
-
-2. **Applications**: This category encompasses the code that functions as applications within the OSDU developer platform. Notable examples include:
-   - OSDU Core Services
-   - OSDU Reference Services
 
 ### Stamp Layout
 
-The stamp layout is organized as follows:
+In our software architecture design, we define two primary software Kustomizations that describe a **stamp**. A Kustomization is a Flux resource representing a set of defined manifests that Flux should reconcile to the cluster, with dependencies between them. Structuring our Kustomizations this way ensures clarity and separation of concerns, making it easier to manage and organize both components and applications.
+
+1. **Components**: Middleware layers that provide essential services to the platform, necessary to support OSDU Services.
+2. **Applications**: The OSDU platform services themselves, organized into logical groups of capabilities.
+
+
+```mermaid
+flowchart TD
+  FluxSystemComponents("flux-system-components")
+  FluxSystemApplications("flux-system-applications")
+  FluxSystemComponents-->FluxSystemApplications
+```
 
 ```bash
 ├── applications
@@ -48,40 +41,45 @@ The stamp layout is organized as follows:
     └── kustomize.yaml
 ```
 
-- applications/kustomize.yaml: This file defines the Kustomization for the various applications that run on the platform.
-
-- components/kustomize.yaml: This file specifies the Kustomization for the middleware components that support the applications.
-
-By structuring our Kustomizations in this manner, we ensure clarity and separation of concerns, making it easier to manage and scale separately both components and applications.
+ 
 
 ### Components Structure
 
 The Components directory is organized to facilitate the management of various middleware layers essential for our infrastructure. Below is the layout:
 
+Components are organized to facilitate the logical understanding of the middleware software installations.  Components have dependency structures in the sequence of configuration.  A naming pattern is in place to help facilitate understanding.
+
 ```bash
-└── components
-    ├── README.md
+── components
     ├── certs
-    │   ├── namespace.yaml
-    │   ├── release.yaml
-    │   └── source.yaml
+    │   ├── namespace.yaml
+    │   ├── release.yaml
+    │   └── source.yaml
     ├── certs-ca
-    │   └── certificate.yaml
+    │   └── certificate.yaml
     ├── certs-ca-issuer
-    │   └── issuer.yaml
+    │   └── issuer.yaml
+    ├── database
+    │   ├── namespace.yaml
+    │   ├── postgresql.yaml
+    │   └── vault-secrets.yaml
+    ├── elastic-search
+    │   ├── elastic-job.yaml
+    │   ├── elastic-search.yaml
+    │   ├── kibana.yaml
+    │   ├── namespace.yaml
+    │   └── vault-secrets.yaml
     ├── elastic-storage
-    │   └── storage-class.yaml
+    │   └── storage-class.yaml
     ├── mesh-ingress
-    │   └── gateway.yaml
+    │   └── gateway.yaml
     ├── observability
-    │   ├── grafana.yaml
-    │   ├── jaeger.yaml
-    │   ├── kiali.yaml
-    │   ├── loki.yaml
-    │   ├── prometheus.yaml
-    │   └── subnet_monitoring.yaml
-    ├── osdu-config
-    │   └── release.yaml
+    │   ├── grafana.yaml
+    │   ├── jaeger.yaml
+    │   ├── kiali.yaml
+    │   ├── loki.yaml
+    │   ├── prometheus.yaml
+    │   └── subnet_monitoring.yaml
     └── osdu-system
         ├── airflow.yaml
         ├── cache.yaml
@@ -90,6 +88,36 @@ The Components directory is organized to facilitate the management of various mi
         ├── mesh.yaml
         ├── namespace.yaml
         └── reloader.yaml
+```
+
+```mermaid
+flowchart TD
+  FluxSystemComponents("flux-system-components")
+  Certs("component-certs")
+  CertsCA("component-certs-ca")
+  CertsCAIssuer("component-certs-ca-issuer")
+  Cache("component-cache")
+  Database("component-database")
+  Postgresql("component-postgresql")
+  Elastic("component-elastic")
+  ElasticStorage("component-elastic-storage")
+  ElasticSearch("component-elastic-search")
+  Mesh("component-mesh")
+  MeshIngress("component-mesh-ingress")
+  Observability("component-observability")
+
+  FluxSystemComponents-->Certs
+  Certs-->CertsCA
+  CertsCA-->CertsCAIssuer
+  CertsCAIssuer-->Cache
+  CertsCAIssuer-->Mesh
+  Mesh-->MeshIngress
+  MeshIngress-->Observability
+  CertsCAIssuer-->Elastic
+  Elastic-->ElasticStorage
+  ElasticStorage-->ElasticSearch
+  CertsCAIssuer-->Database
+  Database-->Postgresql
 ```
 
 __Directory Breakdown__

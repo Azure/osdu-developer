@@ -47,7 +47,41 @@ flowchart TD
 
 The Components directory is organized to facilitate the management of various middleware layers essential for our infrastructure. Below is the layout:
 
-Components are organized to facilitate the logical understanding of the middleware software installations.  Components have dependency structures in the sequence of configuration.  A naming pattern is in place to help facilitate understanding.
+Components are organized to facilitate the logical understanding of the middleware software installations.  Components have dependency structures in the sequence of configuration.  A naming pattern is used to help facilitate understanding.
+
+```mermaid
+flowchart TD
+  FluxSystemComponents("flux-system-components")
+  Certs("component-certs")
+  CertsCA("component-certs-ca")
+  CertsCAIssuer("component-certs-ca-issuer")
+  OSDUSystem("component-osdu-system")
+  Cache("component-cache")
+  Database("component-database")
+  Postgresql("component-postgresql")
+  Airflow("component-airflow")
+  Elastic("component-elastic")
+  ElasticStorage("component-elastic-storage")
+  ElasticSearch("component-elastic-search")
+  Mesh("component-mesh")
+  MeshIngress("component-mesh-ingress")
+  Observability("component-observability")
+
+  FluxSystemComponents-->Certs
+  Certs-->CertsCA
+  CertsCA-->CertsCAIssuer
+  CertsCAIssuer-->OSDUSystem
+  OSDUSystem-->Cache
+  OSDUSystem-->Mesh
+  Mesh-->MeshIngress
+  MeshIngress-->Observability
+  OSDUSystem-->Elastic
+  Elastic-->ElasticStorage
+  ElasticStorage-->ElasticSearch
+  OSDUSystem-->Database
+  Database-->Postgresql
+  Postgresql-->Airflow
+```
 
 ```bash
 ── components
@@ -90,69 +124,27 @@ Components are organized to facilitate the logical understanding of the middlewa
         └── reloader.yaml
 ```
 
-```mermaid
-flowchart TD
-  FluxSystemComponents("flux-system-components")
-  Certs("component-certs")
-  CertsCA("component-certs-ca")
-  CertsCAIssuer("component-certs-ca-issuer")
-  Cache("component-cache")
-  Database("component-database")
-  Postgresql("component-postgresql")
-  Elastic("component-elastic")
-  ElasticStorage("component-elastic-storage")
-  ElasticSearch("component-elastic-search")
-  Mesh("component-mesh")
-  MeshIngress("component-mesh-ingress")
-  Observability("component-observability")
-
-  FluxSystemComponents-->Certs
-  Certs-->CertsCA
-  CertsCA-->CertsCAIssuer
-  CertsCAIssuer-->Cache
-  CertsCAIssuer-->Mesh
-  Mesh-->MeshIngress
-  MeshIngress-->Observability
-  CertsCAIssuer-->Elastic
-  Elastic-->ElasticStorage
-  ElasticStorage-->ElasticSearch
-  CertsCAIssuer-->Database
-  Database-->Postgresql
-```
-
-__Directory Breakdown__
-
-- certs: Contains YAML files for managing certificates, including:
-- namespace.yaml: Defines the namespace for the certificate resources.
-- release.yaml: Specifies the release configuration for the certificates.
-- source.yaml: Outlines the source for certificate generation.
-- certs-ca: Contains the configuration for Certificate Authority certificates:
-- certificate.yaml: Defines the CA certificate.
-- certs-ca-issuer: Contains the issuer configuration for certificates:
-- issuer.yaml: Specifies the issuer details.
-- elastic-storage: Contains the configuration for ElasticSearch storage:
-- storage-class.yaml: Defines the storage class for ElasticSearch.
-- mesh-ingress: Contains the configuration for ingress routing:
-- gateway.yaml: Defines the gateway configuration for the service mesh.
-- observability: Includes configurations for observability tools:
-- grafana.yaml, jaeger.yaml, kiali.yaml, loki.yaml, prometheus.yaml, subnet_monitoring.yaml: Define settings for various observability tools.
-- osdu-config: Contains configuration files for OSDU services:
-- release.yaml: Specifies the release configuration for OSDU.
-- osdu-system: Contains configurations for the OSDU system components:
-- Includes files for airflow, cache, database, elastic, mesh, namespace, and reloader, each defining the necessary configurations for those services.
-
 __Applications Structure__
 
-The Applications directory is organized to manage various applications within the OSDU developer platform. Below is the layout:
+The Applications directory is organized to facilitate the management of applications that are installed in the platform. 
+
+```mermaid
+flowchart TD
+  FluxSystemApplications("flux-system-applications")
+  Podinfo("application-podinfo")
+  OSDUCore("application-osdu-core")
+  OSDUReference("application-osdu-reference")
+  OSDUAuth("application-osdu-auth")
+
+  FluxSystemApplications-->Podinfo
+  FluxSystemApplications-->OSDUCore
+  FluxSystemApplications-->OSDUReference
+  FluxSystemApplications-->OSDUAuth
+```
+
 
 ```bash
 ── applications
-│   ├── elastic-search
-│   │   ├── elastic-job.yaml
-│   │   ├── elastic-search.yaml
-│   │   ├── kibana.yaml
-│   │   ├── namespace.yaml
-│   │   └── vault-secrets.yaml
 │   ├── osdu-auth
 │   │   ├── namespace.yaml
 │   │   └── release.yaml
@@ -182,26 +174,3 @@ The Applications directory is organized to manage various applications within th
 │       └── source.yaml
 ```
 
-- dev-sample: Contains sample application configurations:
-- httpbin.yaml: Configuration for the HTTP Bin sample application.
-- namespace.yaml: Defines the namespace for the sample application resources.
-- release.yaml: Specifies the release configuration for the sample application.
-- elastic-search: Includes configurations for the ElasticSearch application:
-- elastic-job.yaml: Defines a job for ElasticSearch.
-- elastic-search.yaml: Configuration for the ElasticSearch deployment.
-- kibana.yaml: Configuration for Kibana, the visualization tool.
-- namespace.yaml: Defines the namespace for ElasticSearch resources.
-- vault-secrets.yaml: Contains the secrets required by ElasticSearch.
-- osdu-auth: Contains configurations for OSDU authentication services:
-- namespace.yaml: Defines the namespace for authentication resources.
-- release.yaml: Specifies the release configuration for the authentication service.
-- osdu-core: Includes configurations for core OSDU services:
-- Contains multiple YAML files for defining the service configurations, including:
-- base.yaml, entitlements.yaml, file.yaml, indexer.yaml, legal.yaml, namespace.yaml, partition.yaml, schema.yaml, search.yaml, storage.yaml, user-init.yaml.
-- osdu-reference: Contains configurations for reference services in OSDU:
-- Includes base.yaml, crs-catalog.yaml, crs-conversion.yaml, namespace.yaml, and unit.yaml.
-- podinfo: Contains configurations for the Podinfo application:
-- ingress.yaml: Defines ingress rules for the Podinfo application.
-- namespace.yaml: Defines the namespace for Podinfo resources.
-- release.yaml: Specifies the release configuration for Podinfo.
-- source.yaml: Contains the source configuration for Podinfo.

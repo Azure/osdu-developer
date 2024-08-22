@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "15715547594614627706"
+      "templateHash": "12091367006936561025"
     }
   },
   "parameters": {
@@ -6438,7 +6438,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "1432460502819309476"
+              "templateHash": "12602517446775868413"
             }
           },
           "definitions": {
@@ -6612,6 +6612,22 @@
               {
                 "secretName": "app-dev-sp-id",
                 "secretValue": "[parameters('applicationClientId')]"
+              },
+              {
+                "secretName": "cpng-user-name",
+                "secretValue": "dbuser"
+              },
+              {
+                "secretName": "cpng-user-password",
+                "secretValue": "[substring(uniqueString('dbuser', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
+              },
+              {
+                "secretName": "cpng-superuser-name",
+                "secretValue": "dbadmin"
+              },
+              {
+                "secretName": "cpng-superuser-password",
+                "secretValue": "[substring(uniqueString('dbadmin', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
               }
             ],
             "roleAssignment": {
@@ -29176,7 +29192,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "9657753739276909582"
+              "templateHash": "17807599380893178997"
             }
           },
           "definitions": {
@@ -29469,7 +29485,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.26.0"
+              "release": "v0.27.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -33605,10 +33621,10 @@
                 "federatedCredsOsduCoreNamespace"
               ]
             },
-            "federatedCredsDevSampleNamespace": {
+            "federatedCredsPostgreSqlNamespace": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_dev-sample', parameters('bladeConfig').sectionName)]",
+              "name": "[format('{0}-federated-cred-ns_postgresql', parameters('bladeConfig').sectionName)]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -33616,7 +33632,7 @@
                 "mode": "Incremental",
                 "parameters": {
                   "name": {
-                    "value": "federated-ns_dev-sample"
+                    "value": "federated-ns_postgresql"
                   },
                   "audiences": {
                     "value": [
@@ -33630,7 +33646,7 @@
                     "value": "[parameters('managedIdentityName')]"
                   },
                   "subject": {
-                    "value": "system:serviceaccount:dev-sample:workload-identity-sa"
+                    "value": "system:serviceaccount:postgresql:workload-identity-sa"
                   }
                 },
                 "template": {
@@ -33834,7 +33850,7 @@
               "dependsOn": [
                 "appIdentity",
                 "cluster",
-                "federatedCredsDevSampleNamespace"
+                "federatedCredsPostgreSqlNamespace"
               ]
             },
             "federatedCredsOsduSystem": {
@@ -34432,13 +34448,13 @@
                 "appIdentity",
                 "federatedCredsConfigMapsNamespace",
                 "federatedCredsDefaultNamespace",
-                "federatedCredsDevSampleNamespace",
                 "federatedCredsElasticNamespace",
                 "federatedCredsOduInitNamespace",
                 "federatedCredsOsduAuth",
                 "federatedCredsOsduCoreNamespace",
                 "federatedCredsOsduReference",
-                "federatedCredsOsduSystem"
+                "federatedCredsOsduSystem",
+                "federatedCredsPostgreSqlNamespace"
               ]
             },
             "appRoleAssignments2": {
@@ -34573,9 +34589,9 @@
                 "appIdentity",
                 "federatedCredsConfigMapsNamespace",
                 "federatedCredsDefaultNamespace",
-                "federatedCredsDevSampleNamespace",
                 "federatedCredsOsduCoreNamespace",
-                "federatedCredsOsduReference"
+                "federatedCredsOsduReference",
+                "federatedCredsPostgreSqlNamespace"
               ]
             },
             "helmAppConfigProvider": {

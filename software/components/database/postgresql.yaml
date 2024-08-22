@@ -1,0 +1,37 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: airflow-cluster
+  namespace: postgresql
+spec:
+  inheritedMetadata:
+    labels:
+      azure.workload.identity/use: "true"
+  # imageName: 'ghcr.io/cloudnative-pg/postgresql:16'
+  instances: 3
+  storage:
+    size: 1Gi
+  replicationSlots:
+    highAvailability:
+      enabled: true
+  affinity:
+    tolerations:
+    - effect: NoSchedule
+      key: app
+      value: "cluster"
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        cnpg.io/cluster: airflow-cluster
+  postgresql:
+    pg_hba:
+      - host airflow-db airflow all password
+  bootstrap:
+    initdb:
+      database: airflow-db
+      owner: airflow
+      secret:
+        name: postgresql-credentials

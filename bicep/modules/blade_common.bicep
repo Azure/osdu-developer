@@ -153,6 +153,22 @@ var vaultSecrets = [
     secretName: 'app-dev-sp-id'
     secretValue: applicationClientId
   }
+  {
+    secretName: 'cpng-user-name'
+    secretValue: 'dbuser'
+  }
+  {
+    secretName: 'cpng-user-password'
+    secretValue: substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'cpng-superuser-name'
+    secretValue: 'dbadmin'
+  }
+  {
+    secretName: 'cpng-superuser-password'
+    secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
 ]
 
 var roleAssignment = {

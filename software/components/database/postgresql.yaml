@@ -14,7 +14,7 @@ spec:
   replicationSlots:
     highAvailability:
       enabled: true
-  afinity:
+  affinity:
     tolerations:
     - effect: NoSchedule
       key: app

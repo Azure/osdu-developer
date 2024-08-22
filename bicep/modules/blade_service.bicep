@@ -427,16 +427,16 @@ module federatedCredsOduInitNamespace './federated_identity.bicep' = {
   ]
 }
 
-module federatedCredsDevSampleNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_dev-sample'
+module federatedCredsPostgreSqlNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_postgresql'
   params: {
-    name: 'federated-ns_dev-sample'
+    name: 'federated-ns_postgresql'
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:dev-sample:workload-identity-sa'
+    subject: 'system:serviceaccount:postgresql:workload-identity-sa'
   }
   dependsOn: [
     federatedCredsOduInitNamespace
@@ -455,7 +455,7 @@ module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
     subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
   }
   dependsOn: [
-    federatedCredsDevSampleNamespace
+    federatedCredsPostgreSqlNamespace
   ]
 }
 
@@ -524,7 +524,6 @@ module federatedCredsOsduReference './federated_identity.bicep' = {
 }
 
 
-
 module appRoleAssignments './app_assignments.bicep' = {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac'
   params: {
@@ -536,7 +535,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     federatedCredsDefaultNamespace
     federatedCredsOsduCoreNamespace
     federatedCredsOduInitNamespace
-    federatedCredsDevSampleNamespace
+    federatedCredsPostgreSqlNamespace
     federatedCredsConfigMapsNamespace
     federatedCredsElasticNamespace
     federatedCredsOsduSystem
@@ -555,7 +554,7 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
     federatedCredsDefaultNamespace
     federatedCredsOsduCoreNamespace
     federatedCredsOsduReference
-    federatedCredsDevSampleNamespace
+    federatedCredsPostgreSqlNamespace
     federatedCredsConfigMapsNamespace
   ]
 }]

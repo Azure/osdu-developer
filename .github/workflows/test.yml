@@ -406,9 +406,7 @@ jobs:
         shell: pwsh
         run: |
           $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
-          $AKS_NAME='${{ needs.Deploy.outputs.AKS_NAME }}'
-          $paramFilePath="${{ env.ParamFilePath }}"
-          $params = Get-Content $paramFilePath | ConvertFrom-Json
+          AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
 
           # Check for Flux compliance and timing logic
           Write-Output "Checking for Flux compliance"

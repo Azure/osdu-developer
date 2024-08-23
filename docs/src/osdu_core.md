@@ -1,9 +1,8 @@
-# Service Environment Variables
+# Core Services
 
-The following information can be used as a guide for the required environment variables necessary to start a service locally, and the [local.http](../tools/rest-scripts/local.http) rest script can be used for a quick test to call the local services.
+This repository can be used to hold the source code for the OSDU Core Services.
 
-Environment Variables can be referenced in IntelliJ with the [EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile) plugin.
-
+Environment variables can be automatically generated and then be referenced in IntelliJ with the [EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile) plugin.
 
 
 ## Partition Service
@@ -35,21 +34,6 @@ The following environment variables are necessary to run the Partition Service.
 | `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
 
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "partition",
-  "REDIS_DATABASE": "1",
-  "PARTITION_SPRING_LOGGING_LEVEL": "INFO",
-  "AZURE_ISTIO_AUTH_ENABLED": "false",
-  "AZURE_ACTIVEDIRECTORY_APP_ID_URI": "api://<your_client_id>",
-  "AZURE_ACTIVEDIRECTORY_SESSION_STATELESS": "true"
-}
-```
-
 ### Testing
 
 The partition service can be tested locally in IntelliJ with the following run configuration
@@ -64,21 +48,12 @@ All in package: org.opengroup.osdu.partition
 
 | Variable                                | Value                                          | Description                                |
 |-----------------------------------------|------------------------------------------------|--------------------------------------------|
+| `ENVIRONMENT`                           | `<your_environment>`                           | local or cloud                             |
 | `AZURE_AD_TENANT_ID`                    | `<your_tenant_id>`                             | Azure tenant ID                            |
 | `INTEGRATION_TESTER`                    | `<your_client_id>`                             | Azure client ID                            |
 | `AZURE_TESTER_SERVICEPRINCIPAL_SECRET`  | `<your_client_secret>`                         | Azure client secret                        |
 | `AZURE_AD_APP_RESOURCE_ID`              | `<your_client_id>`                             | Azure client ID                            |
 | `PARTITION_BASE_URL`                    | `http://localhost:8080/`                       | Service URL                                |
-
-```json
-{
-  "AZURE_AD_TENANT_ID": "<your_tenant_id>",
-  "INTEGRATION_TESTER": "<your_client_id>",
-  "AZURE_TESTER_SERVICEPRINCIPAL_SECRET": "<your_client_secret>",
-  "AZURE_AD_APP_RESOURCE_ID": "<your_client_id>",
-  "PARTITION_BASE_URL": "http://localhost:8080/"
-}
-```
 
 
 
@@ -109,22 +84,7 @@ Class: org.opengroup.osdu.entitlements.v2.azure.EntitlementsV2Application
 | `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
 | `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "entitlements",
-  "LOGGING_LEVEL": "INFO",
-  "SERVICE_DOMAIN_NAME": "dataservices.energy",
-  "ROOT_DATA_GROUP_QUOTA": "5000",
-  "REDIS_TTL_SECONDS": "1",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIO_AUTH_ENABLED": "true",
-}
-```
+
 
 ### Testing
 
@@ -138,7 +98,7 @@ Module: entitlementsv2-test-azure
 All in package: org.opengroup.osdu.entitlements
 ```
 
-//TODO
+
 
 ## Legal Service
 
@@ -176,30 +136,7 @@ Class: org.opengroup.osdu.legal.azure.LegalApplication
 | `AZURE_ACTIVEDIRECTORY_APP_ID_URI`   | `api://${AZURE_CLIENT_ID}`                     | Active Directory app ID URI                |
 | `AZURE_ACTIVEDIRECTORY_SESSION_STATELESS` | `true`                                    | Enable stateless session for AD            |
 
-```json
 
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "ENTITLEMENTS_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/entitlements/v2",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "legal",
-  "LOG_PREFIX": "legal",
-  "SPRING_CONFIG_NAME": "common,application",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "REDIS_DATABASE": "2",
-  "LEGAL_SERVICE_REGION": "us",
-  "AZURE_STORAGE_ENABLE_HTTPS": "true",
-  "AZURE_STORAGE_CONTAINER_NAME": "legal-service-azure-configuration",
-  "SERVICEBUS_TOPIC_NAME": "legaltags",
-  "ENTITLEMENTS_SERVICE_API_KEY": "OBSOLETE",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIOAUTH_ENABLED": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```
 
 ### Testing
 
@@ -213,7 +150,7 @@ Module: legal-test-azure
 All in package: org.opengroup.osdu.legal
 ```
 
-//TODO
+
 
 
 ## Schema Service
@@ -255,30 +192,6 @@ Class: org.opengroup.osdu.schema.azure.SchemaApplication
 | `AZURE_ISTIOAUTH_ENABLED`            | `true`                                         | Turn Istio auth on                         |
 | `AZURE_PAAS_PODIDENTITY_ISENABLED`   | `false`                                        | Azure PaaS pod identity enabled            |
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "ENTITLEMENTS_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/entitlements/v2",
-  "STORAGE_ACCOUNT": "<your_storage_account_name>",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "schema",
-  "LOG_PREFIX": "schema",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "AZURE_STORAGE_ENABLE_HTTPS": "true",
-  "EVENT_GRID_ENABLED": "false",
-  "EVENT_GRID_TOPIC": "schemachangedtopic",
-  "SERVICE_BUS_ENABLED": "true",
-  "SERVICEBUS_TOPIC_NAME": "schemachangedtopic",
-  "ENTITLEMENTS_SERVICE_API_KEY": "OBSOLETE",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIOAUTH_ENABLED": "false",
-  "AZURE_ACTIVEDIRECTORY_SESSION_STATELESS": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```
 
 
 ## Storage Service
@@ -320,32 +233,6 @@ Class: org.opengroup.osdu.storage.provider.azure.StorageApplication
 | `OPA_ENABLED`                        | `false`                                        | Enable OPA                                 |
 
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "ENTITLEMENTS_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/entitlements/v2",
-  "LEGAL_SERVICE_ENDPOINT": "http://<your_ingress_ip>api/legal/v1",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "storage",
-  "LOG_PREFIX": "storage",
-  "AZURE_STORAGE_ENABLE_HTTPS": "true",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "SERVICEBUS_TOPIC_NAME": "recordstopic",
-  "SERVICEBUS_V2_TOPIC_NAME": "recordstopic-v2",
-  "REDIS_DATABASE": "4",
-  "ENTITLEMENTS_SERVICE_API_KEY": "OBSOLETE",
-  "LEGAL_SERVICE_REGION": "southcentralus",
-  "LEGAL_SERVICEBUS_TOPIC_NAME": "legaltagschangedtopiceg",
-  "LEGAL_SERVICEBUS_TOPIC_SUBSCRIPTION": "eg_sb_legaltagchangedsubscription",
-  "OPA_ENABLED": "false",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIOAUTH_ENABLED": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```
 
 ## Indexer Service
 
@@ -369,7 +256,7 @@ Class: org.opengroup.osdu.indexer.azure.IndexerAzureApplication
 | `SCHEMA_SERVICE_URL`                 | `http://${AZURE_HOST}/api/schema-service/v1`   | Schema service endpoint                    |
 | `STORAGE_SERVICE_URL`                | `http://${AZURE_HOST}/api/storage/v2`          | Storage service endpoint                   |
 | `STORAGE_QUERY_RECORD_HOST`          | `http://${AZURE_HOST}/api/storage/v2/query/records`         | Storage service record query endpoint      |
-| `STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST`          | `http://${AZURE_HOST}/api/storage/v2/query/records:batch`         | Storage service record batch query endpoint      |
+| `STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST` | `http://${AZURE_HOST}/api/storage/v2/query/records:batch`         | Storage service record batch query endpoint      |
 | `AAD_CLIENT_ID`                      | `<your_aad_client_id>`                         | Active Directory client ID                 |
 | `SPRING_APPLICATION_NAME`            | `indexer`                                      | Spring application name                    |
 | `AZURE_PAAS_PODIDENTITY`             | `false`                                        | Azure PaaS pod identity                    |
@@ -380,34 +267,6 @@ Class: org.opengroup.osdu.indexer.azure.IndexerAzureApplication
 
 
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "ENTITLEMENTS_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/entitlements/v2",
-  "SCHEMA_SERVICE_URL": "http://<your_ingress_ip>/api/schema-service/v1",
-  "STORAGE_SERVICE_URL": "http://<your_ingress_ip>/api/storage/v2",
-  "STORAGE_SCHEMA_HOST": "http://<your_ingress_ip>/api/storage/v2/schemas",
-  "STORAGE_QUERY_RECORD_FOR_CONVERSION_HOST": "http://<your_ingress_ip>/api/storage/v2/query/records:batch",
-  "STORAGE_QUERY_RECORD_HOST": "http://<your_ingress_ip>/api/storage/v2/query/records",
-  "SEARCH_SERVICE_URL": "http://<your_ingress_ip>/api/search/v2",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "indexer",
-  "LOG_PREFIX": "indexer",
-  "LOG_LEVEL": "TRACE",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "SERVICEBUS_TOPIC_NAME": "indexing-progress",
-  "REINDEX_TOPIC_NAME": "recordstopic",
-  "ENTITLEMENTS_SERVICE_API_KEY": "OBSOLETE",
-  "REDIS_DATABASE": "4",
-  "runtime.env.local": "true",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIOAUTH_ENABLED": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```
 
 
 ## Search Service
@@ -437,33 +296,6 @@ Class: org.opengroup.osdu.search.provider.azure.SearchApplication
 | `LOG_PREFIX`                         | `search`                                       | Log prefix                                 |
 
 
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "APPLICATIONINSIGHTS_CONNECTION_STRING": "<your_insights_connection>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "ENTITLEMENTS_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/entitlements/v2",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "search",
-  "SERVER_SERVLET_CONTEXTPATH": "/api/search/v2/",
-  "LOG_PREFIX": "search",
-  "SEARCH_SERVICE_SPRING_LOGGING_LEVEL": "DEBUG",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "REDIS_DATABASE": "5",
-  "ENVIRONMENT": "evt",
-  "ELASTIC_CACHE_EXPIRATION": "1",
-  "MAX_CACHE_VALUE_SIZE": "60",
-  "SERVICE_POLICY_ENABLED": "false",
-  "ENTITLEMENTS_SERVICE_API_KEY": "OBSOLETE",
-  "AZURE_ISTIOAUTH_ENABLED": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```
-
-
-
 ## File Service
 
 The file service can be run locally in IntelliJ with the following run configuration
@@ -490,27 +322,3 @@ Class: org.opengroup.osdu.file.provider.azure.FileAzureApplication
 | `AZURE_PAAS_PODIDENTITY_ISENABLED`   | `false`                                        | Azure PaaS pod identity enabled            |
 | `LOG_PREFIX`                         | `file`                                         | Log prefix                                 |
 
-
-```json
-{
-  "APPINSIGHTS_KEY": "<your_insights_key>",
-  "KEYVAULT_URI": "https://<your_keyvault_name.vault.azure.net",
-  "PARTITION_SERVICE_ENDPOINT": "http://<your_ingress_ip>/api/partition/v1/",
-  "OSDU_ENTITLEMENTS_URL": "http://<your_ingress_ip>/api/entitlements/v2",
-  "OSDU_STORAGE_URL": "http://<your_ingress_ip>/storage/api/storage/v2",
-  "AZURE_TENANT_ID": "<your_tenant_id>",
-  "AAD_CLIENT_ID": "<your_client_id>",
-  "AZURE_AD_APP_RESOURCE_ID": "<your_client_id>",
-  "SERVER_PORT": "8080",
-  "SPRING_APPLICATION_NAME": "file",
-  "LOG_PREFIX": "file",
-  "COSMOSDB_DATABASE": "osdu-db",
-  "OSDU_ENTITLEMENTS_APP_KEY": "OBSOLETE",
-  "EVENT_GRID_ENABLED_STATUS": "false",
-  "SERVICE_BUS_ENABLED_STATUS": "false",
-  "AZURE_PUBSUB_PUBLISH": "false",
-  "AZURE_PAAS_PODIDENTITY": "false",
-  "AZURE_ISTIOAUTH_ENABLED": "true",
-  "AZURE_PAAS_PODIDENTITY_ISENABLED": "false",
-}
-```

@@ -1,4 +1,4 @@
-# Software Management with a GitOps Approach
+# Software Management
 
 In this solution, we utilize a **GitOps** approach for efficient and reliable software management. This method leverages a git repository as the source of truth for defining and updating the software within the cluster and comes with some distinct advantages.
 

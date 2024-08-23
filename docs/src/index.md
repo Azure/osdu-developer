@@ -1,42 +1,47 @@
-# OSDU Personal Instances
+# OSDU Developer
 
-OSDU Developer is an open-source solution to enable easy creation of Personal Instances of OSDU running in the Azure Public Cloud.
+## Overview
 
-## What is it?
- 
-This Azure Developer CLI (AZD) integrated solution, along with a one-click deployment option, allows engineers to explore authoring applications or work directly on individual or custom OSDU services prior to transitioning to a fully managed service offering like ADME.
- 
-The primary objective is to offer an environment for use as an inner loop development cycle within an organization’s own cloud tenant while working and exploring with the open-source codebase. This engineering environment is easy to work with and strives to ensure compliance through a flexible infrastructure framework, providing a path to explore the depth of OSDU.
+OSDU Developer is an open-source solution designed to enable the creation of lightweight, personal instances of [OSDU™](https://osduforum.org/osdu-data-platform-primer-1/) running on the Azure Public Cloud. These personal instances are tailored specifically for developers and work with the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This allows engineers to explore and author applications or work directly on technology prior to the transition to a fully managed service offering. A simplified one-click deployment capability with less development features is also available.
 
-Deploying a personal instance of the OSDU open-source solution on Azure Cloud delivers practical insights into early development and integration processes. It ensures transparency, cost-efficiency, and flexibility, while enabling essential application and cloud developer scenarios.
+!!! Note
+    Microsoft recommends using [Azure Data Manager for Energy (ADME)](https://azure.microsoft.com/en-us/products/data-manager-for-energy) on production workloads and integration testing.
+
+The primary goal for this solution is to provide an environment that can help function within an inner loop process providing faster feedback for developers. This personal environment strives to be user-friendly yet maintain compliance with varying organizational standards. It offers a flexible framework to facilitate deeper exploration of OSDU™ capabilities.
+
+Deploying personal instances provide valuable insights into early-stage development and integration processes. It emphasizes transparency, cost-efficiency, and flexibility, empowering developers to engage in essential application and cloud development scenarios.
+
+!!! Note
+    Learn more about how inner and outer loop concepts can enhance developer productivity by viewing a discusion with Scott Hanselman, VP of Developer Community at Microsoft on the Planet Argon Podcast [The Fear Factor in Maintainable Software](https://www.youtube.com/watch?v=V5OhIjn7pJo)
  
 ### Key Benefits
 
-- **Observability and Transparency:**  Direct interaction with the resources, software, and components of the solution facilitates enhanced observability through logs, dashboards, and source code debugging, providing transparency crucial for developers.
+**Observability and Transparency:**  Interact directly with resource and software components within the solution to facilitate enhanced observability through logs, dashboards, and source code debugging.
 
-- **Cost Efficiency:**  By deploying with minimal resources, cluster compute, and omitting costly features like disaster recovery (DR) and backup, consumption costs are minimized.
+**Cost Efficiency:**  Deploy with minimal resource consumption omitting costly features like disaster recovery and backup to minimize consumption costs.
 
-- **Flexibility:**  Supports scenarios such as:
+**Flexibility:** Provide adaptable infrastructure to meet various organizational needs.
 
-- **Virtual Network Injection:** Allows for flexible network designs with site-to-site VPN connections and integration with preexisting networks.
+- Virtual Network Injection - Flexible network designs, including site-to-site VPN connections and integration with preexisting networks.
 
-- **Controlled Access:** Supports both public and private ingress along with the ability to layer your own routing solutions for ingress, such as Azure Firewall and Azure Front Door.
+- Controlled Access - Public or private ingress, with the option to layer your own routing solutions for ingress, such as Azure Firewall or Azure Front Door.
 
-- **Software Isolation**:** Override and isolate the defined software customizations while extending into additional custom software configurations.
+- Software Isolation - Override and isolate defined software configurations as well as extend with custom configurations.
 
-### Scenarios
+### Use Cases
  
-Several scenarios illustrate the practical applications of this approach, such as:
+Several use cases illustrate the practical applications for this approach.
 
-- **Service Development:** Enables engineers to create, update, debug, and work with integrated OSDU services.
-Application Development: Allows for easy developer integration with applications being developed for initial testing prior to integration with a managed service offering.
+**Service Development:** Create, update, debug, and work directly with OSDU services.
 
-- **Innovate with Azure-Specific Technologies:**  Fork and extend the solution to explore deeper integration with Azure-specific tools and technologies such as Azure Fabric, Co-Pilot, and Power Platform, impacting various Azure integration points.
+**Application Development:** Easy development for applications prior to integration with a managed service offering.
 
-- **Training and Onboarding:**  Provides a valuable opportunity for training new employees on Azure within the OSDU framework, offering hands-on experience in a controlled environment.
+**Technology Innovation:**  Fork and extend exploring deeper integration with various technologies such as Azure Fabric, Co-Pilot, and Power Platform.
+
+**Training and Onboarding:**  Train new employees on the OSDU™ platform, offering hands-on experience in a controlled environment.
  
 
-## Main features
+## Features
 
  | **Feature**            | **Description**                                                                                                    |
 |------------------------|--------------------------------------------------------------------------------------------------------------------|
@@ -54,5 +59,5 @@ Application Development: Allows for easy developer integration with applications
 
 ## About this guide
 
-Follow the instructions in the "Quickstart" to quickly bring online a personal instance of OSDU.
+Follow the instructions in the "Tutorials" to quickly bring online a personal instance.
 

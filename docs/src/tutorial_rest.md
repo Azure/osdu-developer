@@ -1,4 +1,4 @@
-# API requests using VSCode and integrated scripts
+# Test using REST
 
 The solution has an integrated capability for the immediate execution of Rest API's using visual studio code. This integration only occurs if the Azure Developer CLI installation process has been performed.
 

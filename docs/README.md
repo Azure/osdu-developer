@@ -41,25 +41,3 @@ Make sure you review what you have written by putting yourself in the end
 user's shoes. Once you are ready, proceed with the spell check and then with
 the pull request.
 
-## How to run the spell checker
-
-Every time you work on the documentation, please run from the top directory:
-
-``` bash
-make spellcheck
-```
-
-This will run a spell checker and highlight all the words that need to be
-either fixed or added to the `.wordlist-en-custom.txt` file.
-
-## How to build the documentation in HTML
-
-From the `docs` folder, run the following command to build the documentation
-and place it in the `dist` directory:
-
-``` bash
-docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" \
-    minidocks/mkdocs \
-    sh -c "pip install mkdocs-mermaid2-plugin && mkdocs build -v -d dist"
-```
-

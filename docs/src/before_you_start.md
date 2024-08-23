@@ -1,10 +1,10 @@
 # Before you start
 
-Before starting it is important to ensure the Azure Subscription is properly configured for the solution to deploy.
+Before starting it is important to ensure the Azure Subscription is properly configured for a personal instance.
 
-## Required Resource Providers
+## Resource Providers
 
-To ensure the successful deployment of this solution, the following Azure Resource Providers must be registered in your subscription.
+To ensure the successful deployment, the following Azure Resource Providers must be registered in the subscription.
 
 | Resource Provider                 | Description                                                                 |
 |-----------------------------------|-----------------------------------------------------------------------------|

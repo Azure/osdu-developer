@@ -1,4 +1,4 @@
-# How to deploy using native ARM Templates
+# Deploy using One Click
 
 The solution is a native bicep solution and includes a transpiled ARM template from the latest release.  This ARM template can then be easily used as a custom template deployment.
 

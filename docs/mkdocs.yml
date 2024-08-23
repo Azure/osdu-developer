@@ -20,3 +20,13 @@ nav:
   - index.md
   - before_you_start.md
   - architecture.md
+  - software.md
+  - feature_flags.md
+  - Tutorials:
+    - tutorial_cli.md
+    - tutorial_click.md
+    - tutorial_rest.md
+  - OSDU Services:
+    - osdu_source.md
+    - osdu_core.md
+    - osdu_reference.md

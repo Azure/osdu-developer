@@ -1,20 +1,35 @@
-# Optional Features
+# Feature Flags
 
-Customize your resources by enabling these optional features based on your specific requirements:
+Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
+
+## Custom Software
+
+Software customizations can be managed and modified using the following feature flags.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_SOFTWARE           | Disables loading of all software when set to false (True by default)        |
 | ENABLE_OSDU_CORE          | Disables loading of the osdu core services (True by default)                |
 | ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
-| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
-| ENABLE_POD_SUBNET         | Enables a Subnet for Pods and uses network configuration Azure CNI Pod Subnet |
+
+## Bastion Management
+
+Modify the infrastructure and network by enabling Bastion Host with a virtual machine to use for access.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
 
-Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
+## Public Storage Access
+
+Control public access to Storage.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
 
 
-### Feature: Vnet Injection
+## Vnet Injection
 
 __Purpose:__ Enables a bring your own network capability.
 

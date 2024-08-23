@@ -45,7 +45,7 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 
 > **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as creation of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
 
-Follow this [tutorial](./docs/tutorials.md) for a quick overview from the Azure Cloud Shell.
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview from the Azure Cloud Shell.
 
 ### Prerequisites
 

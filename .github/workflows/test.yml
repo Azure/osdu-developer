@@ -176,8 +176,6 @@ jobs:
         uses: azure/CLI@v2
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
-          container:
-            image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
           inlineScript: |
             echo "RESOURCE_GROUP is $RESOURCE_GROUP"
             echo "LOCATION is $LOCATION"

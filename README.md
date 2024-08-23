@@ -1,6 +1,6 @@
 # OSDU Developer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![Infra - Test](https://github.com/Azure/osdu-developer/actions/workflows/test.yml/badge.svg)](https://github.com/Azure/osdu-developer/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![Infra - Test](https://github.com/Azure/osdu-developer/actions/workflows/test.yml/badge.svg)](https://github.com/Azure/osdu-developer/actions/workflows/test.yml) ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1)
 
 
 <!-- ![Github Issues](https://img.shields.io/github/issues/azure/osdu-developer)

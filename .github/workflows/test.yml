@@ -180,7 +180,7 @@ jobs:
             echo "RESOURCE_GROUP is $RESOURCE_GROUP"
             echo "LOCATION is $LOCATION"
 
-            EXISTING=$(az group list --query  "[?name=='$RESOURCE_GROUP'].[name]" -otsv)
+            $EXISTING = az group list --query "[?name=='$RESOURCE_GROUP'].[name]" -otsv
 
             if [ "$EXISTING"  == "" ]
               then
@@ -352,7 +352,7 @@ jobs:
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
-            az stack group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --action-on-unmanage deleteResources --verbose
+            az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --action-on-unmanage deleteResources --verbose
       
       - name: Azure Login Refresh Token
         uses: Azure/login@v2
@@ -370,7 +370,7 @@ jobs:
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
-            az stack group list --resource-group $RESOURCE_GROUP -o table
+            az deployment group list --resource-group $RESOURCE_GROUP -o table
 
             AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
             echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT

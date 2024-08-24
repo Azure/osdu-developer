@@ -455,32 +455,6 @@ jobs:
               exit 1
           }
 
-      # - name: Test Deployment
-      #   shell: pwsh
-      #   run: |
-      #     $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
-      #     $AKS_NAME='${{ needs.Deploy.outputs.AKS_NAME }}'
-      #     $paramFilePath="${{ env.ParamFilePath }}"
-      #     $params = Get-Content $paramFilePath | ConvertFrom-Json
-      #     Write-Output "Checking for User Assigned Identity"
-      #     if($params.parameters.custom_vnet.value -eq $true) {
-      #       $aksId=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "identity.type" -o tsv
-      #       write-output $aksId
-      #       if($aksId -eq "UserAssigned"){
-      #         Write-Output "UAI set correctly"
-      #       } else {
-      #         Write-Error "UAI not set properly"}
-      #     }
-      #     Write-Output "Checking for CSI Secrets driver"
-      #     if($params.parameters.keyVaultAksCSI.value -eq $true) {
-      #       $csiEnabled=az aks show -n $AKS_NAME -g $RESOURCE_GROUP --query "addonProfiles.omsagent.enabled" -o tsv
-      #       write-output $csiEnabled
-      #       if($csiEnabled -eq "true"){
-      #         Write-Output "CSI Secrets driver set correctly"
-      #       } else {
-      #         Write-Error "CSI Secrets driver not set properly"}
-      #     }
-
   Cleanup:
     name: Cleanup
     runs-on: ubuntu-latest

@@ -351,7 +351,7 @@ jobs:
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
-            az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --deny-settings-mode None --action-on-unmanage deleteResources --verbose
+            az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
       
       - name: Azure Login Refresh Token
         uses: Azure/login@v2

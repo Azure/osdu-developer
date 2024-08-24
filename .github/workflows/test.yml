@@ -180,13 +180,12 @@ jobs:
             echo "RESOURCE_GROUP is $RESOURCE_GROUP"
             echo "LOCATION is $LOCATION"
 
-            $EXISTING = az group list --query "[?name=='$RESOURCE_GROUP'].[name]" -otsv
+            EXISTING=$(az group list --query "[?name=='$RESOURCE_GROUP'].[name]" -otsv)
 
-            if [ "$EXISTING"  == "" ]
-              then
-                az group create --name $RESOURCE_GROUP --location $LOCATION
-              else
-                echo "Resource Group $RESOURCE_GROUP exists"
+            if [ -z "$EXISTING" ]; then
+              az group create --name $RESOURCE_GROUP --location $LOCATION
+            else
+              echo "Resource Group $RESOURCE_GROUP exists"
             fi
 
       - name: Verify any active Azure Resource Group Deployments #These can mess up our deployment
@@ -503,11 +502,17 @@ jobs:
 
       - name: Delete Resource Group
         uses: azure/CLI@v2
+        continue-on-error: true
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-            az group delete --name $RESOURCE_GROUP --yes
+            if az group exists --name $RESOURCE_GROUP; then
+              echo "Resource group $RESOURCE_GROUP exists. Deleting..."
+              az group delete --name $RESOURCE_GROUP --yes --no-wait
+            else
+              echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
+            fi
 
       - name: Purge Deleted Key Vaults
         uses: azure/CLI@v2

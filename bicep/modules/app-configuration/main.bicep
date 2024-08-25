@@ -175,9 +175,9 @@ module configurationStore_keyValues './.bicep/key_values.bicep' = [for (keyValue
     appConfigurationName: configStore.name
     name: keyValue.name
     value: keyValue.value
-    label: contains(keyValue, 'label') ? keyValue.label : ''
-    contentType: contains(keyValue, 'contentType') ? keyValue.contentType : ''
-    tags: contains(keyValue, 'tags') ? keyValue.tags : {}
+    label: keyValue.?label ?? ''
+    contentType: keyValue.?contentType ?? ''
+    tags: keyValue.?tags ?? {}
   }
 }]
 

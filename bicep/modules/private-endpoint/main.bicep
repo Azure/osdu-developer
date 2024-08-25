@@ -106,11 +106,11 @@ module privateEndpoint_roleAssignments './.bicep/nested_rbac.bicep' = [for (role
   name: '${deployment().name}-rbac-${index}'
   
   params: {
-    description: contains(roleAssignment, 'description') ? roleAssignment.description : ''
+    description: roleAssignment.?description ?? ''
     principals: roleAssignment.principals
-    principalType: contains(roleAssignment, 'principalType') ? roleAssignment.principalType : ''
+    principalType: roleAssignment.?principalType ?? ''
     roleDefinitionIdOrName: roleAssignment.roleDefinitionIdOrName
-    condition: contains(roleAssignment, 'condition') ? roleAssignment.condition : ''
+    condition: roleAssignment.?condition ?? ''
     resourceId: privateEndpoint.id
     crossTenant: crossTenant
   }

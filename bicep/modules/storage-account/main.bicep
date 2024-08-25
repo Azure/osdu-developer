@@ -317,10 +317,10 @@ resource resource_lock 'Microsoft.Authorization/locks@2020-05-01' = if (lock != 
 module storage_rbac '.bicep/nested_rbac.bicep' = [for (roleAssignment, index) in roleAssignments: {
   name: '${deployment().name}-rbac-${index}'
   params: {
-    description: contains(roleAssignment, 'description') ? roleAssignment.description : ''
+    description: roleAssignment.?description ?? ''
     principals: roleAssignment.principals
     roleDefinitionIdOrName: roleAssignment.roleDefinitionIdOrName
-    principalType: contains(roleAssignment, 'principalType') ? roleAssignment.principalType : ''
+    principalType: roleAssignment.?principalType ?? ''
     resourceId: storage.id
     crossTenant: crossTenant
   }

@@ -45,7 +45,7 @@ module gremlinDatabase_gremlinGraphs 'gremlin_graph.bicep' = [for graph in graph
     name: graph.name
     gremlinDatabaseName: name
     databaseAccountName: databaseAccountName
-    automaticIndexing: contains(graph, 'automaticIndexing') ? graph.automaticIndexing : true
+    automaticIndexing: graph.?automaticIndexing ?? true
     partitionKeyPaths: !empty(graph.partitionKeyPaths) ? graph.partitionKeyPaths : []
   }
 }]

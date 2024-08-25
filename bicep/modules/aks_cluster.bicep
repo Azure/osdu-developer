@@ -67,6 +67,9 @@ param managedNodeResourceGroup string = ''
 @description('The System Pool Preset sizing')
 param clusterSize string = 'CostOptimised'
 
+@description('Override the default server type.')
+param customVMSize string = ''
+
 @description('The System Pool Preset sizing')
 param AutoscaleProfile object = {
   'balance-similar-node-groups': 'true'
@@ -336,20 +339,10 @@ var outboundTrafficType = aksOutboundTrafficType=='natGateway' ? ( custom_vnet ?
 @description('System Pool presets are derived from the recommended system pool specs')
 var systemPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
-  CostOptimised : {
+  Burstable : {
     vmSize: 'Standard_B4ms'
     minCount: 1
     maxCount: 3
-    availabilityZones: []
-    osDiskType: 'Managed'
-    osDiskSize: 128
-    maxPods: 30
-  }
-  // 2 vCPU, 7 GiB RAM, 14 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
-  Standard : {
-    vmSize: 'Standard_DS2_v2'
-    minCount: 3
-    maxCount: 5
     availabilityZones: [
       '1'
       '2'
@@ -359,11 +352,11 @@ var systemPoolPresets = {
     osDiskSize: 128
     maxPods: 30
   }
-  // 4 vCPU, 16 GiB RAM, 32 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
-  HighSpec : {
-    vmSize: 'Standard_D4s_v3'
-    minCount: 3
-    maxCount: 10
+  // 2 vCPU, 7 GiB RAM, 14 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
+  Standard : {
+    vmSize: 'Standard_D4s_v5'
+    minCount: 1
+    maxCount: 3
     availabilityZones: [
       '1'
       '2'
@@ -383,7 +376,7 @@ var systemPoolProfile = {
   type: 'VirtualMachineScaleSets'
   osDiskType: systemPoolPresets[clusterSize].osDiskType
   osDiskSizeGB: systemPoolPresets[clusterSize].osDiskSize
-  vmSize: systemPoolPresets[clusterSize].vmSize
+  vmSize: empty(customVMSize) ? systemPoolPresets[clusterSize].vmSize : customVMSize
   count: systemPoolPresets[clusterSize].minCount
   minCount: systemPoolPresets[clusterSize].minCount
   maxCount: systemPoolPresets[clusterSize].maxCount
@@ -403,41 +396,31 @@ var systemPoolProfile = {
 @description('First User Pool presets')
 var userPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
-  CostOptimised : {
-    vmSize: 'Standard_B4ms'
+  Burstable : {
+    vmSize: 'Standard_B2ms'
     minCount: 3
-    maxCount: 8
-    availabilityZones: []
-    osDiskType: 'Managed'
-    osDiskSize: 128
-    maxPods: 30
-  }
-  // 4 vCPU, 32 GiB RAM, 64 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
-  Standard : {
-    vmSize: 'Standard_E4s_v3'
-    minCount: 3
-    maxCount: 15
-    availabilityZones: [
-      '1'
-      '2'
-      '3'
-    ]
-    osDiskType: 'Managed'
-    osDiskSize: 128
-    maxPods: 30
-  }
-  // 8 vCPU, 32 GiB RAM, 300 GiB Temp Disk, (77000) IOPS, Ephermial Disk
-  HighSpec : {
-    vmSize: 'Standard_D8ds_v4'
-    minCount: 4
     maxCount: 20
     availabilityZones: [
       '1'
       '2'
       '3'
     ]
-    osDiskType: 'Ephemeral'
-    osDiskSize: 0
+    osDiskType: 'Managed'
+    osDiskSize: 128
+    maxPods: 30
+  }
+  // 4 vCPU, 32 GiB RAM, 64 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
+  Standard : {
+    vmSize: 'Standard_D2s_v5'
+    minCount: 3
+    maxCount: 20
+    availabilityZones: [
+      '1'
+      '2'
+      '3'
+    ]
+    osDiskType: 'Managed'
+    osDiskSize: 128
     maxPods: 30
   }
 }
@@ -450,7 +433,7 @@ var userPoolProfile = {
   type: 'VirtualMachineScaleSets'
   osDiskType: userPoolPresets[clusterSize].osDiskType
   osDiskSizeGB: userPoolPresets[clusterSize].osDiskSize
-  vmSize: userPoolPresets[clusterSize].vmSize
+  vmSize: empty(customVMSize) ? userPoolPresets[clusterSize].vmSize : customVMSize
   count: userPoolPresets[clusterSize].minCount
   minCount: userPoolPresets[clusterSize].minCount
   maxCount: userPoolPresets[clusterSize].maxCount

@@ -18,12 +18,14 @@ param applicationClientSecret string
 param applicationClientPrincipalOid string
 
 @allowed([
-  'CostOptimised'
+  'Burstable'
   'Standard'
-  'HighSpec'
 ])
 @description('The size of the solution')
-param tier string = 'CostOptimised'
+param tier string = 'Burstable'
+
+@description('Override the default server type.')
+param customVMSize string = ''
 
 @allowed([
   'External'
@@ -419,6 +421,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     
     aksSubnetId: networkBlade.outputs.aksSubnetId
     podSubnetId: enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
+    customVMSize: customVMSize
     clusterSize: tier
     clusterAdminIds: clusterAdminIds
 

@@ -59,13 +59,11 @@ param managedNodeResourceGroup string = ''
 // Compute Configuration
 ////////////////////
 @allowed([
-  'CostOptimised'
+  'Burstable'
   'Standard'
-  'HighSpec'
-  'Custom'
 ])
 @description('The System Pool Preset sizing')
-param clusterSize string = 'CostOptimised'
+param clusterSize string = 'Burstable'
 
 @description('Override the default server type.')
 param customVMSize string = ''

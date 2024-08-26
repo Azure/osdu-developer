@@ -6,6 +6,7 @@ permissions:
 
 on:
   push:
+    branches: [main]
     paths:
       - "bicep/main.bicep"
       - "bicep/modules_bicep/**/*"

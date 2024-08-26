@@ -133,12 +133,12 @@ jobs:
       - name: Parameter Value Augmentation
         id: params
         env:
-          DEFAULTRGNAME: gh-osdu-developer
+          DEFAULTRGNAME: ${{ env.DEPNAME }}
         run: |
           if [ -z "${{ github.event.inputs.region }}" ]
           then
             echo "Region parameter not available through GitHub event data, setting default"
-            REGION="eastus"
+            REGION="eastus2"
           else
             echo "Region parameter found in GitHub event (${{ github.event.inputs.region }})"
             REGION="${{ github.event.inputs.region }}"
@@ -311,7 +311,7 @@ jobs:
       #RESOURCE_GROUP: ${{ env.DEPNAME }}
       REGION: ${{ needs.Validate.outputs.REGION }}
 
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -343,204 +343,142 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          SKIP_POST: true
 
-      # - name: Job parameter check
-      #   if: github.event.inputs.doDebugSteps == 'true'
-      #   run: |
-      #     echo "RESOURCE_GROUP is: ${{ env.RESOURCE_GROUP }}"
-      #     echo "Param file path is: ${{ env.ParamFilePath }}"
-      #     echo "Deployment name is ${{ env.DEPNAME }}"
 
-      # - name: Parameter file check
-      #   if: github.event.inputs.doVerifySteps == 'true'
-      #   shell: pwsh
-      #   run: |
-      #     Write-Output "Checking parameter file existence/contents"
-      #     $paramFilePath="${{ env.ParamFilePath }}"
-      #     Test-Path $paramFilePath
-      #     if (Test-Path $paramFilePath) {
-      #       $paramFileContent=Get-Content $paramFilePath
-      #       Write-Output $paramFileContent
-      #       Write-Output "Test Pulling a param (storageAccountType)"
-      #       $params=$paramFileContent|ConvertFrom-Json
-      #       Write-Output $params.parameters.storageAccountType.value
-      #     }
+  Verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    needs: [Validate, Provision]
+    env:
+      RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+    steps:
+      - uses: actions/checkout@v4
 
-      # - name: Azure Login
-      #   uses: Azure/login@v2
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #     enable-AzPSSession: true
-      #     environment: azurecloud
-      #     allow-no-subscriptions: false
+      - name: Param check
+        if: github.event.inputs.doDebugSteps == 'true'
+        run: |
+          echo "RESOURCE_GROUP is $RESOURCE_GROUP"
+          echo "Param file path is: ${{ env.ParamFilePath }}"
+          echo "Deployment name is ${{ env.DEPNAME }}"
 
-      # - name: Deploy Infrastructure
-      #   id: deployAks
-      #   uses: azure/CLI@v2
-      #   with:
-      #     azcliversion: ${{ env.AZCLIVERSION }}
-      #     inlineScript: |
-      #       DEPNAME='Dep${{ github.run_number }}'
-      #       PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
-      #       az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
-      
-      # - name: Azure Login Refresh Token
-      #   uses: Azure/login@v2
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #     enable-AzPSSession: true
-      #     environment: azurecloud
-      #     allow-no-subscriptions: false
+      - name: Azure Login
+        uses: Azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+          environment: azurecloud
+          allow-no-subscriptions: false
 
-      # - name: Retrieve AKS Name
-      #   id: getAks
-      #   uses: azure/CLI@v2
-      #   with:
-      #     azcliversion: ${{ env.AZCLIVERSION }}
-      #     inlineScript: |
-      #       az deployment group list --resource-group $RESOURCE_GROUP -o table
+      - name: Test Deployment
+        shell: pwsh
+        run: |
+          $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
+          $AKS_NAME = az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv
 
-      #       AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
-      #       echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
+          # Check for Flux compliance and timing logic
+          Write-Output "Checking for Flux compliance"
+          $end = (Get-Date).AddMinutes(35)
+          try {
+              # Check if the Flux configuration exists
+              $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
 
-  # Verify:
-  #   name: Verify
-  #   runs-on: ubuntu-latest
-  #   needs: [Validate, Deploy]
-  #   env:
-  #     RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
-  #   steps:
-  #     - uses: actions/checkout@v4
+              if (-not $fluxExists) {
+                  Write-Host "`n=================================================================="
+                  Write-Host "Software Installation: disabled"
+                  Write-Host "=================================================================="
+                  exit 0
+              }
 
-  #     - name: Param check
-  #       if: github.event.inputs.doDebugSteps == 'true'
-  #       run: |
-  #         echo "RESOURCE_GROUP is $RESOURCE_GROUP"
-  #         echo "Param file path is: ${{ env.ParamFilePath }}"
-  #         echo "Deployment name is ${{ env.DEPNAME }}"
-  #         echo "AKS name is ${{ needs.Deploy.outputs.AKS_NAME }}"
+              $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+              Write-Host "`n=================================================================="
+              Write-Host "Software Installation: $complianceState"
+              Write-Host "=================================================================="
 
-  #     - name: Azure Login
-  #       uses: Azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         enable-AzPSSession: true
-  #         environment: azurecloud
-  #         allow-no-subscriptions: false
+              # If compliant right away, skip the while loop; otherwise, wait initially for 5 minutes
+              if ($complianceState -eq "Compliant") {
+                  return
+              } else {
+                  Write-Host "  Software installing, retry in 10 minutes."
+                  Start-Sleep -Seconds 300
+              }
 
-  #     - name: Test Deployment
-  #       shell: pwsh
-  #       run: |
-  #         $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
-  #         $AKS_NAME = az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv
+              while ((Get-Date) -lt $end) {
+                  $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+                  Write-Host "  Current Software State: $complianceState"
+                  if ($complianceState -eq "Compliant") {
+                      Write-Host "  Software has been installed."
+                      break
+                  } else {
+                      Write-Host "  Software installing, retry in 2 minutes."
+                      Start-Sleep -Seconds 120
+                  }
+              }
 
-  #         # Check for Flux compliance and timing logic
-  #         Write-Output "Checking for Flux compliance"
-  #         $end = (Get-Date).AddMinutes(35)
-  #         try {
-  #             # Check if the Flux configuration exists
-  #             $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
+              if ((Get-Date) -ge $end) {
+                  Write-Host "  Software check timed out - 35 minutes."
+                  exit 1
+              }
+          } catch {
+              Write-Host "Error during software check: $_"
+              exit 1
+          }
 
-  #             if (-not $fluxExists) {
-  #                 Write-Host "`n=================================================================="
-  #                 Write-Host "Software Installation: disabled"
-  #                 Write-Host "=================================================================="
-  #                 exit 0
-  #             }
+  Cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [Validate, Provision, Verify]
+    if: always()  # This ensures the cleanup job always runs
+    timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
+    steps:
+      - uses: actions/checkout@v4
 
-  #             $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
-  #             Write-Host "`n=================================================================="
-  #             Write-Host "Software Installation: $complianceState"
-  #             Write-Host "=================================================================="
+      - name: Azure Login
+        uses: Azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+          environment: azurecloud
+          allow-no-subscriptions: false
 
-  #             # If compliant right away, skip the while loop; otherwise, wait initially for 5 minutes
-  #             if ($complianceState -eq "Compliant") {
-  #                 return
-  #             } else {
-  #                 Write-Host "  Software installing, retry in 10 minutes."
-  #                 Start-Sleep -Seconds 300
-  #             }
+      - name: Delete Resource Group
+        uses: azure/CLI@v2
+        continue-on-error: true
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            if az group exists --name $RESOURCE_GROUP; then
+              echo "Resource group $RESOURCE_GROUP exists. Deleting..."
+              az group delete --name $RESOURCE_GROUP --yes --no-wait
+            else
+              echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
+            fi
 
-  #             while ((Get-Date) -lt $end) {
-  #                 $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
-  #                 Write-Host "  Current Software State: $complianceState"
-  #                 if ($complianceState -eq "Compliant") {
-  #                     Write-Host "  Software has been installed."
-  #                     break
-  #                 } else {
-  #                     Write-Host "  Software installing, retry in 2 minutes."
-  #                     Start-Sleep -Seconds 120
-  #                 }
-  #             }
+      - name: Purge Deleted Key Vaults
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
+            for KV in $DELETED_KEY_VAULTS; do
+              az keyvault purge --name $KV
+              echo "Deleted key vault $KV purged."
+            done
 
-  #             if ((Get-Date) -ge $end) {
-  #                 Write-Host "  Software check timed out - 35 minutes."
-  #                 exit 1
-  #             }
-  #         } catch {
-  #             Write-Host "Error during software check: $_"
-  #             exit 1
-  #         }
-
-  # Cleanup:
-  #   name: Cleanup
-  #   runs-on: ubuntu-latest
-  #   needs: [Validate, Deploy, Verify]
-  #   if: always()  # This ensures the cleanup job always runs
-  #   timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Azure Login
-  #       uses: Azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         enable-AzPSSession: true
-  #         environment: azurecloud
-  #         allow-no-subscriptions: false
-
-  #     - name: Delete Resource Group
-  #       uses: azure/CLI@v2
-  #       continue-on-error: true
-  #       with:
-  #         azcliversion: ${{ env.AZCLIVERSION }}
-  #         inlineScript: |
-  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-  #           if az group exists --name $RESOURCE_GROUP; then
-  #             echo "Resource group $RESOURCE_GROUP exists. Deleting..."
-  #             az group delete --name $RESOURCE_GROUP --yes --no-wait
-  #           else
-  #             echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
-  #           fi
-
-  #     - name: Purge Deleted Key Vaults
-  #       uses: azure/CLI@v2
-  #       with:
-  #         azcliversion: ${{ env.AZCLIVERSION }}
-  #         inlineScript: |
-  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-  #           DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
-  #           for KV in $DELETED_KEY_VAULTS; do
-  #             az keyvault purge --name $KV
-  #             echo "Deleted key vault $KV purged."
-  #           done
-
-  #     - name: Purge Deleted App Configurations
-  #       uses: azure/CLI@v2
-  #       with:
-  #         azcliversion: ${{ env.AZCLIVERSION }}
-  #         inlineScript: |
-  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-  #           DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(configurationStoreId, '${RESOURCE_GROUP}')].name" -o tsv)
-  #           for AC in $DELETED_APP_CONFIGS; do
-  #             az appconfig purge --name $AC --yes
-  #             echo "Deleted app configuration $AC purged."
-  #           done
+      - name: Purge Deleted App Configurations
+        uses: azure/CLI@v2
+        with:
+          azcliversion: ${{ env.AZCLIVERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+            DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(configurationStoreId, '${RESOURCE_GROUP}')].name" -o tsv)
+            for AC in $DELETED_APP_CONFIGS; do
+              az appconfig purge --name $AC --yes
+              echo "Deleted app configuration $AC purged."
+            done

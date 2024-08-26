@@ -75,8 +75,6 @@ function Set-Login {
     }
 }
 
-
-
 function Get-AKSName {
     try {
         # Check if AKS_NAME is provided, if not retrieve it
@@ -229,6 +227,10 @@ function Update-Application {
 # Main script execution
 if ($Help) {
     Show-Help
+    exit 0
+}
+
+if ($SKIP_POST) {
     exit 0
 }
 

@@ -304,81 +304,99 @@ jobs:
             }
           }
 
-  # Deploy:
-  #   name: Deploy
-  #   runs-on: ubuntu-latest
-  #   needs: [Validate]
-  #   environment: ${{ github.event.inputs.environment }}
-  #   env:
-  #     RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
-  #     REGION: ${{ needs.Validate.outputs.REGION }}
+  Provision:
+    name: Provision
+    runs-on: ubuntu-latest
+    needs: [Validate]
+    environment: ${{ github.event.inputs.environment }}
+    env:
+      RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+      REGION: ${{ needs.Validate.outputs.REGION }}
 
-  #   if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
-  #   steps:
-  #     - uses: actions/checkout@v4
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Job parameter check
-  #       if: github.event.inputs.doDebugSteps == 'true'
-  #       run: |
-  #         echo "RESOURCE_GROUP is: ${{ env.RESOURCE_GROUP }}"
-  #         echo "Param file path is: ${{ env.ParamFilePath }}"
-  #         echo "Deployment name is ${{ env.DEPNAME }}"
-
-  #     - name: Parameter file check
-  #       if: github.event.inputs.doVerifySteps == 'true'
-  #       shell: pwsh
-  #       run: |
-  #         Write-Output "Checking parameter file existence/contents"
-  #         $paramFilePath="${{ env.ParamFilePath }}"
-  #         Test-Path $paramFilePath
-  #         if (Test-Path $paramFilePath) {
-  #           $paramFileContent=Get-Content $paramFilePath
-  #           Write-Output $paramFileContent
-  #           Write-Output "Test Pulling a param (storageAccountType)"
-  #           $params=$paramFileContent|ConvertFrom-Json
-  #           Write-Output $params.parameters.storageAccountType.value
-  #         }
-
-  #     - name: Azure Login
-  #       uses: Azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         enable-AzPSSession: true
-  #         environment: azurecloud
-  #         allow-no-subscriptions: false
-
-  #     - name: Deploy Infrastructure
-  #       id: deployAks
-  #       uses: azure/CLI@v2
-  #       with:
-  #         azcliversion: ${{ env.AZCLIVERSION }}
-  #         inlineScript: |
-  #           DEPNAME='Dep${{ github.run_number }}'
-  #           PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
-  #           az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
+      - name: Install azd
+        uses: Azure/setup-azd@v1.0.0
       
-  #     - name: Azure Login Refresh Token
-  #       uses: Azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         enable-AzPSSession: true
-  #         environment: azurecloud
-  #         allow-no-subscriptions: false
+      - name: Log in with Azure (Federated Credentials)
+        if: ${{ env.AZURE_CLIENT_ID != '' }}
+        run: |
+          azd auth login `
+            --client-id "$Env:AZURE_CLIENT_ID" `
+            --federated-credential-provider "github" `
+            --tenant-id "$Env:AZURE_TENANT_ID"
+        shell: pwsh
 
-  #     - name: Retrieve AKS Name
-  #       id: getAks
-  #       uses: azure/CLI@v2
-  #       with:
-  #         azcliversion: ${{ env.AZCLIVERSION }}
-  #         inlineScript: |
-  #           az deployment group list --resource-group $RESOURCE_GROUP -o table
+      - name: Provision Infrastructure
+        run: azd provision --no-prompt
+        env:
+          AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
 
-  #           AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
-  #           echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
+      # - name: Job parameter check
+      #   if: github.event.inputs.doDebugSteps == 'true'
+      #   run: |
+      #     echo "RESOURCE_GROUP is: ${{ env.RESOURCE_GROUP }}"
+      #     echo "Param file path is: ${{ env.ParamFilePath }}"
+      #     echo "Deployment name is ${{ env.DEPNAME }}"
+
+      # - name: Parameter file check
+      #   if: github.event.inputs.doVerifySteps == 'true'
+      #   shell: pwsh
+      #   run: |
+      #     Write-Output "Checking parameter file existence/contents"
+      #     $paramFilePath="${{ env.ParamFilePath }}"
+      #     Test-Path $paramFilePath
+      #     if (Test-Path $paramFilePath) {
+      #       $paramFileContent=Get-Content $paramFilePath
+      #       Write-Output $paramFileContent
+      #       Write-Output "Test Pulling a param (storageAccountType)"
+      #       $params=$paramFileContent|ConvertFrom-Json
+      #       Write-Output $params.parameters.storageAccountType.value
+      #     }
+
+      # - name: Azure Login
+      #   uses: Azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      #     enable-AzPSSession: true
+      #     environment: azurecloud
+      #     allow-no-subscriptions: false
+
+      # - name: Deploy Infrastructure
+      #   id: deployAks
+      #   uses: azure/CLI@v2
+      #   with:
+      #     azcliversion: ${{ env.AZCLIVERSION }}
+      #     inlineScript: |
+      #       DEPNAME='Dep${{ github.run_number }}'
+      #       PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
+      #       az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
+      
+      # - name: Azure Login Refresh Token
+      #   uses: Azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      #     enable-AzPSSession: true
+      #     environment: azurecloud
+      #     allow-no-subscriptions: false
+
+      # - name: Retrieve AKS Name
+      #   id: getAks
+      #   uses: azure/CLI@v2
+      #   with:
+      #     azcliversion: ${{ env.AZCLIVERSION }}
+      #     inlineScript: |
+      #       az deployment group list --resource-group $RESOURCE_GROUP -o table
+
+      #       AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
+      #       echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
 
   # Verify:
   #   name: Verify

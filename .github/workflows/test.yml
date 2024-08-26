@@ -58,6 +58,11 @@ env:
   AZCLIVERSION: latest
   ParamFilePath: ".github/parameters.json"
   DEPNAME: "Dep${{ github.run_number }}"
+  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+  AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
 
 jobs:
   Standards:
@@ -86,428 +91,428 @@ jobs:
           modules: "PSRule.Rules.Azure"
           inputPath: "${{ env.ParamFilePath }}"
 
-  Validate:
-    runs-on: ubuntu-latest
-    environment: dev
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    outputs:
-      RESOURCEGROUP: ${{ steps.params.outputs.RESOURCEGROUP}}
-      REGION: ${{ steps.params.outputs.REGION}}
+  # Validate:
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+  #   if: ${{ !github.event.pull_request.head.repo.fork }}
+  #   outputs:
+  #     RESOURCEGROUP: ${{ steps.params.outputs.RESOURCEGROUP}}
+  #     REGION: ${{ steps.params.outputs.REGION}}
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Job parameter check
-        if: github.event.inputs.doDebugSteps == 'true'
-        run: |
-          echo "Param file path is: ${{ env.ParamFilePath }}"
-          echo "Resource name is ${{ env.RESNAME }}"
-          echo "Deployment name is ${{ env.DEPNAME }}"
-          echo "Ref is ${{ github.ref }}"
-          echo "Ref name is ${{GITHUB.REF_NAME}}"
-          echo "EventTrigger name is ${{github.event_name}}"
-          echo "PR contains bug :  ${{contains(github.event.pull_request.labels.*.name, 'bug')}}"
-          echo "PR labels :  ${{github.event.pull_request.labels.*.name}}"
-          echo "AZCLIVERSION is ${{ env.AZCLIVERSION }}"
-          echo "doDebugSteps is ${{ github.event.inputs.doDebugSteps }}"
-          echo "doVerifySteps is ${{ github.event.inputs.doVerifySteps }}"
+  #     - name: Job parameter check
+  #       if: github.event.inputs.doDebugSteps == 'true'
+  #       run: |
+  #         echo "Param file path is: ${{ env.ParamFilePath }}"
+  #         echo "Resource name is ${{ env.RESNAME }}"
+  #         echo "Deployment name is ${{ env.DEPNAME }}"
+  #         echo "Ref is ${{ github.ref }}"
+  #         echo "Ref name is ${{GITHUB.REF_NAME}}"
+  #         echo "EventTrigger name is ${{github.event_name}}"
+  #         echo "PR contains bug :  ${{contains(github.event.pull_request.labels.*.name, 'bug')}}"
+  #         echo "PR labels :  ${{github.event.pull_request.labels.*.name}}"
+  #         echo "AZCLIVERSION is ${{ env.AZCLIVERSION }}"
+  #         echo "doDebugSteps is ${{ github.event.inputs.doDebugSteps }}"
+  #         echo "doVerifySteps is ${{ github.event.inputs.doVerifySteps }}"
 
-      - name: Arm Parameter file check
-        if: github.event.inputs.doVerifySteps == 'true'
-        shell: pwsh
-        run: |
-          Write-Output "Checking parameter file existence/contents"
-          $paramFilePath="${{ env.ParamFilePath }}"
-          Test-Path $paramFilePath
-          if (Test-Path $paramFilePath) {
-            $paramFileContent=Get-Content $paramFilePath
-            Write-Output $paramFileContent
-            Write-Output "Test Pulling a param (storageAccountType)"
-            $params=$paramFileContent|ConvertFrom-Json
-            Write-Output $params.parameters.storageAccountType.value
-          }
+  #     - name: Arm Parameter file check
+  #       if: github.event.inputs.doVerifySteps == 'true'
+  #       shell: pwsh
+  #       run: |
+  #         Write-Output "Checking parameter file existence/contents"
+  #         $paramFilePath="${{ env.ParamFilePath }}"
+  #         Test-Path $paramFilePath
+  #         if (Test-Path $paramFilePath) {
+  #           $paramFileContent=Get-Content $paramFilePath
+  #           Write-Output $paramFileContent
+  #           Write-Output "Test Pulling a param (storageAccountType)"
+  #           $params=$paramFileContent|ConvertFrom-Json
+  #           Write-Output $params.parameters.storageAccountType.value
+  #         }
 
-      - name: Parameter Value Augmentation
-        id: params
-        env:
-          DEFAULTRGNAME: gh-osdu-developer
-        run: |
-          if [ -z "${{ github.event.inputs.region }}" ]
-          then
-            echo "Region parameter not available through GitHub event data, setting default"
-            REGION="eastus"
-          else
-            echo "Region parameter found in GitHub event (${{ github.event.inputs.region }})"
-            REGION="${{ github.event.inputs.region }}"
-          fi
-          echo $REGION
-          echo "REGION=$REGION" >> $GITHUB_OUTPUT
-          if [ -z "${{ github.event.inputs.ResourceGroup }}" ]
-          then
-            echo "ResourceGroup parameter not available through GitHub event data, setting to default"
-            echo $DEFAULTRGNAME
-            echo "RESOURCEGROUP=$DEFAULTRGNAME" >> $GITHUB_OUTPUT
-          else
-            echo "Resource Group parameter found in GitHub event (${{ github.event.inputs.ResourceGroup }})"
-            echo "RESOURCEGROUP=${{ github.event.inputs.ResourceGroup }}" >> $GITHUB_OUTPUT
-          fi
+  #     - name: Parameter Value Augmentation
+  #       id: params
+  #       env:
+  #         DEFAULTRGNAME: gh-osdu-developer
+  #       run: |
+  #         if [ -z "${{ github.event.inputs.region }}" ]
+  #         then
+  #           echo "Region parameter not available through GitHub event data, setting default"
+  #           REGION="eastus"
+  #         else
+  #           echo "Region parameter found in GitHub event (${{ github.event.inputs.region }})"
+  #           REGION="${{ github.event.inputs.region }}"
+  #         fi
+  #         echo $REGION
+  #         echo "REGION=$REGION" >> $GITHUB_OUTPUT
+  #         if [ -z "${{ github.event.inputs.ResourceGroup }}" ]
+  #         then
+  #           echo "ResourceGroup parameter not available through GitHub event data, setting to default"
+  #           echo $DEFAULTRGNAME
+  #           echo "RESOURCEGROUP=$DEFAULTRGNAME" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "Resource Group parameter found in GitHub event (${{ github.event.inputs.ResourceGroup }})"
+  #           echo "RESOURCEGROUP=${{ github.event.inputs.ResourceGroup }}" >> $GITHUB_OUTPUT
+  #         fi
 
-      - name: Azure Login
-        uses: Azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          enable-AzPSSession: true
-          environment: azurecloud
-          allow-no-subscriptions: false
+  #     - name: Azure Login
+  #       uses: Azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #         enable-AzPSSession: true
+  #         environment: azurecloud
+  #         allow-no-subscriptions: false
 
-      - name: Install Pwsh modules
-        shell: pwsh
-        run: |
-          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-          Install-Module -Name Az.KeyVault -Force
+  #     - name: Install Pwsh modules
+  #       shell: pwsh
+  #       run: |
+  #         Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+  #         Install-Module -Name Az.KeyVault -Force
 
-      - name: Verify Resource Group Exists
-        id: hasResourceGroup
-        env:
-          RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-          LOCATION: ${{ steps.params.outputs.REGION }}
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            echo "RESOURCE_GROUP is $RESOURCE_GROUP"
-            echo "LOCATION is $LOCATION"
+  #     - name: Verify Resource Group Exists
+  #       id: hasResourceGroup
+  #       env:
+  #         RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+  #         LOCATION: ${{ steps.params.outputs.REGION }}
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           echo "RESOURCE_GROUP is $RESOURCE_GROUP"
+  #           echo "LOCATION is $LOCATION"
 
-            EXISTING=$(az group list --query "[?name=='$RESOURCE_GROUP'].[name]" -otsv)
+  #           EXISTING=$(az group list --query "[?name=='$RESOURCE_GROUP'].[name]" -otsv)
 
-            if [ -z "$EXISTING" ]; then
-              az group create --name $RESOURCE_GROUP --location $LOCATION
-            else
-              echo "Resource Group $RESOURCE_GROUP exists"
-            fi
+  #           if [ -z "$EXISTING" ]; then
+  #             az group create --name $RESOURCE_GROUP --location $LOCATION
+  #           else
+  #             echo "Resource Group $RESOURCE_GROUP exists"
+  #           fi
 
-      - name: Verify any active Azure Resource Group Deployments #These can mess up our deployment
-        id: activedeps
-        if: github.event.inputs.doVerifySteps == 'true'
-        env:
-          RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            echo "AZ CLI version"
-            az version
-            RUNCOUNT=$(az deployment group list -g $RESOURCE_GROUP --query "[?properties.provisioningState=='Running'].[properties.provisioningState, name] | length(@)" -o tsv)
-            echo "Active deployments : $RUNCOUNT"
-            echo 'Active deployment list'
-            az deployment group list -g $RESOURCE_GROUP --query "[?properties.provisioningState=='Running'].[properties.provisioningState, name]"
-            echo "RUNCOUNT=$RUNCOUNT" >> $GITHUB_OUTPUT
+  #     - name: Verify any active Azure Resource Group Deployments #These can mess up our deployment
+  #       id: activedeps
+  #       if: github.event.inputs.doVerifySteps == 'true'
+  #       env:
+  #         RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           echo "AZ CLI version"
+  #           az version
+  #           RUNCOUNT=$(az deployment group list -g $RESOURCE_GROUP --query "[?properties.provisioningState=='Running'].[properties.provisioningState, name] | length(@)" -o tsv)
+  #           echo "Active deployments : $RUNCOUNT"
+  #           echo 'Active deployment list'
+  #           az deployment group list -g $RESOURCE_GROUP --query "[?properties.provisioningState=='Running'].[properties.provisioningState, name]"
+  #           echo "RUNCOUNT=$RUNCOUNT" >> $GITHUB_OUTPUT
 
-      - name: Verify AKS Preview Features are available in target Subscription
-        if: github.event.inputs.doVerifySteps == 'true'
-        shell: pwsh
-        run: |
-          write-output 'Full list of features of AKS'
-          az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService')].{Name:name,State:properties.state}"
-          write-output 'Features that are still registering'
-          az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService') && properties.state=='Registering'].{Name:name,State:properties.state}"
-          write-output 'Checking to ensure no features are still registering'
-          $aksfeatures = az feature list --query "[?contains(name, 'Microsoft.ContainerService')]" | ConvertFrom-Json
-          $registeringfeatures = $aksfeatures |  Where-Object {$_.properties.state -eq 'Registering'}
-          if ($registeringfeatures.count -gt 0) {
-            Write-Error "There are still features registering"
-          } else { Write-Output "-- All good, no features in the process of registering" }
-          write-output 'Check specific features.'
-          $paramFilePath="${{ env.ParamFilePath }}"
-          $paramFileContent=Get-Content $paramFilePath
-          $params=$paramFileContent|ConvertFrom-Json
-          if($params.parameters.keyVaultAksCSI.value -eq $true) {
-            $feature='AKS-AzureKeyVaultSecretsProvider'
-            write-output "-- $feature"
-            $featureCsi = $aksfeatures |  Where-Object {$_.name -like "*$feature"}
-            $featureCsi.properties.state
-            if ($featureCsi.properties.state -ne 'Registered') {
-              Write-Output $featureCsi
-              Write-Error "$feature NOT registered"
-            } else { Write-Output "-- Looks like $feature is registered properly" }
-          }
+  #     - name: Verify AKS Preview Features are available in target Subscription
+  #       if: github.event.inputs.doVerifySteps == 'true'
+  #       shell: pwsh
+  #       run: |
+  #         write-output 'Full list of features of AKS'
+  #         az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService')].{Name:name,State:properties.state}"
+  #         write-output 'Features that are still registering'
+  #         az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService') && properties.state=='Registering'].{Name:name,State:properties.state}"
+  #         write-output 'Checking to ensure no features are still registering'
+  #         $aksfeatures = az feature list --query "[?contains(name, 'Microsoft.ContainerService')]" | ConvertFrom-Json
+  #         $registeringfeatures = $aksfeatures |  Where-Object {$_.properties.state -eq 'Registering'}
+  #         if ($registeringfeatures.count -gt 0) {
+  #           Write-Error "There are still features registering"
+  #         } else { Write-Output "-- All good, no features in the process of registering" }
+  #         write-output 'Check specific features.'
+  #         $paramFilePath="${{ env.ParamFilePath }}"
+  #         $paramFileContent=Get-Content $paramFilePath
+  #         $params=$paramFileContent|ConvertFrom-Json
+  #         if($params.parameters.keyVaultAksCSI.value -eq $true) {
+  #           $feature='AKS-AzureKeyVaultSecretsProvider'
+  #           write-output "-- $feature"
+  #           $featureCsi = $aksfeatures |  Where-Object {$_.name -like "*$feature"}
+  #           $featureCsi.properties.state
+  #           if ($featureCsi.properties.state -ne 'Registered') {
+  #             Write-Output $featureCsi
+  #             Write-Error "$feature NOT registered"
+  #           } else { Write-Output "-- Looks like $feature is registered properly" }
+  #         }
 
-      - name: Create Parameter file imperative override string
-        uses: azure/CLI@v2
-        id: imperitiveparams
-        env:
-          RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            PARAMOVERRIDES="location=${{ steps.params.outputs.REGION }}"
-            echo $PARAMOVERRIDES
-            echo "PARAMOVERRIDES=$PARAMOVERRIDES" >> $GITHUB_OUTPUT
+  #     - name: Create Parameter file imperative override string
+  #       uses: azure/CLI@v2
+  #       id: imperitiveparams
+  #       env:
+  #         RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           PARAMOVERRIDES="location=${{ steps.params.outputs.REGION }}"
+  #           echo $PARAMOVERRIDES
+  #           echo "PARAMOVERRIDES=$PARAMOVERRIDES" >> $GITHUB_OUTPUT
 
-      - name: Validate Infrastructure deployment
-        uses: azure/CLI@v2
-        env:
-          RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            DEPNAME='Dep${{ github.run_number }}'
+  #     - name: Validate Infrastructure deployment
+  #       uses: azure/CLI@v2
+  #       env:
+  #         RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           DEPNAME='Dep${{ github.run_number }}'
             
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
-            echo $PARAMS
-            az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
+  #           PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+  #           echo $PARAMS
+  #           az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
-      - name: What If
-        uses: azure/CLI@v2
-        id: whatif
-        env:
-          RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
-        continue-on-error: true #Setting to true due to bug in the AzureCLI https://github.com/Azure/azure-cli/issues/19850
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }} #latest
-          inlineScript: |
-            DEPNAME='${{ env.DEPNAME }}'
-            WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
-            az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
-            if [[ -f $WHATIFPATH ]]
-            then
-                echo "The WhatIf json file was created"
-            fi
-            cat $WHATIFPATH
-            echo "edgeSuccess=true" >> $GITHUB_OUTPUT
+  #     - name: What If
+  #       uses: azure/CLI@v2
+  #       id: whatif
+  #       env:
+  #         RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+  #       continue-on-error: true #Setting to true due to bug in the AzureCLI https://github.com/Azure/azure-cli/issues/19850
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }} #latest
+  #         inlineScript: |
+  #           DEPNAME='${{ env.DEPNAME }}'
+  #           WHATIFPATH='whatif.json'
+  #           PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+  #           az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
+  #           if [[ -f $WHATIFPATH ]]
+  #           then
+  #               echo "The WhatIf json file was created"
+  #           fi
+  #           cat $WHATIFPATH
+  #           echo "edgeSuccess=true" >> $GITHUB_OUTPUT
 
-      - name: What If Analysis Output - Parse output
-        if: github.event.inputs.doVerifySteps == 'true'
-        shell: pwsh
-        run: |
-          $whatifpath='whatif.json'
-          Write-Output "Checking for JSON What-If"
-          $whatifexists=Test-Path -path $whatifpath
-          Write-Output $whatifexists
-          if ($whatifexists) {
-            $jsonFileRaw=Get-Content $whatifpath
-            Write-Output $jsonFileRaw
-            $whatIf=$jsonFileRaw | ConvertFrom-Json
-            if ($null -eq $whatIf) {
-              Write-Output "What If results are null"
-            } else {
-              Write-Output $whatif.changes[0].after.type
-            }
-          }
+  #     - name: What If Analysis Output - Parse output
+  #       if: github.event.inputs.doVerifySteps == 'true'
+  #       shell: pwsh
+  #       run: |
+  #         $whatifpath='whatif.json'
+  #         Write-Output "Checking for JSON What-If"
+  #         $whatifexists=Test-Path -path $whatifpath
+  #         Write-Output $whatifexists
+  #         if ($whatifexists) {
+  #           $jsonFileRaw=Get-Content $whatifpath
+  #           Write-Output $jsonFileRaw
+  #           $whatIf=$jsonFileRaw | ConvertFrom-Json
+  #           if ($null -eq $whatIf) {
+  #             Write-Output "What If results are null"
+  #           } else {
+  #             Write-Output $whatif.changes[0].after.type
+  #           }
+  #         }
 
-  Deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: [Validate]
-    environment: ${{ github.event.inputs.environment }}
-    env:
-      RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
-      REGION: ${{ needs.Validate.outputs.REGION }}
+  # Deploy:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   needs: [Validate]
+  #   environment: ${{ github.event.inputs.environment }}
+  #   env:
+  #     RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+  #     REGION: ${{ needs.Validate.outputs.REGION }}
 
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v4
+  #   if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Job parameter check
-        if: github.event.inputs.doDebugSteps == 'true'
-        run: |
-          echo "RESOURCE_GROUP is: ${{ env.RESOURCE_GROUP }}"
-          echo "Param file path is: ${{ env.ParamFilePath }}"
-          echo "Deployment name is ${{ env.DEPNAME }}"
+  #     - name: Job parameter check
+  #       if: github.event.inputs.doDebugSteps == 'true'
+  #       run: |
+  #         echo "RESOURCE_GROUP is: ${{ env.RESOURCE_GROUP }}"
+  #         echo "Param file path is: ${{ env.ParamFilePath }}"
+  #         echo "Deployment name is ${{ env.DEPNAME }}"
 
-      - name: Parameter file check
-        if: github.event.inputs.doVerifySteps == 'true'
-        shell: pwsh
-        run: |
-          Write-Output "Checking parameter file existence/contents"
-          $paramFilePath="${{ env.ParamFilePath }}"
-          Test-Path $paramFilePath
-          if (Test-Path $paramFilePath) {
-            $paramFileContent=Get-Content $paramFilePath
-            Write-Output $paramFileContent
-            Write-Output "Test Pulling a param (storageAccountType)"
-            $params=$paramFileContent|ConvertFrom-Json
-            Write-Output $params.parameters.storageAccountType.value
-          }
+  #     - name: Parameter file check
+  #       if: github.event.inputs.doVerifySteps == 'true'
+  #       shell: pwsh
+  #       run: |
+  #         Write-Output "Checking parameter file existence/contents"
+  #         $paramFilePath="${{ env.ParamFilePath }}"
+  #         Test-Path $paramFilePath
+  #         if (Test-Path $paramFilePath) {
+  #           $paramFileContent=Get-Content $paramFilePath
+  #           Write-Output $paramFileContent
+  #           Write-Output "Test Pulling a param (storageAccountType)"
+  #           $params=$paramFileContent|ConvertFrom-Json
+  #           Write-Output $params.parameters.storageAccountType.value
+  #         }
 
-      - name: Azure Login
-        uses: Azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          enable-AzPSSession: true
-          environment: azurecloud
-          allow-no-subscriptions: false
+  #     - name: Azure Login
+  #       uses: Azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #         enable-AzPSSession: true
+  #         environment: azurecloud
+  #         allow-no-subscriptions: false
 
-      - name: Deploy Infrastructure
-        id: deployAks
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            DEPNAME='Dep${{ github.run_number }}'
-            PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
-            az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
+  #     - name: Deploy Infrastructure
+  #       id: deployAks
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           DEPNAME='Dep${{ github.run_number }}'
+  #           PARAMS="location=$REGION applicationClientId=${{ secrets.STAMP_CLIENT_ID }} applicationClientSecret=${{ secrets.STAMP_CLIENT_SECRET }} applicationClientPrincipalOid=${{ secrets.STAMP_CLIENT_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}"
+  #           az deployment group create -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --name $DEPNAME --verbose
       
-      - name: Azure Login Refresh Token
-        uses: Azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          enable-AzPSSession: true
-          environment: azurecloud
-          allow-no-subscriptions: false
+  #     - name: Azure Login Refresh Token
+  #       uses: Azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #         enable-AzPSSession: true
+  #         environment: azurecloud
+  #         allow-no-subscriptions: false
 
-      - name: Retrieve AKS Name
-        id: getAks
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            az deployment group list --resource-group $RESOURCE_GROUP -o table
+  #     - name: Retrieve AKS Name
+  #       id: getAks
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           az deployment group list --resource-group $RESOURCE_GROUP -o table
 
-            AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
-            echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
+  #           AKS_NAME=$(az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv)
+  #           echo "AKS_NAME=$AKS_NAME" >> $GITHUB_OUTPUT
 
-  Verify:
-    name: Verify
-    runs-on: ubuntu-latest
-    needs: [Validate, Deploy]
-    env:
-      RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
-    steps:
-      - uses: actions/checkout@v4
+  # Verify:
+  #   name: Verify
+  #   runs-on: ubuntu-latest
+  #   needs: [Validate, Deploy]
+  #   env:
+  #     RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Param check
-        if: github.event.inputs.doDebugSteps == 'true'
-        run: |
-          echo "RESOURCE_GROUP is $RESOURCE_GROUP"
-          echo "Param file path is: ${{ env.ParamFilePath }}"
-          echo "Deployment name is ${{ env.DEPNAME }}"
-          echo "AKS name is ${{ needs.Deploy.outputs.AKS_NAME }}"
+  #     - name: Param check
+  #       if: github.event.inputs.doDebugSteps == 'true'
+  #       run: |
+  #         echo "RESOURCE_GROUP is $RESOURCE_GROUP"
+  #         echo "Param file path is: ${{ env.ParamFilePath }}"
+  #         echo "Deployment name is ${{ env.DEPNAME }}"
+  #         echo "AKS name is ${{ needs.Deploy.outputs.AKS_NAME }}"
 
-      - name: Azure Login
-        uses: Azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          enable-AzPSSession: true
-          environment: azurecloud
-          allow-no-subscriptions: false
+  #     - name: Azure Login
+  #       uses: Azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #         enable-AzPSSession: true
+  #         environment: azurecloud
+  #         allow-no-subscriptions: false
 
-      - name: Test Deployment
-        shell: pwsh
-        run: |
-          $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
-          $AKS_NAME = az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv
+  #     - name: Test Deployment
+  #       shell: pwsh
+  #       run: |
+  #         $RESOURCE_GROUP='${{ env.RESOURCE_GROUP }}'
+  #         $AKS_NAME = az aks list --resource-group $RESOURCE_GROUP --query '[].name' -o tsv
 
-          # Check for Flux compliance and timing logic
-          Write-Output "Checking for Flux compliance"
-          $end = (Get-Date).AddMinutes(35)
-          try {
-              # Check if the Flux configuration exists
-              $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
+  #         # Check for Flux compliance and timing logic
+  #         Write-Output "Checking for Flux compliance"
+  #         $end = (Get-Date).AddMinutes(35)
+  #         try {
+  #             # Check if the Flux configuration exists
+  #             $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
 
-              if (-not $fluxExists) {
-                  Write-Host "`n=================================================================="
-                  Write-Host "Software Installation: disabled"
-                  Write-Host "=================================================================="
-                  exit 0
-              }
+  #             if (-not $fluxExists) {
+  #                 Write-Host "`n=================================================================="
+  #                 Write-Host "Software Installation: disabled"
+  #                 Write-Host "=================================================================="
+  #                 exit 0
+  #             }
 
-              $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
-              Write-Host "`n=================================================================="
-              Write-Host "Software Installation: $complianceState"
-              Write-Host "=================================================================="
+  #             $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+  #             Write-Host "`n=================================================================="
+  #             Write-Host "Software Installation: $complianceState"
+  #             Write-Host "=================================================================="
 
-              # If compliant right away, skip the while loop; otherwise, wait initially for 5 minutes
-              if ($complianceState -eq "Compliant") {
-                  return
-              } else {
-                  Write-Host "  Software installing, retry in 10 minutes."
-                  Start-Sleep -Seconds 300
-              }
+  #             # If compliant right away, skip the while loop; otherwise, wait initially for 5 minutes
+  #             if ($complianceState -eq "Compliant") {
+  #                 return
+  #             } else {
+  #                 Write-Host "  Software installing, retry in 10 minutes."
+  #                 Start-Sleep -Seconds 300
+  #             }
 
-              while ((Get-Date) -lt $end) {
-                  $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
-                  Write-Host "  Current Software State: $complianceState"
-                  if ($complianceState -eq "Compliant") {
-                      Write-Host "  Software has been installed."
-                      break
-                  } else {
-                      Write-Host "  Software installing, retry in 2 minutes."
-                      Start-Sleep -Seconds 120
-                  }
-              }
+  #             while ((Get-Date) -lt $end) {
+  #                 $complianceState = az k8s-configuration flux show -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --name flux-system --query 'complianceState' -o tsv
+  #                 Write-Host "  Current Software State: $complianceState"
+  #                 if ($complianceState -eq "Compliant") {
+  #                     Write-Host "  Software has been installed."
+  #                     break
+  #                 } else {
+  #                     Write-Host "  Software installing, retry in 2 minutes."
+  #                     Start-Sleep -Seconds 120
+  #                 }
+  #             }
 
-              if ((Get-Date) -ge $end) {
-                  Write-Host "  Software check timed out - 35 minutes."
-                  exit 1
-              }
-          } catch {
-              Write-Host "Error during software check: $_"
-              exit 1
-          }
+  #             if ((Get-Date) -ge $end) {
+  #                 Write-Host "  Software check timed out - 35 minutes."
+  #                 exit 1
+  #             }
+  #         } catch {
+  #             Write-Host "Error during software check: $_"
+  #             exit 1
+  #         }
 
-  Cleanup:
-    name: Cleanup
-    runs-on: ubuntu-latest
-    needs: [Validate, Deploy, Verify]
-    if: always()  # This ensures the cleanup job always runs
-    timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
-    steps:
-      - uses: actions/checkout@v4
+  # Cleanup:
+  #   name: Cleanup
+  #   runs-on: ubuntu-latest
+  #   needs: [Validate, Deploy, Verify]
+  #   if: always()  # This ensures the cleanup job always runs
+  #   timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Azure Login
-        uses: Azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          enable-AzPSSession: true
-          environment: azurecloud
-          allow-no-subscriptions: false
+  #     - name: Azure Login
+  #       uses: Azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #         enable-AzPSSession: true
+  #         environment: azurecloud
+  #         allow-no-subscriptions: false
 
-      - name: Delete Resource Group
-        uses: azure/CLI@v2
-        continue-on-error: true
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-            if az group exists --name $RESOURCE_GROUP; then
-              echo "Resource group $RESOURCE_GROUP exists. Deleting..."
-              az group delete --name $RESOURCE_GROUP --yes --no-wait
-            else
-              echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
-            fi
+  #     - name: Delete Resource Group
+  #       uses: azure/CLI@v2
+  #       continue-on-error: true
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+  #           if az group exists --name $RESOURCE_GROUP; then
+  #             echo "Resource group $RESOURCE_GROUP exists. Deleting..."
+  #             az group delete --name $RESOURCE_GROUP --yes --no-wait
+  #           else
+  #             echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
+  #           fi
 
-      - name: Purge Deleted Key Vaults
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-            DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
-            for KV in $DELETED_KEY_VAULTS; do
-              az keyvault purge --name $KV
-              echo "Deleted key vault $KV purged."
-            done
+  #     - name: Purge Deleted Key Vaults
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+  #           DELETED_KEY_VAULTS=$(az keyvault list-deleted --query "[?contains(properties.vaultId, '${RESOURCE_GROUP}')].name" -o tsv)
+  #           for KV in $DELETED_KEY_VAULTS; do
+  #             az keyvault purge --name $KV
+  #             echo "Deleted key vault $KV purged."
+  #           done
 
-      - name: Purge Deleted App Configurations
-        uses: azure/CLI@v2
-        with:
-          azcliversion: ${{ env.AZCLIVERSION }}
-          inlineScript: |
-            RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
-            DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(configurationStoreId, '${RESOURCE_GROUP}')].name" -o tsv)
-            for AC in $DELETED_APP_CONFIGS; do
-              az appconfig purge --name $AC --yes
-              echo "Deleted app configuration $AC purged."
-            done
+  #     - name: Purge Deleted App Configurations
+  #       uses: azure/CLI@v2
+  #       with:
+  #         azcliversion: ${{ env.AZCLIVERSION }}
+  #         inlineScript: |
+  #           RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
+  #           DELETED_APP_CONFIGS=$(az appconfig list-deleted --query "[?contains(configurationStoreId, '${RESOURCE_GROUP}')].name" -o tsv)
+  #           for AC in $DELETED_APP_CONFIGS; do
+  #             az appconfig purge --name $AC --yes
+  #             echo "Deleted app configuration $AC purged."
+  #           done

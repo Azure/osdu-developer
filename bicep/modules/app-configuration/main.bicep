@@ -209,10 +209,10 @@ resource configstore_diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-
 module configStore_rbac '.bicep/nested_rbac.bicep' = [for (roleAssignment, index) in roleAssignments: {
   name: '${deployment().name}-rbac-${index}'
   params: {
-    description: contains(roleAssignment, 'description') ? roleAssignment.description : ''
+    description: roleAssignment.?description ?? ''
     principalIds: roleAssignment.principalIds
     roleDefinitionIdOrName: roleAssignment.roleDefinitionIdOrName
-    principalType: contains(roleAssignment, 'principalType') ? roleAssignment.principalType : ''
+    principalType: roleAssignment.?principalType ?? ''
     resourceId: configStore.id
   }
 }]

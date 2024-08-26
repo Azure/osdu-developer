@@ -6,7 +6,7 @@ param PoolName string
 param availabilityZones array = []
 
 @description('OS disk type')
-param osDiskType string = 'Ephemeral'
+param osDiskType string = 'Managed'
 
 @description('VM SKU')
 param agentVMSize string = 'Standard_DS3_v2'

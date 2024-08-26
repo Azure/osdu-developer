@@ -1,3 +1,15 @@
+# Required GitHub Variables:
+# - AZURE_TENANT_ID: The tenant ID for Azure authentication
+# - AZURE_SUBSCRIPTION_ID: The subscription ID for Azure authentication
+# - AZURE_CLIENT_ID: The client ID for Azure authentication
+# - AZURE_PRINCIPAL_ID: The AD Managed Application OID for Stamp deployment
+# - AZURE_ENV_NAME: The Github Environment name to deploy to (default is dev)
+# - AZURE_LOCATION: The Azure region to deploy to (default is eastus2)
+# Required GitHub Secrets:
+#  - AZURE_CLIENT_SECRET: The client secret for Azure authentication
+#  - EMAIL_ADDRESS: The email address to send notifications to
+#  - AZD_INITIAL_ENVIRONMENT_CONFIG: The initial environment config.json file
+
 name: Infra - Test
 
 permissions:
@@ -6,6 +18,7 @@ permissions:
 
 on:
   push:
+    branches: [main]
     paths:
       - "bicep/main.bicep"
       - "bicep/modules_bicep/**/*"
@@ -55,13 +68,13 @@ on:
 concurrency: ci-${{ github.ref }}
 
 env:
-  AZCLIVERSION: latest
-  ParamFilePath: ".github/parameters.json"
-  DEPNAME: "dep${{ github.run_number }}"
   AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
+  AZCLIVERSION: latest
+  ParamFilePath: ".github/parameters.json"
+  DEPNAME: "dep${{ github.run_number }}"
+  
 jobs:
   Standards:
     runs-on: ubuntu-latest
@@ -104,7 +117,6 @@ jobs:
         if: github.event.inputs.doDebugSteps == 'true'
         run: |
           echo "Param file path is: ${{ env.ParamFilePath }}"
-          echo "Resource name is ${{ env.RESNAME }}"
           echo "Deployment name is ${{ env.DEPNAME }}"
           echo "Ref is ${{ github.ref }}"
           echo "Ref name is ${{GITHUB.REF_NAME}}"
@@ -253,12 +265,13 @@ jobs:
         uses: azure/CLI@v2
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+          AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_PRINCIPAL_ID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             echo $PARAMS
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
@@ -267,13 +280,14 @@ jobs:
         id: whatif
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+          AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
         continue-on-error: true #Setting to true due to bug in the AzureCLI https://github.com/Azure/azure-cli/issues/19850
         with:
           azcliversion: ${{ env.AZCLIVERSION }} #latest
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_PRINCIPAL_ID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
             if [[ -f $WHATIFPATH ]]
             then
@@ -305,10 +319,8 @@ jobs:
     name: Provision
     runs-on: ubuntu-latest
     needs: [Validate]
-    environment: ${{ github.event.inputs.environment }}
     env:
       AZURE_RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
-      #RESOURCE_GROUP: ${{ env.DEPNAME }}
       REGION: ${{ needs.Validate.outputs.REGION }}
 
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
@@ -454,7 +466,7 @@ jobs:
             RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
             if az group exists --name $RESOURCE_GROUP; then
               echo "Resource group $RESOURCE_GROUP exists. Deleting..."
-              az group delete --name $RESOURCE_GROUP --yes --no-wait
+              az group delete --name $RESOURCE_GROUP --yes
             else
               echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
             fi

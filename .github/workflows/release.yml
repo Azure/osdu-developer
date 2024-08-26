@@ -1,10 +1,19 @@
+# Required GitHub Variables:
+# - AZURE_CLIENT_ID: The client ID for Azure authentication
+# - AZURE_TENANT_ID: The tenant ID for Azure authentication
+# - AZURE_SUBSCRIPTION_ID: The subscription ID for Azure authentication
+#
+
 name: Infra - Release
 
 on:
   workflow_dispatch:
 
 env:
-  CLI_VERSION: latest
+  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  AZCLIVERSION: latest
 
 jobs:
   Build:
@@ -19,9 +28,9 @@ jobs:
       - name: Azure Login
         uses: Azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
           environment: azurecloud
           allow-no-subscriptions: false

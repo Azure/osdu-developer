@@ -15,7 +15,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -43,7 +43,7 @@ jobs:
           config: ./.github/_typos.toml
 
   # Deployment job
-  deploy:
+  Deploy:
     needs: SpellCheck  # Run only after SpellCheck job is successful
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     environment:
@@ -58,3 +58,5 @@ jobs:
       - run: |
           cd docs
           mkdocs gh-deploy --force --clean --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

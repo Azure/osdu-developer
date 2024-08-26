@@ -2,6 +2,17 @@
 
 Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
 
+## Custom Infrastructure
+
+Infrastructure customizations can be managed and modified using the following feature flags.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_BURSTABLE          | User cheaper Burstable server types in the cluster                          |
+| CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
+| CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
+
+
 ## Custom Software
 
 Software customizations can be managed and modified using the following feature flags.
@@ -11,6 +22,7 @@ Software customizations can be managed and modified using the following feature 
 | ENABLE_SOFTWARE           | Disables loading of all software when set to false (True by default)        |
 | ENABLE_OSDU_CORE          | Disables loading of the osdu core services (True by default)                |
 | ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
+| SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed                           |
 
 ## Bastion Management
 

@@ -104,7 +104,6 @@ jobs:
         if: github.event.inputs.doDebugSteps == 'true'
         run: |
           echo "Param file path is: ${{ env.ParamFilePath }}"
-          echo "Resource name is ${{ env.RESNAME }}"
           echo "Deployment name is ${{ env.DEPNAME }}"
           echo "Ref is ${{ github.ref }}"
           echo "Ref name is ${{GITHUB.REF_NAME}}"
@@ -253,12 +252,13 @@ jobs:
         uses: azure/CLI@v2
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+          AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
             
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_PRINCIPAL_ID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             echo $PARAMS
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
@@ -267,13 +267,14 @@ jobs:
         id: whatif
         env:
           RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+          AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
         continue-on-error: true #Setting to true due to bug in the AzureCLI https://github.com/Azure/azure-cli/issues/19850
         with:
           azcliversion: ${{ env.AZCLIVERSION }} #latest
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_PRINCIPAL_ID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
             if [[ -f $WHATIFPATH ]]
             then
@@ -454,7 +455,7 @@ jobs:
             RESOURCE_GROUP="${{ needs.Validate.outputs.RESOURCEGROUP }}"
             if az group exists --name $RESOURCE_GROUP; then
               echo "Resource group $RESOURCE_GROUP exists. Deleting..."
-              az group delete --name $RESOURCE_GROUP --yes --no-wait
+              az group delete --name $RESOURCE_GROUP --yes
             else
               echo "Resource group $RESOURCE_GROUP does not exist. Skipping deletion."
             fi

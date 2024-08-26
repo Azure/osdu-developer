@@ -17,27 +17,20 @@ param applicationClientSecret string
 @description('Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)')
 param applicationClientPrincipalOid string
 
-@allowed([
-  'Burstable'
-  'Standard'
-])
-@description('The size of the solution')
-param tier string = 'Burstable'
+@description('Feature Flag: Enable Burstable Server Types')
+param enableBurstable bool = true
 
-@description('Override the default server type.')
+@description('Use customized server types.')
 param customVMSize string = ''
 
 @allowed([
   'External'
   'Internal'
   'Both'
+  ''
 ])
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
-
-
-@description('Specify the OSDU version. (release-0-27, master)')
-param osduVersion string = 'release-0-27'
 
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
@@ -76,11 +69,14 @@ param vnetConfiguration object = {
   }
 }
 
+
+
 @description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
   osduCore: true
   osduReference: true
+  osduVersion: ''
   repository: ''
   branch: ''
   tag: ''
@@ -373,7 +369,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     storageDNSZoneId: commonBlade.outputs.storageDNSZoneId
     cosmosDNSZoneId: commonBlade.outputs.cosmosDNSZoneId
 
-    partitionSize: tier
+    partitionSize: enableBurstable ? 'Burstable' : 'Standard'
     partitions: configuration.partitions
     managedIdentityName: stampIdentity.outputs.name
   }
@@ -402,7 +398,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    osduVersion: osduVersion == '' ? 'release-0-27' : osduVersion
+    osduVersion: clusterSoftware.osduVersion == '' ? 'release-0-27' : clusterSoftware.osduVersion
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
@@ -422,10 +418,10 @@ module serviceBlade 'modules/blade_service.bicep' = {
     aksSubnetId: networkBlade.outputs.aksSubnetId
     podSubnetId: enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
     customVMSize: customVMSize
-    clusterSize: tier
+    clusterSize: enableBurstable ? 'Burstable' : 'Standard'
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: ingressType 
+    clusterIngress: ingressType == '' ? 'Both' : ingressType
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin

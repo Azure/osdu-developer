@@ -14,6 +14,15 @@
     "emailAddress": {
       "value": "${EMAIL_ADDRESS}"
     },
+    "enableBurstable": {
+      "value": "${ENABLE_BURSTABLE}"
+    },
+    "customVMSize": {
+      "value": "${CLUSTER_VM_SIZE}"
+    },
+    "ingressType": {
+      "value": "${CLUSTER_INGRESS}"
+    },
     "enableManage": {
       "value": "${ENABLE_MANAGE}"
     },
@@ -22,9 +31,6 @@
     },
     "enableBlobPublicAccess": {
       "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
-    },
-    "osduVersion": {
-      "value": "${SOFTWARE_VERSION}"
     },
     "vnetConfiguration": {
       "value": {
@@ -53,6 +59,7 @@
     "clusterSoftware": {
       "value": {
         "enable": "${ENABLE_SOFTWARE}",
+        "osduVersion": "${SOFTWARE_VERSION}",
         "osduCore": "${ENABLE_OSDU_CORE}",
         "osduReference": "${ENABLE_OSDU_REFERENCE}",
         "repository": "${SOFTWARE_REPOSITORY}",

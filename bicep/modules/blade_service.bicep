@@ -75,6 +75,7 @@ param softwareTag string = ''
   'Internal'
   'External'
   'Both'
+  ''
 ])
 @description('The Cluster Ingress Mode')
 param clusterIngress string = 'External'

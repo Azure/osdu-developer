@@ -1,16 +1,15 @@
 name: Auto - Documentation
 
 on:
+  # Trigger spell check on pull requests
+  pull_request:
+    paths:
+      - "**/*.md"
   # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
     paths:
       - 'docs/src/**'
-  # Trigger spell check on pull requests
-  pull_request:
-    paths:
-      - "*.md"
-      - "docs/*.md"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -29,11 +28,12 @@ concurrency:
 jobs:
   # Deployment job
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'  # Run on merge to main
     environment:
       name: github-pages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
@@ -44,9 +44,10 @@ jobs:
 
   # Spell Check job
   SpellCheck:
+    if: github.event_name == 'pull_request'  # Run only on PR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Typo file contents check
         shell: bash
         run: cat ./.github/_typos.toml

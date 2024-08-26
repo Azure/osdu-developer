@@ -1,4 +1,4 @@
-name: Deploy MKDocs with GitHub Pages dependencies preinstalled
+name: Auto - Documentation
 
 on:
   # Runs on pushes targeting the default branch

@@ -26,25 +26,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Deployment job
-  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'  # Run on merge to main
-    environment:
-      name: github-pages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - run: pip install mkdocs mkdocs-mermaid2-plugin
-      - run: |
-          cd docs
-          mkdocs gh-deploy --force --clean --verbose
-
   # Spell Check job
   SpellCheck:
-    if: github.event_name == 'pull_request'  # Run only on PR
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'  # Run on PR and manual dispatch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -57,3 +41,20 @@ jobs:
         with:
           files: ./**/*.md
           config: ./.github/_typos.toml
+
+  # Deployment job
+  deploy:
+    needs: SpellCheck  # Run only after SpellCheck job is successful
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs mkdocs-mermaid2-plugin
+      - run: |
+          cd docs
+          mkdocs gh-deploy --force --clean --verbose

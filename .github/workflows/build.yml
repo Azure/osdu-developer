@@ -3,9 +3,7 @@
 name: Infra - Build
 
 on:
-  pull_request: #On PR, we're just doing validation that it compiled to support the build policy
-    branches:
-      - main
+  push: # On Push we are just doing validation that it compiled to support the build policy
     paths:
       - "bicep/*"
       - "bicep/modules_bicep/**/*"

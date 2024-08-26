@@ -61,7 +61,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
   name: guid(storage.name, principal.id, roleDefinitionIdOrName)
   properties: {
     description: description
-    roleDefinitionId: contains(builtInRoleNames, roleDefinitionIdOrName) ? builtInRoleNames[roleDefinitionIdOrName] : roleDefinitionIdOrName
+    roleDefinitionId: builtInRoleNames[?roleDefinitionIdOrName] ?? roleDefinitionIdOrName
     principalId: principal.id
     principalType: !empty(principalType) ? principalType : null
     delegatedManagedIdentityResourceId: crossTenant ? principal.resourceId : null

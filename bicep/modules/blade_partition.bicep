@@ -48,12 +48,11 @@ param storageDNSZoneId string
 param cosmosDNSZoneId string
 
 @allowed([
-  'CostOptimised'
+  'Burstable'
   'Standard'
-  'HighSpec'
 ])
 @description('The Partition Size')
-param partitionSize string = 'CostOptimised'
+param partitionSize string = 'Burstable'
 
 @description('List of Data Partitions')
 param partitions array = [
@@ -129,14 +128,11 @@ var partitionLayerConfig = {
   }
   database: {
     name: 'osdu-db'
-    CostOptimised : {
+    Burstable : {
       throughput: 2000
     }
     Standard: {
       throughput: 4000
-    }
-    HighSpec: {
-      throughput: 12000
     }
     backup: 'Continuous'
     containers: [

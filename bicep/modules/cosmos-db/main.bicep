@@ -332,7 +332,7 @@ module databaseAccount_sqlDatabases '.bicep/sql_database.bicep' = [for sqlDataba
     name: sqlDatabase.name
     throughput: throughput
     maxThroughput: maxThroughput
-    containers: contains(sqlDatabase, 'containers') ? sqlDatabase.containers : []
+    containers: sqlDatabase.?containers ?? []
   }
 }]
 
@@ -343,7 +343,7 @@ module databaseAccount_gremlinDatabases './.bicep/gremlin_database.bicep' = [for
     name: gremlinDatabase.name
     throughput: throughput
     maxThroughput: maxThroughput
-    graphs: contains(gremlinDatabase, 'graphs') ? gremlinDatabase.graphs : []
+    graphs: gremlinDatabase.?graphs ?? []
   }
 }]
 
@@ -380,10 +380,10 @@ resource storage_diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
 module databaseaccount_rbac '.bicep/nested_rbac.bicep' = [for (roleAssignment, index) in roleAssignments: {
   name: '${deployment().name}-rbac-${index}'
   params: {
-    description: contains(roleAssignment, 'description') ? roleAssignment.description : ''
+    description: roleAssignment.?description ?? ''
     principals: roleAssignment.principals
     roleDefinitionIdOrName: roleAssignment.roleDefinitionIdOrName
-    principalType: contains(roleAssignment, 'principalType') ? roleAssignment.principalType : ''
+    principalType: roleAssignment.?principalType ?? ''
     resourceId: databaseAccount.id
     crossTenant: crossTenant
   }

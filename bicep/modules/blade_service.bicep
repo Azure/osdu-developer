@@ -38,7 +38,11 @@ param workspaceResourceId string
 
 param networkPlugin string
 
+@description('The size of the solution')
 param clusterSize string
+
+@description('Override the default server type.')
+param customVMSize string = ''
 
 @description('The name of the Key Vault where the secret exists')
 param kvName string 
@@ -302,17 +306,11 @@ module cluster './aks_cluster.bicep' = {
 // Elastic Configuration 
 /////////////////
 var elasticPoolPresets = {
-  // 4 vCPU, 15 GiB RAM, 28 GiB SSD, (12800) IOPS, Ephemeral OS Disk
-  CostOptimised : {
-    vmSize: 'Standard_DS3_v2'
+  Burstable : {
+    vmSize: 'Standard_B4ms'
   }
-  // 8 vCPU, 28 GiB RAM, 56 GiB SSD, (32000) IOPS, Ephemeral OS Disk
   Standard : {
-    vmSize: 'Standard_DS4_v2'
-  }
-  // 16 vCPU, 56 GiB RAM, 112 GiB SSD, (64000) IOPS, Ephemeral OS Disk
-  HighSpec : {
-    vmSize: 'Standard_DS5_v2'
+    vmSize: 'Standard_D4s_v5'
   }
 }
 
@@ -321,7 +319,7 @@ module pool1 './aks_agent_pool.bicep' = {
   params: {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz1'
-    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
     agentCount: 1
     agentCountMax: 3
     availabilityZones: [
@@ -341,7 +339,7 @@ module pool2 './aks_agent_pool.bicep' = {
   params: {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz2'
-    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
     agentCount: 1
     agentCountMax: 3
     availabilityZones: [
@@ -361,7 +359,7 @@ module pool3 './aks_agent_pool.bicep' = {
   params: {
     AksName: cluster.outputs.aksClusterName
     PoolName: 'poolz3'
-    agentVMSize: elasticPoolPresets[clusterSize].vmSize
+    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
     agentCount: 1
     agentCountMax: 3
     availabilityZones: [

@@ -24,13 +24,6 @@ Software customizations can be managed and modified using the following feature 
 | ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
 | SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed                           |
 
-## Bastion Management
-
-Modify the infrastructure and network by enabling Bastion Host with a virtual machine to use for access.
-
-| Feature Flag              | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
 
 ## Public Storage Access
 
@@ -39,6 +32,25 @@ Control public access to Storage.
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
+
+
+## Bastion Management
+
+Modify the infrastructure and network by enabling Bastion Host with a virtual machine to use for access.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
+
+
+## Cluster Network
+
+Modify the AKS cluster network configuration for Azure CNI with Dynamic IP allocation.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_POD_SUBNET         | Enables a separate subnet for pod networking in the AKS cluster             |
+
 
 
 ## Vnet Injection

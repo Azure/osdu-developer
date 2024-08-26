@@ -86,7 +86,13 @@ sequenceDiagram
 
 ### Auto -Documentation Check
 
-This is a super simple action that runs a _spell check_ on any `.md` files in the repo. It's useful to catch simple mistakes from quick edits or other peoples PR's. This action is also part of the branch policy for merging to main.
+This action performs two main functions:
+
+1. It runs a _spell check_ on any `.md` files in the repo. This is useful for catching simple mistakes from quick edits or other people's PRs. This spell check is part of the branch policy for merging to main.
+
+2. It automatically compiles and deploys the documentation to the gh-pages site. This ensures that the documentation is always up-to-date with the latest changes in the main branch.
+
+The action is triggered on pull requests that modify markdown files, pushes to the main branch that affect the docs/src directory, and can also be run manually from the Actions tab. This comprehensive approach helps maintain high-quality, current documentation for the project.
 
 ### Auto - Greet
 

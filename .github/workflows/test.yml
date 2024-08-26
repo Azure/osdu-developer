@@ -57,7 +57,7 @@ concurrency: ci-${{ github.ref }}
 env:
   AZCLIVERSION: latest
   ParamFilePath: ".github/parameters.json"
-  DEPNAME: "Dep${{ github.run_number }}"
+  DEPNAME: "dep${{ github.run_number }}"
   AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -307,7 +307,8 @@ jobs:
     needs: [Validate]
     environment: ${{ github.event.inputs.environment }}
     env:
-      RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+      AZURE_RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
+      #RESOURCE_GROUP: ${{ env.DEPNAME }}
       REGION: ${{ needs.Validate.outputs.REGION }}
 
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop'
@@ -341,7 +342,6 @@ jobs:
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-          AZURE_RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
 
       # - name: Job parameter check

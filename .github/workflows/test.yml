@@ -1,3 +1,15 @@
+# Required GitHub Variables:
+# - AZURE_TENANT_ID: The tenant ID for Azure authentication
+# - AZURE_SUBSCRIPTION_ID: The subscription ID for Azure authentication
+# - AZURE_CLIENT_ID: The client ID for Azure authentication
+# - AZURE_PRINCIPAL_ID: The AD Managed Application OID for Stamp deployment
+# - AZURE_ENV_NAME: The Github Environment name to deploy to (default is dev)
+# - AZURE_LOCATION: The Azure region to deploy to (default is eastus2)
+# Required GitHub Secrets:
+#  - AZURE_CLIENT_SECRET: The client secret for Azure authentication
+#  - EMAIL_ADDRESS: The email address to send notifications to
+#  - AZD_INITIAL_ENVIRONMENT_CONFIG: The initial environment config.json file
+
 name: Infra - Test
 
 permissions:
@@ -56,13 +68,13 @@ on:
 concurrency: ci-${{ github.ref }}
 
 env:
-  AZCLIVERSION: latest
-  ParamFilePath: ".github/parameters.json"
-  DEPNAME: "dep${{ github.run_number }}"
   AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
+  AZCLIVERSION: latest
+  ParamFilePath: ".github/parameters.json"
+  DEPNAME: "dep${{ github.run_number }}"
+  
 jobs:
   Standards:
     runs-on: ubuntu-latest

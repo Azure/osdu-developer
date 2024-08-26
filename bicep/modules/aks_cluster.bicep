@@ -338,7 +338,7 @@ var outboundTrafficType = aksOutboundTrafficType=='natGateway' ? ( custom_vnet ?
 var systemPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
   Burstable : {
-    vmSize: 'Standard_B4ms'
+    vmSize: 'Standard_B2ms'
     minCount: 1
     maxCount: 3
     availabilityZones: [
@@ -352,7 +352,7 @@ var systemPoolPresets = {
   }
   // 2 vCPU, 7 GiB RAM, 14 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
   Standard : {
-    vmSize: 'Standard_D4s_v5'
+    vmSize: 'Standard_D2s_v5'
     minCount: 1
     maxCount: 3
     availabilityZones: [
@@ -395,7 +395,7 @@ var systemPoolProfile = {
 var userPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
   Burstable : {
-    vmSize: 'Standard_B2ms'
+    vmSize: 'Standard_B4ms'
     minCount: 3
     maxCount: 20
     availabilityZones: [
@@ -409,7 +409,7 @@ var userPoolPresets = {
   }
   // 4 vCPU, 32 GiB RAM, 64 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
   Standard : {
-    vmSize: 'Standard_D2s_v5'
+    vmSize: 'Standard_D4s_v5'
     minCount: 3
     maxCount: 20
     availabilityZones: [

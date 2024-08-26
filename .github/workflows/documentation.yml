@@ -1,21 +1,55 @@
+name: Auto - Documentation
+
 on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+    paths:
+      - 'docs/src/**'
+  # Trigger spell check on pull requests
   pull_request:
     paths:
       - "*.md"
       - "docs/*.md"
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-name: Auto - Documentation Check
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs mkdocs-mermaid2-plugin
+      - run: |
+          cd docs
+          mkdocs gh-deploy --force --clean --verbose
+
+  # Spell Check job
   SpellCheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Typo file contents check
         shell: bash
         run: cat ./.github/_typos.toml
-
       # https://github.com/crate-ci/typos
       - name: Check spelling of markdown files
         uses: crate-ci/typos@master

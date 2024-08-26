@@ -52,7 +52,6 @@ Modify the AKS cluster network configuration for Azure CNI with Dynamic IP alloc
 | ENABLE_POD_SUBNET         | Enables a separate subnet for pod networking in the AKS cluster             |
 
 
-
 ## Vnet Injection
 
 __Purpose:__ Enables a bring your own network capability.

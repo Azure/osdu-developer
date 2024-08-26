@@ -337,6 +337,8 @@ jobs:
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+          AZURE_RESOURCE_GROUP: ${{ steps.params.outputs.RESOURCEGROUP }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
 
       # - name: Job parameter check
       #   if: github.event.inputs.doDebugSteps == 'true'

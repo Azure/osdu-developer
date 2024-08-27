@@ -1,77 +1,58 @@
-# Contributing to [project-title]
+# Contribution Guide
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+Some important information to consume about the Repo, before you contribute. There's a lot of info here, so make sure to read it.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+## Opportunities to contribute
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+Start by looking through the [active issues](https://github.com/azure/osdu-developer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
- - [Code of Conduct](#coc)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Github Actions](./docs/pipelines.md)
+## Action Workflows
 
-## <a name="coc"></a> Code of Conduct
-Help us keep this project open and inclusive. Please read and follow our [Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+Have awareness of the various [workflows](docs/pipelines.md) that run on Push / PR / Schedule.
 
-## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-[submitting an issue](#submit-issue) to the GitHub Repository. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
 
-## <a name="feature"></a> Want a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to the GitHub
-Repository. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it.
+### Enforced PR Checks
 
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+Each has a _Validate job_, that is required to pass before merging to main. PR's tagged with `bug`, that contain changes to bicep or workflow files will need to pass all of the jobs in the relevant workflows before merge is possible.
 
-## <a name="submit"></a> Submission Guidelines
+### PR's from Forks
 
-### <a name="submit-issue"></a> Submitting an Issue
-Before you submit an issue, search the archive, maybe your question was already answered.
+If you're creating a PR from a fork then we're unable to run the typical actions to ensure quality that the core team are able to use. This is because GitHub prevents Forks from leveraging secrets in this repository. PR's from forks will therefore require comprehensive checking from the core team before merging. Don't be surprised if we change the target branch to a new branch in order to properly test the changes before they hit main.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+## Branches
 
-* **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Version** - what version is affected (e.g. 0.1.2)
-* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
-* **Browsers and Operating System** - is this a problem with all browsers?
-* **Reproduce the Error** - provide a live example or a unambiguous set of steps
-* **Related Issues** - has a similar issue been reported before?
-* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
-  causing the problem (line of code or commit)
+### Feature Branch
 
-You can file new issues by providing the above information at the issues link: https://github.com/azure/osdu-develoepr/issues/new.
+For the _most part_ we try to use feature branches to PR to Main
 
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
-Before you submit your Pull Request (PR) consider the following guidelines:
+```text
+┌─────────────────┐         ┌───────────────┐
+│                 │         │               │
+│ Feature Branch  ├────────►│     Main      │
+│                 │         │               │
+└─────────────────┘         └───────────────┘
 
-* Search the repository (https://github.com/azure/osdu-developer/pulls) for an open or closed PR
-  that relates to your submission. You don't want to duplicate effort.
+```
 
-* Make your changes in a new git fork:
+Branch Policies require the Validation stage of our GitHub Action Workflows to successfully run. The Validation stage does an Az Deployment WhatIf and Validation on an Azure Subscription, however later stages in the Actions that actually deploy resources do not run. This is because we've got a high degree of confidence in the Validate/WhatIf capability. We do run the full stage deploys on a weekly basis to give that warm fuzzy feeling. At some point, we'll run these as part of PR to main.
 
-* Commit your changes using a descriptive commit message
-* Push your fork to GitHub:
-* In GitHub, create a pull request
-* If we suggest changes then:
-  * Make the required updates.
-  * Rebase your fork and force push to your GitHub repository (this will update your Pull Request):
+### The Develop Branch
 
-    ```shell
-    git rebase master -i
-    git push -f
-    ```
+Where there have been significant changes and we want the full gamut of CI testing to be run on real Azure Infrastructure - then the Develop branch is used.
+It gives us the nice warm fuzzy feeling before merging into Main.
+We anticipate the use of the Develop branch is primarily just for use with Forks.
 
-That's it! Thank you for your contribution!
+```text
+┌─────────────────┐         ┌─────────────┐       ┌────────────┐
+│                 │         │             │       │            │
+│ Feature Branch  ├────────►│   Develop   ├──────►│    Main    │
+│                 │         │             │       │            │
+└─────────────────┘         └─────────────┘       └────────────┘
+                                  ▲
+┌─────────────────┐               │
+│                 │               │
+│ Feature Branch  ├───────────────┘
+│                 │
+└─────────────────┘
+
+```

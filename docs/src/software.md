@@ -1,24 +1,5 @@
 # Software Management
 
-In this solution, we utilize a **GitOps** approach for efficient and reliable software management. This method leverages a git repository as the source of truth for defining and updating the software within the cluster and comes with some distinct advantages.
-
-- **Consistency and Standardization**: Ensures consistent configurations across different environments, minimizing discrepancies.
-  
-- **Audit Trails**: Every change is recorded in Git, providing a clear audit trail for accountability and traceability.
-  
-- **Rollbacks and Recovery**: Allows for easy rollbacks to previous configurations in case of errors or issues.
-  
-- **Enhanced Security**: Changes are reviewed through pull requests, increasing security and promoting collaboration among team members.
-
-Software definitions are defined in this repository alongside the IaC and employ a customized [repo-per-team](https://fluxcd.io/flux/guides/repository-structure/#repo-per-team) pattern along with customized Helm charts.
-
-- **Configuration Files**: YAML files that define the desired state of our components and applications.
-  
-- **Charts**: Helm charts used for defining, installing, and upgrading Kubernetes applications.
-
-Our GitOps approach not only standardizes and secures the software management process but also **simplifies the deployment process**. By making it easier to maintain and update configurations, this approach ensures that deployments are both efficient and flexible. It allows for seamless integration of additional software configurations by pointing to alternate repositories that host these configurations. This extensibility enables our deployments to include not just the default software load but also any additional components required by our architecture.
-
-
 ### Stamp Layout
 
 In our software architecture design, we define two primary software Kustomizations that describe a **stamp**. A Kustomization is a Flux resource representing a set of defined manifests that Flux should reconcile to the cluster, with dependencies between them. Structuring our Kustomizations this way ensures clarity and separation of concerns, making it easier to manage and organize both components and applications.

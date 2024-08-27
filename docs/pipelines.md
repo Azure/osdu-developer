@@ -6,6 +6,8 @@ A number of CI workflows are leveraged in this repo to test the bicep files to e
 
 It's essential to catch as many problems before a single resource is deployed to real infrastructure. There are a lot of tools and techniques that can be leveraged to catch functional or syntactical problems.
 
+![[1]][1]
+
 #### PSRule for Azure
 
 An interesting project for performing pre/post validation of Azure Resources against the [Well Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) is [PSRule for Azure](https://azure.github.io/PSRule.Rules.Azure/). Over [200 rules](https://azure.github.io/PSRule.Rules.Azure/en/baselines/Azure.All/) will be evaluated against the Arm template, ranging from Security configuration to naming conventions.
@@ -44,15 +46,17 @@ In this case we are installing software and we are testing the software is insta
 
 ## Solution actions used in this repo
 
-### Infra - Test
+![[0]][0]
+
+#### Infra - Test
 
 This action will run a Validate Step to ensure any changes to bicep is acceptable. It also will trigger a Standards Check that is non blocking in order to determine if the solution passes the PSRule checks.
 
-### Infra - Build
+#### Infra - Build
 
 This action ensures that the bicep can build properly.
 
-### Infra - Release
+#### Infra - Release
 
 The release action will run whenever a release is created to ensure we have a copy of the ARM template from that release that could then be used by other systems as necessary.
 
@@ -60,7 +64,6 @@ The release action will run whenever a release is created to ensure we have a co
 ```mermaid
 sequenceDiagram
     participant Workflow as "GitHub Workflow"
-
     participant Azure as "Azure/login@v2"
     participant extension1 as "github-tag-action@1.69.0"
     participant bashCommand as "bash"
@@ -68,7 +71,6 @@ sequenceDiagram
     participant extension2 as "elease-changelog-builder-action@v1"
     participant EndBug as "add-and-commit@v9"
     participant extension3 as "release-action@v1"
-
 
     Workflow->>Workflow: Manual Trigger
     Workflow->>Workflow: Code Checkout
@@ -82,9 +84,7 @@ sequenceDiagram
     Workflow->>extension3: Create Release
 ```
 
-## Misc actions used in this repo
-
-### Auto -Documentation Check
+#### Auto - Doc
 
 This action performs two main functions:
 
@@ -94,10 +94,13 @@ This action performs two main functions:
 
 The action is triggered on pull requests that modify markdown files, pushes to the main branch that affect the docs/src directory, and can also be run manually from the Actions tab. This comprehensive approach helps maintain high-quality, current documentation for the project.
 
-### Auto - Greet
+#### Auto - Greet
 
 This is an auto action for a bot to reply to open issues and open pull requests.
 
-### Auto - Label
+#### Auto - Label
 
 This is an auto action for a bot to automatically apply labels based on detection of type of code change.
+
+[0]: src/images/pipeline_1.png "Pipeline Diagram"
+[1]: src/images/pipeline_2.png "Pipeline Diagram"

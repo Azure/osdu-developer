@@ -155,3 +155,78 @@ flowchart TD
 │       └── source.yaml
 ```
 
+__OSDU Core Structure__
+
+The OSDU Core application is organized to facilitate the management of the OSDU core platform services. Below is the layout:
+
+```mermaid
+flowchart TD
+  base("base")
+  partition("partition")
+  partition_init("partition-init")
+  entitlements("entitlements")
+  entitlements_init("entitlements-init")
+  legal("legal")
+  indexer("indexer")
+  indexer_queue("indexer-queue")
+  user_init("user-init")
+  schema("schema")
+  schema_init("schema-init")
+  storage("storage")
+  file("file")
+  search("search")
+
+  base-->partition
+  partition-->entitlements
+  partition-->partition_init
+  entitlements-->entitlements_init
+  entitlements_init-->user_init
+  partition-->legal
+  legal-->indexer
+  legal-->indexer_queue
+  legal-->schema
+  schema-->schema_init
+  indexer_queue-->storage
+  indexer_queue-->file
+  indexer_queue-->search
+```
+
+```bash
+── osdu-core
+   ├── base.yaml
+   ├── entitlements.yaml
+   ├── file.yaml
+   ├── indexer.yaml
+   ├── legal.yaml
+   ├── namespace.yaml
+   ├── partition.yaml
+   ├── schema.yaml
+   ├── search.yaml
+   ├── storage.yaml
+   └── user-init.yaml
+```
+
+__OSDU Reference Structure__
+
+The OSDU Reference application is organized to facilitate the management of the OSDU reference platform services. Below is the layout:
+
+```mermaid
+flowchart TD
+  base("base")
+  unit("unit")
+  crs-catalog("crs-catalog")
+  crs-conversion("crs-conversion")
+
+  base-->unit
+  base-->crs-catalog
+  base-->crs-conversion
+```
+
+```bash
+── osdu-reference
+   ├── base.yaml
+   ├── crs-catalog.yaml
+   ├── crs-conversion.yaml
+   ├── namespace.yaml
+   └── unit.yaml
+```

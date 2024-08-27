@@ -7,13 +7,6 @@
     This provides valuable insights into best practices and design
     considerations of azure workloads.
 
-
-**Cost Optimization** - Create a cost-effective solution while balancing security.
-
-**Security** - Enhance security within a development context, adhering to a zero trust model.
-
-**Operational Excellence** - Prioritize standards with automation to ensure efficient operations and robust monitoring.
-
 #### Desired State Configuration
 
 Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Infrastructure as Code (IaC). Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
@@ -103,4 +96,7 @@ A GitOps configuration resides in this Git repository and uses a customized [rep
 
 A GitOps approach simplifies the process of deploying and managing software, making it easier to maintain and update, as well as providing a configurable way of leveraging other software configurations by pointing to alternate repositories hosting other configurations. By leveraging this method, we ensure that our deployments can be extended to things that not only include the default software load.
 
+![[1]][1]
+
 [0]: images/architecture.png "Architecture Diagram"
+[1]: images/architecture_2.png "Gitops Diagram"

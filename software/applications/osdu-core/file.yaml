@@ -7,6 +7,9 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-indexer-queue
+      namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:

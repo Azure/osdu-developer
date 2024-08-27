@@ -7,6 +7,10 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-legal
+      namespace: osdu-core
+  targetNamespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -19,7 +23,6 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-core
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software
@@ -147,6 +150,10 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-legal
+      namespace: osdu-core
+  targetNamespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service
@@ -159,7 +166,6 @@ spec:
   install:
     remediation:
       retries: 3
-  targetNamespace: osdu-core
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software

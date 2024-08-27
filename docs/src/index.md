@@ -9,6 +9,8 @@ OSDU Developer is an open-source solution designed to enable the creation of lig
 
 The primary goal for this solution is to provide an environment that can help function within an inner loop process providing faster feedback for developers. This personal environment strives to be user-friendly yet maintain compliance with varying organizational standards. It offers a flexible framework to facilitate deeper exploration of OSDU™ capabilities.
 
+![[0]][0]
+
 Deploying personal instances provide valuable insights into early-stage development and integration processes. It emphasizes transparency, cost-efficiency, and flexibility, empowering developers to engage in essential application and cloud development scenarios.
 
 !!! Note
@@ -40,6 +42,8 @@ Several use cases illustrate the practical applications for this approach.
 
 **Training and Onboarding:**  Train new employees on the OSDU™ platform, offering hands-on experience in a controlled environment.
  
+![[1]][1]
+
 
 ## Features
 
@@ -61,3 +65,5 @@ Several use cases illustrate the practical applications for this approach.
 
 Follow the instructions in the "Tutorials" to quickly bring online a personal instance.
 
+[0]: images/overview_1.png "Overview Diagram"
+[1]: images/overview_2.png "Use Cases Diagram"

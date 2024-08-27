@@ -1,4 +1,4 @@
-name: Auto - Documentation
+name: Auto - Doc
 
 on:
   # Trigger spell check on pull requests

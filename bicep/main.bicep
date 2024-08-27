@@ -421,7 +421,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     clusterSize: enableBurstable ? 'Burstable' : 'Standard'
     clusterAdminIds: clusterAdminIds
 
-    clusterIngress: ingressType == '' ? 'Both' : ingressType
+    clusterIngress: ingressType == '' ? 'External' : ingressType
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
     dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
     networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin

@@ -34,8 +34,6 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 
 > **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/before_you_start/) registered. 
 
-> **AZURE RESOURCE COSTS:** This solution will create an Azure Kubernetes Cluster that has a monthly cost and consumes a minimum of 44 vCPUs, as well as creation of other Azure Resources such as Storage Accounts, Cosmos Databases and Redis Cache.
-
 Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview from the Azure Cloud Shell.
 
 ### Prerequisites

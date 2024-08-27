@@ -22,15 +22,16 @@ flowchart TD
   partition-->partition_init
   entitlements-->entitlements_init
   partition_init-->entitlements_init
-  entitlements_init-->legal
+  entitlements_init-->user_init
+  entitlements-->legal
   legal-->indexer
   legal-->indexer_queue
-  entitlements_init-->user_init
+  
   indexer-->schema
   indexer_queue-->schema
   schema-->schema_init
   schema-->storage
   schema-->file
-  storage-->search
-  file-->search
+  schema-->search
+  schema-->search
 ```

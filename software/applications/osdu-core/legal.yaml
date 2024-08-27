@@ -7,6 +7,9 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-developer-base-core
+      namespace: default
   targetNamespace: osdu-core
   chart:
     spec:

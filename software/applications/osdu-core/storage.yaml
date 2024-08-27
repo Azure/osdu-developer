@@ -7,6 +7,9 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-partition
+      namespace: osdu-core
   chart:
     spec:
       chart: ./charts/osdu-developer-service

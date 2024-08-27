@@ -34,7 +34,6 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 
 > **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/before_you_start/) registered. 
 
-Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview from the Azure Cloud Shell.
 
 ### Prerequisites
 
@@ -55,9 +54,32 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 - __Azure Developer CLI__: Installed on your local machine. [Download](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
 
+### CLI Deployment  (Recommended)
+
+Deploying the resources via CLI is the recommended approach. This method allows for customization of the deployment parameters to better suit your needs, and offers tighter integration with other capabilities in this repository.
+
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview of doing this from the Azure Cloud Shell.
+
+```bash
+# Authentication
+az login
+az account set --subscription <your_subscription_id>
+azd auth login
+
+# Provisioning
+azd init -e dev
+azd provision
+
+# Settings
+azd env set AUTH_CODE <your_auth_code>
+azd hooks run settings
+
+# Cleanup
+azd down --force --purge
+```
 
 
-### ARM Template Deployment  (Alternative)
+### One Click Deployment  (Alternative)
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
@@ -75,4 +97,14 @@ During the deployment process, some information is required to be provided in th
 - `Application Client Principal OID`: Specify the Enterprise Application Object Id. (The unique ID of the service principal object associated with the application.)
 
  
+## Contributing
 
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+
+For details on contributing to this repository, see the [Contribution Guide](./CONTRIBUTING.md).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

@@ -13,7 +13,8 @@ For detailed instructions, view our online [Documentation](https://azure.github.
 
 ## OSDU Services
 
-Supported services running [Milestone 24](https://community.opengroup.org/groups/osdu/platform/-/milestones/26#tab-issues)
+Supported services of OSDU are based on the release branch of OSDU as specified in the [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones). (ie: release/0.25 release/0.26, release/0.27, master etc.)
+
 
 | **Service**                                                                                     | **Description**                                                                                 |
 |-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|

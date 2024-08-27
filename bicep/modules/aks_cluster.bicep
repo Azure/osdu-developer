@@ -396,7 +396,7 @@ var userPoolPresets = {
   // 4 vCPU, 16 GiB RAM, 32 GiB Temp Disk, (3600) IOPS, 128 GB Managed OS Disk
   Burstable : {
     vmSize: 'Standard_B4ms'
-    minCount: 3
+    minCount: 4
     maxCount: 20
     availabilityZones: [
       '1'
@@ -410,7 +410,7 @@ var userPoolPresets = {
   // 4 vCPU, 32 GiB RAM, 64 GiB SSD, (8000) IOPS, 128 GB Managed OS Disk
   Standard : {
     vmSize: 'Standard_D4s_v5'
-    minCount: 3
+    minCount: 4
     maxCount: 20
     availabilityZones: [
       '1'

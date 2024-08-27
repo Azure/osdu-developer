@@ -8,8 +8,8 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: osdu-developer-base-core
-      namespace: default
+    - name: osdu-init-partition
+      namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:
@@ -151,8 +151,8 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: osdu-developer-base-core
-      namespace: default
+    - name: osdu-init-partition
+      namespace: osdu-core
   targetNamespace: osdu-core
   chart:
     spec:

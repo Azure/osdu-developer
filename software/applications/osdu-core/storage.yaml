@@ -8,7 +8,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: osdu-partition
+    - name: osdu-init-partition
       namespace: osdu-core
   chart:
     spec:

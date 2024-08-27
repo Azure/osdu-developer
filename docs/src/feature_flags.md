@@ -22,7 +22,9 @@ Software customizations can be managed and modified using the following feature 
 | ENABLE_SOFTWARE           | Disables loading of all software when set to false (True by default)        |
 | ENABLE_OSDU_CORE          | Disables loading of the osdu core services (True by default)                |
 | ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
-| SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed                           |
+| SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed (release/0.27)            |
+| SOFTWARE_REPO             | Customizes the repository location used for software definition             |
+| SOFTWARE_BRANCH           | Customizes the branch used for software definition                          |
 
 
 ## Storage Access

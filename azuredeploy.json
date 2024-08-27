@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "12091367006936561025"
+      "templateHash": "5433245448373487199"
     }
   },
   "parameters": {
@@ -40,16 +40,18 @@
         "description": "Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)"
       }
     },
-    "tier": {
-      "type": "string",
-      "defaultValue": "CostOptimised",
-      "allowedValues": [
-        "CostOptimised",
-        "Standard",
-        "HighSpec"
-      ],
+    "enableBurstable": {
+      "type": "bool",
+      "defaultValue": true,
       "metadata": {
-        "description": "The size of the solution"
+        "description": "Feature Flag: Enable Burstable Server Types"
+      }
+    },
+    "customVMSize": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Use customized server types."
       }
     },
     "ingressType": {
@@ -58,17 +60,11 @@
       "allowedValues": [
         "External",
         "Internal",
-        "Both"
+        "Both",
+        ""
       ],
       "metadata": {
         "description": "Specify the Ingress type for the cluster."
-      }
-    },
-    "osduVersion": {
-      "type": "string",
-      "defaultValue": "release-0-27",
-      "metadata": {
-        "description": "Specify the OSDU version. (release-0-27, master)"
       }
     },
     "enableBlobPublicAccess": {
@@ -133,6 +129,7 @@
         "enable": true,
         "osduCore": true,
         "osduReference": true,
+        "osduVersion": "",
         "repository": "",
         "branch": "",
         "tag": ""
@@ -6438,7 +6435,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "12602517446775868413"
+              "templateHash": "4754443620041447891"
             }
           },
           "definitions": {
@@ -10577,7 +10574,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15436384105852111599"
+                      "templateHash": "1268765607862445897"
                     }
                   },
                   "parameters": {
@@ -10850,15 +10847,21 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "condition": "[if(contains(parameters('roleAssignments')[copyIndex()], 'condition'), createObject('value', parameters('roleAssignments')[copyIndex()].condition), createObject('value', ''))]",
+                          "condition": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'condition'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Network/privateEndpoints', if(greater(length(variables('name')), 24), substring(variables('name'), 0, 24), variables('name')))]"
                           },
@@ -10873,7 +10876,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "1223229375479334765"
+                              "templateHash": "15828452477141958846"
                             }
                           },
                           "parameters": {
@@ -10961,7 +10964,7 @@
                               "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -11080,7 +11083,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "6041202029025162391"
+                      "templateHash": "11314640625553577874"
                     }
                   },
                   "parameters": {
@@ -11633,14 +11636,18 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
                           },
@@ -11655,7 +11662,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "14961931288832709297"
+                              "templateHash": "10642602546309979595"
                             }
                           },
                           "parameters": {
@@ -11736,7 +11743,7 @@
                               "name": "[guid(last(split(parameters('resourceId'), '/')), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "delegatedManagedIdentityResourceId": "[if(parameters('crossTenant'), parameters('principals')[copyIndex()].resourceId, null())]"
@@ -12712,7 +12719,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15436384105852111599"
+                      "templateHash": "1268765607862445897"
                     }
                   },
                   "parameters": {
@@ -12985,15 +12992,21 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "condition": "[if(contains(parameters('roleAssignments')[copyIndex()], 'condition'), createObject('value', parameters('roleAssignments')[copyIndex()].condition), createObject('value', ''))]",
+                          "condition": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'condition'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Network/privateEndpoints', if(greater(length(variables('name')), 24), substring(variables('name'), 0, 24), variables('name')))]"
                           },
@@ -13008,7 +13021,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "1223229375479334765"
+                              "templateHash": "15828452477141958846"
                             }
                           },
                           "parameters": {
@@ -13096,7 +13109,7 @@
                               "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -13931,7 +13944,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "4773475520144338789"
+                      "templateHash": "5221319877372577310"
                     }
                   },
                   "parameters": {
@@ -14518,7 +14531,9 @@
                           "maxThroughput": {
                             "value": "[parameters('maxThroughput')]"
                           },
-                          "containers": "[if(contains(parameters('sqlDatabases')[copyIndex()], 'containers'), createObject('value', parameters('sqlDatabases')[copyIndex()].containers), createObject('value', createArray()))]"
+                          "containers": {
+                            "value": "[coalesce(tryGet(parameters('sqlDatabases')[copyIndex()], 'containers'), createArray())]"
+                          }
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -14789,7 +14804,9 @@
                           "maxThroughput": {
                             "value": "[parameters('maxThroughput')]"
                           },
-                          "graphs": "[if(contains(parameters('gremlinDatabases')[copyIndex()], 'graphs'), createObject('value', parameters('gremlinDatabases')[copyIndex()].graphs), createObject('value', createArray()))]"
+                          "graphs": {
+                            "value": "[coalesce(tryGet(parameters('gremlinDatabases')[copyIndex()], 'graphs'), createArray())]"
+                          }
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -14798,7 +14815,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "8121458545745540774"
+                              "templateHash": "11911423838386828107"
                             }
                           },
                           "parameters": {
@@ -14879,7 +14896,9 @@
                                   "databaseAccountName": {
                                     "value": "[parameters('databaseAccountName')]"
                                   },
-                                  "automaticIndexing": "[if(contains(parameters('graphs')[copyIndex()], 'automaticIndexing'), createObject('value', parameters('graphs')[copyIndex()].automaticIndexing), createObject('value', true()))]",
+                                  "automaticIndexing": {
+                                    "value": "[coalesce(tryGet(parameters('graphs')[copyIndex()], 'automaticIndexing'), true())]"
+                                  },
                                   "partitionKeyPaths": "[if(not(empty(parameters('graphs')[copyIndex()].partitionKeyPaths)), createObject('value', parameters('graphs')[copyIndex()].partitionKeyPaths), createObject('value', createArray()))]"
                                 },
                                 "template": {
@@ -15025,14 +15044,18 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', if(greater(length(variables('name')), 26), substring(variables('name'), 0, 26), variables('name')))]"
                           },
@@ -15047,7 +15070,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "8764262835909021528"
+                              "templateHash": "11437483541600622074"
                             }
                           },
                           "parameters": {
@@ -15149,7 +15172,7 @@
                               "name": "[guid(resourceId('Microsoft.DocumentDB/databaseAccounts', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -15788,7 +15811,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15436384105852111599"
+                      "templateHash": "1268765607862445897"
                     }
                   },
                   "parameters": {
@@ -16061,15 +16084,21 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "condition": "[if(contains(parameters('roleAssignments')[copyIndex()], 'condition'), createObject('value', parameters('roleAssignments')[copyIndex()].condition), createObject('value', ''))]",
+                          "condition": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'condition'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Network/privateEndpoints', if(greater(length(variables('name')), 24), substring(variables('name'), 0, 24), variables('name')))]"
                           },
@@ -16084,7 +16113,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "1223229375479334765"
+                              "templateHash": "15828452477141958846"
                             }
                           },
                           "parameters": {
@@ -16172,7 +16201,7 @@
                               "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -19567,9 +19596,7 @@
           "cosmosDNSZoneId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.cosmosDNSZoneId.value]"
           },
-          "partitionSize": {
-            "value": "[parameters('tier')]"
-          },
+          "partitionSize": "[if(parameters('enableBurstable'), createObject('value', 'Burstable'), createObject('value', 'Standard'))]",
           "partitions": {
             "value": "[variables('configuration').partitions]"
           },
@@ -19585,7 +19612,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "10870857716059158663"
+              "templateHash": "2565834844399307473"
             }
           },
           "definitions": {
@@ -19682,11 +19709,10 @@
             },
             "partitionSize": {
               "type": "string",
-              "defaultValue": "CostOptimised",
+              "defaultValue": "Burstable",
               "allowedValues": [
-                "CostOptimised",
-                "Standard",
-                "HighSpec"
+                "Burstable",
+                "Standard"
               ],
               "metadata": {
                 "description": "The Partition Size"
@@ -19772,14 +19798,11 @@
               },
               "database": {
                 "name": "osdu-db",
-                "CostOptimised": {
+                "Burstable": {
                   "throughput": 2000
                 },
                 "Standard": {
                   "throughput": 4000
-                },
-                "HighSpec": {
-                  "throughput": 12000
                 },
                 "backup": "Continuous",
                 "containers": [
@@ -20112,7 +20135,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "6041202029025162391"
+                      "templateHash": "11314640625553577874"
                     }
                   },
                   "parameters": {
@@ -20665,14 +20688,18 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Storage/storageAccounts', if(greater(length(parameters('name')), 24), substring(parameters('name'), 0, 24), parameters('name')))]"
                           },
@@ -20687,7 +20714,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "14961931288832709297"
+                              "templateHash": "10642602546309979595"
                             }
                           },
                           "parameters": {
@@ -20768,7 +20795,7 @@
                               "name": "[guid(last(split(parameters('resourceId'), '/')), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "delegatedManagedIdentityResourceId": "[if(parameters('crossTenant'), parameters('principals')[copyIndex()].resourceId, null())]"
@@ -21745,7 +21772,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15436384105852111599"
+                      "templateHash": "1268765607862445897"
                     }
                   },
                   "parameters": {
@@ -22018,15 +22045,21 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "condition": "[if(contains(parameters('roleAssignments')[copyIndex()], 'condition'), createObject('value', parameters('roleAssignments')[copyIndex()].condition), createObject('value', ''))]",
+                          "condition": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'condition'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Network/privateEndpoints', if(greater(length(variables('name')), 24), substring(variables('name'), 0, 24), variables('name')))]"
                           },
@@ -22041,7 +22074,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "1223229375479334765"
+                              "templateHash": "15828452477141958846"
                             }
                           },
                           "parameters": {
@@ -22129,7 +22162,7 @@
                               "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -22245,7 +22278,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "4773475520144338789"
+                      "templateHash": "5221319877372577310"
                     }
                   },
                   "parameters": {
@@ -22832,7 +22865,9 @@
                           "maxThroughput": {
                             "value": "[parameters('maxThroughput')]"
                           },
-                          "containers": "[if(contains(parameters('sqlDatabases')[copyIndex()], 'containers'), createObject('value', parameters('sqlDatabases')[copyIndex()].containers), createObject('value', createArray()))]"
+                          "containers": {
+                            "value": "[coalesce(tryGet(parameters('sqlDatabases')[copyIndex()], 'containers'), createArray())]"
+                          }
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -23103,7 +23138,9 @@
                           "maxThroughput": {
                             "value": "[parameters('maxThroughput')]"
                           },
-                          "graphs": "[if(contains(parameters('gremlinDatabases')[copyIndex()], 'graphs'), createObject('value', parameters('gremlinDatabases')[copyIndex()].graphs), createObject('value', createArray()))]"
+                          "graphs": {
+                            "value": "[coalesce(tryGet(parameters('gremlinDatabases')[copyIndex()], 'graphs'), createArray())]"
+                          }
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -23112,7 +23149,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "8121458545745540774"
+                              "templateHash": "11911423838386828107"
                             }
                           },
                           "parameters": {
@@ -23193,7 +23230,9 @@
                                   "databaseAccountName": {
                                     "value": "[parameters('databaseAccountName')]"
                                   },
-                                  "automaticIndexing": "[if(contains(parameters('graphs')[copyIndex()], 'automaticIndexing'), createObject('value', parameters('graphs')[copyIndex()].automaticIndexing), createObject('value', true()))]",
+                                  "automaticIndexing": {
+                                    "value": "[coalesce(tryGet(parameters('graphs')[copyIndex()], 'automaticIndexing'), true())]"
+                                  },
                                   "partitionKeyPaths": "[if(not(empty(parameters('graphs')[copyIndex()].partitionKeyPaths)), createObject('value', parameters('graphs')[copyIndex()].partitionKeyPaths), createObject('value', createArray()))]"
                                 },
                                 "template": {
@@ -23339,14 +23378,18 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', if(greater(length(variables('name')), 26), substring(variables('name'), 0, 26), variables('name')))]"
                           },
@@ -23361,7 +23404,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "8764262835909021528"
+                              "templateHash": "11437483541600622074"
                             }
                           },
                           "parameters": {
@@ -23463,7 +23506,7 @@
                               "name": "[guid(resourceId('Microsoft.DocumentDB/databaseAccounts', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -24103,7 +24146,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15436384105852111599"
+                      "templateHash": "1268765607862445897"
                     }
                   },
                   "parameters": {
@@ -24376,15 +24419,21 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principals": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principals]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "condition": "[if(contains(parameters('roleAssignments')[copyIndex()], 'condition'), createObject('value', parameters('roleAssignments')[copyIndex()].condition), createObject('value', ''))]",
+                          "condition": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'condition'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.Network/privateEndpoints', if(greater(length(variables('name')), 24), substring(variables('name'), 0, 24), variables('name')))]"
                           },
@@ -24399,7 +24448,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "1223229375479334765"
+                              "templateHash": "15828452477141958846"
                             }
                           },
                           "parameters": {
@@ -24487,7 +24536,7 @@
                               "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', last(split(parameters('resourceId'), '/'))), parameters('principals')[copyIndex()].id, parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principals')[copyIndex()].id]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",
@@ -29107,7 +29156,7 @@
           "enableTelemetry": {
             "value": "[variables('enableTelemetry')]"
           },
-          "osduVersion": "[if(equals(parameters('osduVersion'), ''), createObject('value', 'release-0-27'), createObject('value', parameters('osduVersion')))]",
+          "osduVersion": "[if(equals(parameters('clusterSoftware').osduVersion, ''), createObject('value', 'release-0-27'), createObject('value', parameters('clusterSoftware').osduVersion))]",
           "enableSoftwareLoad": "[if(equals(parameters('clusterSoftware').enable, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsduCore": "[if(equals(parameters('clusterSoftware').osduCore, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsdureference": "[if(equals(parameters('clusterSoftware').osduReference, 'false'), createObject('value', false()), createObject('value', true()))]",
@@ -29146,15 +29195,14 @@
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.aksSubnetId.value]"
           },
           "podSubnetId": "[if(parameters('enablePodSubnet'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.podSubnetId.value), createObject('value', ''))]",
-          "clusterSize": {
-            "value": "[parameters('tier')]"
+          "customVMSize": {
+            "value": "[parameters('customVMSize')]"
           },
+          "clusterSize": "[if(parameters('enableBurstable'), createObject('value', 'Burstable'), createObject('value', 'Standard'))]",
           "clusterAdminIds": {
             "value": "[parameters('clusterAdminIds')]"
           },
-          "clusterIngress": {
-            "value": "[parameters('ingressType')]"
-          },
+          "clusterIngress": "[if(equals(parameters('ingressType'), ''), createObject('value', 'External'), createObject('value', parameters('ingressType')))]",
           "serviceCidr": "[if(equals(parameters('clusterNetwork').serviceCidr, ''), createObject('value', '172.16.0.0/16'), createObject('value', parameters('clusterNetwork').serviceCidr))]",
           "dnsServiceIP": "[if(equals(parameters('clusterNetwork').dnsServiceIP, ''), createObject('value', '172.16.0.10'), createObject('value', parameters('clusterNetwork').v))]",
           "networkPlugin": "[if(parameters('enablePodSubnet'), createObject('value', 'azure'), createObject('value', parameters('clusterNetworkPlugin')))]",
@@ -29192,7 +29240,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "17807599380893178997"
+              "templateHash": "5900057708516682334"
             }
           },
           "definitions": {
@@ -29279,7 +29327,17 @@
               "type": "string"
             },
             "clusterSize": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "The size of the solution"
+              }
+            },
+            "customVMSize": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Override the default server type."
+              }
             },
             "kvName": {
               "type": "string",
@@ -29343,7 +29401,8 @@
               "allowedValues": [
                 "Internal",
                 "External",
-                "Both"
+                "Both",
+                ""
               ],
               "metadata": {
                 "description": "The Cluster Ingress Mode"
@@ -29485,7 +29544,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.27.0"
+              "release": "v0.28.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -29507,14 +29566,11 @@
               }
             },
             "elasticPoolPresets": {
-              "CostOptimised": {
-                "vmSize": "Standard_DS3_v2"
+              "Burstable": {
+                "vmSize": "Standard_B4ms"
               },
               "Standard": {
-                "vmSize": "Standard_DS4_v2"
-              },
-              "HighSpec": {
-                "vmSize": "Standard_DS5_v2"
+                "vmSize": "Standard_D4s_v5"
               }
             },
             "common_helm_values": [
@@ -31837,7 +31893,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "15986338022934736304"
+                      "templateHash": "16288804577755852114"
                     }
                   },
                   "parameters": {
@@ -31915,15 +31971,20 @@
                     },
                     "clusterSize": {
                       "type": "string",
-                      "defaultValue": "CostOptimised",
+                      "defaultValue": "Burstable",
                       "allowedValues": [
-                        "CostOptimised",
-                        "Standard",
-                        "HighSpec",
-                        "Custom"
+                        "Burstable",
+                        "Standard"
                       ],
                       "metadata": {
                         "description": "The System Pool Preset sizing"
+                      }
+                    },
+                    "customVMSize": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Override the default server type."
                       }
                     },
                     "AutoscaleProfile": {
@@ -32369,19 +32430,10 @@
                     },
                     "outboundTrafficType": "[if(equals(parameters('aksOutboundTrafficType'), 'natGateway'), if(parameters('custom_vnet'), 'userAssignedNATGateway', 'managedNATGateway'), parameters('aksOutboundTrafficType'))]",
                     "systemPoolPresets": {
-                      "CostOptimised": {
-                        "vmSize": "Standard_B4ms",
+                      "Burstable": {
+                        "vmSize": "Standard_B2ms",
                         "minCount": 1,
                         "maxCount": 3,
-                        "availabilityZones": [],
-                        "osDiskType": "Managed",
-                        "osDiskSize": 128,
-                        "maxPods": 30
-                      },
-                      "Standard": {
-                        "vmSize": "Standard_DS2_v2",
-                        "minCount": 3,
-                        "maxCount": 5,
                         "availabilityZones": [
                           "1",
                           "2",
@@ -32391,10 +32443,10 @@
                         "osDiskSize": 128,
                         "maxPods": 30
                       },
-                      "HighSpec": {
-                        "vmSize": "Standard_D4s_v3",
-                        "minCount": 3,
-                        "maxCount": 10,
+                      "Standard": {
+                        "vmSize": "Standard_D2s_v5",
+                        "minCount": 1,
+                        "maxCount": 3,
                         "availabilityZones": [
                           "1",
                           "2",
@@ -32413,7 +32465,7 @@
                       "type": "VirtualMachineScaleSets",
                       "osDiskType": "[variables('systemPoolPresets')[parameters('clusterSize')].osDiskType]",
                       "osDiskSizeGB": "[variables('systemPoolPresets')[parameters('clusterSize')].osDiskSize]",
-                      "vmSize": "[variables('systemPoolPresets')[parameters('clusterSize')].vmSize]",
+                      "vmSize": "[if(empty(parameters('customVMSize')), variables('systemPoolPresets')[parameters('clusterSize')].vmSize, parameters('customVMSize'))]",
                       "count": "[variables('systemPoolPresets')[parameters('clusterSize')].minCount]",
                       "minCount": "[variables('systemPoolPresets')[parameters('clusterSize')].minCount]",
                       "maxCount": "[variables('systemPoolPresets')[parameters('clusterSize')].maxCount]",
@@ -32430,30 +32482,8 @@
                       ]
                     },
                     "userPoolPresets": {
-                      "CostOptimised": {
+                      "Burstable": {
                         "vmSize": "Standard_B4ms",
-                        "minCount": 3,
-                        "maxCount": 8,
-                        "availabilityZones": [],
-                        "osDiskType": "Managed",
-                        "osDiskSize": 128,
-                        "maxPods": 30
-                      },
-                      "Standard": {
-                        "vmSize": "Standard_E4s_v3",
-                        "minCount": 3,
-                        "maxCount": 15,
-                        "availabilityZones": [
-                          "1",
-                          "2",
-                          "3"
-                        ],
-                        "osDiskType": "Managed",
-                        "osDiskSize": 128,
-                        "maxPods": 30
-                      },
-                      "HighSpec": {
-                        "vmSize": "Standard_D8ds_v4",
                         "minCount": 4,
                         "maxCount": 20,
                         "availabilityZones": [
@@ -32461,9 +32491,22 @@
                           "2",
                           "3"
                         ],
-                        "osDiskType": "Ephemeral",
-                        "osDiskSize": 0,
-                        "maxPods": 30
+                        "osDiskType": "Managed",
+                        "osDiskSize": 128,
+                        "maxPods": 60
+                      },
+                      "Standard": {
+                        "vmSize": "Standard_D4s_v5",
+                        "minCount": 4,
+                        "maxCount": 20,
+                        "availabilityZones": [
+                          "1",
+                          "2",
+                          "3"
+                        ],
+                        "osDiskType": "Managed",
+                        "osDiskSize": 128,
+                        "maxPods": 60
                       }
                     },
                     "userPoolProfile": {
@@ -32474,7 +32517,7 @@
                       "type": "VirtualMachineScaleSets",
                       "osDiskType": "[variables('userPoolPresets')[parameters('clusterSize')].osDiskType]",
                       "osDiskSizeGB": "[variables('userPoolPresets')[parameters('clusterSize')].osDiskSize]",
-                      "vmSize": "[variables('userPoolPresets')[parameters('clusterSize')].vmSize]",
+                      "vmSize": "[if(empty(parameters('customVMSize')), variables('userPoolPresets')[parameters('clusterSize')].vmSize, parameters('customVMSize'))]",
                       "count": "[variables('userPoolPresets')[parameters('clusterSize')].minCount]",
                       "minCount": "[variables('userPoolPresets')[parameters('clusterSize')].minCount]",
                       "maxCount": "[variables('userPoolPresets')[parameters('clusterSize')].maxCount]",
@@ -32723,9 +32766,7 @@
                   "PoolName": {
                     "value": "poolz1"
                   },
-                  "agentVMSize": {
-                    "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
-                  },
+                  "agentVMSize": "[if(empty(parameters('customVMSize')), createObject('value', variables('elasticPoolPresets')[parameters('clusterSize')].vmSize), createObject('value', parameters('customVMSize')))]",
                   "agentCount": {
                     "value": 1
                   },
@@ -32761,7 +32802,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "3892277692796781652"
+                      "templateHash": "2021671042154384765"
                     }
                   },
                   "parameters": {
@@ -32780,7 +32821,7 @@
                     },
                     "osDiskType": {
                       "type": "string",
-                      "defaultValue": "Ephemeral",
+                      "defaultValue": "Managed",
                       "metadata": {
                         "description": "OS disk type"
                       }
@@ -32912,9 +32953,7 @@
                   "PoolName": {
                     "value": "poolz2"
                   },
-                  "agentVMSize": {
-                    "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
-                  },
+                  "agentVMSize": "[if(empty(parameters('customVMSize')), createObject('value', variables('elasticPoolPresets')[parameters('clusterSize')].vmSize), createObject('value', parameters('customVMSize')))]",
                   "agentCount": {
                     "value": 1
                   },
@@ -32950,7 +32989,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "3892277692796781652"
+                      "templateHash": "2021671042154384765"
                     }
                   },
                   "parameters": {
@@ -32969,7 +33008,7 @@
                     },
                     "osDiskType": {
                       "type": "string",
-                      "defaultValue": "Ephemeral",
+                      "defaultValue": "Managed",
                       "metadata": {
                         "description": "OS disk type"
                       }
@@ -33101,9 +33140,7 @@
                   "PoolName": {
                     "value": "poolz3"
                   },
-                  "agentVMSize": {
-                    "value": "[variables('elasticPoolPresets')[parameters('clusterSize')].vmSize]"
-                  },
+                  "agentVMSize": "[if(empty(parameters('customVMSize')), createObject('value', variables('elasticPoolPresets')[parameters('clusterSize')].vmSize), createObject('value', parameters('customVMSize')))]",
                   "agentCount": {
                     "value": 1
                   },
@@ -33139,7 +33176,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "3892277692796781652"
+                      "templateHash": "2021671042154384765"
                     }
                   },
                   "parameters": {
@@ -33158,7 +33195,7 @@
                     },
                     "osDiskType": {
                       "type": "string",
-                      "defaultValue": "Ephemeral",
+                      "defaultValue": "Managed",
                       "metadata": {
                         "description": "OS disk type"
                       }
@@ -34892,7 +34929,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "11145942819824999735"
+                      "templateHash": "12250854146919217996"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -35254,9 +35291,15 @@
                           "value": {
                             "value": "[parameters('keyValues')[copyIndex()].value]"
                           },
-                          "label": "[if(contains(parameters('keyValues')[copyIndex()], 'label'), createObject('value', parameters('keyValues')[copyIndex()].label), createObject('value', ''))]",
-                          "contentType": "[if(contains(parameters('keyValues')[copyIndex()], 'contentType'), createObject('value', parameters('keyValues')[copyIndex()].contentType), createObject('value', ''))]",
-                          "tags": "[if(contains(parameters('keyValues')[copyIndex()], 'tags'), createObject('value', parameters('keyValues')[copyIndex()].tags), createObject('value', createObject()))]"
+                          "label": {
+                            "value": "[coalesce(tryGet(parameters('keyValues')[copyIndex()], 'label'), '')]"
+                          },
+                          "contentType": {
+                            "value": "[coalesce(tryGet(parameters('keyValues')[copyIndex()], 'contentType'), '')]"
+                          },
+                          "tags": {
+                            "value": "[coalesce(tryGet(parameters('keyValues')[copyIndex()], 'tags'), createObject())]"
+                          }
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -35367,14 +35410,18 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
-                          "description": "[if(contains(parameters('roleAssignments')[copyIndex()], 'description'), createObject('value', parameters('roleAssignments')[copyIndex()].description), createObject('value', ''))]",
+                          "description": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'description'), '')]"
+                          },
                           "principalIds": {
                             "value": "[parameters('roleAssignments')[copyIndex()].principalIds]"
                           },
                           "roleDefinitionIdOrName": {
                             "value": "[parameters('roleAssignments')[copyIndex()].roleDefinitionIdOrName]"
                           },
-                          "principalType": "[if(contains(parameters('roleAssignments')[copyIndex()], 'principalType'), createObject('value', parameters('roleAssignments')[copyIndex()].principalType), createObject('value', ''))]",
+                          "principalType": {
+                            "value": "[coalesce(tryGet(parameters('roleAssignments')[copyIndex()], 'principalType'), '')]"
+                          },
                           "resourceId": {
                             "value": "[resourceId('Microsoft.AppConfiguration/configurationStores', if(greater(length(variables('name')), 50), substring(variables('name'), 0, 50), variables('name')))]"
                           }
@@ -35386,7 +35433,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.29.47.4906",
-                              "templateHash": "12687607211502800271"
+                              "templateHash": "7839211716433469277"
                             }
                           },
                           "parameters": {
@@ -35488,7 +35535,7 @@
                               "name": "[guid(resourceId('Microsoft.AppConfiguration/configurationStores', last(split(parameters('resourceId'), '/'))), parameters('principalIds')[copyIndex()], parameters('roleDefinitionIdOrName'))]",
                               "properties": {
                                 "description": "[parameters('description')]",
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]",
+                                "roleDefinitionId": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]",
                                 "principalId": "[parameters('principalIds')[copyIndex()]]",
                                 "principalType": "[if(not(empty(parameters('principalType'))), parameters('principalType'), null())]",
                                 "condition": "[if(not(empty(parameters('condition'))), parameters('condition'), null())]",

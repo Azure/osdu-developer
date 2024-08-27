@@ -44,7 +44,9 @@ The fact that a deployment completes successfully is a great sign, however there
 
 In this case we are installing software and we are testing the software is installed.
 
-## Solution actions used in this repo
+## Github Actions
+
+This section outlines the key GitHub Actions implemented in this repository to ensure code quality, automate builds, and streamline releases. These actions form the backbone of the continuous integration and deployment pipeline, enhancing our development workflow and maintaining high standards across our project.
 
 ![[0]][0]
 
@@ -102,5 +104,5 @@ This is an auto action for a bot to reply to open issues and open pull requests.
 
 This is an auto action for a bot to automatically apply labels based on detection of type of code change.
 
-[0]: src/images/pipeline_1.png "Pipeline Diagram"
+[0]: src/images/pipeline_1.png "Validation Diagram"
 [1]: src/images/pipeline_2.png "Pipeline Diagram"

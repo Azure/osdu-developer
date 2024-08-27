@@ -12,13 +12,7 @@ OSDU Developer enables the deployment of personal instances of the [OSDU™](htt
 > For a fully managed implementation use [Azure Data Manager for Energy](https://azure.microsoft.com/en-us/products/data-manager-for-energy).
 
 
-__Documentation__
-
-For detailed instructions please view our online [Documentation](https://azure.github.io/osdu-developer/)
-
-__Roadmap__
-
-Check out what is on the [roadmap](https://github.com/orgs/Azure/projects/696/views/2) and what the team is currently working on.
+For detailed instructions, view our online [Documentation](https://azure.github.io/osdu-developer/) and see what the team is currently working by looking through the [Roadmap](https://github.com/orgs/Azure/projects/696/views/2).
 
 ## OSDU Services
 

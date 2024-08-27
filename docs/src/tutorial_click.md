@@ -2,13 +2,13 @@
 
 The solution is a native bicep solution and includes a transpiled ARM template from the latest release.  This ARM template can then be easily used as a custom template deployment.
 
-### 1. Retrieve an existing or create a new Microsoft Entra Application
+### 1. Microsoft Entra App Create
 
 The solution requires the use of an Application to be registered in Microsoft Entra.
 
 ![Create Application](./images/tutorial_click_1.png)
 
-### 2. Collect the required IDs and secret from the Application
+### 2. Microsoft Entra App Info
 
 Create a new client secret to use and note the following IDs for the application.
 
@@ -18,7 +18,7 @@ Create a new client secret to use and note the following IDs for the application
 ![Client Id](./images/tutorial_click_2.png)
 ![Principal Id](./images/tutorial_click_3.png)
 
-### 2. Deploy the solution
+### 2. Deploy Solution
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
@@ -43,7 +43,7 @@ Additional fields are all optional changes.  Please see feature flags for furthe
 
 ![Principal Id](./images/tutorial_click_4.png)
 
-### 3. Validate completion
+### 3. Validate Completion
 
 Deployment is broken up into 2 parts, Infrastructure and Software.
 
@@ -55,7 +55,7 @@ Software deployment occurs after successful infrastructure and be seen by lookin
 ![Software Deployment](./images/tutorial_click_6.png)
 
 
-### 3. Set the Application SPA platform redirect URL
+### 3. Microsoft Entra App Auth
 
 Lookup the ingress IP address that has been configured under the kubernetes service `services and ingresses` blade and add the redirect uri to a spa platform on the application authentication blade.
 
@@ -63,7 +63,7 @@ Lookup the ingress IP address that has been configured under the kubernetes serv
 ![Redirect](./images/tutorial_click_8.png)
 
 
-### 3. Retrieve an access token
+### 3. Retrieve Token
 
 Using the form located at `https://<ip_address>/auth/spa/` retrieve a valid access token by clicking the Authorize button which will return an authorization code, then clicking the Get Tokens button which will retrieve a limited use access token.
 
@@ -73,7 +73,7 @@ Using the form located at `https://<ip_address>/auth/spa/` retrieve a valid acce
 ![Token](./images/tutorial_click_9c.png)
 
 
-### 4. Using an api service swagger page execute api calls.
+### 4. Execute API Requests
 
 OSDU Services have swagger pages that are available.  Using the retrieved bearer token authenticate and execute API calls as desired.
 

@@ -6,6 +6,7 @@
 *_env.json
 
 # User-specific files
+*.DS_Store
 *.rsuser
 *.suo
 *.user

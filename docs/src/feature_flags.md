@@ -25,7 +25,7 @@ Software customizations can be managed and modified using the following feature 
 | SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed                           |
 
 
-## Public Storage Access
+## Storage Access
 
 Control public access to Storage.
 
@@ -34,7 +34,7 @@ Control public access to Storage.
 | ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
 
 
-## Bastion Management
+## Private Access
 
 Modify the infrastructure and network by enabling Bastion Host with a virtual machine to use for access.
 
@@ -45,32 +45,24 @@ Modify the infrastructure and network by enabling Bastion Host with a virtual ma
 
 ## Cluster Network
 
-Modify the AKS cluster network configuration for Azure CNI with Dynamic IP allocation.
+Modify the cluster network configuration to utilize Azure CNI with Dynamic IP allocation.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_POD_SUBNET         | Enables a separate subnet for pod networking in the AKS cluster             |
 
 
-## Vnet Injection
+## Virtual Network Injection
 
-__Purpose:__ Enables a bring your own network capability.
+Modify the network configuration for use with a pre-existing virtual network.
 
-__Details:__ Typically, internal solutions require a preconfigured network due to possible S2S vpn configurations or a Hub Spoke Network design.
-
-__How To Enable:__
-
-```bash
-azd env set VIRTUAL_NETWORK_GROUP <your_network_group>
-azd env set VIRTUAL_NETWORK_NAME <your_network_name>
-azd env set VIRTUAL_NETWORK_PREFIX <your_network_prefix>
-azd env set VIRTUAL_NETWORK_IDENTITY <your_network_managed_identity>
-
-azd env set AKS_SUBNET_NAME <your_subnet_name>
-azd env set AKS_SUBNET_PREFIX <your_subnet_prefix>
-
-azd env set POD_SUBNET_NAME <your_subnet_name>
-azd env set POD_SUBNET_PREFIX <your_subnet_prefix>
-```
-
-
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| VIRTUAL_NETWORK_GROUP     | Resource group of the existing virtual network                               |
+| VIRTUAL_NETWORK_NAME      | Name of the existing virtual network                                         |
+| VIRTUAL_NETWORK_PREFIX    | Address prefix of the existing virtual network                               |
+| VIRTUAL_NETWORK_IDENTITY  | Managed identity associated with the existing virtual network                |
+| AKS_SUBNET_NAME           | Name of the subnet for AKS within the existing virtual network               |
+| AKS_SUBNET_PREFIX         | Address prefix for the AKS subnet                                            |
+| POD_SUBNET_NAME           | Name of the subnet for Pods within the existing virtual network              |
+| POD_SUBNET_PREFIX         | Address prefix for the Pod subnet                                            |

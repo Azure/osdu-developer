@@ -1,4 +1,4 @@
-# Deploy using the AZD
+# Deploy using AZD
 
 The process for working with the solution using the Azure Developer CLI is the recommended way for deployent offering the most flexibility.  This process can be used if working directly with the solution on a computer, working in a Visual Studio Code remote container, or using a cloud environment like Github Codespaces.
 
@@ -9,7 +9,7 @@ It is recommended to use persistent files in Azure Cloud Shell for non-ephemeral
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
 
-### 1. Prepare your Cloud Shell Environment
+### 1. Prepare your Cloud Shell
 
 Create a PowerShell profile for use with helper functions and restart the session.
 
@@ -102,14 +102,14 @@ azd provision
 A successful deployment will result in a web page opening for the Identity Provider. Retrieve a one time use Authorization Code and set it for the environment.
 
 
-### 4. Generate the settings
+### 4. Generate settings
 
 ```powershell
 azd env set AUTH_CODE=<your_auth_code>
 azd hooks run settings
 ```
 
-### 5. Clone the services and test
+### 5. Clone services and test
 
 Clone the OSDU Services
 
@@ -142,7 +142,7 @@ cd src/core/entitilements/testing/entitlements-v2-test-azure
 mvn test
 ```
 
-### 6. Remove services and cleanup (Optional)
+### 6. Clean up (Optional)
 
 After a deployment remove environment and delete the Azure Application that was created in Microsoft Entra.
 

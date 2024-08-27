@@ -1,4 +1,4 @@
-# Virtual Network Injection
+# Using a Custom Network
 
 The provided custom deployment solution is a sample of how to leverage the virtual network (VNet) injection feature. This allows for the integration of the solution into a preexisting network design and ensuring the solution is on an internal network.
 

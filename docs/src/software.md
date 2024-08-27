@@ -24,7 +24,7 @@ flowchart TD
 
  
 
-### Components Structure
+### Component Structure
 
 The Components directory is organized to facilitate the management of various middleware layers essential for our infrastructure. Below is the layout:
 

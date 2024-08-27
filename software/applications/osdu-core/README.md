@@ -26,12 +26,10 @@ flowchart TD
   entitlements-->legal
   legal-->indexer
   legal-->indexer_queue
-  
   indexer-->schema
   indexer_queue-->schema
   schema-->schema_init
   schema-->storage
   schema-->file
-  schema-->search
   schema-->search
 ```

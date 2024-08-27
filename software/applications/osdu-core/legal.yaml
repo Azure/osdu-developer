@@ -8,7 +8,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: entitlements
+    - name: osdu-entitlements
       namespace: osdu-core
   targetNamespace: osdu-core
   chart:

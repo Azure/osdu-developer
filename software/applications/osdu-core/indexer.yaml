@@ -8,7 +8,7 @@ metadata:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: legal
+    - name: osdu-legal
       namespace: osdu-core
   targetNamespace: osdu-core
   chart:
@@ -145,13 +145,13 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: legal
+  name: osdu-indexer-queue
   namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
   dependsOn:
-    - name: osdu-init-partition
+    - name: osdu-legal
       namespace: osdu-core
   targetNamespace: osdu-core
   chart:

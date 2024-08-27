@@ -26,6 +26,7 @@ nav:
     - tutorial_cli.md
     - tutorial_click.md
     - tutorial_rest.md
+    - tutorial_vnet.md
   - OSDU Services:
     - osdu_source.md
     - osdu_core.md

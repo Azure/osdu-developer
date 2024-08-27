@@ -68,14 +68,16 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
 
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_click/) for a quick overview of One Click deployments.
+
 **Important Parameter Requirement:**
 
 During the deployment process, some information is required to be provided in the deployment form:
 
-- `Email Address`: Specify a valid email address to be used as the first user.
-- `Application Client Id`: Specify the Application Client Id. (This is the unique application ID of this application.)
+- `Email Address`: A valid email address to be used as a first user.
+- `Application Client Id`: Specify the Application Client Id. (The unique application ID of this application.)
 - `Application Client Secret`: Specify the Application Client Secret. (A valid secret for the application client ID.)
-- `Application Client Principal OID`: Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)
+- `Application Client Principal OID`: Specify the Enterprise Application Object Id. (The unique ID of the service principal object associated with the application.)
 
-Upon completing the deployment, the infrastructure and software components will be automatically provisioned. 
+ 
 

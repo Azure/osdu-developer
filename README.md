@@ -34,7 +34,6 @@ Supported services running [Milestone 24](https://community.opengroup.org/groups
 
 > **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/before_you_start/) registered. 
 
-Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview from the Azure Cloud Shell.
 
 ### Prerequisites
 
@@ -55,9 +54,32 @@ This solution can be run virtually by using GitHub Codespaces or VS Code Remote 
 
 - __Azure Developer CLI__: Installed on your local machine. [Download](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
 
+### CLI Deployment  (Recommended)
+
+Deploying the resources via CLI is the recommended approach. This method allows for customization of the deployment parameters to better suit your needs, and offers tighter integration with other capabilities in this repository.
+
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview of doing this from the Azure Cloud Shell.
+
+```bash
+# Authentication
+az login
+az account set --subscription <your_subscription_id>
+azd auth login
+
+# Provisioning
+azd init -e dev
+azd provision
+
+# Settings
+azd env set AUTH_CODE <your_auth_code>
+azd hooks run settings
+
+# Cleanup
+azd down --force --purge
+```
 
 
-### ARM Template Deployment  (Alternative)
+### One Click Deployment  (Alternative)
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 

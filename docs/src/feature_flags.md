@@ -2,6 +2,17 @@
 
 Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
 
+## Reusable Entra App
+
+Entra App configurations are by default automatically created but one can be reused or created manually as well.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| AZURE_CLIENT_ID           | Use an existing Azure AD App Client ID                                      |
+| AZURE_CLIENT_SECRET       | Use an existing Azure AD Client Secret and don't reset it.                  |
+| AZURE_CLIENT_PRINCIPAL_OID| Skip Principal ID lookup and use provided.                                  |
+| AZURE_TENANT_ID           | Skip Tenant ID lookup and use provided.                                     |
+
 ## Custom Infrastructure
 
 Infrastructure customizations can be managed and modified using the following feature flags.

@@ -25,37 +25,6 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: azure-keyvault-cache
-  namespace: default            # This has to go in the default namespace to retrieve the configmap
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  targetNamespace: osdu-system
-  chart:
-    spec:
-      chart: ./charts/keyvault-secrets
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: config-map-values
-      valuesKey: values.yaml
-  values:
-    secrets:
-      - secretName: keyvault-secrets 
-        data:
-          - key: redis-password
-            vaultSecret: redis-password
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
   name: redis-cluster
   namespace: flux-system
 spec:

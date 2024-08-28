@@ -68,7 +68,6 @@ var commonLayerConfig = {
       'system'
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
-      'adf-airflow'
     ]
     tables: [
       'partitionInfo'
@@ -77,7 +76,7 @@ var commonLayerConfig = {
       'crs'
       'crs-conversion'
       'unit'
-      'sample-share'
+      'airflow'
     ]
   }
   database: {
@@ -168,6 +167,14 @@ var vaultSecrets = [
   {
     secretName: 'cpng-superuser-password'
     secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'airflow-admin-username'
+    secretValue: 'airflow'
+  }
+  {
+    secretName: 'airflow-admin-password'
+    secretValue: substring(uniqueString('airflow', resourceGroup().id, bladeConfig.sectionName), 0, 8)
   }
 ]
 

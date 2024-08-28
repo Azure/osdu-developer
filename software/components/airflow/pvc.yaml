@@ -13,7 +13,7 @@ spec:
     - ReadOnlyMany
   azureFile:
     secretName: keyvault-secrets
-    shareName: sample-share
+    shareName: airflow
   volumeMode: Filesystem
   mountOptions:
   - dir_mode=0777

@@ -39,17 +39,39 @@ spec:
       - name: ENVIRONMENT
         value: dev
 
+    # Admin user configuration
+    admin:
+      existingSecret: keyvault-secrets
+      usernameKey: airflow-admin-username
+      passwordKey: airflow-admin-password
+
     # Configuration for postgresql subchart
     # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
     # attribute in this yaml file.
     postgresql:
-      enabled: true
+      enabled: false
+
+    data:
+      metadataConnection:
+        user: dbuser
+        pass: {{ .Values.data.secrets.dbPassword }}
+        protocol: postgresql
+        host: airflow-cluster-rw.postgresql.svc.cluster.local
+        port: 5432
+        db: airflow-db
+
+    secrets:
+      dbPassword:
+        existingSecret: keyvault-secrets
+        existingSecretKey: db-password
+
+
     # externalDatabase:
     #   type: postgresql
     #   host: airflow-cluster-rw.postgresql.svc.cluster.local
     #   port: 5432  # Default PostgreSQL port
     #   database: airflow-db
-    #   user: dbadmin
+    #   user: dbuser
     #   password:
     #     existingSecret: keyvault-secrets 
     #     existingSecretKey: db-password

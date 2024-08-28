@@ -61,17 +61,23 @@ Deploying the resources via CLI is the recommended approach. This method allows 
 
 Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview of doing this from the Azure Cloud Shell.
 
+> **NOTE:** If you are using a pre-existing Entra App, you will need to set the feature flag `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` with the values from your app (See [Feature Flags](https://azure.github.io/osdu-developer/feature_flags/#custom-infrastructure) for more information on feature flags).
+
 ```bash
 # Authentication
-az login
+az login --scope https://graph.microsoft.com//.default
 az account set --subscription <your_subscription_id>
 azd auth login
 
+# Prepare Environment
+azd init -e dev # This if first environment
+azd env new dev # This if adding a new environment
+azd env set <feature_flag> <value> # Set any necessary feature flags
+
 # Provisioning
-azd init -e dev
 azd provision
 
-# Settings
+# Configure Settings for Integrations
 azd env set AUTH_CODE <your_auth_code>
 azd hooks run settings
 

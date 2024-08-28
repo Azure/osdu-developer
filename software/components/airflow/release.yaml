@@ -31,38 +31,56 @@ spec:
         name: airflow
         namespace: flux-system
   values:
-    executor: LocalKubernetesExecutor
-    data:
-      metadataSecretName: postgresql-connection-string-secret
+    # Airflow executor
+    executor: KubernetesExecutor
+
+    # Environment variables for all airflow containers
+    env:
+      - name: ENVIRONMENT
+        value: dev
+
+    # Configuration for postgresql subchart
+    # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
+    # attribute in this yaml file.
     postgresql:
-      enabled: false
+      enabled: true
+
+    # data:
+    #   metadataSecretName: postgresql-connection-string-secret
+
+    # Enable pgbouncer.
+    # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
+    pgbouncer:
+      enabled: true
+
     dags:
       gitSync:
         enabled: true
         repo: 'https://github.com/polyseam/demo-dag-bag'
-        credentialsSecret: airflow-git-credentials
+        # credentialsSecret: airflow-git-credentials
         branch: main
         wait: 40
         subPath: dags
-    enableBuiltInSecretEnvVars:
-      AIRFLOW__CORE__FERNET_KEY: false
-      AIRFLOW__WEBSERVER__SECRET_KEY: false
-    fernetKeySecretName: keyvault-secrets
-    webserverSecretKeySecretName: keyvault-secrets
-    config:
-      webserver:
-        expose_config: 'True'
-        instance_name: OSDU
-        enable_proxy_fix: 'True'
-        base_url: 'https://airflow.osdu.dev'
-      operators:
-        default_owner: OSDU
-    logs:
-      persistence:
-        enabled: true
-        size: 15Gi
-        storageClassName: rwm
-    createUserJob:
-      useHelmHooks: false
-    migrateDatabaseJob:
-      useHelmHooks: false
+        
+    # enableBuiltInSecretEnvVars:
+    #   AIRFLOW__CORE__FERNET_KEY: false
+    #   AIRFLOW__WEBSERVER__SECRET_KEY: false
+    # fernetKeySecretName: keyvault-secrets
+    # webserverSecretKeySecretName: keyvault-secrets
+    # config:
+    #   webserver:
+    #     expose_config: 'True'
+    #     instance_name: OSDU
+    #     enable_proxy_fix: 'True'
+    #     base_url: 'https://airflow.osdu.dev'
+    #   operators:
+    #     default_owner: OSDU
+    # logs:
+    #   persistence:
+    #     enabled: true
+    #     size: 15Gi
+    #     storageClassName: rwm
+    # createUserJob:
+    #   useHelmHooks: false
+    # migrateDatabaseJob:
+    #   useHelmHooks: false

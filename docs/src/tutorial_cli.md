@@ -9,18 +9,34 @@ It is recommended to use persistent files in Azure Cloud Shell for non-ephemeral
 - [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window)
 - [Persist Files in  Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
 
-### 1. Prepare your Cloud Shell
+In this tutorial you'll clone the osdu-developer repo to your clouddrive with Azure Cloud Shell, run a series of scripts to log into your subscription and deploy the solution, then verify the solution by running a few tests.
 
-Create a PowerShell profile for use with helper functions and restart the session.
+## Prepare a Cloud Shell Session before you Deploy the Solution
+
+In this section you will create a Cloud Shell session, then modify your PowerShell profile in the session with inherent code required to run the deployment scripts.
+
+### 1. Open a Cloud Shell session in Azure Portal
+
+From <http://portal.azure.com> open an Azure Cloud Shell session in PowerShell, see [How to Use Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/new-ui-shell-window).  Run the following command:
 
 ```powershell
-# Create a Profile
 New-Item -Path $Profile -ItemType File -Force
+```
 
-# Edit the Profile
+### 2. Modify your PowerShell profile
+
+Open the PowerShell code editor in your Azure portal by running the following command.
+
+```powershell
 code Microsoft.PowerShell_profile.ps1
+```
 
-# Add the following helper functions to the profile.
+### 3. Create a PowerShell profile for use with helper functions
+
+Paste the following code into your Microsoft.PowerShell_profile.ps1 file.
+Save, then restart the session.
+
+```powershell
 function Show-Env
 {
   Get-ChildItem Env:
@@ -70,9 +86,13 @@ New-Alias env Show-Env
 
 ![Create Profile](./images/tutorial_1.png)
 
-### 2. Clone the solution
+## Clone and Deploy the Solution
 
-Use a new cloudshell session and clone the repository.
+In this section you'll clone the osdu-developer repo into your clouddrive, then run a series of scripts to log into your subscription and deploy the solution.
+
+### 1. Clone the Solution
+
+Use a new Cloud Shell session and clone the repository.
 
 ```powershell
 cd clouddrive
@@ -81,8 +101,7 @@ git clone https://github.com/Azure/osdu-developer.git
 
 ![Clone Repository](./images/tutorial_2.png)
 
-
-### 3. Deploy the solution
+### 2. Deploy the Solution
 
 Deploy the solution to your subscription answering any questions that may be presented.
 
@@ -95,21 +114,23 @@ azd config set alpha.resourceGroupDeployments on
 azd init -e <your_env_name>
 azd provision
 ```
+
 ![Clone Repository](./images/tutorial_3.png)
 
 ![Clone Repository](./images/tutorial_4.png)
 
 A successful deployment will result in a web page opening for the Identity Provider. Retrieve a one time use Authorization Code and set it for the environment.
 
+## Verify your Deployment
 
-### 4. Generate settings
+### 1. Generate settings
 
 ```powershell
 azd env set AUTH_CODE=<your_auth_code>
 azd hooks run settings
 ```
 
-### 5. Clone services and test
+### 2. Clone services and test
 
 Clone the OSDU Services
 
@@ -142,9 +163,13 @@ cd src/core/entitilements/testing/entitlements-v2-test-azure
 mvn test
 ```
 
-### 6. Clean up (Optional)
+## Clean up
 
-After a deployment remove environment and delete the Azure Application that was created in Microsoft Entra.
+After a deployment remove environment and delete the Azure Application that was created in Microsoft Entra. You can clean up your environments using scripts or manually through the Azure Portal.
+
+### Option 1. Scripting Method
+
+From the Azure Portal, run the following in your Azure Cloud Shell session.
 
 ```powershell
 # Remove the resources
@@ -154,9 +179,11 @@ azd down --force --purge
 rm .azure/<your_env_name>
 ```
 
-> Additionally the environment can be manually removed by the following process.
+### Option 2. Manual method
 
-- Remove the Azure Resource Group
-- Purge any Key Vaults or App Configuration Services
-- Delete the Azure Application from Microsoft Entra
-- Remove the cloned repository.
+Manually delete the resources from the Azure Portal.
+
+1. Remove the Azure Resource Group
+1. Purge any Key Vaults or App Configuration Services
+1. Delete the Azure Application from Microsoft Entra
+1. Remove the cloned repository.

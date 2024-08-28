@@ -43,16 +43,16 @@ spec:
     # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
     # attribute in this yaml file.
     postgresql:
-      enabled: false
-    externalDatabase:
-      type: postgresql
-      host: airflow-cluster-rw.postgresql.svc.cluster.local
-      port: 5432  # Default PostgreSQL port
-      database: airflow-db
-      user: dbadmin
-      password:
-        existingSecret: keyvault-secrets 
-        existingSecretKey: db-password
+      enabled: true
+    # externalDatabase:
+    #   type: postgresql
+    #   host: airflow-cluster-rw.postgresql.svc.cluster.local
+    #   port: 5432  # Default PostgreSQL port
+    #   database: airflow-db
+    #   user: dbadmin
+    #   password:
+    #     existingSecret: keyvault-secrets 
+    #     existingSecretKey: db-password
 
     # Enable pgbouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer

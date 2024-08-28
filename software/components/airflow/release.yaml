@@ -10,7 +10,7 @@ spec:
   targetNamespace: osdu-system
   releaseName: airflow
   dependsOn:
-    - name: azure-keyvault-cache
+    - name: azure-keyvault-airflow
       namespace: default
   install:
     remediation:

@@ -1,108 +1,108 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: airflow
-  namespace: flux-system
-  labels:
-    name: airflow
-spec:
-  targetNamespace: osdu-system
-  releaseName: airflow
-  dependsOn:
-    - name: azure-keyvault-airflow
-      namespace: default
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 10
-      strategy: rollback
-  test:
-    enable: true
-  interval: 10m0s
-  chart:
-    spec:
-      chart: airflow
-      version: 1.11.0
-      sourceRef:
-        kind: HelmRepository
-        name: airflow
-        namespace: flux-system
-  values:
-    # Airflow executor
-    executor: KubernetesExecutor
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: airflow
+#   namespace: flux-system
+#   labels:
+#     name: airflow
+# spec:
+#   targetNamespace: osdu-system
+#   releaseName: airflow
+#   dependsOn:
+#     - name: azure-keyvault-airflow
+#       namespace: default
+#   install:
+#     remediation:
+#       retries: 3
+#   upgrade:
+#     remediation:
+#       retries: 10
+#       strategy: rollback
+#   test:
+#     enable: true
+#   interval: 10m0s
+#   chart:
+#     spec:
+#       chart: airflow
+#       version: 1.11.0
+#       sourceRef:
+#         kind: HelmRepository
+#         name: airflow
+#         namespace: flux-system
+#   values:
+#     # Airflow executor
+#     executor: KubernetesExecutor
 
-    # Environment variables for all airflow containers
-    env:
-      - name: ENVIRONMENT
-        value: dev
+#     # Environment variables for all airflow containers
+#     env:
+#       - name: ENVIRONMENT
+#         value: dev
 
-    # Configuration for postgresql subchart
-    # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
-    # attribute in this yaml file.
-    postgresql:
-      enabled: true
+#     # Configuration for postgresql subchart
+#     # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
+#     # attribute in this yaml file.
+#     postgresql:
+#       enabled: true
 
-    # data:
-    #   metadataSecretName: postgresql-connection-string-secret
+#     # data:
+#     #   metadataSecretName: postgresql-connection-string-secret
 
-    # Enable pgbouncer.
-    # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
-    pgbouncer:
-      enabled: true
+#     # Enable pgbouncer.
+#     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
+#     pgbouncer:
+#       enabled: true
 
-    dags:
-      gitSync:
-        enabled: true
-        repo: 'https://github.com/polyseam/demo-dag-bag'
-        branch: main
-        wait: 40
-        subPath: dags
+#     dags:
+#       gitSync:
+#         enabled: true
+#         repo: 'https://github.com/polyseam/demo-dag-bag'
+#         branch: main
+#         wait: 40
+#         subPath: dags
 
-    logs:
-      persistence:
-        enabled: true
-        existingClaim: airflow-pvc
-        storageClassName: azurefile-csi-premium
+#     logs:
+#       persistence:
+#         enabled: true
+#         existingClaim: airflow-pvc
+#         storageClassName: azurefile-csi-premium
 
-    # We disable the log groomer sidecar because we use Azure Blob Storage for logs,
-    # where a lifecycle policy is already set
-    triggerer:
-      logGroomerSidecar:
-        enabled: false
+#     # We disable the log groomer sidecar because we use Azure Blob Storage for logs,
+#     # where a lifecycle policy is already set
+#     triggerer:
+#       logGroomerSidecar:
+#         enabled: false
 
-    scheduler:
-      logGroomerSidecar:
-        enabled: false
+#     scheduler:
+#       logGroomerSidecar:
+#         enabled: false
 
-    workers:
-      logGroomerSidecar:
-        enabled: false
-
-
+#     workers:
+#       logGroomerSidecar:
+#         enabled: false
 
 
-    # enableBuiltInSecretEnvVars:
-    #   AIRFLOW__CORE__FERNET_KEY: false
-    #   AIRFLOW__WEBSERVER__SECRET_KEY: false
-    # fernetKeySecretName: keyvault-secrets
-    # webserverSecretKeySecretName: keyvault-secrets
-    # config:
-    #   webserver:
-    #     expose_config: 'True'
-    #     instance_name: OSDU
-    #     enable_proxy_fix: 'True'
-    #     base_url: 'https://airflow.osdu.dev'
-    #   operators:
-    #     default_owner: OSDU
-    # logs:
-    #   persistence:
-    #     enabled: true
-    #     size: 15Gi
-    #     storageClassName: rwm
-    # createUserJob:
-    #   useHelmHooks: false
-    # migrateDatabaseJob:
-    #   useHelmHooks: false
+
+
+#     # enableBuiltInSecretEnvVars:
+#     #   AIRFLOW__CORE__FERNET_KEY: false
+#     #   AIRFLOW__WEBSERVER__SECRET_KEY: false
+#     # fernetKeySecretName: keyvault-secrets
+#     # webserverSecretKeySecretName: keyvault-secrets
+#     # config:
+#     #   webserver:
+#     #     expose_config: 'True'
+#     #     instance_name: OSDU
+#     #     enable_proxy_fix: 'True'
+#     #     base_url: 'https://airflow.osdu.dev'
+#     #   operators:
+#     #     default_owner: OSDU
+#     # logs:
+#     #   persistence:
+#     #     enabled: true
+#     #     size: 15Gi
+#     #     storageClassName: rwm
+#     # createUserJob:
+#     #   useHelmHooks: false
+#     # migrateDatabaseJob:
+#     #   useHelmHooks: false

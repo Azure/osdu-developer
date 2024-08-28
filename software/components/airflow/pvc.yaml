@@ -35,6 +35,3 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: azurefile-csi-premium  # Use this for premium Azure Files
-  selector:
-    matchLabels:
-      usage: airflow-pv

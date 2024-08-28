@@ -1,0 +1,84 @@
+# values.yaml
+
+# Ensure this goes on the correct node pool.
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: agentpool
+          operator: In
+          values:
+            - poolz1
+            - poolz2
+            - poolz3  # Adjust these values to match your node pools
+
+topologySpreadConstraints:
+- maxSkew: 1
+  topologyKey: topology.kubernetes.io/zone
+  whenUnsatisfiable: DoNotSchedule
+  labelSelector:
+    matchLabels:
+      release: airflow  # Adjust to match your Helm release name
+
+# Tolerations should be defined outside of affinity
+tolerations:
+  - effect: NoSchedule
+    key: app
+    value: "cluster"
+
+executor: KubernetesExecutor
+
+env:
+  - name: ENVIRONMENT
+    value: dev
+
+# Disable the built-in PostgreSQL
+postgresql:
+  enabled: false
+
+# External PostgreSQL configuration
+externalDatabase:
+  type: postgresql
+  host: airflow-cluster-rw.postgresql.svc.cluster.local
+  port: 5432  # Default PostgreSQL port
+  database: airflow-db
+  user: dbadmin
+  password:
+    existingSecret: <your-secret-containing-password>  # The name of a Kubernetes Secret containing the password
+    existingSecretKey: <your-secret-key>  # The key within the Secret where the password is stored
+
+pgbouncer:
+  enabled: true
+
+dags:
+  gitSync:
+    enabled: true
+    repo: 'https://github.com/polyseam/demo-dag-bag'
+    branch: main
+    wait: 40
+    subPath: dags
+
+logs:
+  persistence:
+    enabled: true
+    existingClaim: airflow-pvc
+    storageClassName: azurefile-csi-premium
+
+triggerer:
+  logGroomerSidecar:
+    enabled: false
+
+scheduler:
+  logGroomerSidecar:
+    enabled: false
+
+workers:
+  logGroomerSidecar:
+    enabled: false
+
+enableBuiltInSecretEnvVars:
+  AIRFLOW__CORE__FERNET_KEY: false
+  AIRFLOW__WEBSERVER__SECRET_KEY: false
+fernetKeySecretName: keyvault-secrets
+webserverSecretKeySecretName: keyvault-secrets

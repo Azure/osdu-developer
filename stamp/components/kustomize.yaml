@@ -195,7 +195,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: component-postgresql
+  name: component-airflow
   namespace: flux-system
 spec:
   dependsOn:

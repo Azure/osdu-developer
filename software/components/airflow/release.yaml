@@ -28,7 +28,7 @@ spec:
       version: 1.11.0
       sourceRef:
         kind: HelmRepository
-        name: airflow-repo
+        name: airflow
         namespace: flux-system
   values:
     executor: LocalKubernetesExecutor

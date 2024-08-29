@@ -1,126 +1,126 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: airflow
-#   namespace: flux-system
-#   labels:
-#     name: airflow
-# spec:
-#   targetNamespace: airflow
-#   releaseName: airflow
-#   dependsOn:
-#     - name: azure-keyvault-airflow
-#       namespace: default
-#   install:
-#     remediation:
-#       retries: 3
-#   upgrade:
-#     remediation:
-#       retries: 10
-#       strategy: rollback
-#   test:
-#     enable: true
-#   interval: 10m0s
-#   chart:
-#     spec:
-#       chart: airflow
-#       # version: 1.11.0
-#       sourceRef:
-#         kind: HelmRepository
-#         name: airflow
-#         namespace: flux-system
-#   values:
-#     # Airflow executor
-#     executor: KubernetesExecutor
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: airflow
+  namespace: flux-system
+  labels:
+    name: airflow
+spec:
+  targetNamespace: airflow
+  releaseName: airflow
+  dependsOn:
+    - name: azure-keyvault-airflow
+      namespace: default
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 10
+      strategy: rollback
+  test:
+    enable: true
+  interval: 10m0s
+  chart:
+    spec:
+      chart: airflow
+      # version: 1.11.0
+      sourceRef:
+        kind: HelmRepository
+        name: airflow
+        namespace: flux-system
+  values:
+    # Airflow executor
+    executor: KubernetesExecutor
 
-#     # Environment variables for all airflow containers
-#     env:
-#       - name: ENVIRONMENT
-#         value: dev
+    # Environment variables for all airflow containers
+    env:
+      - name: ENVIRONMENT
+        value: dev
 
-#     # Admin user configuration
-#     admin:
-#       existingSecret: airflow-secrets
-#       usernameKey: username
-#       passwordKey: password
+    # Admin user configuration
+    admin:
+      existingSecret: airflow-secrets
+      usernameKey: username
+      passwordKey: password
 
-#     # Disable the internal PostgreSQL chart
-#     postgresql:
-#       enabled: false
+    # Disable the internal PostgreSQL chart
+    postgresql:
+      enabled: false
 
-#     # External PostgreSQL configuration
-#     data:
-#       metadataSecretName: database-secrets
+    # External PostgreSQL configuration
+    data:
+      metadataSecretName: airflow-secrets
 
-#     # Enable pgbouncer.
-#     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
-#     pgbouncer:
-#       enabled: true
+    # Enable pgbouncer.
+    # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
+    pgbouncer:
+      enabled: true
 
-#     dags:
-#       gitSync:
-#         enabled: true
-#         repo: 'https://github.com/polyseam/demo-dag-bag'
-#         branch: main
-#         wait: 40
-#         subPath: dags
+    dags:
+      gitSync:
+        enabled: true
+        repo: 'https://github.com/polyseam/demo-dag-bag'
+        branch: main
+        wait: 40
+        subPath: dags
 
-#     logs:
-#       persistence:
-#         enabled: true
-#         existingClaim: airflow-pvc
-#         storageClassName: azurefile-csi-premium
+    logs:
+      persistence:
+        enabled: true
+        existingClaim: airflow-pvc
+        storageClassName: azurefile-csi-premium
 
-#     # We disable the log groomer sidecar because we use Azure Blob Storage for logs,
-#     # where a lifecycle policy is already set
-#     triggerer:
-#       logGroomerSidecar:
-#         enabled: false
+    # We disable the log groomer sidecar because we use Azure Blob Storage for logs,
+    # where a lifecycle policy is already set
+    triggerer:
+      logGroomerSidecar:
+        enabled: false
 
-#     scheduler:
-#       logGroomerSidecar:
-#         enabled: false
+    scheduler:
+      logGroomerSidecar:
+        enabled: false
 
-#     workers:
-#       logGroomerSidecar:
-#         enabled: false
+    workers:
+      logGroomerSidecar:
+        enabled: false
 
-#     # Ensure we are using the secrets from Azure Key Vault
-#     enableBuiltInSecretEnvVars:
-#       AIRFLOW__CORE__FERNET_KEY: false
-#       AIRFLOW__WEBSERVER__SECRET_KEY: false
-#     fernetKeySecretName: keyvault-secrets
-#     webserverSecretKeySecretName: keyvault-secrets
+    # Ensure we are using the secrets from Azure Key Vault
+    enableBuiltInSecretEnvVars:
+      AIRFLOW__CORE__FERNET_KEY: false
+      AIRFLOW__WEBSERVER__SECRET_KEY: false
+    fernetKeySecretName: keyvault-secrets
+    webserverSecretKeySecretName: keyvault-secrets
 
-#     createUserJob:
-#       useHelmHooks: false
-#     migrateDatabaseJob:
-#       useHelmHooks: false
+    createUserJob:
+      useHelmHooks: false
+    migrateDatabaseJob:
+      useHelmHooks: false
 
-#     # Ensure this goes on the correct node pool.
-#     affinity:
-#       nodeAffinity:
-#         requiredDuringSchedulingIgnoredDuringExecution:
-#           nodeSelectorTerms:
-#           - matchExpressions:
-#             - key: agentpool
-#               operator: In
-#               values:
-#                 - poolz1
-#                 - poolz2
-#                 - poolz3  # Adjust these values to match your node pools
+    # Ensure this goes on the correct node pool.
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: agentpool
+              operator: In
+              values:
+                - poolz1
+                - poolz2
+                - poolz3  # Adjust these values to match your node pools
 
-#     topologySpreadConstraints:
-#     - maxSkew: 1
-#       topologyKey: topology.kubernetes.io/zone
-#       whenUnsatisfiable: DoNotSchedule
-#       labelSelector:
-#         matchLabels:
-#           release: airflow  # Adjust to match your Helm release name
+    topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          release: airflow  # Adjust to match your Helm release name
 
-#     # Tolerations should be defined outside of affinity
-#     tolerations:
-#       - effect: NoSchedule
-#         key: app
-#         value: "cluster"
+    # Tolerations should be defined outside of affinity
+    tolerations:
+      - effect: NoSchedule
+        key: app
+        value: "cluster"

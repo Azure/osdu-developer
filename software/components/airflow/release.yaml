@@ -59,12 +59,18 @@ spec:
       enabled: true
 
     dags:
-      gitSync:
+      # gitSync:
+      #   enabled: true
+      #   repo: 'https://github.com/polyseam/demo-dag-bag'
+      #   credentialsSecret: airflow-git-credentials
+      #   branch: main
+      #   wait: 40
+      #   subPath: dags
+      installRequirements: true
+      persistence:
         enabled: true
-        repo: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags'
-        branch: main
-        wait: 40
-        subPath: src/osdu_dags
+        existingClaim: airflow-dags-pvc
+        subPath: "dags"
 
     logs:
       persistence:

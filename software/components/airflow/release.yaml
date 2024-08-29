@@ -58,6 +58,14 @@ spec:
     pgbouncer:
       enabled: true
       configSecretName: airflow-secrets
+      airflowdb:
+        name: airflow-db
+        host: airflow-cluster-rw.postgresql.svc.cluster.local
+        port: 5432
+        pool_size: 100
+        user: dbuser
+        passwordSecret: airflow-secrets
+        passwordSecretKey: db-password
 
 
     dags:

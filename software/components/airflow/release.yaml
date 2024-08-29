@@ -45,36 +45,34 @@ spec:
       usernameKey: username
       passwordKey: password
 
-    # Configuration for postgresql subchart
-    # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
-    # attribute in this yaml file.
+    # Disable the internal PostgreSQL chart
     postgresql:
-      enabled: true
+      enabled: false
 
-    # data:
-    #   metadataConnection:
-    #     user: dbuser
-    #     pass: {{ .Values.data.secrets.dbPassword }}
-    #     protocol: postgresql
-    #     host: airflow-cluster-rw.postgresql.svc.cluster.local
-    #     port: 5432
-    #     db: airflow-db
+    # External PostgreSQL configuration
+    data:
+      metadataConnection:
+        user: dbuser
+        pass: {{ .Values.data.dbPassword }}
+        protocol: postgresql
+        host: airflow-cluster-rw.postgresql.svc.cluster.local
+        port: 5432
+        db: airflow-db
+        sslmode: disable
+      resultBackendConnection:
+        user: dbuser
+        pass: {{ .Values.data.dbPassword }}
+        protocol: postgresql
+        host: airflow-cluster-rw.postgresql.svc.cluster.local
+        port: 5432
+        db: airflow-db
+        sslmode: disable
 
-    # secrets:
-    #   dbPassword:
-    #     existingSecret: airflow-secrets
-    #     existingSecretKey: db-password
-
-
-    # externalDatabase:
-    #   type: postgresql
-    #   host: airflow-cluster-rw.postgresql.svc.cluster.local
-    #   port: 5432  # Default PostgreSQL port
-    #   database: airflow-db
-    #   user: dbuser
-    #   password:
-    #     existingSecret: keyvault-secrets 
-    #     existingSecretKey: db-password
+    # Reference to the secret
+    data:
+      dbPassword:
+        secretName: airflow-secrets
+        secretKey: db-password
 
     # Enable pgbouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer

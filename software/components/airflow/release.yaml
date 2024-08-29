@@ -67,9 +67,6 @@ spec:
         port: 5432
         db: airflow-db
         sslmode: disable
-
-    # Reference to the secret
-    data:
       dbPassword:
         secretName: airflow-secrets
         secretKey: db-password

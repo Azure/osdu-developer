@@ -35,5 +35,5 @@ spec:
       owner: airflow
       secret:
         name: postgresql-user-credentials
-  superuserSecret:
-    name: postgresql-superuser-credentials
+  # superuserSecret:
+  #   name: postgresql-superuser-credentials

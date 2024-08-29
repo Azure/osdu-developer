@@ -53,23 +53,26 @@ spec:
     data:
       metadataConnection:
         user: dbuser
-        pass: {{ .Values.data.dbPassword }}
+        pass:
+          secretKeyRef:
+            name: airflow-secrets
+            key: db-password
         protocol: postgresql
         host: airflow-cluster-rw.postgresql.svc.cluster.local
         port: 5432
         db: airflow-db
         sslmode: disable
       resultBackendConnection:
-        user: dbuser
-        pass: {{ .Values.data.dbPassword }}
+        uuser: dbuser
+        pass:
+          secretKeyRef:
+            name: airflow-secrets
+            key: db-password
         protocol: postgresql
         host: airflow-cluster-rw.postgresql.svc.cluster.local
         port: 5432
         db: airflow-db
         sslmode: disable
-      dbPassword:
-        secretName: airflow-secrets
-        secretKey: db-password
 
     # Enable pgbouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer

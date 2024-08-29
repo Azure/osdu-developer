@@ -76,7 +76,8 @@ var commonLayerConfig = {
       'crs'
       'crs-conversion'
       'unit'
-      'airflow'
+      'airflow-logs'
+      'airflow-dags'
     ]
   }
   database: {

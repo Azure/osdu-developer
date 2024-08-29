@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: airflow-pv
+  name: airflow-logs-pv
   namespace: airflow
   labels:
-    usage: airflow-pv
+    usage: airflow-logs-pv
 spec:
   capacity:
     storage: 5Gi
@@ -13,7 +13,7 @@ spec:
     - ReadOnlyMany
   azureFile:
     secretName: keyvault-secrets
-    shareName: airflow
+    shareName: airflow-logs
   volumeMode: Filesystem
   mountOptions:
   - dir_mode=0777
@@ -26,7 +26,44 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: airflow-pvc
+  name: airflow-logs-pvc
+  namespace: airflow
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: azurefile-csi-premium  # Use this for premium Azure Files
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: airflow-dags-pv
+  namespace: airflow
+  labels:
+    usage: airflow-dags-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadOnlyMany
+  azureFile:
+    secretName: keyvault-secrets
+    shareName: airflow-dags
+  volumeMode: Filesystem
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  - mfsymlinks
+  - nobrl
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-dags-pvc
   namespace: airflow
 spec:
   accessModes:

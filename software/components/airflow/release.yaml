@@ -69,11 +69,19 @@ spec:
     logs:
       persistence:
         enabled: true
-        existingClaim: airflow-pvc
+        existingClaim: airflow-logs-pvc
         storageClassName: azurefile-csi-premium
 
-    # We disable the log groomer sidecar because we use Azure Blob Storage for logs,
-    # where a lifecycle policy is already set
+    config:
+      webserver:
+        expose_config: 'True'
+        instance_name: OSDU
+        enable_proxy_fix: 'True'
+        base_url: 'http://localhost/airflow'
+      operators:
+        default_owner: OSDU
+
+    # We disable the log groomer sidecars because we use Azure File Storage for logs
     triggerer:
       logGroomerSidecar:
         enabled: false
@@ -93,8 +101,11 @@ spec:
     fernetKeySecretName: keyvault-secrets
     webserverSecretKeySecretName: keyvault-secrets
 
+    # Airflow create user job settings
     createUserJob:
       useHelmHooks: false
+
+    # Airflow database migration job settings
     migrateDatabaseJob:
       useHelmHooks: false
 

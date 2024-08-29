@@ -61,10 +61,10 @@ spec:
     dags:
       gitSync:
         enabled: true
-        repo: 'https://github.com/polyseam/demo-dag-bag'
+        repo: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags'
         branch: main
         wait: 40
-        subPath: dags
+        subPath: src/osdu_dags
 
     logs:
       persistence:

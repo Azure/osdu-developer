@@ -57,12 +57,8 @@ spec:
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
     pgbouncer:
       enabled: true
-      config:
-        databases:
-          airflow-db:
-            host: airflow-cluster-rw.postgresql.svc.cluster.local
-            port: 5432
-            dbname: airflow-db
+      configSecretName: airflow-secrets
+
 
     dags:
       gitSync:

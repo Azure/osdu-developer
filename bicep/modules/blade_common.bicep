@@ -169,6 +169,10 @@ var vaultSecrets = [
     secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
   }
   {
+    secretName: 'airflow-db-connection'
+    secretValue: 'postgresql://dbuser:${substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db'
+  }
+  {
     secretName: 'airflow-admin-username'
     secretValue: 'airflow'
   }

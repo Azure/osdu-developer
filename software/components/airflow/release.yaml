@@ -51,28 +51,7 @@ spec:
 
     # External PostgreSQL configuration
     data:
-      metadataConnection:
-        user: dbuser
-        pass:
-          secretKeyRef:
-            name: airflow-secrets
-            key: db-password
-        protocol: postgresql
-        host: airflow-cluster-rw.postgresql.svc.cluster.local
-        port: 5432
-        db: airflow-db
-        sslmode: disable
-      resultBackendConnection:
-        uuser: dbuser
-        pass:
-          secretKeyRef:
-            name: airflow-secrets
-            key: db-password
-        protocol: postgresql
-        host: airflow-cluster-rw.postgresql.svc.cluster.local
-        port: 5432
-        db: airflow-db
-        sslmode: disable
+      metadataSecretName: database-secrets
 
     # Enable pgbouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer

@@ -47,11 +47,11 @@ spec:
 
     # Disable the internal PostgreSQL chart
     postgresql:
-      enabled: false
+      enabled: true
 
     # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
+    # data:
+    #   metadataSecretName: airflow-secrets
 
     # Enable pgbouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer

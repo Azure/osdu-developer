@@ -176,6 +176,14 @@ var vaultSecrets = [
     secretName: 'airflow-admin-password'
     secretValue: substring(uniqueString('airflow', resourceGroup().id, bladeConfig.sectionName), 0, 8)
   }
+  {
+    secretName: 'airflow-fernet-key'
+    secretValue: substring(uniqueString('airflow-fernet', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'airflow-webserver-key'
+    secretValue: substring(uniqueString('airflow-webserver', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
 ]
 
 var roleAssignment = {

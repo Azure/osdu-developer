@@ -9,16 +9,17 @@ spec:
       azure.workload.identity/use: "true"
   # imageName: 'ghcr.io/cloudnative-pg/postgresql:16'
   instances: 3
+  startDelay: 30
+  stopDelay: 30
+  minSyncReplicas: 1
+  maxSyncReplicas: 1
   storage:
     size: 1Gi
   replicationSlots:
     highAvailability:
       enabled: true
-  affinity:
-    tolerations:
-    - effect: NoSchedule
-      key: app
-      value: "cluster"
+    updateInterval: 30
+
   topologySpreadConstraints:
   - maxSkew: 1
     topologyKey: topology.kubernetes.io/zone
@@ -26,14 +27,70 @@ spec:
     labelSelector:
       matchLabels:
         cnpg.io/cluster: airflow-cluster
-  postgresql:
-    pg_hba:
-      - host airflow-db airflow all password
+  
+  affinity:
+    tolerations:
+    - effect: NoSchedule
+      key: app
+      value: "cluster"
+
+  # resources:
+  #   requests:
+  #     memory: '8Gi'
+  #     cpu: 2
+  #   limits:
+  #     memory: '8Gi'
+  #     cpu: 2
+
+  
   bootstrap:
     initdb:
       database: airflow-db
       owner: airflow
       secret:
         name: postgresql-user-credentials
+      dataChecksums: true
+  
+  storage:
+    size: 2Gi
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: managed-csi-premium
+  
+  walStorage:
+    size: 2Gi
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: managed-csi-premium
+
+  # monitoring:
+  #   enablePodMonitor: true
+
+  serviceAccountTemplate:
+    metadata:
+      annotations:
+        azure.workload.identity/client-id: workload-identity-sa 
+      labels:
+        azure.workload.identity/use: "true"
+
+  # backup:
+  #   barmanObjectStore:
+  #     destinationPath: "https://${PG_PRIMARY_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/backups"
+  #     azureCredentials:
+  #       inheritFromAzureAD: true
+  #   retentionPolicy: '7d'
+
   superuserSecret:
     name: postgresql-superuser-credentials
+
+  postgresql:
+    pg_hba:
+      - host airflow-db airflow all password

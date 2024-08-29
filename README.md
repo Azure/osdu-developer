@@ -78,7 +78,7 @@ azd env set <feature_flag> <value> # Set any necessary feature flags
 azd provision
 
 # Configure Settings for Integrations
-azd env set AUTH_CODE <your_auth_code>
+azd env set AUTH_CODE <auth_code>
 azd hooks run settings
 
 # Cleanup

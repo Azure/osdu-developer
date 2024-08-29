@@ -1,69 +1,69 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: airflow
-  namespace: flux-system
-  labels:
-    name: airflow
-spec:
-  targetNamespace: airflow
-  releaseName: airflow
-  dependsOn:
-    - name: azure-keyvault-airflow
-      namespace: default
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 10
-      strategy: rollback
-  test:
-    enable: true
-  interval: 10m0s
-  chart:
-    spec:
-      chart: airflow
-      version: 1.11.0
-      sourceRef:
-        kind: HelmRepository
-        name: airflow
-        namespace: flux-system
-  values:
-    # Airflow executor
-    executor: KubernetesExecutor
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: airflow
+#   namespace: flux-system
+#   labels:
+#     name: airflow
+# spec:
+#   targetNamespace: airflow
+#   releaseName: airflow
+#   dependsOn:
+#     - name: azure-keyvault-airflow
+#       namespace: default
+#   install:
+#     remediation:
+#       retries: 3
+#   upgrade:
+#     remediation:
+#       retries: 10
+#       strategy: rollback
+#   test:
+#     enable: true
+#   interval: 10m0s
+#   chart:
+#     spec:
+#       chart: airflow
+#       version: 1.11.0
+#       sourceRef:
+#         kind: HelmRepository
+#         name: airflow
+#         namespace: flux-system
+#   values:
+#     # Airflow executor
+#     executor: KubernetesExecutor
 
-    # Environment variables for all airflow containers
-    env:
-      - name: ENVIRONMENT
-        value: dev
+#     # Environment variables for all airflow containers
+#     env:
+#       - name: ENVIRONMENT
+#         value: dev
 
-    # Admin user configuration
-    admin:
-      existingSecret: keyvault-secrets
-      usernameKey: airflow-admin-username
-      passwordKey: airflow-admin-password
+#     # Admin user configuration
+#     admin:
+#       existingSecret: keyvault-secrets
+#       usernameKey: airflow-admin-username
+#       passwordKey: airflow-admin-password
 
-    # Configuration for postgresql subchart
-    # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
-    # attribute in this yaml file.
-    postgresql:
-      enabled: false
+#     # Configuration for postgresql subchart
+#     # Not recommended for production! Instead, spin up your own Postgresql server and use the `data`
+#     # attribute in this yaml file.
+#     postgresql:
+#       enabled: false
 
-    data:
-      metadataConnection:
-        user: dbuser
-        pass: {{ .Values.data.secrets.dbPassword }}
-        protocol: postgresql
-        host: airflow-cluster-rw.postgresql.svc.cluster.local
-        port: 5432
-        db: airflow-db
+#     data:
+#       metadataConnection:
+#         user: dbuser
+#         pass: {{ .Values.data.secrets.dbPassword }}
+#         protocol: postgresql
+#         host: airflow-cluster-rw.postgresql.svc.cluster.local
+#         port: 5432
+#         db: airflow-db
 
-    secrets:
-      dbPassword:
-        existingSecret: keyvault-secrets
-        existingSecretKey: db-password
+#     secrets:
+#       dbPassword:
+#         existingSecret: keyvault-secrets
+#         existingSecretKey: db-password
 
 
     # externalDatabase:

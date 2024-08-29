@@ -13,8 +13,7 @@ spec:
   stopDelay: 30
   minSyncReplicas: 1
   maxSyncReplicas: 1
-  storage:
-    size: 1Gi
+
   replicationSlots:
     highAvailability:
       enabled: true

@@ -7,7 +7,7 @@ spec:
   inheritedMetadata:
     labels:
       azure.workload.identity/use: "true"
-  # imageName: 'ghcr.io/cloudnative-pg/postgresql:16'
+
   instances: 3
   startDelay: 30
   stopDelay: 30
@@ -45,7 +45,7 @@ spec:
   bootstrap:
     initdb:
       database: airflow-db
-      owner: airflow
+      owner: dbuser
       secret:
         name: postgresql-user-credentials
       dataChecksums: true
@@ -80,12 +80,12 @@ spec:
       labels:
         azure.workload.identity/use: "true"
 
-  # backup:
-  #   barmanObjectStore:
-  #     destinationPath: "https://${PG_PRIMARY_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/backups"
-  #     azureCredentials:
-  #       inheritFromAzureAD: true
-  #   retentionPolicy: '7d'
+  backup:
+    barmanObjectStore:
+      destinationPath: "https://${PG_PRIMARY_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/backups"
+      azureCredentials:
+        inheritFromAzureAD: true
+    retentionPolicy: '7d'
 
   superuserSecret:
     name: postgresql-superuser-credentials

@@ -61,8 +61,8 @@ spec:
 
     dags:
       gitSync:
-        enabled: true
-        repo: 'https://github.com/polyseam/demo-dag-bag'
+        enabled: false
+        repo: 'https://github.com/azure/osdu-developer'
         branch: main
         wait: 40
         subPath: dags

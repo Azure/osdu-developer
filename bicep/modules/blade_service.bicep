@@ -410,16 +410,16 @@ module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
   ]
 }
 
-module federatedCredsOduInitNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-init'
+module federatedCredsAirflowNamespace './federated_identity.bicep' = {
+  name: '${bladeConfig.sectionName}-federated-cred-ns_airflow'
   params: {
-    name: 'federated-ns_osdu-init'
+    name: 'federated-ns_airflow'
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:osdu-init:workload-identity-sa'
+    subject: 'system:serviceaccount:airflow:workload-identity-sa'
   }
   dependsOn: [
     federatedCredsOsduCoreNamespace
@@ -438,7 +438,7 @@ module federatedCredsPostgreSqlNamespace './federated_identity.bicep' = {
     subject: 'system:serviceaccount:postgresql:workload-identity-sa'
   }
   dependsOn: [
-    federatedCredsOduInitNamespace
+    federatedCredsAirflowNamespace
   ]
 }
 
@@ -533,7 +533,7 @@ module appRoleAssignments './app_assignments.bicep' = {
   dependsOn: [
     federatedCredsDefaultNamespace
     federatedCredsOsduCoreNamespace
-    federatedCredsOduInitNamespace
+    federatedCredsAirflowNamespace
     federatedCredsPostgreSqlNamespace
     federatedCredsConfigMapsNamespace
     federatedCredsElasticNamespace

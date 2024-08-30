@@ -53,19 +53,10 @@ spec:
     data:
       metadataSecretName: airflow-secrets
 
-    # Enable pgbouncer.
-    # See https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#pgbouncer
+    # Disable pgbouncer.
+    # CloudNativePG provides native support for connection pooling with PgBouncer
     pgbouncer:
-      enabled: true
-      configSecretName: airflow-secrets
-      airflowdb:
-        name: airflow-db
-        host: airflow-cluster-rw.postgresql.svc.cluster.local
-        port: 5432
-        pool_size: 100
-        user: dbuser
-        passwordSecret: airflow-secrets
-        passwordSecretKey: db-password
+      enabled: false
 
 
     dags:

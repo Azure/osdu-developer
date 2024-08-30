@@ -62,8 +62,7 @@ spec:
     dags:
       gitSync:
         enabled: true
-        repo: 'https://github.com/polyseam/demo-dag-bag'
-        credentialsSecret: airflow-git-credentials
+        repo: 'https://github.com/azure/osdu-developer.git'
         branch: main
         wait: 40
         subPath: dags

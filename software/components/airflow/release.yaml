@@ -66,10 +66,10 @@ spec:
         branch: main
         wait: 40
         subPath: dags
-      # persistence:
-      #   enabled: false
-      #   existingClaim: airflow-dags-pvc
-      #   subPath: dags
+      persistence:
+        enabled: true
+        existingClaim: airflow-dags-pvc
+        subPath: dags
 
     logs:
       persistence:

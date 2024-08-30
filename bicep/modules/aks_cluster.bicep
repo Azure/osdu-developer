@@ -393,7 +393,7 @@ var systemPoolProfile = {
 var userPoolPresets = {
   Burstable : {
     vmSize: 'Standard_B4ms'
-    minCount: 4
+    minCount: 5
     maxCount: 20
     availabilityZones: [
       '1'
@@ -406,7 +406,7 @@ var userPoolPresets = {
   }
   Standard : {
     vmSize: 'Standard_D4s_v5'
-    minCount: 4
+    minCount: 5
     maxCount: 20
     availabilityZones: [
       '1'

@@ -97,7 +97,7 @@ param enableOsdureference bool = true
   'master'
 ])
 @description('Specify the OSDU version.')
-param osduVersion string = 'release-0-27'
+param osduVersion string = 'master'
 
 @description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
 param clusterAdminIds array

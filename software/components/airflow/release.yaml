@@ -67,7 +67,7 @@ spec:
         wait: 40
         subPath: dags
       persistence:
-        enabled: true
+        enabled: false
         existingClaim: airflow-dags-pvc
         subPath: dags
 

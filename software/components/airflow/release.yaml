@@ -58,10 +58,10 @@ spec:
     pgbouncer:
       enabled: false
 
-
+    # Pull DAGS from file share and from a git repo
     dags:
       gitSync:
-        enabled: false
+        enabled: true
         repo: 'https://github.com/azure/osdu-developer'
         branch: main
         wait: 40
@@ -90,11 +90,9 @@ spec:
     triggerer:
       logGroomerSidecar:
         enabled: false
-
     scheduler:
       logGroomerSidecar:
         enabled: false
-
     workers:
       logGroomerSidecar:
         enabled: false

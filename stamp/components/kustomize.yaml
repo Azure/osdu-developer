@@ -209,6 +209,13 @@ spec:
   path: ./software/components/airflow
   prune: true
   wait: true
+  healthChecks:
+    - kind: Deployment
+      name: airflow-scheduler
+    - kind: Deployment
+      name: airflow-statsd
+    - kind: Deployment
+      name: airflow-webserver
 
 
 ######################

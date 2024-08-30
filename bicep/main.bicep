@@ -398,7 +398,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
-    osduVersion: clusterSoftware.osduVersion == '' ? 'release-0-27' : clusterSoftware.osduVersion
+    osduVersion: clusterSoftware.osduVersion == '' ? 'master' : clusterSoftware.osduVersion
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true

@@ -61,6 +61,8 @@ Deploying the resources via CLI is the recommended approach. This method allows 
 
 Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview of doing this from the Azure Cloud Shell.
 
+Clone the latest version of this repo on your computer and switch to the directory. Note that the deployment scripts are being updated continously, make sure you update to the latest version.
+
 > **NOTE:** If you are using a pre-existing Entra App, you will need to set the feature flag `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` with the values from your app (See [Feature Flags](https://azure.github.io/osdu-developer/feature_flags/#custom-infrastructure) for more information on feature flags).
 
 ```bash

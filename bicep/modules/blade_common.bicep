@@ -68,7 +68,6 @@ var commonLayerConfig = {
       'system'
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
-      'adf-airflow'
     ]
     tables: [
       'partitionInfo'
@@ -77,7 +76,8 @@ var commonLayerConfig = {
       'crs'
       'crs-conversion'
       'unit'
-      'sample-share'
+      'airflow-logs'
+      'airflow-dags'
     ]
   }
   database: {
@@ -168,6 +168,26 @@ var vaultSecrets = [
   {
     secretName: 'cpng-superuser-password'
     secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'airflow-db-connection'
+    secretValue: 'postgresql://dbuser:${substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db'
+  }
+  {
+    secretName: 'airflow-admin-username'
+    secretValue: 'airflow'
+  }
+  {
+    secretName: 'airflow-admin-password'
+    secretValue: substring(uniqueString('airflow', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'airflow-fernet-key'
+    secretValue: substring(uniqueString('airflow-fernet', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+  }
+  {
+    secretName: 'airflow-webserver-key'
+    secretValue: substring(uniqueString('airflow-webserver', resourceGroup().id, bladeConfig.sectionName), 0, 8)
   }
 ]
 

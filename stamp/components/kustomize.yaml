@@ -188,6 +188,35 @@ spec:
   prune: true
   wait: true
 
+######################
+## Airflow Component
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: component-airflow
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: component-postgresql
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/components/airflow
+  prune: true
+  wait: true
+  healthChecks:
+    - kind: Deployment
+      name: airflow-scheduler
+    - kind: Deployment
+      name: airflow-statsd
+    - kind: Deployment
+      name: airflow-webserver
+
 
 ######################
 ## Mesh Component

@@ -392,7 +392,7 @@ jobs:
 
           # Check for Flux compliance and timing logic
           Write-Output "Checking for Flux compliance"
-          $end = (Get-Date).AddMinutes(35)
+          $end = (Get-Date).AddMinutes(45)
           try {
               # Check if the Flux configuration exists
               $fluxExists = az k8s-configuration flux list -t managedClusters -g $RESOURCE_GROUP --cluster-name $AKS_NAME --query "[?name=='flux-system']" -o tsv
@@ -430,7 +430,7 @@ jobs:
               }
 
               if ((Get-Date) -ge $end) {
-                  Write-Host "  Software check timed out - 35 minutes."
+                  Write-Host "  Software check timed out - 45 minutes."
                   exit 1
               }
           } catch {

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "5433245448373487199"
+      "templateHash": "1713304123873761697"
     }
   },
   "parameters": {
@@ -6435,7 +6435,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "4754443620041447891"
+              "templateHash": "1490849594624635009"
             }
           },
           "definitions": {
@@ -6560,8 +6560,7 @@
                 "containers": [
                   "system",
                   "azure-webjobs-hosts",
-                  "azure-webjobs-eventhub",
-                  "adf-airflow"
+                  "azure-webjobs-eventhub"
                 ],
                 "tables": [
                   "partitionInfo"
@@ -6570,7 +6569,8 @@
                   "crs",
                   "crs-conversion",
                   "unit",
-                  "sample-share"
+                  "airflow-logs",
+                  "airflow-dags"
                 ]
               },
               "database": {
@@ -6625,6 +6625,26 @@
               {
                 "secretName": "cpng-superuser-password",
                 "secretValue": "[substring(uniqueString('dbadmin', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
+              },
+              {
+                "secretName": "airflow-db-connection",
+                "secretValue": "[format('postgresql://dbuser:{0}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db', substring(uniqueString('dbuser', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8))]"
+              },
+              {
+                "secretName": "airflow-admin-username",
+                "secretValue": "airflow"
+              },
+              {
+                "secretName": "airflow-admin-password",
+                "secretValue": "[substring(uniqueString('airflow', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
+              },
+              {
+                "secretName": "airflow-fernet-key",
+                "secretValue": "[substring(uniqueString('airflow-fernet', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
+              },
+              {
+                "secretName": "airflow-webserver-key",
+                "secretValue": "[substring(uniqueString('airflow-webserver', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8)]"
               }
             ],
             "roleAssignment": {
@@ -29156,7 +29176,7 @@
           "enableTelemetry": {
             "value": "[variables('enableTelemetry')]"
           },
-          "osduVersion": "[if(equals(parameters('clusterSoftware').osduVersion, ''), createObject('value', 'release-0-27'), createObject('value', parameters('clusterSoftware').osduVersion))]",
+          "osduVersion": "[if(equals(parameters('clusterSoftware').osduVersion, ''), createObject('value', 'master'), createObject('value', parameters('clusterSoftware').osduVersion))]",
           "enableSoftwareLoad": "[if(equals(parameters('clusterSoftware').enable, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsduCore": "[if(equals(parameters('clusterSoftware').osduCore, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsdureference": "[if(equals(parameters('clusterSoftware').osduReference, 'false'), createObject('value', false()), createObject('value', true()))]",
@@ -29240,7 +29260,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "5900057708516682334"
+              "templateHash": "1314592225776013964"
             }
           },
           "definitions": {
@@ -29431,7 +29451,7 @@
             },
             "osduVersion": {
               "type": "string",
-              "defaultValue": "release-0-27",
+              "defaultValue": "master",
               "allowedValues": [
                 "release-0-24",
                 "release-0-25",
@@ -29544,7 +29564,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.28.0"
+              "release": "v0.29.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -31893,7 +31913,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "16288804577755852114"
+                      "templateHash": "14476728379346157501"
                     }
                   },
                   "parameters": {
@@ -32484,7 +32504,7 @@
                     "userPoolPresets": {
                       "Burstable": {
                         "vmSize": "Standard_B4ms",
-                        "minCount": 4,
+                        "minCount": 5,
                         "maxCount": 20,
                         "availabilityZones": [
                           "1",
@@ -32497,7 +32517,7 @@
                       },
                       "Standard": {
                         "vmSize": "Standard_D4s_v5",
-                        "minCount": 4,
+                        "minCount": 5,
                         "maxCount": 20,
                         "availabilityZones": [
                           "1",
@@ -33542,10 +33562,10 @@
                 "federatedCredsDefaultNamespace"
               ]
             },
-            "federatedCredsOduInitNamespace": {
+            "federatedCredsAirflowNamespace": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-init', parameters('bladeConfig').sectionName)]",
+              "name": "[format('{0}-federated-cred-ns_airflow', parameters('bladeConfig').sectionName)]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -33553,7 +33573,7 @@
                 "mode": "Incremental",
                 "parameters": {
                   "name": {
-                    "value": "federated-ns_osdu-init"
+                    "value": "federated-ns_airflow"
                   },
                   "audiences": {
                     "value": [
@@ -33567,7 +33587,7 @@
                     "value": "[parameters('managedIdentityName')]"
                   },
                   "subject": {
-                    "value": "system:serviceaccount:osdu-init:workload-identity-sa"
+                    "value": "system:serviceaccount:airflow:workload-identity-sa"
                   }
                 },
                 "template": {
@@ -33771,7 +33791,7 @@
               "dependsOn": [
                 "appIdentity",
                 "cluster",
-                "federatedCredsOduInitNamespace"
+                "federatedCredsAirflowNamespace"
               ]
             },
             "federatedCredsConfigMapsNamespace": {
@@ -34483,10 +34503,10 @@
               },
               "dependsOn": [
                 "appIdentity",
+                "federatedCredsAirflowNamespace",
                 "federatedCredsConfigMapsNamespace",
                 "federatedCredsDefaultNamespace",
                 "federatedCredsElasticNamespace",
-                "federatedCredsOduInitNamespace",
                 "federatedCredsOsduAuth",
                 "federatedCredsOsduCoreNamespace",
                 "federatedCredsOsduReference",

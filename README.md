@@ -1,6 +1,6 @@
 # OSDU Developer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![Infra - Test](https://github.com/Azure/osdu-developer/actions/workflows/test.yml/badge.svg)](https://github.com/Azure/osdu-developer/actions/workflows/test.yml) ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1)
 
 
 <!-- ![Github Issues](https://img.shields.io/github/issues/azure/osdu-developer)
@@ -61,7 +61,9 @@ Deploying the resources via CLI is the recommended approach. This method allows 
 
 Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_cli/) for a quick overview of doing this from the Azure Cloud Shell.
 
-> **NOTE:** If you are using a pre-existing Entra App, you will need to set the feature flag `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` with the values from your app (See [Feature Flags](https://azure.github.io/osdu-developer/feature_flags/#custom-infrastructure) for more information on feature flags).
+> **NOTE:** Clone the latest version of this repo on your computer and switch to the directory. Note that the deployment scripts are being updated continously, make sure you update to the latest version.
+
+> **NOTE:** If you are using a pre-existing Entra ID App, you will need to set the feature flag `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` with the values from your app (See [Feature Flags](https://azure.github.io/osdu-developer/feature_flags/#custom-infrastructure) for more information on feature flags).
 
 ```bash
 # Authentication
@@ -78,7 +80,7 @@ azd env set <feature_flag> <value> # Set any necessary feature flags
 azd provision
 
 # Configure Settings for Integrations
-azd env set AUTH_CODE <your_auth_code>
+azd env set AUTH_CODE <auth_code>
 azd hooks run settings
 
 # Cleanup

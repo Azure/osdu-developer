@@ -80,7 +80,7 @@ spec:
 
     # Airflow database & redis config
     data:
-      metadataSecretName: 
+      metadataSecretName: airflow-secrets
 
     # Fernet key settings
     fernetKeySecretName: keyvault-secrets

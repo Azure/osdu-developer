@@ -16,7 +16,7 @@ For detailed instructions, view our online [Documentation](https://azure.github.
 Supported services of OSDU are based on the release branch of OSDU as specified in the [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones). (ie: release/0.25 release/0.26, release/0.27, master etc.)
 
 
-| **Service**                                                                                     | **Description**                                                                                 |
+| **Core Services**                                                                               | **Description**                                                                                 |
 |-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)             | Manages data partitions to ensure efficient data management and scalability.                    |
 | [Entitlement Service](https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements) | Provides access control and permissions management for data within the OSDU platform. |
@@ -27,6 +27,10 @@ Supported services of OSDU are based on the release branch of OSDU as specified 
 | [Storage Service](https://community.opengroup.org/osdu/platform/system/storage)                | Provides scalable storage solutions for managing and retrieving large volumes of data.           |
 | [Search Service](https://community.opengroup.org/osdu/platform/system/search-service)          | Facilitates searching and querying across data stored within the OSDU platform.                  |
 | [File Service](https://community.opengroup.org/osdu/platform/system/file)                      | Handles file operations such as storage, retrieval, and management of data files.                |
+| [Workflow Service](https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-workflow/)  | Initiates business processes within the system. During the prototype phase, it facilitates CRUD operations on workflow metadata and triggers workflows in Apache Airflow. Additionally, the service manages process startup records, acting as a wrapper around Airflow functions.. |
+
+| **Reference Helper Services**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [Unit Service](https://community.opengroup.org/osdu/platform/system/reference/unit-service)    | Provides dimension/measurement and unit definitions.                                             |
 | [CRS Catalog Service](https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service) | Provides API endpoints to work with geodetic reference data, allowing developers to retrieve CRS definitions, select appropriate CRSs for data ingestion, and search for CRSs based on various constraints. |
 | [CRS Conversion Service](https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service)  | Enables the conversion of coordinates from one coordinate reference system (CRS) to another. |

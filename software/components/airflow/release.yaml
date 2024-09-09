@@ -25,33 +25,29 @@ spec:
   chart:
     spec:
       chart: airflow
-      # version: 1.11.0
       sourceRef:
         kind: HelmRepository
         name: airflow
         namespace: flux-system
   values:
+    # Isolate version
+    airflowVersion: 2.10.1
+
     # Airflow executor
     executor: KubernetesExecutor
+
+    # External PostgreSQL configuration
+    data:
+      metadataSecretName: airflow-secrets
 
     # Environment variables for all airflow containers
     env:
       - name: ENVIRONMENT
         value: dev
 
-    # Admin user configuration
-    admin:
-      existingSecret: airflow-secrets
-      usernameKey: username
-      passwordKey: password
-
     # Disable the internal PostgreSQL chart
     postgresql:
       enabled: false
-
-    # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
 
     # Disable pgbouncer.
     # CloudNativePG provides native support for connection pooling with PgBouncer
@@ -66,10 +62,10 @@ spec:
         branch: main
         wait: 40
         subPath: dags
-      # persistence:
-      #   enabled: false
-      #   existingClaim: airflow-dags-pvc
-      #   subPath: dags
+      persistence:
+        enabled: false
+        existingClaim: airflow-dags-pvc
+        subPath: dags
 
     logs:
       persistence:

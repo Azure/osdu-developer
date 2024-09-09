@@ -47,7 +47,7 @@ spec:
   capacity:
     storage: 5Gi
   accessModes:
-    - ReadOnlyMany
+    - ReadWriteMany
   azureFile:
     secretName: keyvault-secrets
     shareName: airflow-dags
@@ -67,7 +67,7 @@ metadata:
   namespace: airflow
 spec:
   accessModes:
-    - ReadOnlyMany
+    - ReadWriteMany
   resources:
     requests:
       storage: 5Gi

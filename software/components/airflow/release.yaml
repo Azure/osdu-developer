@@ -25,14 +25,14 @@ spec:
   chart:
     spec:
       chart: airflow
-      # version: 1.11.0
       sourceRef:
         kind: HelmRepository
         name: airflow
         namespace: flux-system
   values:
-    airflowVersion: 2.10.0
-    
+    # Isolate version
+    airflowVersion: 2.10.1
+
     # Airflow executor
     executor: KubernetesExecutor
 
@@ -68,10 +68,10 @@ spec:
         branch: main
         wait: 40
         subPath: dags
-      # persistence:
-      #   enabled: false
-      #   existingClaim: airflow-dags-pvc
-      #   subPath: dags
+      persistence:
+        enabled: false
+        existingClaim: airflow-dags-pvc
+        subPath: dags
 
     logs:
       persistence:

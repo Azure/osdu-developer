@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "1713304123873761697"
+      "templateHash": "1073984802304467511"
     }
   },
   "parameters": {
@@ -29260,7 +29260,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "1314592225776013964"
+              "templateHash": "12198676988381837831"
             }
           },
           "definitions": {
@@ -29564,7 +29564,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.29.0"
+              "release": "v0.30.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {

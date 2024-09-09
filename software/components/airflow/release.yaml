@@ -36,24 +36,18 @@ spec:
     # Airflow executor
     executor: KubernetesExecutor
 
+    # External PostgreSQL configuration
+    data:
+      metadataSecretName: airflow-secrets
+
     # Environment variables for all airflow containers
     env:
       - name: ENVIRONMENT
         value: dev
 
-    # Admin user configuration
-    admin:
-      existingSecret: airflow-secrets
-      usernameKey: username
-      passwordKey: password
-
     # Disable the internal PostgreSQL chart
     postgresql:
       enabled: false
-
-    # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
 
     # Disable pgbouncer.
     # CloudNativePG provides native support for connection pooling with PgBouncer

@@ -73,6 +73,14 @@ spec:
       AIRFLOW__CORE__FERNET_KEY: false
       AIRFLOW__WEBSERVER__SECRET_KEY: false
 
+    # Airflow create user job settings
+    createUserJob:
+      useHelmHooks: false
+
+    # Airflow database migration job settings
+    migrateDatabaseJob:
+      useHelmHooks: false
+
     # Environment variables for all airflow containers
     env:
       - name: ENVIRONMENT
@@ -98,12 +106,6 @@ spec:
       enabled: true
       logGroomerSidecar:
         enabled: false
-
-    # Airflow create user job settings
-    createUserJob:
-
-    # Airflow database migration job settings
-    migrateDatabaseJob:
 
     # Airflow webserver settings
     webserver:

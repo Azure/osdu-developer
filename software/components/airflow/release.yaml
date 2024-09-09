@@ -73,6 +73,29 @@ spec:
       AIRFLOW__CORE__FERNET_KEY: false
       AIRFLOW__WEBSERVER__SECRET_KEY: false
 
+    extraConfigMaps:
+      useHelmHooks: false
+      data: |
+        AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+        AIRFLOW_VAR_ENV_VARS_ENABLED: "true"
+        AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME: "entitlements_client"
+        AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+        AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
+        AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
+        AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
+        AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2"
+        AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
+        AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
+        AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
+        AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
+        AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+        
+        
+        
+
+
+
+
     # Airflow create user job settings
     createUserJob:
       useHelmHooks: false

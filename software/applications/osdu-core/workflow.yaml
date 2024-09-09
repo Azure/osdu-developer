@@ -126,6 +126,8 @@ spec:
         value: "osdu-db"
       - name: OSDU_AIRFLOW_URL
         value: "http://airflow-webserver.airflow.svc.cluster.local/airflow"
+      - name: DP_AIRFLOW_FOR_SYSTEM_DAG
+        value: "false"
       
       
       # - name: AIRFLOW_STORAGE_ACCOUNT_NAME

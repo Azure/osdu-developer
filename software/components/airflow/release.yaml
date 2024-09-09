@@ -60,16 +60,17 @@ spec:
 
     # Pull DAGS from file share and from a git repo
     dags:
-      gitSync:
-        enabled: true
-        repo: 'https://github.com/azure/osdu-developer.git'
-        branch: main
-        wait: 40
+      persistence:
+        enabled: false
+        existingClaim: airflow-dags-pvc
         subPath: dags
-      # persistence:
-      #   enabled: false
-      #   existingClaim: airflow-dags-pvc
+      # gitSync:
+      #   enabled: true
+      #   repo: 'https://github.com/azure/osdu-developer.git'
+      #   branch: main
+      #   wait: 40
       #   subPath: dags
+
 
     logs:
       persistence:

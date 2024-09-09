@@ -99,10 +99,6 @@ spec:
       logGroomerSidecar:
         enabled: false
 
-    # Airflow Triggerer Config
-    triggerer:
-      enabled: true
-
     # Airflow create user job settings
     createUserJob:
 

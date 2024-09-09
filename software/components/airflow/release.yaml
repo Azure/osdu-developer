@@ -31,87 +31,10 @@ spec:
         name: airflow
         namespace: flux-system
   values:
-    # Airflow executor
-    executor: KubernetesExecutor
 
-    # Environment variables for all airflow containers
-    env:
-      - name: ENVIRONMENT
-        value: dev
-
-    # Admin user configuration
-    admin:
-      existingSecret: airflow-secrets
-      usernameKey: username
-      passwordKey: password
-
-    # Disable the internal PostgreSQL chart
-    postgresql:
-      enabled: false
-
-    # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
-
-    # Disable pgbouncer.
-    # CloudNativePG provides native support for connection pooling with PgBouncer
-    pgbouncer:
-      enabled: false
-
-    # Pull DAGS from file share and from a git repo
-    dags:
-      persistence:
-        enabled: false
-        existingClaim: airflow-dags-pvc
-        subPath: dags
-      # gitSync:
-      #   enabled: true
-      #   repo: 'https://github.com/azure/osdu-developer.git'
-      #   branch: main
-      #   wait: 40
-      #   subPath: dags
-
-
-    logs:
-      persistence:
-        enabled: true
-        existingClaim: airflow-logs-pvc
-        storageClassName: azurefile-csi-premium
-
-    config:
-      webserver:
-        expose_config: 'True'
-        instance_name: OSDU
-        enable_proxy_fix: 'True'
-        # base_url: 'http://localhost/airflow'
-      operators:
-        default_owner: OSDU
-
-    # We disable the log groomer sidecars because we use Azure File Storage for logs
-    triggerer:
-      logGroomerSidecar:
-        enabled: false
-    scheduler:
-      logGroomerSidecar:
-        enabled: false
-    workers:
-      logGroomerSidecar:
-        enabled: false
-
-    # Ensure we are using the secrets from Azure Key Vault
-    enableBuiltInSecretEnvVars:
-      AIRFLOW__CORE__FERNET_KEY: false
-      AIRFLOW__WEBSERVER__SECRET_KEY: false
-    fernetKeySecretName: keyvault-secrets
-    webserverSecretKeySecretName: keyvault-secrets
-
-    # Airflow create user job settings
-    createUserJob:
-      useHelmHooks: false
-
-    # Airflow database migration job settings
-    migrateDatabaseJob:
-      useHelmHooks: false
+    # Isolate version
+    airflowVersion: 2.10.1
+    defaultAirflowTag: 2.10.1
 
     # Ensure this goes on the correct node pool.
     affinity:
@@ -124,8 +47,7 @@ spec:
               values:
                 - poolz1
                 - poolz2
-                - poolz3  # Adjust these values to match your node pools
-
+                - poolz3 
     topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: topology.kubernetes.io/zone
@@ -133,9 +55,134 @@ spec:
       labelSelector:
         matchLabels:
           release: airflow  # Adjust to match your Helm release name
-
-    # Tolerations should be defined outside of affinity
     tolerations:
       - effect: NoSchedule
         key: app
         value: "cluster"
+
+
+    # Airflow executor
+    # One of: LocalExecutor, LocalKubernetesExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
+    executor: KubernetesExecutor
+
+    # Enables selected built-in secrets that are set via environment variables by default.
+    # Those secrets are provided by the Helm Chart secrets by default but in some cases you
+    # might want to provide some of those variables with _CMD or _SECRET variable, and you should
+    # in this case disable setting of those variables by setting the relevant configuration to false.
+    enableBuiltInSecretEnvVars:
+      AIRFLOW__CORE__FERNET_KEY: false
+      AIRFLOW__WEBSERVER__SECRET_KEY: false
+
+    # Environment variables for all airflow containers
+    env:
+      - name: ENVIRONMENT
+        value: dev
+
+    # Airflow database & redis config
+    data:
+      metadataSecretName: 
+
+    # Fernet key settings
+    fernetKeySecretName: keyvault-secrets
+
+    # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
+    webserverSecretKeySecretName: keyvault-secrets
+
+    # Airflow Worker Config
+    workers:
+      logGroomerSidecar:
+        enabled: false
+
+    # Airflow scheduler settings
+    scheduler:
+      enabled: true
+      logGroomerSidecar:
+        enabled: false
+
+    # Airflow Triggerer Config
+    triggerer:
+      enabled: true
+
+    # Airflow create user job settings
+    createUserJob:
+
+    # Airflow database migration job settings
+    migrateDatabaseJob:
+
+    # Airflow webserver settings
+    webserver:
+      enabled: true
+
+    # Airflow Triggerer Config
+    triggerer:
+      enabled: true
+      logGroomerSidecar:
+        enabled: false
+
+    # Airflow Dag Processor Config
+    dagProcessor:
+      enabled: false
+
+    # Flower settings
+    flower:
+      # Enable flower.
+      # If True, and using CeleryExecutor/CeleryKubernetesExecutor, will deploy flower app.
+      enabled: false
+
+    # StatsD settings
+    statsd:
+      enabled: true
+
+    # PgBouncer settings
+    # CloudNativePG provides native support for connection pooling with PgBouncer
+    pgbouncer:
+      # Enable PgBouncer
+      enabled: false
+
+    # Configuration for the redis provisioned by the chart
+    redis:
+      enabled: true
+      terminationGracePeriodSeconds: 600
+
+    # Configuration for postgresql subchart
+    # Not recommended for production
+    postgresql:
+      enabled: false
+
+    # Config settings to go into the mounted airflow.cfg
+    #
+    # Please note that these values are passed through the `tpl` function, so are
+    # all subject to being rendered as go templates. If you need to include a
+    # literal `{{` in a value, it must be expressed like this:
+    #
+    #    a: '{{ "{{ not a template }}" }}'
+    #
+    # Do not set config containing secrets via plain text values, use Env Var or k8s secret object
+    # yamllint disable rule:line-length
+    config:
+      webserver:
+        expose_config: 'True'
+        instance_name: OSDU
+        enable_proxy_fix: 'True'
+        # base_url: 'http://localhost/airflow'
+      operators:
+        default_owner: OSDU
+
+
+    # Pull DAGS from file share
+    dags:
+      persistence:
+        enabled: false
+        existingClaim: airflow-dags-pvc
+        subPath: dags
+      gitSync:
+        enabled: false
+
+
+    logs:
+      persistence:
+        enabled: true
+        existingClaim: airflow-logs-pvc
+        storageClassName: azurefile-csi-premium
+
+  

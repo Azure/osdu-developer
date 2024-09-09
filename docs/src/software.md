@@ -66,6 +66,12 @@ flowchart TD
 
 ```bash
 ── components
+    ├── airflow
+    │   ├── namespace.yaml
+    │   ├── pvc.yaml
+    │   ├── release.yaml
+    │   ├── source.yaml
+    │   └── vault-secrets.yaml
     ├── certs
     │   ├── namespace.yaml
     │   ├── release.yaml
@@ -175,6 +181,7 @@ flowchart TD
   storage("storage")
   file("file")
   search("search")
+  workflow("workflow")
 
   base-->partition
   partition-->entitlements
@@ -185,6 +192,7 @@ flowchart TD
   legal-->indexer
   legal-->indexer_queue
   legal-->schema
+  legal-->workflow
   schema-->schema_init
   indexer_queue-->storage
   indexer_queue-->file
@@ -204,6 +212,7 @@ flowchart TD
    ├── search.yaml
    ├── storage.yaml
    └── user-init.yaml
+   └── workflow.yaml
 ```
 
 __OSDU Reference Structure__

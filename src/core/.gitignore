@@ -7,3 +7,4 @@ indexer-queue
 storage
 search-service
 file
+ingestion-workflow

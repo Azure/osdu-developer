@@ -71,7 +71,7 @@ env:
   AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-  AZCLIVERSION: latest
+  AZCLIVERSION: 2.63.0    # https://github.com/Azure/azure-cli/issues/29828
   ParamFilePath: ".github/parameters.json"
   DEPNAME: "dep${{ github.run_number }}"
   
@@ -283,7 +283,7 @@ jobs:
           AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
         continue-on-error: true #Setting to true due to bug in the AzureCLI https://github.com/Azure/azure-cli/issues/19850
         with:
-          azcliversion: ${{ env.AZCLIVERSION }} #latest
+          azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
@@ -377,6 +377,7 @@ jobs:
       - name: Azure Login
         uses: Azure/login@v2
         with:
+          azcliversion: ${{ env.AZCLIVERSION }}
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}

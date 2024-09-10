@@ -32,9 +32,11 @@ spec:
         namespace: flux-system
   values:
 
-    # Isolate version
+    # Version Isolation
     airflowVersion: 2.10.1
     defaultAirflowTag: 2.10.1
+    # Used for mount paths
+    airflowHome: /opt/airflow
 
     # Ensure this goes on the correct node pool.
     affinity:
@@ -70,7 +72,7 @@ spec:
     # might want to provide some of those variables with _CMD or _SECRET variable, and you should
     # in this case disable setting of those variables by setting the relevant configuration to false.
     enableBuiltInSecretEnvVars:
-      AIRFLOW__CORE__FERNET_KEY: false
+      AIRFLOW__CORE__FERNET_KEY: true
       AIRFLOW__WEBSERVER__SECRET_KEY: false
         
     # Airflow create user job settings

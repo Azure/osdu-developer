@@ -83,18 +83,20 @@ spec:
 
     # Environment variables for all airflow containers
     env:
-      - name: ENVIRONMENT
-        value: dev
       - name: AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH
         value: "/opt/airflow/dags/configs/dataload.ini"
       - name: AIRFLOW_VAR_ENV_VARS_ENABLED
         value: "true"
       - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
         value: "entitlements_client"
-
+      - name: CLOUD_PROVIDER
+        value: "azure"
+      - name: ENVIRONMENT
+        value: dev
     extraEnv:
       - name: CLOUD_PROVIDER
         value: "azure"
+
     
     extraEnvFrom: |
       - configMapRef:

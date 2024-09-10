@@ -229,11 +229,15 @@ spec:
     # Pull DAGS from file share
     dags:
       persistence:
-        enabled: false
+        enabled: true
         existingClaim: airflow-dags-pvc
         subPath: dags
       gitSync:
         enabled: false
+        repo: 'https://github.com/azure/osdu-developer'
+        branch: main
+        wait: 40
+        subPath: dags
 
     # Global Logs go to pvc file share.
     logs:

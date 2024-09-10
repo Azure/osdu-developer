@@ -68,8 +68,10 @@ spec:
     # Create user and migrate database jobs
     createUserJob:
       useHelmHooks: false
+      applyCustomEnv: false
     migrateDatabaseJob:
       useHelmHooks: false
+      applyCustomEnv: false
 
 
     # Database and secrets

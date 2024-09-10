@@ -133,7 +133,6 @@ spec:
 
     # Airflow Worker Config
     workers:
-      enabled: true
       logGroomerSidecar:
         enabled: false
       env:
@@ -179,8 +178,8 @@ spec:
         enabled: false
 
     # Airflow Dag Processor Config
-    dagProcessor:
-      enabled: false
+    # dagProcessor:
+    #   enabled: false
 
     # Flower settings
     flower:

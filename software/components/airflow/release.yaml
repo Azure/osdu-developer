@@ -118,7 +118,7 @@ spec:
           AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
           AIRFLOW_VAR_NAMESPACE: "airflow"
           AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
-          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 60
+          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
 
 
     # Airflow database & redis config

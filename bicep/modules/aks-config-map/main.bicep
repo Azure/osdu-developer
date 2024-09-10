@@ -103,8 +103,8 @@ resource runAksCommand 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.61.0'
-    timeout: 'PT15M'
+    azCliVersion: '2.63.0'
+    timeout: 'PT30M'
     retentionInterval: 'PT1H'
     environmentVariables: [
       { name: 'RG', value: resourceGroup().name }

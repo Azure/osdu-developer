@@ -105,7 +105,7 @@ resource rbacKv 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (perfo
   }
 }
 
-resource createImportCerts 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for (certificateName, index) in certificateNames: {
+resource createImportCerts 'Microsoft.Resources/deploymentScripts@2023-08-01' = [for (certificateName, index) in certificateNames: {
   name: 'script-${akv.name}-${replace(replace(certificateName, ':', ''), '/', '-')}'
   location: location
   identity: {
@@ -120,8 +120,8 @@ resource createImportCerts 'Microsoft.Resources/deploymentScripts@2020-10-01' = 
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.61.0'
-    timeout: 'PT15M'
+    azCliVersion: '2.63.0'
+    timeout: 'PT30M'
     retentionInterval: 'PT1H'
     environmentVariables: [
       { name: 'akvName', value: kvName }

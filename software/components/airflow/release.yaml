@@ -120,9 +120,9 @@ spec:
 
     extraEnvFrom: |
       - configMapRef:
-        name: "airflow-variables"
+          name: "airflow-variables"
       - secretRef:
-        name: 'airflow-variables'
+          name: 'airflow-variables'
 
     # Airflow database & redis config
     data:

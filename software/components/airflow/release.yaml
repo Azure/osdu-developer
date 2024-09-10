@@ -160,22 +160,22 @@ spec:
     ###################################
     ## COMPONENT | Airflow Scheduler
     ###################################
-    scheduler:
-      enabled: true
-      logGroomerSidecar:
-        enabled: false
+    # scheduler:
+    #   enabled: true
+    #   logGroomerSidecar:
+    #     enabled: false
 
     ###################################
     ## COMPONENT | Airflow Webserver
     ###################################
-    webserver:
-      enabled: true
+    # webserver:
+    #   enabled: true
 
     # Airflow Triggerer Config
-    triggerer:
-      enabled: true
-      logGroomerSidecar:
-        enabled: false
+    # triggerer:
+    #   enabled: true
+    #   logGroomerSidecar:
+        # enabled: false
 
     # Airflow Dag Processor Config
     # dagProcessor:
@@ -198,9 +198,9 @@ spec:
       enabled: false
 
     # Configuration for the redis provisioned by the chart
-    redis:
-      enabled: true
-      terminationGracePeriodSeconds: 600
+    # redis:
+    #   enabled: true
+    #   terminationGracePeriodSeconds: 600
 
     # Configuration for postgresql subchart
     # Not recommended for production

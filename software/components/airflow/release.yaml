@@ -83,10 +83,12 @@ spec:
 
     # Environment variables for all airflow containers
     env:
-      - name: AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH
-        value: "/opt/airflow/dags/configs/dataload.ini"
-      - name: AIRFLOW_VAR_ENV_VARS_ENABLED
-        value: "true"
+      # Needed for installing python osdu python sdk. In future this will be changed
+      - name: CI_COMMIT_TAG
+        value: "v0.12.0"
+      - name: BUILD_TAG
+        value: "v0.12.0"
+      #
       - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
         value: "entitlements_client"
       - name: CLOUD_PROVIDER
@@ -97,6 +99,8 @@ spec:
     extraEnvFrom: |
       - configMapRef:
           name: "airflow-endpoint-variables"
+      - configMapRef:
+          name: "airflow-settings-variables"
 
     extraConfigMaps:
       airflow-endpoint-variables:
@@ -111,6 +115,21 @@ spec:
           AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
           AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
           AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+      airflow-settings-variables:
+        data: |
+          AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
+          AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+          AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+          AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+          AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
+          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 60
+          AIRFLOW__CORE__LOGGING_LEVEL: "INFO"
+          AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True" 
+          AIRFLOW__CORE__STORE_DAG_CODE: "True"
+          AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
+          AIRFLOW_VAR_NAMESPACE: "airflow"
+          AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
+
 
     # Airflow database & redis config
     data:

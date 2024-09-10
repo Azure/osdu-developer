@@ -25,7 +25,7 @@ spec:
   chart:
     spec:
       chart: airflow
-      # version: 1.11.0
+      version: 1.15.0
       sourceRef:
         kind: HelmRepository
         name: airflow
@@ -95,6 +95,10 @@ spec:
         value: "azure"
       - name: ENVIRONMENT
         value: "dev"
+
+    extraEnv: |
+      - name: AIRFLOW_VAR_ANOTHER_KEY
+        value: 'value_1'
     
     extraEnvFrom: |
       - configMapRef:

@@ -105,7 +105,7 @@ spec:
           name: "airflow-endpoint-variables"
 
     extraConfigMaps:
-      airflow-endpoint-variables:
+      'airflow-endpoint-variables':
         data: |
           AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
           AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
@@ -117,7 +117,8 @@ spec:
           AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
           AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
           AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
-      airflow-settings-variables:
+      
+      'airflow-settings-variables':
         data: |
           AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
@@ -148,13 +149,18 @@ spec:
       logGroomerSidecar:
         enabled: false
 
-    # Airflow scheduler settings
+    
+    ###################################
+    ## COMPONENT | Airflow Scheduler
+    ###################################
     scheduler:
       enabled: true
       logGroomerSidecar:
         enabled: false
 
-    # Airflow webserver settings
+    ###################################
+    ## COMPONENT | Airflow Webserver
+    ###################################
     webserver:
       enabled: true
 

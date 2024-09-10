@@ -104,21 +104,34 @@ spec:
       - configMapRef:
           name: "airflow-settings-variables"
 
-    extraConfigMaps:      
-      airflow-settings-variables:
+    extraConfigMaps:
+      'airflow-settings-variables':
         data: |
-          AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
-          AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
-          AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
-          AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
-          AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
-          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 60
-          AIRFLOW__CORE__LOGGING_LEVEL: "INFO"
-          AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True" 
-          AIRFLOW__CORE__STORE_DAG_CODE: "True"
-          AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
-          AIRFLOW_VAR_NAMESPACE: "airflow"
-          AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
+          AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+          AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
+          AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
+          AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
+          AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2"
+          AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
+          AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
+          AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
+          AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
+          AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+      
+      # airflow-settings-variables':
+      #   data: |
+      #     AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
+      #     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+      #     AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+      #     AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+      #     AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
+      #     AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 60
+      #     AIRFLOW__CORE__LOGGING_LEVEL: "INFO"
+      #     AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True" 
+      #     AIRFLOW__CORE__STORE_DAG_CODE: "True"
+      #     AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
+      #     AIRFLOW_VAR_NAMESPACE: "airflow"
+      #     AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
 
 
     # Airflow database & redis config
@@ -135,27 +148,27 @@ spec:
     workers:
       logGroomerSidecar:
         enabled: false
-      env:
-        - name: AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL
-          value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
-        - name: AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST
-          value: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
-        - name: AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL
-          value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
-        - name: AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL
-          value: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
-        - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL
-          value: "http://search.osdu-core.svc.cluster.local/api/search/v2"
-        - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL
-          value: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
-        - name: AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL
-          value: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
-        - name: AIRFLOW_VAR_CORE__SERVICE__FILE__HOST
-          value: "http://file.osdu-core.svc.cluster.local/api/file"
-        - name: AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST
-          value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
-        - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
-          value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+      # env:
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL
+      #     value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST
+      #     value: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL
+      #     value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL
+      #     value: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL
+      #     value: "http://search.osdu-core.svc.cluster.local/api/search/v2"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL
+      #     value: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL
+      #     value: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__FILE__HOST
+      #     value: "http://file.osdu-core.svc.cluster.local/api/file"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST
+      #     value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
+      #   - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
+      #     value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
 
     
     ###################################

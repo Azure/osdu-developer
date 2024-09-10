@@ -160,7 +160,6 @@ spec:
         - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
           value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
 
-    
     ###################################
     ## COMPONENT | Airflow Scheduler
     ###################################

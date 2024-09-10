@@ -72,13 +72,6 @@ spec:
     enableBuiltInSecretEnvVars:
       AIRFLOW__CORE__FERNET_KEY: false
       AIRFLOW__WEBSERVER__SECRET_KEY: false
-
-    extraConfigMaps:
-      'airflow-airflow-variables':
-        useHelmHooks: false
-        data: |
-          AIRFLOW_VAR_HELLO: "world"
-          
         
     # Airflow create user job settings
     createUserJob:
@@ -118,6 +111,19 @@ spec:
         value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
       - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
         value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+
+    extraEnv:
+      - name: CLOUD_PROVIDER
+        value: "azure"
+    
+    extraEnvFrom: |
+      - configMapRef:
+          name: 'airflow-variables'
+
+    extraConfigMaps:
+      'airflow-variables':
+        data: |
+          AIRFLOW_VAR_HELLO_MESSAGE: "Hi!"
 
     # Airflow database & redis config
     data:

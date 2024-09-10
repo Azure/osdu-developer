@@ -111,12 +111,9 @@ spec:
           AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
           AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
           AIRFLOW__CORE__LOGGING_LEVEL: "INFO"
-          AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True" 
-          AIRFLOW__CORE__STORE_DAG_CODE: "True"
           AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
           AIRFLOW_VAR_NAMESPACE: "airflow"
           AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
-          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
 
     extraEnvFrom: |
       - configMapRef:
@@ -136,6 +133,7 @@ spec:
 
     # Airflow Worker Config
     workers:
+      enabled: true
       logGroomerSidecar:
         enabled: false
       env:

@@ -92,15 +92,11 @@ spec:
       - name: CLOUD_PROVIDER
         value: "azure"
       - name: ENVIRONMENT
-        value: dev
-    extraEnv:
-      - name: CLOUD_PROVIDER
-        value: "azure"
-
+        value: "dev"
     
     extraEnvFrom: |
       - configMapRef:
-          name: 'airflow-endpoint-variables'
+          name: "airflow-endpoint-variables"
 
     extraConfigMaps:
       airflow-endpoint-variables:

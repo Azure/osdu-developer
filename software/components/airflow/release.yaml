@@ -116,12 +116,12 @@ spec:
       - name: CLOUD_PROVIDER
         value: "azure"
     
-    extraEnvFrom: |
-      - configMapRef:
-          name: 'airflow-variables'
+    # extraEnvFrom: |
+    #   - configMapRef:
+    #     name: 'airflow-airflow-variables'
 
     extraConfigMaps:
-      'airflow-variables':
+      airflow-variables:
         data: |
           AIRFLOW_VAR_HELLO_MESSAGE: "Hi!"
 

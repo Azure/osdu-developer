@@ -229,11 +229,11 @@ spec:
     # Pull DAGS from file share
     dags:
       persistence:
-        enabled: true
+        enabled: false
         existingClaim: airflow-dags-pvc
         subPath: dags
       gitSync:
-        enabled: false
+        enabled: true
         repo: 'https://github.com/azure/osdu-developer'
         branch: main
         wait: 40

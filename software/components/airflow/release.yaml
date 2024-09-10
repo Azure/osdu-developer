@@ -118,10 +118,10 @@ spec:
     
     extraEnvFrom: |
       - configMapRef:
-          name: 'airflow-variables'
+          name: 'airflow-airflow-variables'
 
     extraConfigMaps:
-      airflow-variables:
+      airflow-airflow-variables:
         data: |
           AIRFLOW_VAR_HELLO_MESSAGE: "Hi!"
 

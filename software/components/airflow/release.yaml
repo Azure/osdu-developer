@@ -103,8 +103,6 @@ spec:
     extraEnvFrom: |
       - configMapRef:
           name: "airflow-endpoint-variables"
-      - configMapRef:
-          name: "airflow-settings-variables"
 
     extraConfigMaps:
       airflow-endpoint-variables:

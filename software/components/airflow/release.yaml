@@ -47,11 +47,11 @@ spec:
 
     # Disable the internal PostgreSQL chart
     postgresql:
-      enabled: false
+      enabled: true
 
     # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
+    # data:
+    #   metadataSecretName: airflow-secrets
 
     # Disable pgbouncer.
     # CloudNativePG provides native support for connection pooling with PgBouncer

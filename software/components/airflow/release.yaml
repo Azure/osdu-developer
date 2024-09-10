@@ -102,10 +102,10 @@ spec:
     
     extraEnvFrom: |
       - configMapRef:
-          name: "airflow-settings-variables"
+          name: "airflow-settings"
 
     extraConfigMaps:
-      'airflow-settings-variables':
+      'airflow-settings':
         data: |
           AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
@@ -126,10 +126,10 @@ spec:
       metadataSecretName: airflow-secrets
 
     # Fernet key settings
-    fernetKeySecretName: keyvault-secrets
+    fernetKeySecretName: airflow-secrets
 
     # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
-    webserverSecretKeySecretName: keyvault-secrets
+    webserverSecretKeySecretName: airflow-secrets
 
     # Airflow Worker Config
     workers:
@@ -227,7 +227,6 @@ spec:
       operators:
         default_owner: OSDU
 
-
     # Pull DAGS from file share
     dags:
       persistence:
@@ -237,11 +236,9 @@ spec:
       gitSync:
         enabled: false
 
-
+    # Global Logs go to pvc file share.
     logs:
       persistence:
         enabled: true
         existingClaim: airflow-logs-pvc
         storageClassName: azurefile-csi-premium
-
-  

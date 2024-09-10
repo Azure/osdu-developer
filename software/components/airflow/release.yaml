@@ -101,10 +101,6 @@ spec:
     extraEnv: |
       - name: AIRFLOW_VAR_ANOTHER_KEY
         value: 'value_1'
-    
-    extraEnvFrom: |
-      - configMapRef:
-          name: "airflow-variables"
 
     extraConfigMaps:
       'airflow-variables':
@@ -122,6 +118,11 @@ spec:
           AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
           AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
 
+    extraEnvFrom: |
+      - configMapRef:
+        name: "airflow-variables"
+      - secretRef:
+        name: 'airflow-variables'
 
     # Airflow database & redis config
     data:

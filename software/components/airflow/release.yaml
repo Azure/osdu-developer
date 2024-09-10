@@ -104,10 +104,10 @@ spec:
     
     extraEnvFrom: |
       - configMapRef:
-          name: "airflow-settings"
+          name: "airflow-variables"
 
     extraConfigMaps:
-      'airflow-settings':
+      'airflow-variables':
         data: |
           AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"

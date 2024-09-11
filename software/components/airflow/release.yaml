@@ -39,10 +39,6 @@ spec:
     # Airflow executor
     executor: KubernetesExecutor
 
-    enableBuiltInSecretEnvVars:
-      AIRFLOW__CORE__FERNET_KEY: true
-      AIRFLOW__WEBSERVER__SECRET_KEY: false
-
     # Environment variables for all airflow containers
     env:
       - name: ENVIRONMENT
@@ -66,6 +62,10 @@ spec:
     # CloudNativePG provides native support for connection pooling with PgBouncer
     pgbouncer:
       enabled: false
+
+    # StatsD settings
+    statsd:
+      enabled: true
 
     # Pull DAGS from file share and from a git repo
     dags:

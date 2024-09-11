@@ -10,7 +10,8 @@ spec:
     configMapName: configmap-services
   auth:
     workloadIdentity:
-      managedIdentityClientId: {{ .Values.azure.clientId }}
+      serviceAccountName: workload-identity-sa
+      # managedIdentityClientId: {{ .Values.azure.clientId }}
   configuration:
      selectors:
         - keyFilter: "*"

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "17301741082969953411"
+      "templateHash": "8499293486508590297"
     }
   },
   "parameters": {
@@ -6435,7 +6435,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "1490849594624635009"
+              "templateHash": "13756778556908121175"
             }
           },
           "definitions": {
@@ -9968,7 +9968,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "1539816742918978358"
+                      "templateHash": "8917691388228346170"
                     },
                     "name": "SSH Key Pair",
                     "description": "This module creates a SSH Key Pair and stores it in an Azure Key Vault",
@@ -10086,7 +10086,7 @@
                     },
                     {
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('sshKeyName'), ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -10098,8 +10098,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -10134,14 +10134,14 @@
                       "metadata": {
                         "description": "The URI of the public key secret in the Key Vault"
                       },
-                      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('sshKeyName'), ':', ''), '/', '-'))), '2020-10-01').outputs.secretUris.public]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('sshKeyName'), ':', ''), '/', '-'))), '2023-08-01').outputs.secretUris.public]"
                     },
                     "privateKeyUri": {
                       "type": "string",
                       "metadata": {
                         "description": "The URI of the private key secret in the Key Vault"
                       },
-                      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('sshKeyName'), ':', ''), '/', '-'))), '2020-10-01').outputs.secretUris.private]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('sshKeyName'), ':', ''), '/', '-'))), '2023-08-01').outputs.secretUris.private]"
                     },
                     "publicKeySecretName": {
                       "type": "string",
@@ -10211,7 +10211,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "14101649367784107105"
+                      "templateHash": "8013250558188455393"
                     },
                     "name": "Key Vault Certificate",
                     "description": "This module creates a Key Vault Certificate and stores it in an Azure Key Vault",
@@ -10414,7 +10414,7 @@
                         "count": "[length(parameters('certificateNames'))]"
                       },
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -10426,8 +10426,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -10504,7 +10504,7 @@
                       },
                       "copy": {
                         "count": "[length(parameters('certificateNames'))]",
-                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2020-10-01').outputs.name)]"
+                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2023-08-01').outputs.name)]"
                       }
                     },
                     "certificateSecretIds": {
@@ -10514,7 +10514,7 @@
                       },
                       "copy": {
                         "count": "[length(parameters('certificateNames'))]",
-                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2020-10-01').outputs.certSecretId.versioned)]"
+                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2023-08-01').outputs.certSecretId.versioned)]"
                       }
                     },
                     "certificateSecretIdUnversioneds": {
@@ -10524,7 +10524,7 @@
                       },
                       "copy": {
                         "count": "[length(parameters('certificateNames'))]",
-                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2020-10-01').outputs.certSecretId.unversioned)]"
+                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2023-08-01').outputs.certSecretId.unversioned)]"
                       }
                     },
                     "certificateThumbpints": {
@@ -10534,7 +10534,7 @@
                       },
                       "copy": {
                         "count": "[length(parameters('certificateNames'))]",
-                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2020-10-01').outputs.thumbprint)]"
+                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2023-08-01').outputs.thumbprint)]"
                       }
                     },
                     "certificateThumbprintHexs": {
@@ -10544,7 +10544,7 @@
                       },
                       "copy": {
                         "count": "[length(parameters('certificateNames'))]",
-                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2020-10-01').outputs.thumbprintHex)]"
+                        "input": "[createArray(reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}', parameters('kvName'), replace(replace(parameters('certificateNames')[copyIndex()], ':', ''), '/', '-'))), '2023-08-01').outputs.thumbprintHex)]"
                       }
                     }
                   }
@@ -13227,7 +13227,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "14452765823010778672"
+                      "templateHash": "1430893790712936976"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13359,7 +13359,7 @@
                     },
                     {
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -13371,8 +13371,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -13460,7 +13460,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "14452765823010778672"
+                      "templateHash": "1430893790712936976"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13592,7 +13592,7 @@
                     },
                     {
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -13604,8 +13604,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -13693,7 +13693,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "14452765823010778672"
+                      "templateHash": "1430893790712936976"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13825,7 +13825,7 @@
                     },
                     {
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -13837,8 +13837,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -19632,7 +19632,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "2565834844399307473"
+              "templateHash": "2226971502545280945"
             }
           },
           "definitions": {
@@ -28814,7 +28814,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "4563917897089357001"
+                      "templateHash": "14496442914716334133"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -28940,7 +28940,7 @@
                     },
                     {
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -28952,8 +28952,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -29260,7 +29260,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "10790363321831446465"
+              "templateHash": "11168103121851413135"
             }
           },
           "definitions": {
@@ -29564,7 +29564,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.31.0"
+              "release": "v0.32.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -34692,7 +34692,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "12426218101819168896"
+                      "templateHash": "15279236559168999217"
                     },
                     "name": "AKS Run Command Script",
                     "description": "An Azure CLI Deployment Script that allows you to run a command on a Kubernetes cluster.",
@@ -34833,7 +34833,7 @@
                         "batchSize": 1
                       },
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('script-{0}-{1}-{2}', parameters('aksName'), deployment().name, copyIndex())]",
                       "location": "[parameters('location')]",
                       "identity": {
@@ -34845,8 +34845,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {
@@ -34890,7 +34890,7 @@
                         "input": {
                           "Index": "[copyIndex()]",
                           "Name": "[format('script-{0}-{1}-{2}', parameters('aksName'), deployment().name, copyIndex())]",
-                          "CommandOutput": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}-{2}', parameters('aksName'), deployment().name, copyIndex())), '2020-10-01').outputs]"
+                          "CommandOutput": "[reference(resourceId('Microsoft.Resources/deploymentScripts', format('script-{0}-{1}-{2}', parameters('aksName'), deployment().name, copyIndex())), '2023-08-01').outputs]"
                         }
                       }
                     }
@@ -35650,7 +35650,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.29.47.4906",
-                      "templateHash": "8328542063016542427"
+                      "templateHash": "3910136647371065588"
                     },
                     "name": "AKS Config Map",
                     "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",
@@ -35819,8 +35819,8 @@
                       "kind": "AzureCLI",
                       "properties": {
                         "forceUpdateTag": "[parameters('forceUpdateTag')]",
-                        "azCliVersion": "2.61.0",
-                        "timeout": "PT15M",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
                         "retentionInterval": "PT1H",
                         "environmentVariables": [
                           {

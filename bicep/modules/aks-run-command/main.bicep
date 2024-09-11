@@ -73,7 +73,7 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDe
 }]
 
 @batchSize(1)
-resource runAksCommand 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for (command, i) in commands: {
+resource runAksCommand 'Microsoft.Resources/deploymentScripts@2023-08-01' = [for (command, i) in commands: {
   name: 'script-${aks.name}-${deployment().name}-${i}'
   location: location
   identity: {
@@ -88,8 +88,8 @@ resource runAksCommand 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.61.0'
-    timeout: 'PT15M'
+    azCliVersion: '2.63.0'
+    timeout: 'PT30M'
     retentionInterval: 'PT1H'
     environmentVariables: [
       { name: 'RG', value: resourceGroup().name }

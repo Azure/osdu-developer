@@ -79,4 +79,4 @@ spec:
       storage: 5Gi
   selector:
     matchLabels:
-      usage: airflow-logs-pv
+      usage: airflow-dags-pv

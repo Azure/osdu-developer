@@ -69,7 +69,6 @@ spec:
           AIRFLOW_VAR_NAMESPACE: "airflow"
           AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
 
-    extraConfigMaps:
       'airflow-service-endpoints':
         data: |
           AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"

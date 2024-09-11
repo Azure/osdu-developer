@@ -185,10 +185,3 @@ spec:
       - effect: NoSchedule
         key: app
         value: "cluster"
-
-
-
-
-
-
-

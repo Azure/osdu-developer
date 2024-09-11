@@ -39,7 +39,7 @@ output aksName string = aks.name
 //   ]
 //   properties: {
 //     forceUpdateTag: forceUpdateTag
-//     azCliVersion: '2.35.0'
+//     azCliVersion: '2.63.0'
 //     timeout: 'PT30M'
 //     retentionInterval: 'P1D'
 //     scriptContent: 'sleep 120s'

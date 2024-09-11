@@ -12,7 +12,7 @@ spec:
   accessModes:
     - ReadWriteMany
   azureFile:
-    secretName: keyvault-secrets
+    secretName: airflow-secrets
     shareName: airflow-logs
   volumeMode: Filesystem
   mountOptions:
@@ -28,13 +28,17 @@ kind: PersistentVolumeClaim
 metadata:
   name: airflow-logs-pvc
   namespace: airflow
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
-  storageClassName: azurefile-csi-premium  # Use this for premium Azure Files
+  selector:
+    matchLabels:
+      usage: airflow-logs-pv
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -49,7 +53,7 @@ spec:
   accessModes:
     - ReadWriteMany
   azureFile:
-    secretName: keyvault-secrets
+    secretName: airflow-secrets
     shareName: airflow-dags
   volumeMode: Filesystem
   mountOptions:
@@ -65,10 +69,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: airflow-dags-pvc
   namespace: airflow
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
-  storageClassName: azurefile-csi-premium  # Use this for premium Azure Files
+  selector:
+    matchLabels:
+      usage: airflow-dags-pv

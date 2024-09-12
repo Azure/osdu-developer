@@ -210,7 +210,7 @@ GET {{FILE_HOST}}/files/{{ID}}/downloadURL
 Authorization: Bearer {{access_token}}
 Accept: application/json
 Content-Type: application/json
-data-partition-id: {{data_partition_id}}
+data-partition-id: {{DATA_PARTITION}}
 
 @URL = {{getDownloadUrl.response.body.SignedUrl}}
 

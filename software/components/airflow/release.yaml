@@ -151,15 +151,12 @@ spec:
         firstName: admin
         lastName: user
         username: 
-          valueFrom:
-            secretKeyRef:
-              name: airflow-secrets
-              key: username
-        password: 
-          valueFrom:
-            secretKeyRef:
-              name: airflow-secrets
-              key: password
+          secretName: airflow-secrets
+          secretKey: username
+        password:
+          secretName: airflow-secrets
+          secretKey: password
+
 
     # Ensure we are using the secrets from Azure Key Vault
     enableBuiltInSecretEnvVars:

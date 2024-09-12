@@ -28,12 +28,12 @@ New-Item -Path $Profile -ItemType File -Force
 Open the PowerShell code editor in your Azure portal by running the following command.
 
 ```powershell
-code Microsoft.PowerShell_profile.ps1
+code $Profile
 ```
 
 ### 3. Create a PowerShell profile for use with helper functions
 
-Paste the following code into your Microsoft.PowerShell_profile.ps1 file.
+Paste the following code into your '$Profile' ('Microsoft.PowerShell_profile.ps1') file.
 Save, then restart the session.
 
 ```powershell

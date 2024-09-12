@@ -88,6 +88,40 @@ spec:
       - secretRef:
           name: 'airflow-variables'
 
+    # Modify Create User Job command to use secrets
+    createUserJob:
+      command: ~
+      args:
+        - "bash"
+        - "-c"
+        - |-
+          exec \
+          airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "users create" "create_user" }} "$@"
+        - --
+        - "-r"
+        - "{{ .Values.webserver.defaultUser.role }}"
+        - "-u"
+        - "$(ADMIN_USERNAME)""
+        - "-e"
+        - "{{ .Values.webserver.defaultUser.email }}"
+        - "-f"
+        - "{{ .Values.webserver.defaultUser.firstName }}"
+        - "-l"
+        - "{{ .Values.webserver.defaultUser.lastName }}"
+        - "-p"
+        - "$(ADMIN_PASSWORD)"
+      env:
+        - name: ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: username
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: password
+
     # Admin user configuration
     admin:
       existingSecret: airflow-secrets
@@ -144,6 +178,7 @@ spec:
       logGroomerSidecar:
         enabled: false
     webserver:
+      
       defaultUser:
         enabled: true
         role: Admin

@@ -65,10 +65,6 @@ spec:
     extraConfigMaps:
       'airflow-variables':
         data: |
-          AIRFLOW__SCHEDULER__STATSD_ON: "True"
-          AIRFLOW__SCHEDULER__STATSD_HOST: "appinsights-statsd"
-          AIRFLOW__SCHEDULER__STATSD_PORT: "8125"
-          AIRFLOW__SCHEDULER__STATSD_PREFIX: "osdu_airflow"
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
           AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
           AIRFLOW__WEBSERVER__AUTHENTICATE: "True"

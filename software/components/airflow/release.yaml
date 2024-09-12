@@ -89,27 +89,33 @@ spec:
           name: 'airflow-variables'
 
     # Modify Create User Job command to use secrets
+    # Airflow create user job settings
     createUserJob:
+      # Limit the lifetime of the job object after it finished execution.
+      ttlSecondsAfterFinished: 300
+      # Command to use when running the create user job (templated).
       command: ~
+      # Args to use when running the create user job (templated).
       args:
         - "bash"
         - "-c"
+        # The format below is necessary to get `helm lint` happy
         - |-
-            exec \
-            airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "users create" "create_user" }} "$@"
-          - --
-          - "-r"
-          - "{{ .Values.webserver.defaultUser.role }}"
-          - "-u"
-          - "$(ADMIN_USERNAME)""
-          - "-e"
-          - "{{ .Values.webserver.defaultUser.email }}"
-          - "-f"
-          - "{{ .Values.webserver.defaultUser.firstName }}"
-          - "-l"
-          - "{{ .Values.webserver.defaultUser.lastName }}"
-          - "-p"
-          - "$(ADMIN_PASSWORD)"
+          exec \
+          airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "users create" "create_user" }} "$@"
+        - --
+        - "-r"
+        - "{{ .Values.webserver.defaultUser.role }}"
+        - "-u"
+        - "{{ .Values.webserver.defaultUser.username }}"
+        - "-e"
+        - "{{ .Values.webserver.defaultUser.email }}"
+        - "-f"
+        - "{{ .Values.webserver.defaultUser.firstName }}"
+        - "-l"
+        - "{{ .Values.webserver.defaultUser.lastName }}"
+        - "-p"
+        - "{{ .Values.webserver.defaultUser.password }}"
       env:
         - name: ADMIN_USERNAME
           valueFrom:

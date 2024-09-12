@@ -49,6 +49,8 @@ spec:
         value: "v0.12.0"
       - name: BUILD_TAG
         value: "v0.12.0"
+      - name: PYTHONPATH
+        value: "/opt/celery"
       - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
         value: "entitlements_client"
 
@@ -59,13 +61,36 @@ spec:
     extraConfigMaps:
       'airflow-variables':
         data: |
-          AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
+          AIRFLOW__SCHEDULER__STATSD_ON: "True"
+          AIRFLOW__SCHEDULER__STATSD_HOST: "appinsights-statsd"
+          AIRFLOW__SCHEDULER__STATSD_PORT: 8125
+          AIRFLOW__SCHEDULER__STATSD_PREFIX: "osdu_airflow"
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
-          AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
-          AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
-          AIRFLOW_VAR_NAMESPACE: "airflow"
-          AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
-          AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
+          ## Enable for Debug purpose
+          AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
+          AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
+          AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+          AIRFLOW__WEBSERVER__RBAC: "True"
+          AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
+          AIRFLOW__CORE__REMOTE_LOGGING: "True"
+          AIRFLOW__CORE__REMOTE_LOG_CONN_ID: "az_log"
+          AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: "wasb-airflowlog"
+          AIRFLOW__CORE__LOGGING_CONFIG_CLASS: "log_config.DEFAULT_LOGGING_CONFIG"
+          AIRFLOW__CORE__LOG_FILENAME_TEMPLATE: "{{ run_id }}/{{ ti.dag_id }}/{{ ti.task_id }}/{{ ts }}/{% if dag_run.conf is not none and 'correlation_id' in dag_run.conf %}{{ dag_run.conf['correlation_id'] }}{% else %}None{% endif %}/{{ try_number }}.log"
+          AIRFLOW__CELERY__SSL_ACTIVE: "True"
+          AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+          AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
+          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 60
+          AIRFLOW__CORE__LOGGING_LEVEL: DEBUG
+          AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+          AIRFLOW__WEBSERVER__WORKERS: 8
+          AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: 0
+          AIRFLOW__CORE__STORE_SERIALIZED_DAGS: True #This flag decides whether to serialise DAGs and persist them in DB
+          AIRFLOW__CORE__STORE_DAG_CODE: True #This flag decides whether to persist DAG files code in DB
+          AIRFLOW__WEBSERVER__WORKER_CLASS: gevent
+          AIRFLOW__CELERY__WORKER_CONCURRENCY: 16 # Do not remove this config as it is used for autoscaling as well
+          AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: True
+
 
       'airflow-service-endpoints':
         data: |
@@ -79,6 +104,7 @@ spec:
           AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
           AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
           AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+
 
     extraEnvFrom: |
       - configMapRef:

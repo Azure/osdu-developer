@@ -38,10 +38,10 @@ CORE:
       INTEGRATION_TESTER: "%AZURE_CLIENT_ID%"
       AZURE_TESTER_SERVICEPRINCIPAL_SECRET: "%AZURE_CLIENT_SECRET%"
       AZURE_AD_APP_RESOURCE_ID: "%AZURE_CLIENT_ID%"
-      HOST_URL: http://%AUTH_INGRESS%/api/partition/v1/
-      ENTITLEMENT_V2_URL: https://%AUTH_INGRESS%/api/entitlements/v2/
-      TENANT_NAME: opendes
-      DOMAIN: contoso.com
+      HOST_URL: "http://%AUTH_INGRESS%/api/partition/v1/"
+      ENTITLEMENT_V2_URL: "https://%AUTH_INGRESS%/api/entitlements/v2/"
+      TENANT_NAME: "opendes"
+      DOMAIN: "dataservices.energy"
   LEGAL:
     RUN:
       APPINSIGHTS_KEY: "%INSTRUMENTATION_KEY%"
@@ -69,6 +69,13 @@ CORE:
       AZURE_TESTER_SERVICEPRINCIPAL_SECRET: "%AZURE_CLIENT_SECRET%"
       AZURE_AD_APP_RESOURCE_ID: "%AZURE_CLIENT_ID%"
       LEGAL_BASE_URL: "http://%AUTH_INGRESS%/api/legal/v1/"
+      MY_TENANT: "opendes"
+      AZURE_LEGAL_TOPICNAME: "legaltags"
+      HOST_URL: "http://%INGRESS_IP%/api/legal/v1/"
+      ENTITLEMENT_URL: "http://%INGRESS_IP%/api/entitlements/v2/"
+      AZURE_LEGAL_STORAGE_ACCOUNT: "%DATA_NAME%"
+      AZURE_LEGAL_STORAGE_KEY: "%DATA_STORAGE_KEY%"
+      AZURE_LEGAL_SERVICEBUS: "%DATA_SERVICEBUS_CONNECTION%"
   SCHEMA:
     RUN:
       APPINSIGHTS_KEY: "%APPINSIGHTS_KEY%"

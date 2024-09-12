@@ -207,7 +207,7 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'ReplayIndexStatus'
+        name: 'ReplayStatus'
         kind: 'Hash'
         paths: [
           '/id'
@@ -270,6 +270,13 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'WorkflowCustomOperatorV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
         name: 'WorkflowRun'
         kind: 'Hash'
         paths: [
@@ -277,7 +284,28 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'WorkflowRunV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
         name: 'WorkflowRunStatus'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      // {
+      //   name: 'WorkflowTasksSharingInfoV2'
+      //   kind: 'Hash'
+      //   paths: [
+      //     '/partitionKey'
+      //   ]
+      // }
+      {
+        name: 'WorkflowV2'
         kind: 'Hash'
         paths: [
           '/partitionKey'

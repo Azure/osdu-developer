@@ -96,24 +96,6 @@ spec:
         secret:
           name: azure-resources
           key: insights-connection
-      
-      - name: OSDU_AIRFLOW_USERNAME
-        secret:
-          name: azure-resources
-          key: airflow-username
-      - name: OSDU_AIRFLOW_PASSWORD
-        secret:
-          name: azure-resources
-          key: airflow-password
-      - name: AIRFLOW_STORAGE_ACCOUNT_NAME
-        secret:
-          name: azure-resources
-          key: azurestorageaccountname
-      - name: AIRFLOW_STORAGE_ACCOUNT_KEY
-        secret:
-          name: azure-resources
-          key: azurestorageaccountkey
-
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
@@ -132,10 +114,32 @@ spec:
         value: "workflow"
       - name: AZURE_STORAGE_ENABLE_HTTPS
         value: "true"
+
+        
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
       - name: COSMOSDB_SYSTEM_DATABASE
         value: osdu-system-db
+
+      - name: OSDU_AIRFLOW_USERNAME
+        secret:
+          name: azure-resources
+          key: airflow-username
+      - name: OSDU_AIRFLOW_PASSWORD
+        secret:
+          name: azure-resources
+          key: airflow-password
+
+      - name: AIRFLOW_STORAGE_ACCOUNT_NAME
+        secret:
+          name: azure-resources
+          key: azurestorageaccountname
+      - name: AIRFLOW_STORAGE_ACCOUNT_KEY
+        secret:
+          name: azure-resources
+          key: azurestorageaccountkey
+
+      
 
       - name: AUTHORIZEAPI
         value: http://entitlements/api/entitlements/v2

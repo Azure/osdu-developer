@@ -143,6 +143,23 @@ spec:
     workers:
       logGroomerSidecar:
         enabled: false
+    webserver:
+      defaultUser:
+        enabled: true
+        role: Admin
+        email: admin@example.com
+        firstName: admin
+        lastName: user
+        username: 
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: username
+        password: 
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: password
 
     # Ensure we are using the secrets from Azure Key Vault
     enableBuiltInSecretEnvVars:

@@ -93,4 +93,13 @@ resource insightsConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
+resource keyvaultUrl 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'keyvault-url'
+  parent: keyVault
+
+  properties: {
+    value: keyVault.properties.vaultUri
+  }
+}
+
 output keyVaultName string = keyVault.name

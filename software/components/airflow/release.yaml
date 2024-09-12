@@ -51,12 +51,16 @@ spec:
         value: "v0.12.0"
       - name: PYTHONPATH
         value: "/opt/celery"
-      - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
-        value: "entitlements_client"
+      
 
     extraEnv: |
-      - name: AIRFLOW_VAR_ANOTHER_KEY
-        value: 'value_1'
+      - name: AIRFLOW_VAR_AZURE_ENABLE_MSI
+        value: "false"
+      - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
+        value: "entitlements_client"
+      - name: AIRFLOW_VAR_ENV_VARS_ENABLED
+        value: "true"
+
       
     extraConfigMaps:
       'airflow-variables':
@@ -90,7 +94,7 @@ spec:
           AIRFLOW__WEBSERVER__WORKER_CLASS: gevent
           AIRFLOW__CELERY__WORKER_CONCURRENCY: 16 # Do not remove this config as it is used for autoscaling as well
           AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: True
-
+          AIRFLOW_VAR_ENV_VARS_ENABLED: True
 
       'airflow-service-endpoints':
         data: |
@@ -105,7 +109,13 @@ spec:
           AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
           AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
 
-
+    ## Secret Variables
+    # AIRFLOW_VAR_AAD_CLIENT_ID
+    # AIRFLOW_VAR_APPINSIGHTS_KEY
+    # AIRFLOW_VAR_AZURE_CLIENT_ID
+    # AIRFLOW_VAR_AZURE_CLIENT_SECRET
+    # AIRFLOW_VAR_AZURE_TENANT_ID
+    # AIRFLOW_VAR_KEYVAULT_URI
     extraEnvFrom: |
       - configMapRef:
           name: "airflow-variables"

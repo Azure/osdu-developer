@@ -125,14 +125,13 @@ spec:
         value: 1
       - name: MAX_CACHE_VALUE_SIZE
         value: 60
+      - name: POLICY_SERVICE_ENABLED
+        value: "false"
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
       - name: ENTITLEMENTS_SERVICE_ENDPOINT
         value: "http://entitlements/api/entitlements/v2"
-      - name: ENTITLEMENTS_SERVICE_API_KEY
-        value: "OBSOLETE"
       - name: POLICY_SERVICE_ENDPOINT
         value: http://policy/api/policy/v1
-      - name: POLICY_ENABLED
-        value: "false"
-      

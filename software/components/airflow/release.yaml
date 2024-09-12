@@ -108,7 +108,7 @@ spec:
         - "-r"
         - "{{ .Values.webserver.defaultUser.role }}"
         - "-u"
-        - "{{ .Values.webserver.defaultUser.username }}"
+        - "$(ADMIN_USERNAME)"
         - "-e"
         - "{{ .Values.webserver.defaultUser.email }}"
         - "-f"
@@ -116,7 +116,7 @@ spec:
         - "-l"
         - "{{ .Values.webserver.defaultUser.lastName }}"
         - "-p"
-        - "{{ .Values.webserver.defaultUser.password }}"
+        - "$(ADMIN_PASSWORD)"
       env:
         - name: ADMIN_USERNAME
           valueFrom:

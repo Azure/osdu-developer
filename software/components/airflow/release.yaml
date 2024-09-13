@@ -128,16 +128,15 @@ spec:
 
     pgbouncer:
       enabled: false
-
     externalDatabase:
       type: postgres
       host: "airflow-cluster-rw.postgresql.svc.cluster.local"
       port: 5432
-      database: "airflow-db"
+      ## Azure PostgreSQL Database username, formatted as {username}@{hostname}
       user: "dbuser"
-      passwordSecret:
-        name: "airflow-secrets"
-        key: "db-password"
+      passwordSecret: "airflow-secrets"
+      passwordSecretKey: "db-password"
+      database: "airflow-db"
 
     # Enable StatsD
     statsd:

@@ -104,6 +104,8 @@ spec:
           - "apache-airflow-providers-microsoft-azure"
           - "emoji"
 
+    executor: KubernetesExecutor
+
     # DAGs Configuration
     dags:
       persistence:
@@ -121,6 +123,8 @@ spec:
     # External PostgreSQL Configuration
     data:
       metadataSecretName: airflow-secrets
+
+    
 
     # Disable Internal PostgreSQL and PgBouncer
     pgbouncer:

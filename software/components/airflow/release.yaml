@@ -136,7 +136,7 @@ spec:
       database: "airflow-db"
       user: "dbuser"
       passwordSecret:
-        secretName: "airflow-secrets"
+        name: "airflow-secrets"
         key: "db-password"
 
     # Enable StatsD

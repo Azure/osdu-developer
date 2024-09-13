@@ -43,7 +43,7 @@ spec:
     # Environment Variables
     airflow:
       executor: KubernetesExecutor
-      
+
       extraEnv:
         - name: ENVIRONMENT
           value: "dev"
@@ -154,11 +154,15 @@ spec:
     statsd:
       enabled: true
 
+    flower:
+      enabled: false
+
     scheduler:
       logCleanup:
         enabled: false
 
     workers:
+      enabled: false
       logCleanup:
         enabled: false
 

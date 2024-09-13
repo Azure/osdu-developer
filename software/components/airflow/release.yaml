@@ -203,6 +203,11 @@ spec:
       operators:
         default_owner: OSDU
 
+    # Extra pip packages to install
+    airflow:
+      extraPipPackages: 
+        - emoji==2.8.0
+
     # We disable the log groomer sidecars because we use Azure File Storage for logs
     triggerer:
       logGroomerSidecar:

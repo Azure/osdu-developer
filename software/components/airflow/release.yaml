@@ -118,15 +118,22 @@ spec:
         enabled: true
         existingClaim: airflow-logs-pvc
 
-    # External PostgreSQL Configuration
-    data:
-      metadataSecretName: airflow-secrets
-
     # Disable Internal PostgreSQL and PgBouncer
     postgresql:
       enabled: false
+
     pgbouncer:
       enabled: false
+
+    externalDatabase:
+      type: postgres
+      host: "airflow-cluster-rw.postgresql.svc.cluster.local"
+      port: 5432
+      database: "airflow-db"
+      user: "dbuser"
+      passwordSecret:
+        secretName: "airflow-secrets"
+        key: "db-password"
 
     # Enable StatsD
     statsd:

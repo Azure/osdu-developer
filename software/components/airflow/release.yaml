@@ -118,6 +118,10 @@ spec:
         enabled: true
         existingClaim: airflow-logs-pvc
 
+    # External PostgreSQL Configuration
+    data:
+      metadataSecretName: airflow-secrets
+
     # Disable Internal PostgreSQL and PgBouncer
     postgresql:
       enabled: false

@@ -203,10 +203,10 @@ spec:
       operators:
         default_owner: OSDU
 
-    # Extra pip packages to install
     airflow:
-      extraPipPackages: 
-        - emoji==2.8.0
+      extraPipPackages:
+        - "apache-airflow-providers-microsoft-azure"
+        - "emoji"
 
     # We disable the log groomer sidecars because we use Azure File Storage for logs
     triggerer:
@@ -225,9 +225,6 @@ spec:
         email: admin@example.com
         firstName: admin
         lastName: user
-    kubernetesPodTemplate:
-      extraPipPackages:
-        - emoji==2.12.1
 
     # Ensure we are using the secrets from Azure Key Vault
     enableBuiltInSecretEnvVars:

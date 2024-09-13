@@ -137,6 +137,8 @@ spec:
       passwordSecretKey: "db-password"
       database: "airflow-db"
 
+    redis:
+      enabled: false
     externalRedis:
       host: "airflow-redis-master.airflow.svc.cluster.local"
       port: 6379

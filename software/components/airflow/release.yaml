@@ -203,10 +203,12 @@ spec:
       operators:
         default_owner: OSDU
 
+
     airflow:
-      extraPipPackages:
-        - "apache-airflow-providers-microsoft-azure"
-        - "emoji"
+      kubernetesPodTemplate:
+        extraPipPackages:
+          - "apache-airflow-providers-microsoft-azure"
+          - "emoji"
 
     # We disable the log groomer sidecars because we use Azure File Storage for logs
     triggerer:

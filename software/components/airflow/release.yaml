@@ -35,9 +35,6 @@ spec:
     # Set the Airflow version
     airflowVersion: "2.10.1"
 
-    # Set the executor type
-    executor: KubernetesExecutor
-
     # Set the Airflow Docker image tag
     images:
       airflow:
@@ -45,6 +42,8 @@ spec:
 
     # Environment Variables
     airflow:
+      executor: KubernetesExecutor
+      
       extraEnv:
         - name: ENVIRONMENT
           value: "dev"
@@ -104,7 +103,7 @@ spec:
           - "apache-airflow-providers-microsoft-azure"
           - "emoji"
 
-    executor: KubernetesExecutor
+      
 
     # DAGs Configuration
     dags:

@@ -132,6 +132,10 @@ spec:
     statsd:
       enabled: true
 
+    scheduler:
+      logCleanup:
+        enabled: false
+
     # Webserver Default User Configuration
     web:
       defaultUser:

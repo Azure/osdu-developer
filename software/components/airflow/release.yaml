@@ -123,10 +123,9 @@ spec:
       metadataSecretName: airflow-secrets
 
     # Disable Internal PostgreSQL and PgBouncer
-    postgresql:
-      enabled: false
-
     pgbouncer:
+      enabled: false
+    postgresql:
       enabled: false
     externalDatabase:
       type: postgres
@@ -137,6 +136,14 @@ spec:
       passwordSecret: "airflow-secrets"
       passwordSecretKey: "db-password"
       database: "airflow-db"
+
+    externalRedis:
+      host: "airflow-redis-master.airflow.svc.cluster.local"
+      port: 6379
+      passwordSecret: "airflow-secrets"
+      passwordSecretKey: "redis-password"
+      databaseNumber: 2
+      # properties: "?ssl_cert_reqs=CERT_REQUIRED"
 
     # Enable StatsD
     statsd:

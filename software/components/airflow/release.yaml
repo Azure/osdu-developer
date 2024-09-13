@@ -50,7 +50,7 @@ spec:
       - name: BUILD_TAG
         value: "v0.12.0"
       - name: PYTHONPATH
-        value: "/opt/celery"
+        value: "/opt/airflow/dags:/opt/airflow"
 
     # Extra Environment Variables Specific to Azure OSDU
     extraEnv: |

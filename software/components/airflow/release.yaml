@@ -136,6 +136,10 @@ spec:
       logCleanup:
         enabled: false
 
+    workers:
+      logCleanup:
+        enabled: false
+
     # Webserver Default User Configuration
     web:
       defaultUser:

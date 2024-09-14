@@ -43,7 +43,38 @@ spec:
     # Environment Variables
     airflow:
       executor: KubernetesExecutor
-
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      kubernetesPodTemplate:
+        extraPipPackages:
+          - "apache-airflow-providers-microsoft-azure"
+          - "emoji"
+      # Airflow Configuration
+      config:
+        AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
+        AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
+        AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
+        AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+        AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+        AIRFLOW__CORE__STORE_DAG_CODE: "True"
+        AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
+        AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
+        AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
+        AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
+        AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+        AIRFLOW__WEBSERVER__RBAC: "True"
+        AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+        AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
+        AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
+        AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
+        AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
+        AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True" 
+        AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+        # AIRFLOW__WEBSERVER__WORKERS: "8"
+        # AIRFLOW__CELERY__WORKER_CONCURRENCY: "16"
+        # AIRFLOW__CELERY__SSL_ACTIVE: "True"
+        
       extraEnv:
         - name: ENVIRONMENT
           value: "dev"
@@ -59,7 +90,6 @@ spec:
           value: "false"
         - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
           value: "entitlements_client"
-
       extraEnvFrom:
         - configMapRef:
             name: airflow-variables
@@ -67,41 +97,7 @@ spec:
             name: airflow-service-endpoints
         - secretRef:
             name: airflow-variables
-
-      # Install additional Python packages
-      extraPipPackages:
-        - "apache-airflow-providers-microsoft-azure"
-        - "emoji"
-
-      # Airflow Configuration
-      config:
-        AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
-        AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
-        AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
-        AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
-        AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
-        AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
-        AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
-        AIRFLOW__WEBSERVER__RBAC: "True"
-        AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
-        AIRFLOW__CELERY__SSL_ACTIVE: "True"
-        AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
-        AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
-        AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
-        AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
-        AIRFLOW__WEBSERVER__WORKERS: "8"
-        AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
-        AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
-        AIRFLOW__CORE__STORE_DAG_CODE: "True"
-        AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
-        AIRFLOW__CELERY__WORKER_CONCURRENCY: "16"
-        AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True"
-        AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
       
-      kubernetesPodTemplate:
-        extraPipPackages:
-          - "apache-airflow-providers-microsoft-azure"
-          - "emoji"
 
       
 

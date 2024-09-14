@@ -46,10 +46,13 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
-      kubernetesPodTemplate:
-        extraPipPackages:
-          - "apache-airflow-providers-microsoft-azure"
-          - "emoji"
+      extraPipPackages:
+        - "apache-airflow-providers-microsoft-azure"
+        - "emoji"
+      # kubernetesPodTemplate:
+      #   extraPipPackages:
+      #     - "apache-airflow-providers-microsoft-azure"
+      #     - "emoji"
       # Airflow Configuration
       config:
         AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"

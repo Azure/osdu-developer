@@ -49,10 +49,10 @@ spec:
       extraPipPackages:
         - "apache-airflow-providers-microsoft-azure"
         - "emoji"
-      # kubernetesPodTemplate:
-      #   extraPipPackages:
-      #     - "apache-airflow-providers-microsoft-azure"
-      #     - "emoji"
+      kubernetesPodTemplate:
+        extraPipPackages:
+          - "apache-airflow-providers-microsoft-azure"
+          - "emoji"
       # Airflow Configuration
       config:
         AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"

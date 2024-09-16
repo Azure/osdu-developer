@@ -43,16 +43,12 @@ spec:
         runAsUser: 1000
       usersUpdate: true
       usersTemplates:
-        ADMIN_USER:
-          kind: secret
-          name: airflow-secrets
-          key: username
         ADMIN_PASSWORD:
           kind: secret
           name: airflow-secrets
           key: password
       users:
-        - username: ${ADMIN_USER}
+        - username: "admin"  # This is hardcoded
           password: ${ADMIN_PASSWORD}
           role: Admin
           email: admin@example.com

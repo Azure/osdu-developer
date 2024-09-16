@@ -25,235 +25,226 @@ spec:
   chart:
     spec:
       chart: airflow
-      # version: 1.11.0
+      # Specify the desired chart version if needed
+      # version: 8.5.1
       sourceRef:
         kind: HelmRepository
-        name: airflow
+        name: airflow-community
         namespace: flux-system
   values:
 
-    # Version Isolation
-    # airflowVersion: 2.10.1
-    # defaultAirflowTag: 2.10.1
+    airflow:
+      image:
+        repository: apache/airflow
+        tag: 2.10.1-python3.12
+      executor: KubernetesExecutor
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      usersUpdate: true
+      usersTemplates:
+        ADMIN_PASSWORD:
+          kind: secret
+          name: airflow-secrets
+          key: password
+      users:
+        - username: "admin"  # This is hardcoded
+          password: ${ADMIN_PASSWORD}
+          role: Admin
+          email: admin@example.com
+          firstName: admin
+          lastName: admin
 
-    # Airflow executor
-    executor: KubernetesExecutor
-
-    # Generic Environment Variables
-    env:
-      - name: ENVIRONMENT
-        value: "dev"
-      - name: CLOUD_PROVIDER
-        value: "azure"
-      - name: CI_COMMIT_TAG
-        value: "v0.12.0"
-      - name: BUILD_TAG
-        value: "v0.12.0"
-      - name: PYTHONPATH
-        value: "/opt/celery"
-
-    # Extra Environment Variables Specific to Azure OSDU
-    extraEnv: |
-      - name: AIRFLOW_VAR_AZURE_ENABLE_MSI
-        value: "false"
-      - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
-        value: "entitlements_client"
-
-    # Environment Variables from ConfigMaps
-    # Airflow Settings are in airflow-variables
-    # Service Endpoints are in airflow-service-endpoints
-    extraConfigMaps:
-      'airflow-variables':
-        data: |
-          AIRFLOW_VAR_NAMESPACE: "airflow"
-          AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
-          AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
-          AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
-          AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
-          AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
-          AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
-          AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
-          AIRFLOW__WEBSERVER__RBAC: "True"
-          AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
-          AIRFLOW__CELERY__SSL_ACTIVE: "True"
-          AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
-          AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
-          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
-          AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
-          AIRFLOW__WEBSERVER__WORKERS: "8"
-          AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
-          AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
-          AIRFLOW__CORE__STORE_DAG_CODE: "True"
-          AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
-          AIRFLOW__CELERY__WORKER_CONCURRENCY: "16"
-          AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True"
-          AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
-
-      'airflow-service-endpoints':
-        data: |
-          AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
-          AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
-          AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
-          AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
-          AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2"
-          AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
-          AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
-          AIRFLOW_VAR_CORE__SERVICE__FILE__HOST: "http://file.osdu-core.svc.cluster.local/api/file"
-          AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
-          AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
-
-    ## Variables coming from Azure Key Vault
-    # AIRFLOW_VAR_AAD_CLIENT_ID
-    # AIRFLOW_VAR_APPINSIGHTS_KEY
-    # AIRFLOW_VAR_AZURE_CLIENT_ID
-    # AIRFLOW_VAR_AZURE_CLIENT_SECRET
-    # AIRFLOW_VAR_AZURE_TENANT_ID
-    # AIRFLOW_VAR_KEYVAULT_URI
-    extraEnvFrom: |
-      - configMapRef:
-          name: "airflow-variables"
-      - configMapRef:
-          name: "airflow-service-endpoints"
-      - secretRef:
-          name: 'airflow-variables'
-
-    # Modify Create User Job command to use secrets
-    # Airflow create user job settings
-    createUserJob:
-      useHelmHooks: false
-      # Limit the lifetime of the job object after it finished execution.
-      ttlSecondsAfterFinished: 300
-      # Command to use when running the create user job (templated).
-      command: ~
-      # Args to use when running the create user job (templated).
-      args:
-        - "bash"
-        - "-c"
-        # The format below is necessary to get `helm lint` happy
-        - |-
-          exec \
-          airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "users create" "create_user" }} "$@"
-        - --
-        - "-r"
-        - "{{ .Values.webserver.defaultUser.role }}"
-        - "-u"
-        - "$(ADMIN_USERNAME)"
-        - "-e"
-        - "{{ .Values.webserver.defaultUser.email }}"
-        - "-f"
-        - "{{ .Values.webserver.defaultUser.firstName }}"
-        - "-l"
-        - "{{ .Values.webserver.defaultUser.lastName }}"
-        - "-p"
-        - "$(ADMIN_PASSWORD)"
-      env:
-        - name: ADMIN_USERNAME
+      # OSDU PIP Packages
+      # 148 https://community.opengroup.org/osdu/platform/system/sdks/common-python-sdk
+      # 668 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-airflow-lib
+      # 823 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-ingestion-lib
+      extraPipPackages:
+        # - "apache-airflow-providers-microsoft-azure"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+        - "osdu-api>=0.27.0,<1.0.0"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
+        - "osdu-airflow>=0.27,<1.0.0"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+        - "osdu-ingestion>=0.27,<1.0.0"
+      kubernetesPodTemplate:
+        extraPipPackages:
+          # - "apache-airflow-providers-microsoft-azure"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+          - "osdu-api>=0.27.0,<1.0.0"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
+          - "osdu-airflow>=0.27,<1.0.0"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+          - "osdu-ingestion>=0.27,<1.0.0"
+      # Airflow Configuration
+      config:
+        AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
+        AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
+        AIRFLOW__LOGGING__ENABLE_TASK_CONTEXT_LOGGER: "False"
+        AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+        AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+        AIRFLOW__CORE__STORE_DAG_CODE: "True"
+        AIRFLOW__CORE__PLUGINS_FOLDER: "/opt/airflow/plugins"
+        AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
+        AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
+        AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
+        AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+        AIRFLOW__WEBSERVER__RBAC: "True"
+        AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+        AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
+        AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
+        AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
+        AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
+        AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True" 
+        AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+        # AIRFLOW__WEBSERVER__WORKERS: "8"
+        # AIRFLOW__CELERY__WORKER_CONCURRENCY: "16"
+        # AIRFLOW__CELERY__SSL_ACTIVE: "True"
+      extraEnv:
+        - name: ENVIRONMENT
+          value: "dev"
+        - name: CLOUD_PROVIDER
+          value: "azure"
+        - name: CI_COMMIT_TAG
+          value: "v0.12.0"
+        - name: BUILD_TAG
+          value: "v0.12.0"
+        - name: PYTHONPATH
+          value: "/opt/airflow/dags:/opt/airflow"
+        - name: AIRFLOW_VAR_AZURE_ENABLE_MSI
+          value: "false"
+        - name: AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME
+          value: "entitlements_client"
+        - name: AIRFLOW_VAR_CORE__SERVICE__PARTITION__URL
+          value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+        - name: AIRFLOW_VAR_CORE__SERVICE__LEGAL__HOST
+          value: "http://legal.osdu-core.svc.cluster.local/api/legal/v1"
+        - name: AIRFLOW_VAR_CORE__SERVICE__ENTITLEMENTS__URL
+          value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
+        - name: AIRFLOW_VAR_CORE__SERVICE__SCHEMA__URL
+          value: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
+        - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH__URL
+          value: "http://search.osdu-core.svc.cluster.local/api/search/v2"
+        - name: AIRFLOW_VAR_CORE__SERVICE__SEARCH_WITH_CURSOR__URL
+          value: "http://search.osdu-core.svc.cluster.local/api/search/v2/query_with_cursor"
+        - name: AIRFLOW_VAR_CORE__SERVICE__STORAGE__URL
+          value: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
+        - name: AIRFLOW_VAR_CORE__SERVICE__FILE__HOST
+          value: "http://file.osdu-core.svc.cluster.local/api/file"
+        - name: AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST
+          value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
+        - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
+          value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+        - name: AIRFLOW_VAR_AZURE_TENANT_ID
           valueFrom:
             secretKeyRef:
-              name: airflow-secrets
-              key: username
-        - name: ADMIN_PASSWORD
+              name: airflow-variables
+              key: AIRFLOW_VAR_AZURE_TENANT_ID
+        - name: AIRFLOW_VAR_AZURE_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: airflow-secrets
-              key: password
+              name: airflow-variables
+              key: AIRFLOW_VAR_AZURE_CLIENT_ID
+        - name: AIRFLOW_VAR_AZURE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: airflow-variables
+              key: AIRFLOW_VAR_AZURE_CLIENT_SECRET
+        - name: AIRFLOW_VAR_AAD_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: airflow-variables
+              key: AIRFLOW_VAR_AZURE_CLIENT_ID
+        - name: AIRFLOW_VAR_APPINSIGHTS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-variables
+              key: AIRFLOW_VAR_APPINSIGHTS_KEY
 
-    # Admin user configuration
-    admin:
-      existingSecret: airflow-secrets
-      usernameKey: username
-      passwordKey: password
-
-    # Disable the internal PostgreSQL chart
-    postgresql:
-      enabled: false
-
-    # External PostgreSQL configuration
-    data:
-      metadataSecretName: airflow-secrets
-
-    # Disable pgbouncer.
-    # CloudNativePG provides native support for connection pooling with PgBouncer
-    pgbouncer:
-      enabled: false
-
-    # StatsD settings
-    statsd:
-      enabled: true
-
-    # Pull DAGS from file share and from a git repo
+    # DAGs Configuration
     dags:
       persistence:
         enabled: true
         existingClaim: airflow-dags-pvc
       gitSync:
         enabled: false
-
     logs:
       persistence:
         enabled: true
         existingClaim: airflow-logs-pvc
+    data:
+      metadataSecretName: airflow-secrets
 
-    config:
-      webserver:
-        expose_config: 'True'
-        instance_name: OSDU
-        enable_proxy_fix: 'True'
-        # base_url: 'http://localhost/airflow'
-      operators:
-        default_owner: OSDU
+    # Disable Internal PostgreSQL and PgBouncer
+    pgbouncer:
+      enabled: false
+    postgresql:
+      enabled: false
+    externalDatabase:
+      type: postgres
+      host: "airflow-cluster-rw.postgresql.svc.cluster.local"
+      port: 5432
+      user: "dbuser"
+      passwordSecret: "airflow-secrets"
+      passwordSecretKey: "db-password"
+      database: "airflow-db"
+    redis:
+      enabled: false
+    # Not needed due to KubernetesExecutor
+    externalRedis:
+      host: "airflow-redis-master.airflow.svc.cluster.local"
+      port: 6379
+      passwordSecret: "airflow-secrets"
+      passwordSecretKey: "redis-password"
+      databaseNumber: 2
+      # properties: "?ssl_cert_reqs=CERT_REQUIRED"
 
-    # We disable the log groomer sidecars because we use Azure File Storage for logs
-    triggerer:
-      logGroomerSidecar:
-        enabled: false
+    # Enable StatsD
+    statsd:
+      enabled: true
+    flower:
+      enabled: false
     scheduler:
-      logGroomerSidecar:
+      logCleanup:
         enabled: false
     workers:
-      logGroomerSidecar:
+      enabled: false
+      logCleanup:
         enabled: false
-    webserver:
-      defaultUser:
-        enabled: true
-        role: Admin
-        email: admin@example.com
-        firstName: admin
-        lastName: user
+    web:
+      enabled: true
 
-    # Ensure we are using the secrets from Azure Key Vault
-    enableBuiltInSecretEnvVars:
-      AIRFLOW__CORE__FERNET_KEY: false
-      AIRFLOW__WEBSERVER__SECRET_KEY: false
-    fernetKeySecretName: keyvault-secrets
-    webserverSecretKeySecretName: keyvault-secrets
+    # Use Existing Secrets for Fernet and Webserver Secret Keys
+    fernetKey:
+      enabled: true
+      existingSecret: keyvault-secrets
+      existingSecretKey: AIRFLOW__CORE__FERNET_KEY
+    webserverSecretKey:
+      enabled: true
+      existingSecret: keyvault-secrets
+      existingSecretKey: AIRFLOW__WEBSERVER__SECRET_KEY
 
-    # Airflow database migration job settings
-    migrateDatabaseJob:
-      useHelmHooks: false
-
-    # Ensure this goes on the correct node pool.
+    # Affinity and Tolerations
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
-          - matchExpressions:
-            - key: agentpool
-              operator: In
-              values:
-                - poolz1
-                - poolz2
-                - poolz3  # Adjust these values to match your node pools
+            - matchExpressions:
+                - key: agentpool
+                  operator: In
+                  values:
+                    - poolz1
+                    - poolz2
+                    - poolz3
 
     topologySpreadConstraints:
-    - maxSkew: 1
-      topologyKey: topology.kubernetes.io/zone
-      whenUnsatisfiable: DoNotSchedule
-      labelSelector:
-        matchLabels:
-          release: airflow  # Adjust to match your Helm release name
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            release: airflow
 
-    # Tolerations should be defined outside of affinity
     tolerations:
       - effect: NoSchedule
         key: app

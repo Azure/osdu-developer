@@ -566,6 +566,7 @@ module helmAppConfigProvider './aks-run-command/main.bicep' = {
   params: {
     aksName: cluster.outputs.aksClusterName
     location: location
+    initialScriptDelay: '130s'
 
     newOrExistingManagedIdentity: 'existing'
     managedIdentityName: managedIdentityName

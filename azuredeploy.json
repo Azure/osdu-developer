@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "8499293486508590297"
+      "templateHash": "12406913525131844307"
     }
   },
   "parameters": {
@@ -19632,7 +19632,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "2226971502545280945"
+              "templateHash": "10699533671994008782"
             }
           },
           "definitions": {
@@ -19897,7 +19897,7 @@
                     ]
                   },
                   {
-                    "name": "ReplayIndexStatus",
+                    "name": "ReplayStatus",
                     "kind": "Hash",
                     "paths": [
                       "/id"
@@ -19960,6 +19960,13 @@
                     ]
                   },
                   {
+                    "name": "WorkflowCustomOperatorV2",
+                    "kind": "Hash",
+                    "paths": [
+                      "/partitionKey"
+                    ]
+                  },
+                  {
                     "name": "WorkflowRun",
                     "kind": "Hash",
                     "paths": [
@@ -19967,7 +19974,21 @@
                     ]
                   },
                   {
+                    "name": "WorkflowRunV2",
+                    "kind": "Hash",
+                    "paths": [
+                      "/partitionKey"
+                    ]
+                  },
+                  {
                     "name": "WorkflowRunStatus",
+                    "kind": "Hash",
+                    "paths": [
+                      "/partitionKey"
+                    ]
+                  },
+                  {
+                    "name": "WorkflowV2",
                     "kind": "Hash",
                     "paths": [
                       "/partitionKey"
@@ -19983,7 +20004,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "indexing-progresssubscription"
+                        "name": "indexing-progresssubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -19992,7 +20015,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "legaltagssubscription"
+                        "name": "legaltagssubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20001,7 +20026,14 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "recordstopicsubscription"
+                        "name": "recordstopicsubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
+                      },
+                      {
+                        "name": "wkssubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20010,7 +20042,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "downstreamsub"
+                        "name": "downstreamsub",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20019,7 +20053,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "eg_sb_wkssubscription"
+                        "name": "eg_sb_wkssubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20028,7 +20064,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "schemachangedtopicsubscription"
+                        "name": "schemachangedtopicsubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20037,10 +20075,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "eg_sb_schemasubscription"
-                      },
-                      {
-                        "name": "schemachangedtopicsubscription"
+                        "name": "eg_sb_schemasubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20049,7 +20086,9 @@
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "eg_sb_legaltagssubscription"
+                        "name": "eg_sb_legaltagssubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
@@ -20058,26 +20097,59 @@
                     "maxSizeInMegabytes": 5120,
                     "subscriptions": [
                       {
-                        "name": "eg_sb_statussubscription"
+                        "name": "statuschangedtopicsubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   },
                   {
                     "name": "statuschangedtopiceg",
                     "maxSizeInMegabytes": 1024,
-                    "subscriptions": []
+                    "subscriptions": [
+                      {
+                        "name": "eg_sb_statussubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
+                      }
+                    ]
                   },
                   {
-                    "name": "replayrecordtopic",
+                    "name": "recordstopic-v2",
                     "maxSizeInMegabytes": 1024,
-                    "subscriptions": []
+                    "subscriptions": [
+                      {
+                        "name": "recordstopic-v2-subscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
+                      }
+                    ]
                   },
                   {
                     "name": "reindextopic",
                     "maxSizeInMegabytes": 1024,
                     "subscriptions": [
                       {
-                        "name": "reindextopicsubscription"
+                        "name": "reindextopicsubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M",
+                        "enableDeadLetteringOnMessageExpiration": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "entitlements-changed",
+                    "maxSizeInMegabytes": 1024,
+                    "subscriptions": []
+                  },
+                  {
+                    "name": "replaytopic",
+                    "maxSizeInMegabytes": 1024,
+                    "subscriptions": [
+                      {
+                        "name": "replaytopicsubscription",
+                        "maxDeliveryCount": 5,
+                        "lockDuration": "PT5M"
                       }
                     ]
                   }
@@ -24641,9 +24713,11 @@
                   },
                   "skuObject": {
                     "value": {
-                      "name": "[variables('partitionLayerConfig').servicebus.sku]"
+                      "name": "[variables('partitionLayerConfig').servicebus.sku]",
+                      "capacity": "[if(equals(variables('partitionLayerConfig').servicebus.sku, 'Premium'), 2, null())]"
                     }
                   },
+                  "zoneRedundant": "[if(equals(variables('partitionLayerConfig').servicebus.sku, 'Premium'), createObject('value', true()), createObject('value', false()))]",
                   "disableLocalAuth": {
                     "value": false
                   },
@@ -24676,8 +24750,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.26.54.24096",
-                      "templateHash": "2927652339165424940"
+                      "version": "0.29.47.4906",
+                      "templateHash": "16891238855778423574"
                     },
                     "name": "Service Bus Namespaces",
                     "description": "This module deploys a Service Bus Namespace.",
@@ -24737,6 +24811,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "name": {
+                            "type": "string",
+                            "nullable": true,
+                            "metadata": {
+                              "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+                            }
+                          },
                           "roleDefinitionIdOrName": {
                             "type": "string",
                             "metadata": {
@@ -24837,21 +24918,44 @@
                               "description": "Required. Resource ID of the subnet where the endpoint needs to be created."
                             }
                           },
-                          "privateDnsZoneGroupName": {
-                            "type": "string",
-                            "nullable": true,
-                            "metadata": {
-                              "description": "Optional. The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided."
-                            }
-                          },
-                          "privateDnsZoneResourceIds": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
+                          "privateDnsZoneGroup": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "nullable": true,
+                                "metadata": {
+                                  "description": "Optional. The name of the Private DNS Zone Group."
+                                }
+                              },
+                              "privateDnsZoneGroupConfigs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "nullable": true,
+                                      "metadata": {
+                                        "description": "Optional. The name of the private DNS zone group config."
+                                      }
+                                    },
+                                    "privateDnsZoneResourceId": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Required. The resource id of the private DNS zone."
+                                      }
+                                    }
+                                  }
+                                },
+                                "metadata": {
+                                  "description": "Required. The private DNS zone groups to associate the private endpoint. A DNS zone group can support up to 5 DNS zones."
+                                }
+                              }
                             },
                             "nullable": true,
                             "metadata": {
-                              "description": "Optional. The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones."
+                              "description": "Optional. The private DNS zone group to configure for the private endpoint."
                             }
                           },
                           "isManualConnection": {
@@ -25778,15 +25882,19 @@
                     },
                     "skuObject": {
                       "$ref": "#/definitions/skuType",
+                      "defaultValue": {
+                        "name": "Premium",
+                        "capacity": 2
+                      },
                       "metadata": {
-                        "description": "Required. The SKU of the Service Bus Namespace."
+                        "description": "Required. The SKU of the Service Bus Namespace. Defaulted to Premium for ZoneRedundant configurations by default."
                       }
                     },
                     "zoneRedundant": {
                       "type": "bool",
-                      "defaultValue": false,
+                      "defaultValue": true,
                       "metadata": {
-                        "description": "Optional. Enabling this property creates a Premium Service Bus Namespace in regions supported availability zones."
+                        "description": "Optional. Enabled by default in order to align with resiliency best practices, thus requires Premium SKU."
                       }
                     },
                     "minimumTlsVersion": {
@@ -25943,6 +26051,13 @@
                     }
                   },
                   "variables": {
+                    "copy": [
+                      {
+                        "name": "formattedRoleAssignments",
+                        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+                        "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+                      }
+                    ],
                     "formattedUserAssignedIdentities": "[reduce(map(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourcesIds'), createArray()), lambda('id', createObject(format('{0}', lambdaVariables('id')), createObject()))), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next'))))]",
                     "identity": "[if(not(empty(parameters('managedIdentities'))), createObject('type', if(coalesce(tryGet(parameters('managedIdentities'), 'systemAssigned'), false()), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourcesIds'), createObject()))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourcesIds'), createObject()))), 'UserAssigned', null())), 'userAssignedIdentities', if(not(empty(variables('formattedUserAssignedIdentities'))), variables('formattedUserAssignedIdentities'), null())), null())]",
                     "builtInRoleNames": {
@@ -25952,7 +26067,7 @@
                       "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                       "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
                       "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-                      "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+                      "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
                       "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
                     }
                   },
@@ -25972,8 +26087,8 @@
                     "avmTelemetry": {
                       "condition": "[parameters('enableTelemetry')]",
                       "type": "Microsoft.Resources/deployments",
-                      "apiVersion": "2023-07-01",
-                      "name": "[format('46d3xbcp.res.servicebus-namespace.{0}.{1}', replace('0.4.2', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
+                      "apiVersion": "2024-03-01",
+                      "name": "[format('46d3xbcp.res.servicebus-namespace.{0}.{1}', replace('0.9.0', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
                       "properties": {
                         "mode": "Incremental",
                         "template": {
@@ -26090,20 +26205,20 @@
                     "serviceBusNamespace_roleAssignments": {
                       "copy": {
                         "name": "serviceBusNamespace_roleAssignments",
-                        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+                        "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
                       },
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.ServiceBus/namespaces/{0}', parameters('name'))]",
-                      "name": "[guid(resourceId('Microsoft.ServiceBus/namespaces', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+                      "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.ServiceBus/namespaces', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
                       "properties": {
-                        "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-                        "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-                        "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-                        "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-                        "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-                        "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-                        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+                        "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+                        "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+                        "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+                        "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+                        "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+                        "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+                        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
                       },
                       "dependsOn": [
                         "serviceBusNamespace"
@@ -26139,8 +26254,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "15856701624247874001"
+                              "version": "0.29.47.4906",
+                              "templateHash": "16659347344675880024"
                             },
                             "name": "Service Bus Namespace Authorization Rules",
                             "description": "This module deploys a Service Bus Namespace Authorization Rule.",
@@ -26243,8 +26358,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "3332271240583753856"
+                              "version": "0.29.47.4906",
+                              "templateHash": "2437567647402328568"
                             },
                             "name": "Service Bus Namespace Disaster Recovery Configs",
                             "description": "This module deploys a Service Bus Namespace Disaster Recovery Config",
@@ -26348,8 +26463,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "3812335497838251447"
+                              "version": "0.29.47.4906",
+                              "templateHash": "5021121087195745079"
                             },
                             "name": "Service Bus Namespace Migration Configuration",
                             "description": "This module deploys a Service Bus Namespace Migration Configuration.",
@@ -26453,8 +26568,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "7745744247225628529"
+                              "version": "0.29.47.4906",
+                              "templateHash": "18220065019802173538"
                             },
                             "name": "Service Bus Namespace Network Rule Sets",
                             "description": "This module deploys a ServiceBus Namespace Network Rule Set.",
@@ -26653,8 +26768,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "6465956085720113527"
+                              "version": "0.29.47.4906",
+                              "templateHash": "12442268068778335924"
                             },
                             "name": "Service Bus Namespace Queue",
                             "description": "This module deploys a Service Bus Namespace Queue.",
@@ -26691,6 +26806,13 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "metadata": {
+                                      "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+                                    }
+                                  },
                                   "roleDefinitionIdOrName": {
                                     "type": "string",
                                     "metadata": {
@@ -26895,18 +27017,7 @@
                             },
                             "authorizationRules": {
                               "type": "array",
-                              "defaultValue": [
-                                {
-                                  "name": "RootManageSharedAccessKey",
-                                  "properties": {
-                                    "rights": [
-                                      "Listen",
-                                      "Manage",
-                                      "Send"
-                                    ]
-                                  }
-                                }
-                              ],
+                              "defaultValue": [],
                               "metadata": {
                                 "description": "Optional. Authorization Rules for the Service Bus Queue."
                               }
@@ -26925,6 +27036,13 @@
                             }
                           },
                           "variables": {
+                            "copy": [
+                              {
+                                "name": "formattedRoleAssignments",
+                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+                                "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+                              }
+                            ],
                             "builtInRoleNames": {
                               "Azure Service Bus Data Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '090c5cfd-751d-490a-894a-3ce6f1109419')]",
                               "Azure Service Bus Data Receiver": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0')]",
@@ -26932,7 +27050,7 @@
                               "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                               "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
                               "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-                              "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+                              "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
                               "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
                             }
                           },
@@ -26986,20 +27104,20 @@
                             "queue_roleAssignments": {
                               "copy": {
                                 "name": "queue_roleAssignments",
-                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+                                "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
                               },
                               "type": "Microsoft.Authorization/roleAssignments",
                               "apiVersion": "2022-04-01",
                               "scope": "[format('Microsoft.ServiceBus/namespaces/{0}/queues/{1}', parameters('namespaceName'), parameters('name'))]",
-                              "name": "[guid(resourceId('Microsoft.ServiceBus/namespaces/queues', parameters('namespaceName'), parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+                              "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.ServiceBus/namespaces/queues', parameters('namespaceName'), parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
                               "properties": {
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-                                "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-                                "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-                                "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-                                "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-                                "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+                                "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+                                "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+                                "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+                                "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+                                "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+                                "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
                               },
                               "dependsOn": [
                                 "queue"
@@ -27038,8 +27156,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "11000394867797752922"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "13378473188831787359"
                                     },
                                     "name": "Service Bus Namespace Queue Authorization Rules",
                                     "description": "This module deploys a Service Bus Namespace Queue Authorization Rule.",
@@ -27219,8 +27337,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.26.54.24096",
-                              "templateHash": "10365585985239248264"
+                              "version": "0.29.47.4906",
+                              "templateHash": "782028791267114581"
                             },
                             "name": "Service Bus Namespace Topic",
                             "description": "This module deploys a Service Bus Namespace Topic.",
@@ -27257,6 +27375,13 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "metadata": {
+                                      "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+                                    }
+                                  },
                                   "roleDefinitionIdOrName": {
                                     "type": "string",
                                     "metadata": {
@@ -27608,6 +27733,13 @@
                             }
                           },
                           "variables": {
+                            "copy": [
+                              {
+                                "name": "formattedRoleAssignments",
+                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+                                "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+                              }
+                            ],
                             "builtInRoleNames": {
                               "Azure Service Bus Data Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '090c5cfd-751d-490a-894a-3ce6f1109419')]",
                               "Azure Service Bus Data Receiver": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0')]",
@@ -27615,7 +27747,7 @@
                               "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                               "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
                               "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-                              "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+                              "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
                               "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
                             }
                           },
@@ -27652,20 +27784,20 @@
                             "topic_roleAssignments": {
                               "copy": {
                                 "name": "topic_roleAssignments",
-                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+                                "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
                               },
                               "type": "Microsoft.Authorization/roleAssignments",
                               "apiVersion": "2022-04-01",
                               "scope": "[format('Microsoft.ServiceBus/namespaces/{0}/topics/{1}', parameters('namespaceName'), parameters('name'))]",
-                              "name": "[guid(resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('namespaceName'), parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+                              "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('namespaceName'), parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
                               "properties": {
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-                                "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-                                "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-                                "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-                                "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-                                "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+                                "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+                                "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+                                "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+                                "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+                                "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+                                "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
                               },
                               "dependsOn": [
                                 "topic"
@@ -27702,8 +27834,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "8469884519860433031"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "6843568331497160185"
                                     },
                                     "name": "Service Bus Namespace Topic Authorization Rules",
                                     "description": "This module deploys a Service Bus Namespace Topic Authorization Rule.",
@@ -27852,8 +27984,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.26.54.24096",
-                                      "templateHash": "14842378053022621119"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "13559505347925945415"
                                     },
                                     "name": "Service Bus Namespace Topic Subscription",
                                     "description": "This module deploys a Service Bus Namespace Topic Subscription.",
@@ -28103,11 +28235,8 @@
                           "lock": {
                             "value": "[coalesce(tryGet(coalesce(parameters('privateEndpoints'), createArray())[copyIndex()], 'lock'), parameters('lock'))]"
                           },
-                          "privateDnsZoneGroupName": {
-                            "value": "[tryGet(coalesce(parameters('privateEndpoints'), createArray())[copyIndex()], 'privateDnsZoneGroupName')]"
-                          },
-                          "privateDnsZoneResourceIds": {
-                            "value": "[tryGet(coalesce(parameters('privateEndpoints'), createArray())[copyIndex()], 'privateDnsZoneResourceIds')]"
+                          "privateDnsZoneGroup": {
+                            "value": "[tryGet(coalesce(parameters('privateEndpoints'), createArray())[copyIndex()], 'privateDnsZoneGroup')]"
                           },
                           "roleAssignments": {
                             "value": "[tryGet(coalesce(parameters('privateEndpoints'), createArray())[copyIndex()], 'roleAssignments')]"
@@ -28135,19 +28264,47 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.25.53.49325",
-                              "templateHash": "4120048060064073955"
+                              "version": "0.29.47.4906",
+                              "templateHash": "1277254088602407590"
                             },
                             "name": "Private Endpoints",
                             "description": "This module deploys a Private Endpoint.",
                             "owner": "Azure/module-maintainers"
                           },
                           "definitions": {
+                            "privateDnsZoneGroupType": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "metadata": {
+                                    "description": "Optional. The name of the Private DNS Zone Group."
+                                  }
+                                },
+                                "privateDnsZoneGroupConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/definitions/privateDnsZoneGroupConfigType"
+                                  },
+                                  "metadata": {
+                                    "description": "Required. The private DNS zone groups to associate the private endpoint. A DNS zone group can support up to 5 DNS zones."
+                                  }
+                                }
+                              }
+                            },
                             "roleAssignmentType": {
                               "type": "array",
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "metadata": {
+                                      "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+                                    }
+                                  },
                                   "roleDefinitionIdOrName": {
                                     "type": "string",
                                     "metadata": {
@@ -28251,13 +28408,13 @@
                                       "groupId": {
                                         "type": "string",
                                         "metadata": {
-                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to."
+                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to. If used with private link service connection, this property must be defined as empty string."
                                         }
                                       },
                                       "memberName": {
                                         "type": "string",
                                         "metadata": {
-                                          "description": "Required. The member name of a group obtained from the remote resource that this private endpoint should connect to."
+                                          "description": "Required. The member name of a group obtained from the remote resource that this private endpoint should connect to. If used with private link service connection, this property must be defined as empty string."
                                         }
                                       },
                                       "privateIPAddress": {
@@ -28291,8 +28448,11 @@
                                     "properties": {
                                       "groupIds": {
                                         "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
                                         "metadata": {
-                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to."
+                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to. If used with private link service connection, this property must be defined as empty string array `[]`."
                                         }
                                       },
                                       "privateLinkServiceId": {
@@ -28332,8 +28492,11 @@
                                     "properties": {
                                       "groupIds": {
                                         "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
                                         "metadata": {
-                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to."
+                                          "description": "Required. The ID of a group obtained from the remote resource that this private endpoint should connect to. If used with private link service connection, this property must be defined as empty string array `[]`."
                                         }
                                       },
                                       "privateLinkServiceId": {
@@ -28381,6 +28544,29 @@
                                 }
                               },
                               "nullable": true
+                            },
+                            "privateDnsZoneGroupConfigType": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "metadata": {
+                                    "description": "Optional. The name of the private DNS zone group config."
+                                  }
+                                },
+                                "privateDnsZoneResourceId": {
+                                  "type": "string",
+                                  "metadata": {
+                                    "description": "Required. The resource id of the private DNS zone."
+                                  }
+                                }
+                              },
+                              "metadata": {
+                                "__bicep_imported_from!": {
+                                  "sourceTemplate": "private-dns-zone-group/main.bicep"
+                                }
+                              }
                             }
                           },
                           "parameters": {
@@ -28416,18 +28602,11 @@
                                 "description": "Optional. A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints."
                               }
                             },
-                            "privateDnsZoneGroupName": {
-                              "type": "string",
+                            "privateDnsZoneGroup": {
+                              "$ref": "#/definitions/privateDnsZoneGroupType",
                               "nullable": true,
                               "metadata": {
-                                "description": "Optional. The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided."
-                              }
-                            },
-                            "privateDnsZoneResourceIds": {
-                              "type": "array",
-                              "nullable": true,
-                              "metadata": {
-                                "description": "Optional. The private DNS zone groups to associate the private endpoint. A DNS zone group can support up to 5 DNS zones."
+                                "description": "Optional. The private DNS zone group to configure for the private endpoint."
                               }
                             },
                             "location": {
@@ -28483,6 +28662,13 @@
                             }
                           },
                           "variables": {
+                            "copy": [
+                              {
+                                "name": "formattedRoleAssignments",
+                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+                                "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+                              }
+                            ],
                             "builtInRoleNames": {
                               "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                               "DNS Resolver Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0f2ebee7-ffd4-4fc0-b3b7-664099fdad5d')]",
@@ -28500,8 +28686,8 @@
                             "avmTelemetry": {
                               "condition": "[parameters('enableTelemetry')]",
                               "type": "Microsoft.Resources/deployments",
-                              "apiVersion": "2023-07-01",
-                              "name": "[format('46d3xbcp.res.network-privateendpoint.{0}.{1}', replace('0.4.1', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
+                              "apiVersion": "2024-03-01",
+                              "name": "[format('46d3xbcp.res.network-privateendpoint.{0}.{1}', replace('0.7.1', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
                               "properties": {
                                 "mode": "Incremental",
                                 "template": {
@@ -28519,7 +28705,7 @@
                             },
                             "privateEndpoint": {
                               "type": "Microsoft.Network/privateEndpoints",
-                              "apiVersion": "2023-04-01",
+                              "apiVersion": "2023-11-01",
                               "name": "[parameters('name')]",
                               "location": "[parameters('location')]",
                               "tags": "[parameters('tags')]",
@@ -28560,27 +28746,27 @@
                             "privateEndpoint_roleAssignments": {
                               "copy": {
                                 "name": "privateEndpoint_roleAssignments",
-                                "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+                                "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
                               },
                               "type": "Microsoft.Authorization/roleAssignments",
                               "apiVersion": "2022-04-01",
                               "scope": "[format('Microsoft.Network/privateEndpoints/{0}', parameters('name'))]",
-                              "name": "[guid(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+                              "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
                               "properties": {
-                                "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-                                "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-                                "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-                                "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-                                "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-                                "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+                                "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+                                "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+                                "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+                                "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+                                "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+                                "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+                                "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
                               },
                               "dependsOn": [
                                 "privateEndpoint"
                               ]
                             },
                             "privateEndpoint_privateDnsZoneGroup": {
-                              "condition": "[not(empty(parameters('privateDnsZoneResourceIds')))]",
+                              "condition": "[not(empty(parameters('privateDnsZoneGroup')))]",
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2022-09-01",
                               "name": "[format('{0}-PrivateEndpoint-PrivateDnsZoneGroup', uniqueString(deployment().name))]",
@@ -28591,27 +28777,51 @@
                                 "mode": "Incremental",
                                 "parameters": {
                                   "name": {
-                                    "value": "[coalesce(parameters('privateDnsZoneGroupName'), 'default')]"
-                                  },
-                                  "privateDNSResourceIds": {
-                                    "value": "[coalesce(parameters('privateDnsZoneResourceIds'), createArray())]"
+                                    "value": "[tryGet(parameters('privateDnsZoneGroup'), 'name')]"
                                   },
                                   "privateEndpointName": {
                                     "value": "[parameters('name')]"
+                                  },
+                                  "privateDnsZoneConfigs": {
+                                    "value": "[parameters('privateDnsZoneGroup').privateDnsZoneGroupConfigs]"
                                   }
                                 },
                                 "template": {
                                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                  "languageVersion": "2.0",
                                   "contentVersion": "1.0.0.0",
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.25.53.49325",
-                                      "templateHash": "11244630631275470040"
+                                      "version": "0.29.47.4906",
+                                      "templateHash": "5805178546717255803"
                                     },
                                     "name": "Private Endpoint Private DNS Zone Groups",
                                     "description": "This module deploys a Private Endpoint Private DNS Zone Group.",
                                     "owner": "Azure/module-maintainers"
+                                  },
+                                  "definitions": {
+                                    "privateDnsZoneGroupConfigType": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": "string",
+                                          "nullable": true,
+                                          "metadata": {
+                                            "description": "Optional. The name of the private DNS zone group config."
+                                          }
+                                        },
+                                        "privateDnsZoneResourceId": {
+                                          "type": "string",
+                                          "metadata": {
+                                            "description": "Required. The resource id of the private DNS zone."
+                                          }
+                                        }
+                                      },
+                                      "metadata": {
+                                        "__bicep_export!": true
+                                      }
+                                    }
                                   },
                                   "parameters": {
                                     "privateEndpointName": {
@@ -28620,12 +28830,15 @@
                                         "description": "Conditional. The name of the parent private endpoint. Required if the template is used in a standalone deployment."
                                       }
                                     },
-                                    "privateDNSResourceIds": {
+                                    "privateDnsZoneConfigs": {
                                       "type": "array",
+                                      "items": {
+                                        "$ref": "#/definitions/privateDnsZoneGroupConfigType"
+                                      },
                                       "minLength": 1,
                                       "maxLength": 5,
                                       "metadata": {
-                                        "description": "Required. Array of private DNS zone resource IDs. A DNS zone group can support up to 5 DNS zones."
+                                        "description": "Required. Array of private DNS zone configurations of the private DNS zone group. A DNS zone group can support up to 5 DNS zones."
                                       }
                                     },
                                     "name": {
@@ -28639,27 +28852,36 @@
                                   "variables": {
                                     "copy": [
                                       {
-                                        "name": "privateDnsZoneConfigs",
-                                        "count": "[length(parameters('privateDNSResourceIds'))]",
+                                        "name": "privateDnsZoneConfigsVar",
+                                        "count": "[length(parameters('privateDnsZoneConfigs'))]",
                                         "input": {
-                                          "name": "[last(split(parameters('privateDNSResourceIds')[copyIndex('privateDnsZoneConfigs')], '/'))]",
+                                          "name": "[coalesce(tryGet(parameters('privateDnsZoneConfigs')[copyIndex('privateDnsZoneConfigsVar')], 'name'), last(split(parameters('privateDnsZoneConfigs')[copyIndex('privateDnsZoneConfigsVar')].privateDnsZoneResourceId, '/')))]",
                                           "properties": {
-                                            "privateDnsZoneId": "[parameters('privateDNSResourceIds')[copyIndex('privateDnsZoneConfigs')]]"
+                                            "privateDnsZoneId": "[parameters('privateDnsZoneConfigs')[copyIndex('privateDnsZoneConfigsVar')].privateDnsZoneResourceId]"
                                           }
                                         }
                                       }
                                     ]
                                   },
-                                  "resources": [
-                                    {
+                                  "resources": {
+                                    "privateEndpoint": {
+                                      "existing": true,
+                                      "type": "Microsoft.Network/privateEndpoints",
+                                      "apiVersion": "2023-11-01",
+                                      "name": "[parameters('privateEndpointName')]"
+                                    },
+                                    "privateDnsZoneGroup": {
                                       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-                                      "apiVersion": "2023-04-01",
+                                      "apiVersion": "2023-11-01",
                                       "name": "[format('{0}/{1}', parameters('privateEndpointName'), parameters('name'))]",
                                       "properties": {
-                                        "privateDnsZoneConfigs": "[variables('privateDnsZoneConfigs')]"
-                                      }
+                                        "privateDnsZoneConfigs": "[variables('privateDnsZoneConfigsVar')]"
+                                      },
+                                      "dependsOn": [
+                                        "privateEndpoint"
+                                      ]
                                     }
-                                  ],
+                                  },
                                   "outputs": {
                                     "name": {
                                       "type": "string",
@@ -28717,14 +28939,28 @@
                               "metadata": {
                                 "description": "The location the resource was deployed into."
                               },
-                              "value": "[reference('privateEndpoint', '2023-04-01', 'full').location]"
+                              "value": "[reference('privateEndpoint', '2023-11-01', 'full').location]"
+                            },
+                            "customDnsConfig": {
+                              "$ref": "#/definitions/customDnsConfigType",
+                              "metadata": {
+                                "description": "The custom DNS configurations of the private endpoint."
+                              },
+                              "value": "[reference('privateEndpoint').customDnsConfigs]"
+                            },
+                            "networkInterfaceIds": {
+                              "type": "array",
+                              "metadata": {
+                                "description": "The IDs of the network interfaces associated with the private endpoint."
+                              },
+                              "value": "[reference('privateEndpoint').networkInterfaces]"
                             },
                             "groupId": {
                               "type": "string",
                               "metadata": {
                                 "description": "The group Id for the private endpoint Group."
                               },
-                              "value": "[if(not(empty(reference('privateEndpoint').manualPrivateLinkServiceConnections)), reference('privateEndpoint').manualPrivateLinkServiceConnections[0].properties.groupIds[0], reference('privateEndpoint').privateLinkServiceConnections[0].properties.groupIds[0])]"
+                              "value": "[if(and(not(empty(reference('privateEndpoint').manualPrivateLinkServiceConnections)), greater(length(tryGet(reference('privateEndpoint').manualPrivateLinkServiceConnections[0].properties, 'groupIds')), 0)), coalesce(tryGet(reference('privateEndpoint').manualPrivateLinkServiceConnections[0].properties, 'groupIds', 0), ''), if(and(not(empty(reference('privateEndpoint').privateLinkServiceConnections)), greater(length(tryGet(reference('privateEndpoint').privateLinkServiceConnections[0].properties, 'groupIds')), 0)), coalesce(tryGet(reference('privateEndpoint').privateLinkServiceConnections[0].properties, 'groupIds', 0), ''), ''))]"
                             }
                           }
                         }
@@ -28769,6 +29005,22 @@
                         "description": "The location the resource was deployed into."
                       },
                       "value": "[reference('serviceBusNamespace', '2022-10-01-preview', 'full').location]"
+                    },
+                    "privateEndpoints": {
+                      "type": "array",
+                      "metadata": {
+                        "description": "The private endpoints of the service bus namespace."
+                      },
+                      "copy": {
+                        "count": "[length(if(not(empty(parameters('privateEndpoints'))), array(parameters('privateEndpoints')), createArray()))]",
+                        "input": {
+                          "name": "[reference(format('serviceBusNamespace_privateEndpoints[{0}]', copyIndex())).outputs.name.value]",
+                          "resourceId": "[reference(format('serviceBusNamespace_privateEndpoints[{0}]', copyIndex())).outputs.resourceId.value]",
+                          "groupId": "[reference(format('serviceBusNamespace_privateEndpoints[{0}]', copyIndex())).outputs.groupId.value]",
+                          "customDnsConfig": "[reference(format('serviceBusNamespace_privateEndpoints[{0}]', copyIndex())).outputs.customDnsConfig.value]",
+                          "networkInterfaceIds": "[reference(format('serviceBusNamespace_privateEndpoints[{0}]', copyIndex())).outputs.networkInterfaceIds.value]"
+                        }
+                      }
                     }
                   }
                 }
@@ -29260,7 +29512,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "11168103121851413135"
+              "templateHash": "11954813962435476626"
             }
           },
           "definitions": {
@@ -29564,7 +29816,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.32.0"
+              "release": "v0.33.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -36947,6 +37199,10 @@
     "COMMON_NAME": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'common-blade'), '2022-09-01').outputs.storageAccountName.value]"
+    },
+    "DATA_NAME": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'partition-blade'), '2022-09-01').outputs.partitionStorageNames.value[0]]"
     }
   }
 }

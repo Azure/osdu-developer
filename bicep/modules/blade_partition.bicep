@@ -207,7 +207,7 @@ var partitionLayerConfig = {
         ]
       }
       {
-        name: 'ReplayIndexStatus'
+        name: 'ReplayStatus'
         kind: 'Hash'
         paths: [
           '/id'
@@ -270,6 +270,13 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'WorkflowCustomOperatorV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
         name: 'WorkflowRun'
         kind: 'Hash'
         paths: [
@@ -277,7 +284,28 @@ var partitionLayerConfig = {
         ]
       }
       {
+        name: 'WorkflowRunV2'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      {
         name: 'WorkflowRunStatus'
+        kind: 'Hash'
+        paths: [
+          '/partitionKey'
+        ]
+      }
+      // {
+      //   name: 'WorkflowTasksSharingInfoV2'
+      //   kind: 'Hash'
+      //   paths: [
+      //     '/partitionKey'
+      //   ]
+      // }
+      {
+        name: 'WorkflowV2'
         kind: 'Hash'
         paths: [
           '/partitionKey'
@@ -294,6 +322,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'indexing-progresssubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -303,6 +333,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'legaltagssubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -312,6 +344,13 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'recordstopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
+          }
+          {
+            name: 'wkssubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -321,6 +360,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'downstreamsub'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -330,6 +371,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'eg_sb_wkssubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -339,6 +382,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'schemachangedtopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -348,9 +393,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'eg_sb_schemasubscription'
-          }
-          {
-            name: 'schemachangedtopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -360,6 +404,8 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'eg_sb_legaltagssubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
@@ -368,19 +414,33 @@ var partitionLayerConfig = {
         maxSizeInMegabytes: 5120
         subscriptions: [
           {
-            name: 'eg_sb_statussubscription'
+            name: 'statuschangedtopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
           }
         ]
       }
       {
         name: 'statuschangedtopiceg'
         maxSizeInMegabytes: 1024
-        subscriptions: []
+        subscriptions: [
+          {
+            name: 'eg_sb_statussubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
+          }
+        ]
       }
       {
-        name: 'replayrecordtopic'
+        name: 'recordstopic-v2'
         maxSizeInMegabytes: 1024
-        subscriptions: []
+        subscriptions: [
+          {
+            name: 'recordstopic-v2-subscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
+          }
+        ]
       }
       {
         name: 'reindextopic'
@@ -388,9 +448,29 @@ var partitionLayerConfig = {
         subscriptions: [
           {
             name: 'reindextopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
+            enableDeadLetteringOnMessageExpiration: false
           }
         ]
       }
+      {
+        name: 'entitlements-changed'
+        maxSizeInMegabytes: 1024
+        subscriptions: []
+      }
+      {
+        name: 'replaytopic'
+        maxSizeInMegabytes: 1024
+        subscriptions: [
+          {
+            name: 'replaytopicsubscription'
+            maxDeliveryCount: 5
+            lockDuration: 'PT5M'
+          }
+        ]
+      }
+      
     ]
   }
 }
@@ -532,7 +612,7 @@ module partitionDbEndpoint './private-endpoint/main.bicep' = [for (partition, in
 }]
 
 
-module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for (partition, index) in partitions:  {
+module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.0' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-service-bus-${index}'
   params: {
     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
@@ -557,7 +637,10 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.4.2' = [for 
 
     skuObject: {
       name: partitionLayerConfig.servicebus.sku
+      capacity: partitionLayerConfig.servicebus.sku == 'Premium' ? 2 : null
     }
+
+    zoneRedundant: partitionLayerConfig.servicebus.sku == 'Premium' ? true : false
 
     disableLocalAuth: false
 

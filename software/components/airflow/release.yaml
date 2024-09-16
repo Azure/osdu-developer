@@ -47,12 +47,14 @@ spec:
         fsGroup: 1000
         runAsUser: 1000
       extraPipPackages:
-        - "apache-airflow-providers-microsoft-azure"
-        - "emoji"
+        # - "apache-airflow-providers-microsoft-azure"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+        - "osdu-api~=0.21.3"
       kubernetesPodTemplate:
         extraPipPackages:
-          - "apache-airflow-providers-microsoft-azure"
-          - "emoji"
+          # - "apache-airflow-providers-microsoft-azure"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+          - "osdu-api~=0.21.3"
       # Airflow Configuration
       config:
         AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"

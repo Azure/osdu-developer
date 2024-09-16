@@ -33,12 +33,12 @@ spec:
         namespace: flux-system
   values:
     # Set the Airflow version
-    airflowVersion: "2.10.1"
+    # airflowVersion: "2.10.1"
 
     # Set the Airflow Docker image tag
-    images:
-      airflow:
-        tag: "2.10.1"
+    # images:
+    #   airflow:
+    #     tag: "2.10.1"
 
     # Environment Variables
     airflow:

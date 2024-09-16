@@ -33,7 +33,6 @@ spec:
         namespace: flux-system
   values:
 
-    # Environment Variables
     airflow:
       image:
         repository: apache/airflow
@@ -42,6 +41,23 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
+      usersUpdate: true
+      usersTemplates:
+        ADMIN_USER:
+          kind: secret
+          name: airflow-secrets
+          key: username
+        ADMIN_PASSWORD:
+          kind: secret
+          name: airflow-secrets
+          key: password
+      users:
+        - username: ${ADMIN_USER}
+          password: ${ADMIN_PASSWORD}
+          role: Admin
+          email: admin@example.com
+          firstName: admin
+          lastName: admin
 
       # OSDU PIP Packages
       # 148 https://community.opengroup.org/osdu/platform/system/sdks/common-python-sdk
@@ -88,7 +104,6 @@ spec:
         # AIRFLOW__WEBSERVER__WORKERS: "8"
         # AIRFLOW__CELERY__WORKER_CONCURRENCY: "16"
         # AIRFLOW__CELERY__SSL_ACTIVE: "True"
-        
       extraEnv:
         - name: ENVIRONMENT
           value: "dev"
@@ -124,12 +139,6 @@ spec:
           value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
         - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
           value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
-
-        # - name: AIRFLOW_CONN_AZ_LOG
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: airflow
-        #       key: remote-log-connection
         - name: AIRFLOW_VAR_AZURE_TENANT_ID
           valueFrom:
             secretKeyRef:
@@ -163,18 +172,12 @@ spec:
         existingClaim: airflow-dags-pvc
       gitSync:
         enabled: false
-
-    # Logs Configuration
     logs:
       persistence:
         enabled: true
         existingClaim: airflow-logs-pvc
-
-    # External PostgreSQL Configuration
     data:
       metadataSecretName: airflow-secrets
-
-    
 
     # Disable Internal PostgreSQL and PgBouncer
     pgbouncer:
@@ -185,14 +188,13 @@ spec:
       type: postgres
       host: "airflow-cluster-rw.postgresql.svc.cluster.local"
       port: 5432
-      ## Azure PostgreSQL Database username, formatted as {username}@{hostname}
       user: "dbuser"
       passwordSecret: "airflow-secrets"
       passwordSecretKey: "db-password"
       database: "airflow-db"
-
     redis:
       enabled: false
+    # Not needed due to KubernetesExecutor
     externalRedis:
       host: "airflow-redis-master.airflow.svc.cluster.local"
       port: 6379
@@ -204,30 +206,17 @@ spec:
     # Enable StatsD
     statsd:
       enabled: true
-
     flower:
       enabled: false
-
     scheduler:
       logCleanup:
         enabled: false
-
     workers:
       enabled: false
       logCleanup:
         enabled: false
-
-    # Webserver Default User Configuration
     web:
-      defaultUser:
-        enabled: true
-        existingSecret: airflow-secrets
-        usernameKey: username
-        passwordKey: password
-        roleName: Admin
-        email: admin@example.com
-        firstName: admin
-        lastName: user
+      enabled: true
 
     # Use Existing Secrets for Fernet and Webserver Secret Keys
     fernetKey:

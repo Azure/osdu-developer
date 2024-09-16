@@ -429,7 +429,7 @@ module manifestDagShareUpload './script-share-upload/main.bicep' = {
     location: location
     shareName: 'airflow-dags'
     filename: 'osdu-ingest-r3.py'
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3.py?ref_type=heads'
+    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3.py'
     useExistingManagedIdentity: true
     managedIdentityName: deploymentScriptIdentity
     existingManagedIdentitySubId: subscription().subscriptionId
@@ -444,7 +444,7 @@ module manifestRefDagShareUpload './script-share-upload/main.bicep' = {
     location: location
     shareName: 'airflow-dags'
     filename: 'osdu-ingest-r3-by-reference.py'
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3-by-reference.py?ref_type=heads'
+    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3-by-reference.py'
     useExistingManagedIdentity: true
     managedIdentityName: deploymentScriptIdentity
     existingManagedIdentitySubId: subscription().subscriptionId

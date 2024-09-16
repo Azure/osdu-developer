@@ -32,16 +32,12 @@ spec:
         name: airflow-community
         namespace: flux-system
   values:
-    # Set the Airflow version
-    # airflowVersion: "2.10.1"
-
-    # Set the Airflow Docker image tag
-    # images:
-    #   airflow:
-    #     tag: "2.10.1"
 
     # Environment Variables
     airflow:
+      image:
+      repository: apache/airflow
+      tag: 2.10.1-python3.12
       executor: KubernetesExecutor
       securityContext:
         fsGroup: 1000

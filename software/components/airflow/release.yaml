@@ -46,15 +46,28 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
+
+      # OSDU PIP Packages
+      # 148 https://community.opengroup.org/osdu/platform/system/sdks/common-python-sdk
+      # 668 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-airflow-lib
+      # 823 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-ingestion-lib
       extraPipPackages:
         # - "apache-airflow-providers-microsoft-azure"
         - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
         - "osdu-api~=0.21.3"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple/"
+        - "osdu-airflow~=0.21.2"
+        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+        - "osdu-ingestion~=0.21.0"
       kubernetesPodTemplate:
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
           - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
           - "osdu-api~=0.21.3"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple/"
+          - "osdu-airflow~=0.21.2"
+          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+          - "osdu-ingestion~=0.21.0"
       # Airflow Configuration
       config:
         AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"

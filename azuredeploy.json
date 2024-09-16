@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "12406913525131844307"
+      "templateHash": "9913820635537420319"
     }
   },
   "parameters": {
@@ -6435,7 +6435,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "13756778556908121175"
+              "templateHash": "4005534644827769472"
             }
           },
           "definitions": {
@@ -6629,10 +6629,6 @@
               {
                 "secretName": "airflow-db-connection",
                 "secretValue": "[format('postgresql://dbuser:{0}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db', substring(uniqueString('dbuser', resourceGroup().id, parameters('bladeConfig').sectionName), 0, 8))]"
-              },
-              {
-                "secretName": "airflow-admin-username",
-                "secretValue": "airflow"
               },
               {
                 "secretName": "airflow-admin-password",
@@ -13672,6 +13668,472 @@
                   },
                   "fileurl": {
                     "value": "https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service/-/archive/master/crs-conversion-service-master.tar.gz"
+                  },
+                  "useExistingManagedIdentity": {
+                    "value": true
+                  },
+                  "managedIdentityName": {
+                    "value": "[parameters('deploymentScriptIdentity')]"
+                  },
+                  "existingManagedIdentitySubId": {
+                    "value": "[subscription().subscriptionId]"
+                  },
+                  "existingManagedIdentityResourceGroupName": {
+                    "value": "[resourceGroup().name]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.29.47.4906",
+                      "templateHash": "1430893790712936976"
+                    },
+                    "name": "Blob Upload",
+                    "description": "This module uploads a file to a blob storage account",
+                    "owner": "azure-global-energy"
+                  },
+                  "parameters": {
+                    "storageAccountName": {
+                      "type": "string",
+                      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name, 'blob')]",
+                      "metadata": {
+                        "description": "Desired name of the storage account"
+                      }
+                    },
+                    "shareName": {
+                      "type": "string",
+                      "defaultValue": "sample-share",
+                      "metadata": {
+                        "description": "Name of the file share"
+                      }
+                    },
+                    "filename": {
+                      "type": "string",
+                      "defaultValue": "sample.json",
+                      "metadata": {
+                        "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "fileurl": {
+                      "type": "string",
+                      "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
+                      "metadata": {
+                        "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]",
+                      "metadata": {
+                        "description": "The location of the Storage Account and where to deploy the module resources to"
+                      }
+                    },
+                    "forceUpdateTag": {
+                      "type": "string",
+                      "defaultValue": "[utcNow()]",
+                      "metadata": {
+                        "description": "How the deployment script should be forced to execute"
+                      }
+                    },
+                    "rbacRoleNeeded": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Azure RoleId that are required for the DeploymentScript resource to upload blobs"
+                      }
+                    },
+                    "useExistingManagedIdentity": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Does the Managed Identity already exists, or should be created"
+                      }
+                    },
+                    "managedIdentityName": {
+                      "type": "string",
+                      "defaultValue": "[format('id-storage-share-{0}', parameters('location'))]",
+                      "metadata": {
+                        "description": "Name of the Managed Identity resource"
+                      }
+                    },
+                    "existingManagedIdentitySubId": {
+                      "type": "string",
+                      "defaultValue": "[subscription().subscriptionId]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Subscription Id it is located in"
+                      }
+                    },
+                    "existingManagedIdentityResourceGroupName": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().name]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Resource Group it is located in"
+                      }
+                    },
+                    "initialScriptDelay": {
+                      "type": "string",
+                      "defaultValue": "30s",
+                      "metadata": {
+                        "description": "A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate"
+                      }
+                    },
+                    "cleanupPreference": {
+                      "type": "string",
+                      "defaultValue": "OnSuccess",
+                      "allowedValues": [
+                        "OnSuccess",
+                        "OnExpiration",
+                        "Always"
+                      ],
+                      "metadata": {
+                        "description": "When the script resource is cleaned up"
+                      }
+                    }
+                  },
+                  "variables": {
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                  },
+                  "resources": [
+                    {
+                      "condition": "[not(parameters('useExistingManagedIdentity'))]",
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2023-01-31",
+                      "name": "[parameters('managedIdentityName')]",
+                      "location": "[parameters('location')]"
+                    },
+                    {
+                      "condition": "[not(empty(parameters('rbacRoleNeeded')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+                      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRoleNeeded'))]",
+                        "principalId": "[if(parameters('useExistingManagedIdentity'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId, reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId)]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deploymentScripts",
+                      "apiVersion": "2023-08-01",
+                      "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
+                      "location": "[parameters('location')]",
+                      "identity": {
+                        "type": "UserAssigned",
+                        "userAssignedIdentities": {
+                          "[format('{0}', if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]": {}
+                        }
+                      },
+                      "kind": "AzureCLI",
+                      "properties": {
+                        "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
+                        "retentionInterval": "PT1H",
+                        "environmentVariables": [
+                          {
+                            "name": "AZURE_STORAGE_ACCOUNT",
+                            "value": "[parameters('storageAccountName')]"
+                          },
+                          {
+                            "name": "AZURE_STORAGE_KEY",
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-04-01').keys[0].value]"
+                          },
+                          {
+                            "name": "FILE",
+                            "value": "[parameters('filename')]"
+                          },
+                          {
+                            "name": "URL",
+                            "value": "[parameters('fileurl')]"
+                          },
+                          {
+                            "name": "SHARE",
+                            "value": "[parameters('shareName')]"
+                          },
+                          {
+                            "name": "initialDelay",
+                            "value": "[parameters('initialScriptDelay')]"
+                          }
+                        ],
+                        "scriptContent": "[variables('$fxv#0')]",
+                        "cleanupPreference": "[parameters('cleanupPreference')]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+                        "[extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))))]"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "configStorage"
+              ]
+            },
+            "manifestDagShareUpload": {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-storage-dag-upload-manifest', parameters('bladeConfig').sectionName)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "storageAccountName": {
+                    "value": "[reference('configStorage').outputs.name.value]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "shareName": {
+                    "value": "airflow-dags"
+                  },
+                  "filename": {
+                    "value": "osdu-ingest-r3.py"
+                  },
+                  "fileurl": {
+                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3.py"
+                  },
+                  "useExistingManagedIdentity": {
+                    "value": true
+                  },
+                  "managedIdentityName": {
+                    "value": "[parameters('deploymentScriptIdentity')]"
+                  },
+                  "existingManagedIdentitySubId": {
+                    "value": "[subscription().subscriptionId]"
+                  },
+                  "existingManagedIdentityResourceGroupName": {
+                    "value": "[resourceGroup().name]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.29.47.4906",
+                      "templateHash": "1430893790712936976"
+                    },
+                    "name": "Blob Upload",
+                    "description": "This module uploads a file to a blob storage account",
+                    "owner": "azure-global-energy"
+                  },
+                  "parameters": {
+                    "storageAccountName": {
+                      "type": "string",
+                      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name, 'blob')]",
+                      "metadata": {
+                        "description": "Desired name of the storage account"
+                      }
+                    },
+                    "shareName": {
+                      "type": "string",
+                      "defaultValue": "sample-share",
+                      "metadata": {
+                        "description": "Name of the file share"
+                      }
+                    },
+                    "filename": {
+                      "type": "string",
+                      "defaultValue": "sample.json",
+                      "metadata": {
+                        "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "fileurl": {
+                      "type": "string",
+                      "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
+                      "metadata": {
+                        "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]",
+                      "metadata": {
+                        "description": "The location of the Storage Account and where to deploy the module resources to"
+                      }
+                    },
+                    "forceUpdateTag": {
+                      "type": "string",
+                      "defaultValue": "[utcNow()]",
+                      "metadata": {
+                        "description": "How the deployment script should be forced to execute"
+                      }
+                    },
+                    "rbacRoleNeeded": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Azure RoleId that are required for the DeploymentScript resource to upload blobs"
+                      }
+                    },
+                    "useExistingManagedIdentity": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Does the Managed Identity already exists, or should be created"
+                      }
+                    },
+                    "managedIdentityName": {
+                      "type": "string",
+                      "defaultValue": "[format('id-storage-share-{0}', parameters('location'))]",
+                      "metadata": {
+                        "description": "Name of the Managed Identity resource"
+                      }
+                    },
+                    "existingManagedIdentitySubId": {
+                      "type": "string",
+                      "defaultValue": "[subscription().subscriptionId]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Subscription Id it is located in"
+                      }
+                    },
+                    "existingManagedIdentityResourceGroupName": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().name]",
+                      "metadata": {
+                        "description": "For an existing Managed Identity, the Resource Group it is located in"
+                      }
+                    },
+                    "initialScriptDelay": {
+                      "type": "string",
+                      "defaultValue": "30s",
+                      "metadata": {
+                        "description": "A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate"
+                      }
+                    },
+                    "cleanupPreference": {
+                      "type": "string",
+                      "defaultValue": "OnSuccess",
+                      "allowedValues": [
+                        "OnSuccess",
+                        "OnExpiration",
+                        "Always"
+                      ],
+                      "metadata": {
+                        "description": "When the script resource is cleaned up"
+                      }
+                    }
+                  },
+                  "variables": {
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                  },
+                  "resources": [
+                    {
+                      "condition": "[not(parameters('useExistingManagedIdentity'))]",
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2023-01-31",
+                      "name": "[parameters('managedIdentityName')]",
+                      "location": "[parameters('location')]"
+                    },
+                    {
+                      "condition": "[not(empty(parameters('rbacRoleNeeded')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+                      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRoleNeeded'))]",
+                        "principalId": "[if(parameters('useExistingManagedIdentity'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId, reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId)]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deploymentScripts",
+                      "apiVersion": "2023-08-01",
+                      "name": "[format('script-{0}-{1}', parameters('storageAccountName'), replace(replace(parameters('filename'), ':', ''), '/', '-'))]",
+                      "location": "[parameters('location')]",
+                      "identity": {
+                        "type": "UserAssigned",
+                        "userAssignedIdentities": {
+                          "[format('{0}', if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))]": {}
+                        }
+                      },
+                      "kind": "AzureCLI",
+                      "properties": {
+                        "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                        "azCliVersion": "2.63.0",
+                        "timeout": "PT30M",
+                        "retentionInterval": "PT1H",
+                        "environmentVariables": [
+                          {
+                            "name": "AZURE_STORAGE_ACCOUNT",
+                            "value": "[parameters('storageAccountName')]"
+                          },
+                          {
+                            "name": "AZURE_STORAGE_KEY",
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-04-01').keys[0].value]"
+                          },
+                          {
+                            "name": "FILE",
+                            "value": "[parameters('filename')]"
+                          },
+                          {
+                            "name": "URL",
+                            "value": "[parameters('fileurl')]"
+                          },
+                          {
+                            "name": "SHARE",
+                            "value": "[parameters('shareName')]"
+                          },
+                          {
+                            "name": "initialDelay",
+                            "value": "[parameters('initialScriptDelay')]"
+                          }
+                        ],
+                        "scriptContent": "[variables('$fxv#0')]",
+                        "cleanupPreference": "[parameters('cleanupPreference')]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+                        "[extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('rbacRoleNeeded'), if(parameters('useExistingManagedIdentity'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('existingManagedIdentitySubId'), parameters('existingManagedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))))]"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "configStorage"
+              ]
+            },
+            "manifestRefDagShareUpload": {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-storage-dag-upload-manifest-by-ref', parameters('bladeConfig').sectionName)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "storageAccountName": {
+                    "value": "[reference('configStorage').outputs.name.value]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "shareName": {
+                    "value": "airflow-dags"
+                  },
+                  "filename": {
+                    "value": "osdu-ingest-r3-by-reference.py"
+                  },
+                  "fileurl": {
+                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3-by-reference.py"
                   },
                   "useExistingManagedIdentity": {
                     "value": true
@@ -29512,7 +29974,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "11954813962435476626"
+              "templateHash": "10221491705030516354"
             }
           },
           "definitions": {
@@ -29816,7 +30278,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.33.0"
+              "release": "v0.34.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -34918,6 +35380,9 @@
                   },
                   "location": {
                     "value": "[parameters('location')]"
+                  },
+                  "initialScriptDelay": {
+                    "value": "130s"
                   },
                   "newOrExistingManagedIdentity": {
                     "value": "existing"

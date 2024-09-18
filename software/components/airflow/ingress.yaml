@@ -1,24 +1,3 @@
-# ---
-# apiVersion: security.istio.io/v1beta1
-# kind: PeerAuthentication
-# metadata:
-#   name: default
-#   namespace: airflow
-# spec:
-#   mtls:
-#     mode: STRICT
-# ---
-# apiVersion: networking.istio.io/v1beta1
-# kind: DestinationRule
-# metadata:
-#   name: airflow-rule
-#   namespace: airflow
-# spec:
-#   host: airflow-web.airflow.svc.cluster.local
-#   trafficPolicy:
-#     connectionPool:
-#       tcp:
-#         maxConnections: 100
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService

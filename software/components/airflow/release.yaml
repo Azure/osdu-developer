@@ -93,6 +93,7 @@ spec:
         AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
         AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
         AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
+        AIRFLOW__WEBSERVER__BASE_URL: "http://localhost/airflow"
         AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"
         AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
         AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True" 

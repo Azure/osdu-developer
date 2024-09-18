@@ -114,13 +114,10 @@ spec:
         value: "workflow"
       - name: AZURE_STORAGE_ENABLE_HTTPS
         value: "true"
-
-        
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
       - name: COSMOSDB_SYSTEM_DATABASE
         value: osdu-system-db
-
       - name: OSDU_AIRFLOW_USERNAME
         secret:
           name: azure-resources
@@ -129,7 +126,6 @@ spec:
         secret:
           name: azure-resources
           key: airflow-password
-
       - name: AIRFLOW_STORAGE_ACCOUNT_NAME
         secret:
           name: azure-resources
@@ -138,18 +134,14 @@ spec:
         secret:
           name: azure-resources
           key: azurestorageaccountkey
-
-      
-
       - name: AUTHORIZEAPI
         value: http://entitlements/api/entitlements/v2
       - name: AUTHORIZEAPIKEY
         value: "OBSOLETE"
       - name: OSDU_AIRFLOW_URL
-        value: "http://airflow-webserver.airflow.svc.cluster.local/airflow"
+        value: "http://airflow-web.airflow.svc.cluster.local/airflow"
       - name: DP_AIRFLOW_FOR_SYSTEM_DAG
         value: "false"
-      
       - name: OSDU_AIRFLOW_VERSION2_ENABLED
         value: true
       - name: PARTITION_SERVICE_ENDPOINT

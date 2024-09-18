@@ -118,14 +118,6 @@ spec:
         value: "osdu-db"
       - name: COSMOSDB_SYSTEM_DATABASE
         value: osdu-system-db
-      - name: OSDU_AIRFLOW_USERNAME
-        secret:
-          name: azure-resources
-          key: airflow-username
-      - name: OSDU_AIRFLOW_PASSWORD
-        secret:
-          name: azure-resources
-          key: airflow-password
       - name: AIRFLOW_STORAGE_ACCOUNT_NAME
         secret:
           name: azure-resources
@@ -134,19 +126,33 @@ spec:
         secret:
           name: azure-resources
           key: azurestorageaccountkey
+      - name: OSDU_AIRFLOW_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: azure-resources
+            key: airflow-password
+      - name: OSDU_AIRFLOW_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: azure-resources
+            key: airflow-username
       - name: AUTHORIZEAPI
         value: http://entitlements/api/entitlements/v2
       - name: AUTHORIZEAPIKEY
         value: "OBSOLETE"
-      - name: OSDU_AIRFLOW_URL
-        value: "http://airflow-web.airflow.svc.cluster.local:8080/airflow"
-      - name: DP_AIRFLOW_FOR_SYSTEM_DAG
-        value: "false"
-      - name: OSDU_AIRFLOW_VERSION2_ENABLED
-        value: true
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
       - name: OSDU_ENTITLEMENTS_URL
         value: "http://entitlements/api/entitlements/v2"
+      - name: OSDU_AIRFLOW_URL
+        value: "http://airflow-web.airflow.svc.cluster.local:8080/airflow"
       - name: OSDU_ENTITLEMENTS_APPKEY
         value: "OBSOLETE"
+      - name: OSDU_AIRFLOW_VERSION2_ENABLED
+        value: true
+      - name: DP_AIRFLOW_FOR_SYSTEM_DAG    
+        value: "false"
+      - name: IGNORE_DAGCONTENT    
+        value: "true"
+      - name: IGNORE_CUSTOMOPERATORCONTENT    
+        value: "true"

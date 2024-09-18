@@ -33,8 +33,10 @@ spec:
     - istio-system/external-gateway
   http:
     - match:
-        - uri:
-            prefix: "/airflow"
+      - uri:
+          prefix: "/airflow"
+      rewrite:
+        uri: "/"
       route:
         - destination:
             host: "airflow-web.airflow.svc.cluster.local"

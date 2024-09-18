@@ -139,7 +139,7 @@ spec:
       - name: AUTHORIZEAPIKEY
         value: "OBSOLETE"
       - name: OSDU_AIRFLOW_URL
-        value: "http://airflow-web.airflow.svc.cluster.local/airflow"
+        value: "http://airflow-web.airflow.svc.cluster.local"
       - name: DP_AIRFLOW_FOR_SYSTEM_DAG
         value: "false"
       - name: OSDU_AIRFLOW_VERSION2_ENABLED

@@ -1,42 +1,42 @@
----
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: default
-  namespace: airflow
-spec:
-  mtls:
-    mode: STRICT
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: airflow-rule
-  namespace: airflow
-spec:
-  host: airflow-web.airflow.svc.cluster.local
-  trafficPolicy:
-    connectionPool:
-      tcp:
-        maxConnections: 100
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: airflow
-  namespace: airflow
-spec:
-  hosts:
-    - "*"
-  gateways:
-    - istio-system/internal-gateway
-    - istio-system/external-gateway
-  http:
-    - match:
-        - uri:
-            prefix: "/airflow"
-      route:
-        - destination:
-            host: "airflow-web.airflow.svc.cluster.local"
-            port:
-              number: 8080
+# ---
+# apiVersion: security.istio.io/v1beta1
+# kind: PeerAuthentication
+# metadata:
+#   name: default
+#   namespace: airflow
+# spec:
+#   mtls:
+#     mode: STRICT
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: DestinationRule
+# metadata:
+#   name: airflow-rule
+#   namespace: airflow
+# spec:
+#   host: airflow-web.airflow.svc.cluster.local
+#   trafficPolicy:
+#     connectionPool:
+#       tcp:
+#         maxConnections: 100
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: airflow
+#   namespace: airflow
+# spec:
+#   hosts:
+#     - "*"
+#   gateways:
+#     - istio-system/internal-gateway
+#     - istio-system/external-gateway
+#   http:
+#     - match:
+#         - uri:
+#             prefix: "/airflow"
+#       route:
+#         - destination:
+#             host: "airflow-web.airflow.svc.cluster.local"
+#             port:
+#               number: 8080

@@ -213,7 +213,11 @@ spec:
         enabled: false
     web:
       enabled: true
-      baseUrl: "http://localhost/airflow"
+      path: "/airflow"
+    ingress:
+      enabled: true
+      web: 
+        path: "/airflow"
 
     # Use Existing Secrets for Fernet and Webserver Secret Keys
     fernetKey:

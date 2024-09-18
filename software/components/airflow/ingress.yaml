@@ -35,8 +35,6 @@ spec:
     - match:
       - uri:
           prefix: "/airflow"
-      rewrite:
-        uri: "/"
       route:
         - destination:
             host: "airflow-web.airflow.svc.cluster.local"

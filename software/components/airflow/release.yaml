@@ -91,6 +91,7 @@ spec:
         AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
         AIRFLOW__WEBSERVER__RBAC: "True"
         AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+        AIRFLOW__WEBSERVER__BASE_URL: "http://localhost:8080/airflow"
         AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE: "0"
         AIRFLOW__WEBSERVER__WORKER_CLASS: "gevent"
         AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.default"

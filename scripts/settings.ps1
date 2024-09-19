@@ -210,6 +210,7 @@ function New-VSCodeSettings {
       "src/core/storage": true,
       "src/core/search-service": true,
       "src/core/file": true,
+      "src/core/ingestion-workflow": true,
       "src/reference/unit-service": true,
       "src/reference/crs-catalog-service": true,
       "src/reference/crs-conversion-service": true

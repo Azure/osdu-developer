@@ -372,3 +372,26 @@ GET {{STORAGE_HOST}}/records/123
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
+
+
+
+# -----------------------
+# API: workflow
+# -----------------------
+@WORKFLOW_HOST = {{HOST_IP}}/api/workflow/v1
+
+###
+# @name info
+GET {{WORKFLOW_HOST}}/info
+Authorization: Bearer {{access_token}}
+Accept: application/json
+x-payload: <jwt_section>
+
+
+###
+# @name getAllWorkflow
+GET {{WORKFLOW_HOST}}/workflow
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+data-partition-id: {{data_partition_id}}
+x-payload: <jwt_section>

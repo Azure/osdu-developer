@@ -1,45 +1,45 @@
-# Configuring Application Insights for Workflow Service
+# Configuring Application Insights for Running Services Locally
 
-> **Note:** These instructions are for setting up Application Insights using the _Workflow Service_ as an example.
+OSDU has modified how Application Insights functions within its ecosystem. While these modifications are primarily on the server side, there is a specific requirement for local development:
+
+When running OSDU services locally, you must ensure that the standard Application Insights Java agent JAR file is available and configured as a java virtual machine argument.
+
+Note: If the Application Insights JAR file is not properly configured or available, you may encounter the following exception:
+
+   ```
+   Cannot invoke \"com.microsoft.applicationinsights.web.internal.RequestTelemetryContext.getHttpRequestTelemetry()\" because the return value of \"com.microsoft.applicationinsights.web.internal.ThreadContext.getRequestTelemetryContext()\" is null
+   ```
 
 ## Prerequisite
 
 1. Download the Application Insights Java Agent (Version 3.5.2) from the [official release page](https://github.com/microsoft/ApplicationInsights-Java/releases/tag/3.5.2) to a known location.
 
-   _In this solution, the Application Insights Java Agent has already been downloaded and is available in the current directory as `applicationinsights-agent-3.5.2.jar`._
-
-2. Note your Azure Application Insights Instrumentation Key.
 
 ## Configuration Options
 
-### Option 1: Command Line (Linux/macOS)
+### Option 1: Command Line
 
 1. Set the environment variable:
    ```bash
+   export APPINSIGHTS_LOGGING_ENABLED="true"
    export APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=<your_instrumentation_key>"
    ```
 
 2. Run your Java application:
    ```bash
-   # Using Java command
-   java -javaagent:/path/to/applicationinsights-agent-3.5.2.jar \
-        -DAPPINSIGHTS_LOGGING_ENABLED=true \
-        -cp your-classpath org.opengroup.osdu.workflow.provider.azure.WorkflowAzureApplication
-
    # Using Maven command
    mvn spring-boot:run -pl "$project_name" \
        -Dspring-boot.run.jvmArguments="-javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true"
    ```
-   Replace `/path/to/applicationinsights-agent-3.5.2.jar`, `your-classpath`, `$project_name`, and the main class as needed.
+   Replace `/path/to/applicationinsights-agent-3.5.2.jar`, and the `$project_name` as needed.
 
 ### Option 2: IntelliJ Configuration
 
 1. Go to **Run > Edit Configurations**.
-2. Select your application configuration (e.g., `WorkflowAzureApplication`).
+2. Select your application configuration
 3. In **VM Options**, add:
    ```
-   -javaagent:/path/to/applicationinsights-agent-3.5.2.jar
-   -DAPPINSIGHTS_LOGGING_ENABLED=true
+   -javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true
    ```
 4. In **Environment Variables**, add:
    - **Key**: `APPLICATIONINSIGHTS_CONNECTION_STRING`
@@ -59,7 +59,7 @@
          "type": "java",
          "name": "Launch WorkflowAzureApplication",
          "request": "launch",
-         "mainClass": "org.opengroup.osdu.workflow.provider.azure.WorkflowAzureApplication",
+         "mainClass": "org.opengroup.osdu.<your_project_name>",
          "vmArgs": "-javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true",
          "env": {
            "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=<your_instrumentation_key>"
@@ -68,6 +68,3 @@
      ]
    }
    ```
-
-3. Replace `/path/to/applicationinsights-agent-3.5.2.jar` and `<your_instrumentation_key>` with actual values.
-4. Save the file and press F5 to run the application.

@@ -517,6 +517,7 @@ Write-Host "=================================================================="
 $AKS_NAME = Get-AKSName
 Set-AuthIngress
 Get-RefreshToken
+Get-AppInsights
 New-EnvFile
 New-ServiceEnvFile
 # New-YamlFile

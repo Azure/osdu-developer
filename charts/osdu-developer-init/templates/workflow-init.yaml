@@ -46,113 +46,113 @@ spec:
           - name: script
             mountPath: "/script"
       restartPolicy: Never
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: workflow-init-script
-#   namespace: {{ $namespace }}
-# data:
-#   init.sh: |
-#     #!/bin/sh
-#     set -eu
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-init-script
+  namespace: {{ $namespace }}
+data:
+  init.sh: |
+    #!/bin/sh
+    set -eu
 
-#     apk add --no-cache curl jq
+    apk add --no-cache curl jq
 
-#     echo "=================================================================="
-#     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
-#     echo "=================================================================="
-#     echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
+    echo "=================================================================="
+    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "=================================================================="
+    echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
 
-#     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-#         --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-#         --header "content-type: application/x-www-form-urlencoded" \
-#         --data "grant_type=client_credentials" \
-#         --data "client_id=${AZURE_CLIENT_ID}" \
-#         --data "client_secret=${AZURE_CLIENT_SECRET}" \
-#         --data "resource=${AZURE_CLIENT_ID}")
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
+        --header "content-type: application/x-www-form-urlencoded" \
+        --data "grant_type=client_credentials" \
+        --data "client_id=${AZURE_CLIENT_ID}" \
+        --data "client_secret=${AZURE_CLIENT_SECRET}" \
+        --data "resource=${AZURE_CLIENT_ID}")
 
-#     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-#     BODY=${OUTPUT%???}
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
 
-#     if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
-#       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-#       exit 1
-#     fi
+    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      exit 1
+    fi
 
-#     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
-#     # First workflow
-#     WORKFLOW_NAME="Osdu_ingest"
-#     WORKFLOW_DESCRIPTION="Manifest Ingest workflow for OSDU"
+    # First workflow
+    WORKFLOW_NAME="Osdu_ingest"
+    WORKFLOW_DESCRIPTION="Manifest Ingest workflow for OSDU"
 
-#     echo "Registering workflow: $WORKFLOW_NAME"
-#     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-#       --url http://workflow.osdu-core/api/workflow/v1/workflow \
-#       --header "Host: workflow.osdu-core" \
-#       --header "accept: application/json" \
-#       --header "content-type: application/json" \
-#       --header "authorization: Bearer $TOKEN" \
-#       --header "data-partition-id: ${PARTITION}" \
-#       --data "{
-#         \"workflowName\": \"$WORKFLOW_NAME\",
-#         \"description\": \"$WORKFLOW_DESCRIPTION\",
-#         \"registrationInstructions\": {
-#           \"active\": true,
-#           \"dagName\": \"$WORKFLOW_NAME\",
-#           \"concurrentWorkflowRun\": 5,
-#           \"concurrentTaskRun\": 5,
-#           \"workflowDetailContent\": \"\",
-#           \"etc\": \"autotest\"
-#         }
-#       }")
+    echo "Registering workflow: $WORKFLOW_NAME"
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+      --url http://workflow.osdu-core/api/workflow/v1/workflow \
+      --header "Host: workflow.osdu-core" \
+      --header "accept: application/json" \
+      --header "content-type: application/json" \
+      --header "authorization: Bearer $TOKEN" \
+      --header "data-partition-id: ${PARTITION}" \
+      --data "{
+        \"workflowName\": \"$WORKFLOW_NAME\",
+        \"description\": \"$WORKFLOW_DESCRIPTION\",
+        \"registrationInstructions\": {
+          \"active\": true,
+          \"dagName\": \"$WORKFLOW_NAME\",
+          \"concurrentWorkflowRun\": 5,
+          \"concurrentTaskRun\": 5,
+          \"workflowDetailContent\": \"\",
+          \"etc\": \"autotest\"
+        }
+      }")
 
-#     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-#     BODY=${OUTPUT%???}
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
 
-#     if [ "$HTTP_STATUS_CODE" = "200" ]; then
-#       echo "Success: $(echo "$BODY" | jq .)"
-#     else
-#       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-#       echo "Response body: $BODY"
-#       exit 1
-#     fi
+    if [ "$HTTP_STATUS_CODE" = "200" ]; then
+      echo "Success: $(echo "$BODY" | jq .)"
+    else
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi
 
-#     # Second workflow
-#     WORKFLOW_NAME="Osdu_ingest_by_reference"
-#     WORKFLOW_DESCRIPTION="ManifestIngest by reference workflow for OSDU"
+    # Second workflow
+    WORKFLOW_NAME="Osdu_ingest_by_reference"
+    WORKFLOW_DESCRIPTION="ManifestIngest by reference workflow for OSDU"
 
-#     echo "Registering workflow: $WORKFLOW_NAME"
-#     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-#       --url http://workflow.osdu-core/api/workflow/v1/workflow \
-#       --header "Host: workflow.osdu-core" \
-#       --header "accept: application/json" \
-#       --header "content-type: application/json" \
-#       --header "authorization: Bearer $TOKEN" \
-#       --header "data-partition-id: ${PARTITION}" \
-#       --data "{
-#         \"workflowName\": \"$WORKFLOW_NAME\",
-#         \"description\": \"$WORKFLOW_DESCRIPTION\",
-#         \"registrationInstructions\": {
-#           \"active\": true,
-#           \"dagName\": \"$WORKFLOW_NAME\",
-#           \"concurrentWorkflowRun\": 5,
-#           \"concurrentTaskRun\": 5,
-#           \"workflowDetailContent\": \"\",
-#           \"etc\": \"autotest\"
-#         }
-#       }")
+    echo "Registering workflow: $WORKFLOW_NAME"
+    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+      --url http://workflow.osdu-core/api/workflow/v1/workflow \
+      --header "Host: workflow.osdu-core" \
+      --header "accept: application/json" \
+      --header "content-type: application/json" \
+      --header "authorization: Bearer $TOKEN" \
+      --header "data-partition-id: ${PARTITION}" \
+      --data "{
+        \"workflowName\": \"$WORKFLOW_NAME\",
+        \"description\": \"$WORKFLOW_DESCRIPTION\",
+        \"registrationInstructions\": {
+          \"active\": true,
+          \"dagName\": \"$WORKFLOW_NAME\",
+          \"concurrentWorkflowRun\": 5,
+          \"concurrentTaskRun\": 5,
+          \"workflowDetailContent\": \"\",
+          \"etc\": \"autotest\"
+        }
+      }")
 
-#     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-#     BODY=${OUTPUT%???}
+    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+    BODY=${OUTPUT%???}
 
-#     if [ "$HTTP_STATUS_CODE" = "200" ]; then
-#       echo "Success: $(echo "$BODY" | jq .)"
-#     else
-#       echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-#       echo "Response body: $BODY"
-#       exit 1
-#     fi
+    if [ "$HTTP_STATUS_CODE" = "200" ]; then
+      echo "Success: $(echo "$BODY" | jq .)"
+    else
+      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+      echo "Response body: $BODY"
+      exit 1
+    fi
 
-#     exit 0
+    exit 0
 {{- end }}

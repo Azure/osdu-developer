@@ -34,13 +34,14 @@ grant_type=client_credentials
 @data_partition_id = opendes
 
 
+
 ###
 # @name infoPartition
 GET {{PARTITION_HOST}}/info
-Authorization: Basic user:password
-# Authorization: Bearer {{access_token}}
+# Authorization: Basic user:password
+Authorization: Bearer {{access_token}}
 Accept: application/json
-
+# x-payload: <jwt_section>
 
 ###
 # @name createPartition
@@ -385,7 +386,7 @@ data-partition-id: {{DATA_PARTITION}}
 GET {{WORKFLOW_HOST}}/info
 Authorization: Bearer {{access_token}}
 Accept: application/json
-x-payload: <jwt_section>
+# x-payload: {{JWT_SECTION}}
 
 
 ###
@@ -394,4 +395,17 @@ GET {{WORKFLOW_HOST}}/workflow
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{data_partition_id}}
-x-payload: <jwt_section>
+# x-payload: {{JWT_SECTION}}
+
+
+###
+# @name runWorkflowExecution
+POST {{WORKFLOW_HOST}}/workflow/test_bash_operator/workflowRun
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+data-partition-id: {{data_partition_id}}
+
+{
+  "executionContext": {
+  }
+}

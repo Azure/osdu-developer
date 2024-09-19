@@ -126,16 +126,14 @@ spec:
         secret:
           name: azure-resources
           key: azurestorageaccountkey
-      - name: OSDU_AIRFLOW_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: azure-resources
-            key: airflow-password
       - name: OSDU_AIRFLOW_USERNAME
-        valueFrom:
-          secretKeyRef:
-            name: azure-resources
-            key: airflow-username
+        secret:
+          name: azure-resources
+          key: airflow-username
+      - name: OSDU_AIRFLOW_PASSWORD
+        secret:
+          name: azure-resources
+          key: airflow-password
       - name: AUTHORIZEAPI
         value: http://entitlements/api/entitlements/v2
       - name: AUTHORIZEAPIKEY

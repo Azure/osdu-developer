@@ -4,3 +4,4 @@ metadata:
   name: airflow
   labels:
     toolkit.fluxcd.io/tenant: dev-team
+    istio-injection: disabled

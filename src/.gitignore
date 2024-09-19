@@ -1,2 +1,4 @@
 .envrc
 *.yaml
+*.env
+applicationinsights-agent.jar

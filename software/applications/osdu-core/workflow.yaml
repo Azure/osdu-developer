@@ -114,22 +114,10 @@ spec:
         value: "workflow"
       - name: AZURE_STORAGE_ENABLE_HTTPS
         value: "true"
-
-        
       - name: COSMOSDB_DATABASE
         value: "osdu-db"
       - name: COSMOSDB_SYSTEM_DATABASE
         value: osdu-system-db
-
-      - name: OSDU_AIRFLOW_USERNAME
-        secret:
-          name: azure-resources
-          key: airflow-username
-      - name: OSDU_AIRFLOW_PASSWORD
-        secret:
-          name: azure-resources
-          key: airflow-password
-
       - name: AIRFLOW_STORAGE_ACCOUNT_NAME
         secret:
           name: azure-resources
@@ -138,23 +126,77 @@ spec:
         secret:
           name: azure-resources
           key: azurestorageaccountkey
-
-      
-
+      - name: OSDU_AIRFLOW_USERNAME
+        secret:
+          name: azure-resources
+          key: airflow-username
+      - name: OSDU_AIRFLOW_PASSWORD
+        secret:
+          name: azure-resources
+          key: airflow-password
       - name: AUTHORIZEAPI
         value: http://entitlements/api/entitlements/v2
       - name: AUTHORIZEAPIKEY
         value: "OBSOLETE"
-      - name: OSDU_AIRFLOW_URL
-        value: "http://airflow-webserver.airflow.svc.cluster.local/airflow"
-      - name: DP_AIRFLOW_FOR_SYSTEM_DAG
-        value: "false"
-      
-      - name: OSDU_AIRFLOW_VERSION2_ENABLED
-        value: true
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
       - name: OSDU_ENTITLEMENTS_URL
         value: "http://entitlements/api/entitlements/v2"
+      - name: OSDU_AIRFLOW_URL
+        value: "http://airflow-web.airflow.svc.cluster.local:8080/airflow"
       - name: OSDU_ENTITLEMENTS_APPKEY
         value: "OBSOLETE"
+      - name: OSDU_AIRFLOW_VERSION2_ENABLED
+        value: true
+      - name: DP_AIRFLOW_FOR_SYSTEM_DAG    
+        value: "false"
+      - name: IGNORE_DAGCONTENT    
+        value: "true"
+      - name: IGNORE_CUSTOMOPERATORCONTENT    
+        value: "true"
+---
+# Retrigger:  kubectl annotate helmrelease osdu-init-workflow fluxcd.io/retrigger=$(date +%s) -n osdu-core
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-init-workflow
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial" 
+spec:
+  dependsOn:
+    - name: osdu-workflow
+      namespace: osdu-core
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    installationType: osduCore
+    jobs:
+      workflowInit: true
+    partition: opendes
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id

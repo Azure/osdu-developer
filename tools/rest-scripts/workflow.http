@@ -37,7 +37,7 @@ grant_type=refresh_token
 @access_token = {{refresh.response.body.access_token}}
 @SERVICE_HOST = {{HOST}}/api/workflow/v1
 @data_partition_id = opendes
-@workflow_name = test_fetch_remote
+@workflow_name = test_bash_operator
 
 
 # -----------------------
@@ -76,9 +76,11 @@ data-partition-id: {{data_partition_id}}
   "description": "Test Register a Workflow",
   "registrationInstructions": {
     "active": true,
+    "dagName": "{{workflow_name}}",
     "concurrentWorkflowRun": 5,
     "concurrentTaskRun": 5,
-    "workflowDetailContent": ""
+    "workflowDetailContent": "",
+    "etc": "autotest"
   }
 }
 
@@ -89,6 +91,20 @@ GET {{SERVICE_HOST}}/workflow/{{workflow_name}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 data-partition-id: {{data_partition_id}}
+
+
+###
+# @name runWorkflowExecution
+POST {{SERVICE_HOST}}/workflow/{{workflow_name}}/workflowRun
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+data-partition-id: {{data_partition_id}}
+
+{
+  "executionContext": {
+  }
+}
+
 
 
 ###

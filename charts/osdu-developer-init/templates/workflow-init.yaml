@@ -84,14 +84,14 @@ data:
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
     # Define the list of workflow names and descriptions
-    declare -A WORKFLOWS=(
-      ["Osdu_ingest"]="Manifest Ingest workflow for OSDU"
-      ["Osdu_ingest_by_reference"]="ManifestIngest by reference workflow for OSDU"
-    )
+    WORKFLOW_NAMES=("Osdu_ingest" "Osdu_ingest_by_reference")
+    WORKFLOW_DESCRIPTIONS=("Manifest Ingest workflow for OSDU" "ManifestIngest by reference workflow for OSDU")
 
     # Loop through each workflow
-    for WORKFLOW_NAME in "${!WORKFLOWS[@]}"; do
-      WORKFLOW_DESCRIPTION="${WORKFLOWS[$WORKFLOW_NAME]}"
+    for i in "${!WORKFLOW_NAMES[@]}"; do
+      WORKFLOW_NAME="${WORKFLOW_NAMES[$i]}"
+      WORKFLOW_DESCRIPTION="${WORKFLOW_DESCRIPTIONS[$i]}"
+      
       echo "Registering workflow: $WORKFLOW_NAME"
       OUTPUT=$(curl -s -w "%{http_code}" --request POST \
         --url http://workflow.{{ $namespace }}/api/workflow/v1/workflow \

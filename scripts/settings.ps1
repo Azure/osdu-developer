@@ -460,6 +460,23 @@ function New-ServiceEnvFile {
     WriteBufferToFile
 }
 
+function Get-AppInsights {
+    Write-Host "`n=================================================================="
+    Write-Host "Downloading Application Insights Agent"
+    Write-Host "=================================================================="
+
+    $url = "https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.5.4/applicationinsights-agent-3.5.4.jar"
+    $outputPath = "./src/applicationinsights-agent.jar"
+
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $outputPath
+        Write-Host "Application Insights agent downloaded successfully to $outputPath"
+    } catch {
+        Write-Host "Error downloading Application Insights agent: $_"
+        exit 1
+    }
+}
+
 if ($Help) {
     Show-Help
     exit 0

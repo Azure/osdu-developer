@@ -345,6 +345,121 @@ function New-YamlFile {
     WriteBufferToFile
 }
 
+function New-ServiceEnvFile {
+    Write-Host "`n=================================================================="
+    Write-Host "Processing YAML file: ./scripts/template.yaml"
+    Write-Host "=================================================================="
+
+    # Read the YAML file
+    $yamlContent = Get-Content "./scripts/template.yaml" -Raw
+
+    # Find all levels of nodes using regex
+    $nodeMatches = [regex]::Matches($yamlContent, '(?m)^(\s*)(\w+):(.*)')
+
+    # Initialize variables
+    $currentLevel = -1
+    $nodePath = @()
+    $osduGroupNode = ""
+    $serviceNameNode = ""
+    $projectTaskNode = ""
+    $contentBuffer = @()
+    $captureContent = $false
+
+    # Function to write buffered content to file
+    function WriteBufferToFile {
+        if ($captureContent -and $contentBuffer.Count -gt 0) {
+            $outputFileName = "${projectTaskNode}_${serviceNameNode}.env".ToLower()
+            $outputPath = Join-Path $outputDirectory $outputFileName
+            $contentBuffer | Out-File -FilePath $outputPath -Encoding utf8
+            $contentBuffer.Clear()
+        }
+    }
+
+    # Function to replace environment variable placeholders
+    function Replace-EnvironmentVariables($value) {
+        return [regex]::Replace($value, '%(\w+)%', {
+            param($match)
+            $envVar = $match.Groups[1].Value
+            $envValue = [Environment]::GetEnvironmentVariable($envVar)
+            if ($null -ne $envValue) {
+                return $envValue
+            }
+            return $match.Value
+        })
+    }
+
+    # Process each line in the YAML file
+    foreach ($match in $nodeMatches) {
+        $indent = $match.Groups[1].Value.Length / 2
+        $nodeName = $match.Groups[2].Value
+        $nodeValue = $match.Groups[3].Value.Trim()
+
+        if ($indent -eq 0) {
+            WriteBufferToFile
+            $currentLevel = 0
+            $nodePath = @($nodeName)
+            $osduGroupNode = $nodeName
+            
+            $outputDirectory = "./src/$osduGroupNode".ToLower()
+            New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
+
+            $captureContent = $false
+        }
+        elseif ($indent -gt $currentLevel) {
+            if ($indent -eq 1) {
+                $serviceNameNode = $nodeName
+            }
+            elseif ($indent -eq 2) {
+                WriteBufferToFile
+                $projectTaskNode = $nodeName
+                $captureContent = $true
+            }
+            $currentLevel = $indent
+            $nodePath += $nodeName
+        }
+        elseif ($indent -eq $currentLevel) {
+            if ($indent -eq 1) {
+                WriteBufferToFile
+                $serviceNameNode = $nodeName
+            }
+            elseif ($indent -eq 2) {
+                WriteBufferToFile
+                $projectTaskNode = $nodeName
+                $captureContent = $true
+            }
+            $nodePath[-1] = $nodeName
+        }
+        else {
+            WriteBufferToFile
+            $nodePath = $nodePath[0..$indent] + @($nodeName)
+            $currentLevel = $indent
+            if ($currentLevel -eq 1) {
+                $serviceNameNode = $nodeName
+            }
+            elseif ($currentLevel -eq 2) {
+                $projectTaskNode = $nodeName
+                $captureContent = $true
+            }
+            else {
+                $captureContent = $false
+            }
+        }
+
+        # Capture content for child nodes of RUN and TEST (indent level 3)
+        if ($captureContent -and $indent -eq 3) {
+            if ($nodeValue -ne "") {
+                $replacedValue = Replace-EnvironmentVariables $nodeValue
+                $contentBuffer += "{0}={1}" -f $nodeName.ToUpper(), $replacedValue
+            } else {
+                $contentBuffer += "{0}=" -f $nodeName.ToUpper()
+            }
+        }
+    }
+
+    # Write the last file if there's content in the buffer
+    WriteBufferToFile
+}
+
 if ($Help) {
     Show-Help
     exit 0
@@ -386,5 +501,6 @@ $AKS_NAME = Get-AKSName
 Set-AuthIngress
 Get-RefreshToken
 New-EnvFile
-New-YamlFile
+New-ServiceEnvFile
+# New-YamlFile
 New-VSCodeSettings

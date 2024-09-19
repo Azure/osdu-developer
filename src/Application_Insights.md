@@ -12,7 +12,7 @@ Note: If the Application Insights JAR file is not properly configured or availab
 
 ## Prerequisite
 
-1. Download the Application Insights Java Agent (Version 3.5.2) from the [official release page](https://github.com/microsoft/ApplicationInsights-Java/releases/tag/3.5.2) to a known location.
+1. Download the Application Insights Java Agent (Version 3.5.4) from the [official release page](https://github.com/microsoft/ApplicationInsights-Java/releases/tag/3.5.4) to a known location.
 
 
 ## Configuration Options
@@ -29,9 +29,9 @@ Note: If the Application Insights JAR file is not properly configured or availab
    ```bash
    # Using Maven command
    mvn spring-boot:run -pl "$project_name" \
-       -Dspring-boot.run.jvmArguments="-javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true"
+       -Dspring-boot.run.jvmArguments="-javaagent:/path/to/applicationinsights-agent.jar -DAPPINSIGHTS_LOGGING_ENABLED=true"
    ```
-   Replace `/path/to/applicationinsights-agent-3.5.2.jar`, and the `$project_name` as needed.
+   Replace `/path/to/applicationinsights-agent.jar`, and the `$project_name` as needed.
 
 ### Option 2: IntelliJ Configuration
 
@@ -39,7 +39,7 @@ Note: If the Application Insights JAR file is not properly configured or availab
 2. Select your application configuration
 3. In **VM Options**, add:
    ```
-   -javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true
+   -javaagent:/path/to/applicationinsights-agent.jar -DAPPINSIGHTS_LOGGING_ENABLED=true
    ```
 4. In **Environment Variables**, add:
    - **Key**: `APPLICATIONINSIGHTS_CONNECTION_STRING`
@@ -60,7 +60,7 @@ Note: If the Application Insights JAR file is not properly configured or availab
          "name": "Launch WorkflowAzureApplication",
          "request": "launch",
          "mainClass": "org.opengroup.osdu.<your_project_name>",
-         "vmArgs": "-javaagent:/path/to/applicationinsights-agent-3.5.2.jar -DAPPINSIGHTS_LOGGING_ENABLED=true",
+         "vmArgs": "-javaagent:/path/to/applicationinsights-agent.jar -DAPPINSIGHTS_LOGGING_ENABLED=true",
          "env": {
            "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=<your_instrumentation_key>"
          }

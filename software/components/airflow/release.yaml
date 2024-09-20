@@ -99,9 +99,9 @@ spec:
         AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2000"
         AIRFLOW__CORE__DAG_CONCURRENCY: "2000"
         AIRFLOW__CORE__DAG_FILE_PROCESSOR_TIMEOUT: "1500"
-        AIRFLOW_VAR_CORE__INGESTION__BATCH_SAVE_SIZE: "500"
-        AIRFLOW_VAR_CORE__INGESTION__BATCH_COUNT: "5"
-        AIRFLOW_VAR_CORE__INGESTION__BATCH_SAVE_ENABLED: "true"
+        # AIRFLOW_VAR_CORE__INGESTION__BATCH_SAVE_SIZE: "500"
+        # AIRFLOW_VAR_CORE__INGESTION__BATCH_COUNT: "5"
+        # AIRFLOW_VAR_CORE__INGESTION__BATCH_SAVE_ENABLED: "true"
         AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
         AIRFLOW__WEBSERVER__BASE_URL: "http://localhost:8080/airflow"
         AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
@@ -115,18 +115,18 @@ spec:
         AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
         AIRFLOW_VAR_ENV_VARS_ENABLED: "True"
         AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True" 
-        AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
+        # AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
         AIRFLOW_VAR_ENTITLEMENTS_MODULE_NAME: "entitlements_client"
 
       extraEnv:
-        - name: ENVIRONMENT
-          value: "dev"
+        # - name: ENVIRONMENT
+        #   value: "dev"
         - name: CLOUD_PROVIDER
           value: "azure"
-        - name: CI_COMMIT_TAG
-          value: "v0.12.0"
-        - name: BUILD_TAG
-          value: "v0.12.0"
+        # - name: CI_COMMIT_TAG
+        #   value: "v0.12.0"
+        # - name: BUILD_TAG
+        #   value: "v0.12.0"
         - name: PYTHONPATH
           value: "/opt/airflow/dags:/opt/airflow"
         - name: AIRFLOW_VAR_AZURE_ENABLE_MSI

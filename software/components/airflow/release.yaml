@@ -149,8 +149,10 @@ spec:
           value: "http://file.osdu-core.svc.cluster.local/api/file"
         - name: AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST
           value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
-        - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__HOST
+        - name: AIRFLOW_VAR_CORE__SERVICE__DATASET__URL
           value: "http://dataset.osdu-core.svc.cluster.local/api/dataset/v1"
+        - name: AIRFLOW_VAR_CORE__SERVICE__WORKFLOW__HOST
+          value: "http://workflow.osdu-core.svc.cluster.local/api/workflow/v1"
         - name: AIRFLOW_VAR_AZURE_TENANT_ID
           valueFrom:
             secretKeyRef:

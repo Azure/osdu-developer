@@ -54,16 +54,16 @@ spec:
           email: admin@example.com
           firstName: admin
           lastName: admin
-      extraVolumeMounts:
-        ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volumemount-v1-core
-        - name: logs-volume
-          mountPath: /opt/airflow/logs
+      # extraVolumeMounts:
+      #   ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volumemount-v1-core
+      #   - name: logs-volume
+      #     mountPath: /opt/airflow/logs
 
-      extraVolumes:
-        ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volume-v1-core
-        - name: logs-volume
-          persistentVolumeClaim:
-            claimName: airflow-logs-pvc
+      # extraVolumes:
+      #   ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volume-v1-core
+      #   - name: logs-volume
+      #     persistentVolumeClaim:
+      #       claimName: airflow-logs-pvc
 
       # OSDU PIP Packages
       # 148 https://community.opengroup.org/osdu/platform/system/sdks/common-python-sdk
@@ -186,12 +186,12 @@ spec:
         existingClaim: airflow-dags-pvc
       gitSync:
         enabled: false
-    # logs:
-    #   path: /opt/airflow/logs
-    #   persistence:
-    #     enabled: true
-    #     existingClaim: airflow-logs-pvc
-    #     accessMode: ReadWriteMany
+    logs:
+      path: /opt/airflow/logs
+      persistence:
+        enabled: true
+        existingClaim: airflow-logs-pvc
+        accessMode: ReadWriteMany
     data:
       metadataSecretName: airflow-secrets
 

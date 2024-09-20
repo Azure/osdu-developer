@@ -184,12 +184,12 @@ spec:
         existingClaim: airflow-dags-pvc
       gitSync:
         enabled: false
-    logs:
-      path: /opt/airflow/logs
-      persistence:
-        enabled: true
-        existingClaim: airflow-logs-pvc
-        accessMode: ReadWriteMany
+    # logs:
+    #   path: /opt/airflow/logs
+    #   persistence:
+    #     enabled: true
+    #     existingClaim: airflow-logs-pvc
+    #     accessMode: ReadWriteMany
     data:
       metadataSecretName: airflow-secrets
 

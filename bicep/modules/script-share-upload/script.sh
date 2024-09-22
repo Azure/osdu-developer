@@ -25,12 +25,14 @@ if [[ ${URL} == *.tar.gz ]]; then
     # Extract the tar.gz file
     tar -xzf ${url_basename} --strip-components=1 -C extracted_files
     
-    if [[ ${compress} == true ]]; then
+    if [[ ${compress} == "True" ]]; then
         echo "Creating tar.gz of contents of ${FILE} and uploading it compressed up to file share ${SHARE}"
-        tar_name="${url_basename%.tar.gz}_dags.tar.gz"
-        tar -czf ${tar_name} -C extracted_files/${FILE} .
-        az storage file upload -s ${SHARE} --source ./${tar_name} -onone
-        echo "Tar.gz file ${tar_name} uploaded to file share ${SHARE}."
+        # Remove the original downloaded tar file
+        rm ${url_basename}
+        # Create a new tar file with the same name
+        tar -czf ${url_basename} -C extracted_files/${FILE} .
+        az storage file upload -s ${SHARE} --source ./${url_basename} -onone
+        echo "Tar.gz file ${url_basename} uploaded to file share ${SHARE}."
     else
         # Batch upload the extracted files to the file share using the specified pattern
         echo "Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**"

@@ -4,7 +4,7 @@ set -e
 echo "Waiting on Identity RBAC replication (${initialDelay})"
 sleep ${initialDelay}
 
-# Installing curl
+# Installing required packages
 apk add --no-cache curl
 
 # Derive the filename from the URL
@@ -25,9 +25,17 @@ if [[ ${URL} == *.tar.gz ]]; then
     # Extract the tar.gz file
     tar -xzf ${url_basename} --strip-components=1 -C extracted_files
     
-    # Batch upload the extracted files to the file share using the specified pattern
-    echo "Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**"
-    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern "${FILE}/**" --no-progress -onone
+    if [[ ${compress} == true ]]; then
+        echo "Creating tar.gz of contents of ${FILE} and uploading it compressed up to file share ${SHARE}"
+        tar_name="${url_basename%.tar.gz}_dags.tar.gz"
+        tar -czf ${tar_name} -C extracted_files/${FILE} .
+        az storage file upload -s ${SHARE} --source ./${tar_name} -onone
+        echo "Tar.gz file ${tar_name} uploaded to file share ${SHARE}."
+    else
+        # Batch upload the extracted files to the file share using the specified pattern
+        echo "Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**"
+        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern "${FILE}/**" --no-progress -onone
+    fi
     echo "Files from ${url_basename} uploaded to file share ${SHARE}."
 else
     # Upload the file to the file share, overwriting if it exists

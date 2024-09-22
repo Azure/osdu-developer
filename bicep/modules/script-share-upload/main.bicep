@@ -14,6 +14,9 @@ param filename string = 'sample.json'
 @description('Name of the file as it is stored in the share')
 param fileurl string = 'https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md'
 
+@description('If the file is a tar.gz, should the contents be zipped when uploaded')
+param compress bool = false
+
 @description('The location of the Storage Account and where to deploy the module resources to')
 param location string = resourceGroup().location
 
@@ -88,6 +91,7 @@ resource uploadFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
       { name: 'URL', value: fileurl }
       { name: 'SHARE', value: shareName }
       { name: 'initialDelay', value: initialScriptDelay }
+      { name: 'compress', value: string(compress) }
     ]
     scriptContent: loadTextContent('script.sh')
     cleanupPreference: cleanupPreference

@@ -10,7 +10,7 @@ apk add --no-cache curl zip
 # Download and extract the file
 url_basename=$(basename "${URL}")
 echo "Downloading and extracting file from ${URL}"
-curl -sL "${URL}" | unzip -d extracted_files -
+curl -sL "${URL}" -o temp.zip && unzip temp.zip -d extracted_files && rm temp.zip
 
 # Process csv-parser.py file if it exists
 if [ -f "extracted_files/csv-parser.py" ]; then
@@ -28,8 +28,9 @@ fi
 
 # Create and upload zip file
 echo "Creating zip of contents and uploading to file share ${SHARE}"
-zip_filename="${url_basename%.tar.gz}.zip"
+zip_filename="${url_basename}"
 (cd extracted_files && zip -r "../${zip_filename}" .)
+rm -rf extracted_files
 az storage file upload -s "${SHARE}" --source "./${zip_filename}" -o none
 echo "Zip file ${zip_filename} uploaded to file share ${SHARE}."
 

@@ -710,6 +710,21 @@ resource aks_admin_role_assignment 'Microsoft.Authorization/roleAssignments@2022
   }
 }
 
+resource appConfigExtension 'Microsoft.KubernetesConfiguration/extensions@2023-05-01' = {
+  name: 'appconfigurationkubernetesprovider'
+  scope: aks
+  properties: {
+    autoUpgradeMinorVersion: true
+    configurationSettings: {
+      'global.clusterType': 'managedclusters'
+      replicaCount: '2'
+    }
+    extensionType: 'microsoft.appconfiguration'
+    releaseTrain: 'preview'
+    version: '2.0.0-preview'
+  }
+}
+
 
 /*
  _______  __       __    __  ___   ___ 
@@ -742,6 +757,17 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2023-05-01' = i
   dependsOn: [daprExtension] //Chaining dependencies because of: https://github.com/Azure/AKS-Construction/issues/385
 }
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
+
+
+/*
+ _______       ___      .______   .______      
+|       \     /   \     |   _  \  |   _  \     
+|  .--.  |   /  ^  \    |  |_)  | |  |_)  |    
+|  |  |  |  /  /_\  \   |   ___/  |      /     
+|  '--'  | /  _____  \  |  |      |  |\  \----.
+|_______/ /__/     \__\ | _|      | _| `._____|
+*/                                               
+
 
 @description('Add the Dapr extension')
 param daprAddon bool = false

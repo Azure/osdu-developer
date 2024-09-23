@@ -438,21 +438,20 @@ module manifestDagShareUpload './script-share-upload/main.bicep' = {
   }
 }
 
-// module csvDagShareUpload './script-share-upload/main.bicep' = {
-//   name: '${bladeConfig.sectionName}-storage-dag-upload-csv'
-//   params: {
-//     storageAccountName: configStorage.outputs.name
-//     location: location
-//     shareName: 'airflow-dags'
-//     filename: 'airflowdags'
-//     compress: true
-//     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
-//     useExistingManagedIdentity: true
-//     managedIdentityName: deploymentScriptIdentity
-//     existingManagedIdentitySubId: subscription().subscriptionId
-//     existingManagedIdentityResourceGroupName:resourceGroup().name
-//   }
-// }
+module csvDagShareUpload './script-share-csvdag/main.bicep' = {
+  name: '${bladeConfig.sectionName}-storage-dag-upload-csv'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    shareName: 'airflow-dags'
+    filename: 'airflowdags'
+    fileurl: 'https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/main/dags/csv_parser.zip'
+    useExistingManagedIdentity: true
+    managedIdentityName: deploymentScriptIdentity
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}
 
 /*
   _______ .______          ___      .______    __    __  

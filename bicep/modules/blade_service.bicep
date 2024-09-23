@@ -561,23 +561,23 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
 /////////////////
 // Helm Charts 
 /////////////////
-module helmAppConfigProvider './aks-run-command/main.bicep' = {
-  name: '${bladeConfig.sectionName}-helm-appconfig-provider'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    initialScriptDelay: '130s'
+// module helmAppConfigProvider './aks-run-command/main.bicep' = {
+//   name: '${bladeConfig.sectionName}-helm-appconfig-provider'
+//   params: {
+//     aksName: cluster.outputs.aksClusterName
+//     location: location
+//     initialScriptDelay: '130s'
 
-    newOrExistingManagedIdentity: 'existing'
-    managedIdentityName: managedIdentityName
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
+//     newOrExistingManagedIdentity: 'existing'
+//     managedIdentityName: managedIdentityName
+//     existingManagedIdentitySubId: subscription().subscriptionId
+//     existingManagedIdentityResourceGroupName:resourceGroup().name
 
-    commands: [
-      'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
-    ]
-  }
-}
+//     commands: [
+//       'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
+//     ]
+//   }
+// }
 
 
 

@@ -5,7 +5,7 @@ echo "Waiting on Identity RBAC replication (${initialDelay})"
 sleep ${initialDelay}
 
 # Installing required packages
-apk add --no-cache curl
+apk add --no-cache curl zip
 
 # Derive the filename from the URL
 url_basename=$(basename ${URL})
@@ -26,13 +26,14 @@ if [[ ${URL} == *.tar.gz ]]; then
     tar -xzf ${url_basename} --strip-components=1 -C extracted_files
     
     if [[ ${compress} == "True" ]]; then
-        echo "Creating tar.gz of contents of ${FILE} and uploading it compressed up to file share ${SHARE}"
+        echo "Creating zip of contents of ${FILE} and uploading it compressed up to file share ${SHARE}"
         # Remove the original downloaded tar file
         rm ${url_basename}
-        # Create a new tar file with the same name
-        tar -czf ${url_basename} -C extracted_files/${FILE} .
-        az storage file upload -s ${SHARE} --source ./${url_basename} -onone
-        echo "Tar.gz file ${url_basename} uploaded to file share ${SHARE}."
+        # Create a new zip file with the desired name
+        zip_filename="${url_basename%.tar.gz}.zip"
+        zip -r ${zip_filename} -j extracted_files/${FILE}/*
+        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone
+        echo "Zip file ${zip_filename} uploaded to file share ${SHARE}."
     else
         # Batch upload the extracted files to the file share using the specified pattern
         echo "Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**"

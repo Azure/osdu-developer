@@ -38,6 +38,8 @@ spec:
               secretKeyRef:
                 name: {{ .Values.clientSecret.name | quote }}
                 key: {{ .Values.clientSecret.key | quote }}
+          - name: WORKFLOWS
+            value: {{ .Values.workflows | toJson | quote }}
       containers:
       - name: sleep
         image: istio/base
@@ -54,8 +56,9 @@ metadata:
   namespace: {{ $namespace }}
 data:
   init.sh: |
-    #!/bin/sh
-    set -eu
+   #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
 
     apk add --no-cache curl jq
 
@@ -82,77 +85,58 @@ data:
 
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
-    # First workflow
-    WORKFLOW_NAME="Osdu_ingest"
-    WORKFLOW_DESCRIPTION="Manifest Ingest workflow for OSDU"
+    # Log the WORKFLOWS variable to check its format
+    echo "WORKFLOWS: $WORKFLOWS"
 
-    echo "Registering workflow: $WORKFLOW_NAME"
-    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-      --url http://workflow.osdu-core/api/workflow/v1/workflow \
-      --header "Host: workflow.osdu-core" \
-      --header "accept: application/json" \
-      --header "content-type: application/json" \
-      --header "authorization: Bearer $TOKEN" \
-      --header "data-partition-id: ${PARTITION}" \
-      --data "{
-        \"workflowName\": \"$WORKFLOW_NAME\",
-        \"description\": \"$WORKFLOW_DESCRIPTION\",
-        \"registrationInstructions\": {
-          \"active\": true,
-          \"dagName\": \"$WORKFLOW_NAME\",
-          \"concurrentWorkflowRun\": 5,
-          \"concurrentTaskRun\": 5,
-          \"workflowDetailContent\": \"\",
-          \"etc\": \"autotest\"
-        }
-      }")
-
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
-
-    if [ "$HTTP_STATUS_CODE" = "200" ]; then
-      echo "Success: $(echo "$BODY" | jq .)"
-    else
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      echo "Response body: $BODY"
+    # Ensure WORKFLOWS is properly formatted JSON
+    if ! echo "$WORKFLOWS" | jq empty; then
+      echo "Error: WORKFLOWS is not valid JSON"
       exit 1
     fi
 
-    # Second workflow
-    WORKFLOW_NAME="Osdu_ingest_by_reference"
-    WORKFLOW_DESCRIPTION="ManifestIngest by reference workflow for OSDU"
+    # Iterate over each workflow in the WORKFLOWS array
+    echo "$WORKFLOWS" | jq -c '.[]' | while read -r WORKFLOW; do
+      # Debugging: Log the current workflow being processed
+      echo "Processing workflow: $WORKFLOW"
 
-    echo "Registering workflow: $WORKFLOW_NAME"
-    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-      --url http://workflow.osdu-core/api/workflow/v1/workflow \
-      --header "Host: workflow.osdu-core" \
-      --header "accept: application/json" \
-      --header "content-type: application/json" \
-      --header "authorization: Bearer $TOKEN" \
-      --header "data-partition-id: ${PARTITION}" \
-      --data "{
-        \"workflowName\": \"$WORKFLOW_NAME\",
-        \"description\": \"$WORKFLOW_DESCRIPTION\",
-        \"registrationInstructions\": {
-          \"active\": true,
-          \"dagName\": \"$WORKFLOW_NAME\",
-          \"concurrentWorkflowRun\": 5,
-          \"concurrentTaskRun\": 5,
-          \"workflowDetailContent\": \"\",
-          \"etc\": \"autotest\"
-        }
-      }")
+      WORKFLOW_NAME=$(echo $WORKFLOW | jq -r '.name')
+      WORKFLOW_DESCRIPTION=$(echo $WORKFLOW | jq -r '.description')
 
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
+      echo "Registering workflow: $WORKFLOW_NAME"
+      OUTPUT=$(curl -s -w "%{http_code}" --request POST \
+        --url http://workflow.osdu-core/api/workflow/v1/workflow/system \
+        --header "Host: workflow.osdu-core" \
+        --header "accept: application/json" \
+        --header "content-type: application/json" \
+        --header "authorization: Bearer $TOKEN" \
+        --header "data-partition-id: ${PARTITION}" \
+        --data "{
+          \"workflowName\": \"$WORKFLOW_NAME\",
+          \"description\": \"$WORKFLOW_DESCRIPTION\",
+          \"registrationInstructions\": {
+            \"active\": true,
+            \"dagName\": \"$WORKFLOW_NAME\",
+            \"concurrentWorkflowRun\": 5,
+            \"concurrentTaskRun\": 5,
+            \"workflowDetailContent\": \"\",
+            \"etc\": \"autotest\"
+          }
+        }")
 
-    if [ "$HTTP_STATUS_CODE" = "200" ]; then
-      echo "Success: $(echo "$BODY" | jq .)"
-    else
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      echo "Response body: $BODY"
-      exit 1
-    fi
+      HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
+      BODY=${OUTPUT%???}
+
+      if [ "$HTTP_STATUS_CODE" = "200" ]; then
+        echo "Info: Workflow created. HTTP status code $HTTP_STATUS_CODE"
+      elif [ "$HTTP_STATUS_CODE" = "409" ]; then
+        echo "Info: Workflow already exists. HTTP status code $HTTP_STATUS_CODE"
+        echo "Response body: $BODY"
+      else
+        echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
+        echo "Response body: $BODY"
+        exit 1
+      fi
+    done
 
     exit 0
 {{- end }}

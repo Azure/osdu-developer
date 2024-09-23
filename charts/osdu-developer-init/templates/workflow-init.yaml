@@ -85,11 +85,20 @@ data:
 
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
-    # Convert JSON string to array
+    # Log the WORKFLOWS variable to check its format
     echo "WORKFLOWS: $WORKFLOWS"
-    WORKFLOWS=$(echo $WORKFLOWS | jq -c '.[]')
 
-    for WORKFLOW in $WORKFLOWS; do
+    # Ensure WORKFLOWS is properly formatted JSON
+    if ! echo "$WORKFLOWS" | jq empty; then
+      echo "Error: WORKFLOWS is not valid JSON"
+      exit 1
+    fi
+
+    # Iterate over each workflow in the WORKFLOWS array
+    echo "$WORKFLOWS" | jq -c '.[]' | while read -r WORKFLOW; do
+      # Debugging: Log the current workflow being processed
+      echo "Processing workflow: $WORKFLOW"
+
       WORKFLOW_NAME=$(echo $WORKFLOW | jq -r '.name')
       WORKFLOW_DESCRIPTION=$(echo $WORKFLOW | jq -r '.description')
 

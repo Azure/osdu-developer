@@ -31,7 +31,18 @@ if [[ ${URL} == *.tar.gz ]]; then
         rm ${url_basename}
         # Create a new zip file with the desired name
         zip_filename="${url_basename%.tar.gz}.zip"
-        zip -r ${zip_filename} -j extracted_files/${FILE}/*
+
+        # Save the current working directory
+        original_dir=$(pwd)
+
+        # Navigate to the extracted_files/${FILE} directory
+        cd extracted_files/${FILE}
+
+        # Create the zip from the contents without including the extracted_files/${FILE} path itself
+        zip -r ${original_dir}/${zip_filename} *
+        # Navigate back to the original directory
+        cd ${original_dir}
+        # Upload the zip file to the file share
         az storage file upload -s ${SHARE} --source ./${zip_filename} -onone
         echo "Zip file ${zip_filename} uploaded to file share ${SHARE}."
     else

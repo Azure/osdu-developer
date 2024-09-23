@@ -56,8 +56,9 @@ metadata:
   namespace: {{ $namespace }}
 data:
   init.sh: |
-    #!/bin/sh
-    set -eu
+   #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
 
     apk add --no-cache curl jq
 
@@ -85,6 +86,7 @@ data:
     TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
 
     # Convert JSON string to array
+    echo "WORKFLOWS: $WORKFLOWS"
     WORKFLOWS=$(echo $WORKFLOWS | jq -c '.[]')
 
     for WORKFLOW in $WORKFLOWS; do

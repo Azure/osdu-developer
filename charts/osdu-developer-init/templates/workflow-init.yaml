@@ -117,6 +117,9 @@ data:
 
       if [ "$HTTP_STATUS_CODE" = "200" ]; then
         echo "Success: $(echo "$BODY" | jq .)"
+      elif [ "$HTTP_STATUS_CODE" = "409" ]; then
+        echo "Info: Workflow already exists. HTTP status code $HTTP_STATUS_CODE"
+        echo "Response body: $BODY"
       else
         echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
         echo "Response body: $BODY"

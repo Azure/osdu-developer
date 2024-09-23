@@ -438,36 +438,6 @@ module manifestDagShareUpload './script-share-upload/main.bicep' = {
   }
 }
 
-// module manifestDagShareUpload './script-share-upload/main.bicep' = {
-//   name: '${bladeConfig.sectionName}-storage-dag-upload-manifest'
-//   params: {
-//     storageAccountName: configStorage.outputs.name
-//     location: location
-//     shareName: 'airflow-dags'
-//     filename: 'osdu-ingest-r3.py'
-//     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3.py'
-//     useExistingManagedIdentity: true
-//     managedIdentityName: deploymentScriptIdentity
-//     existingManagedIdentitySubId: subscription().subscriptionId
-//     existingManagedIdentityResourceGroupName:resourceGroup().name
-//   }
-// }
-
-// module manifestRefDagShareUpload './script-share-upload/main.bicep' = {
-//   name: '${bladeConfig.sectionName}-storage-dag-upload-manifest-by-ref'
-//   params: {
-//     storageAccountName: configStorage.outputs.name
-//     location: location
-//     shareName: 'airflow-dags'
-//     filename: 'osdu-ingest-r3-by-reference.py'
-//     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3-by-reference.py'
-//     useExistingManagedIdentity: true
-//     managedIdentityName: deploymentScriptIdentity
-//     existingManagedIdentitySubId: subscription().subscriptionId
-//     existingManagedIdentityResourceGroupName:resourceGroup().name
-//   }
-// }
-
 /*
   _______ .______          ___      .______    __    __  
  /  _____||   _  \        /   \     |   _  \  |  |  |  | 

@@ -104,7 +104,7 @@ data:
 
       echo "Registering workflow: $WORKFLOW_NAME"
       OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-        --url http://workflow.osdu-core/api/workflow/v1/workflow \
+        --url http://workflow.osdu-core/api/workflow/v1/workflow/system \
         --header "Host: workflow.osdu-core" \
         --header "accept: application/json" \
         --header "content-type: application/json" \

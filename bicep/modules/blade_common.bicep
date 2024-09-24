@@ -445,7 +445,7 @@ module csvDagShareUpload './script-share-csvdag/main.bicep' = {
     location: location
     shareName: 'airflow-dags'
     filename: 'airflowdags'
-    fileurl: 'https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/csv/dags/csv_parser.zip'
+    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
     useExistingManagedIdentity: true
     managedIdentityName: deploymentScriptIdentity
     existingManagedIdentitySubId: subscription().subscriptionId

@@ -14,7 +14,7 @@ param shareName string = 'sample-share'
 param filename string = 'sample.json'
 
 @description('Name of the file as it is stored in the share')
-param fileurl string = 'https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/main/dags/csv_parser.zip'
+param fileurl string = 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
 
 @description('The location of the Storage Account and where to deploy the module resources to')
 param location string = resourceGroup().location
@@ -69,6 +69,18 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(
   }
 }
 
+var searchAndReplace = [ 
+  {
+    find: '{| DAG_NAME |}'
+    replace: 'csv-parser'
+  }
+  {
+    find: '{| DOCKER_IMAGE |}'
+    replace: 'msosdu.azurecr.io/csv-parser-msi:v5'
+  }
+
+]
+
 resource uploadFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'script-${storageAccount.name}-${replace(replace(filename, ':', ''), '/', '-')}'
   location: location
@@ -90,6 +102,7 @@ resource uploadFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
       { name: 'URL', value: fileurl }
       { name: 'SHARE', value: shareName }
       { name: 'initialDelay', value: initialScriptDelay }
+      { name: 'SEARCH_AND_REPLACE', value: string(searchAndReplace) }
     ]
     scriptContent: loadTextContent('script.sh')
     cleanupPreference: cleanupPreference

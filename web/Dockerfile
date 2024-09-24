@@ -1,20 +1,19 @@
 # Use the official Bun image
-FROM oven/bun:latest
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy package.json and bun.lockb (if exists)
-COPY package.json bun.lockb* ./
+FROM oven/bun:1 AS base
+WORKDIR /usr/src/app
 
 # Install dependencies
-RUN bun install
+COPY package.json bun.lockb ./
+RUN bun install --frozen-lockfile
 
 # Copy the rest of the application code
 COPY . .
 
-# Expose port 8000
-EXPOSE 8000
+# Set environment to production
+ENV NODE_ENV=production
 
-# Start the Bun application
-CMD ["bun", "run", "start"]
+# Expose the port your app runs on
+EXPOSE 8080
+
+# Run the app
+CMD ["bun", "run", "index.ts"]

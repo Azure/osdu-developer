@@ -376,152 +376,64 @@ module pool3 './aks_agent_pool.bicep' = {
 }
 
 
-
-// Federated Credentials have to be sequentially added.  Ensure depends on to do sequentially.
-module federatedCredsDefaultNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_default'
-  params: {
+/////////////////
+// Federated
+/////////////////
+var federatedIdentityCredentials = [
+  {
     name: 'federated-ns_default'
+    subject: 'system:serviceaccount:default:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_osdu-core'
+    subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_airflow'
+    subject: 'system:serviceaccount:airflow:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_postgresql'
+    subject: 'system:serviceaccount:postgresql:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_azappconfig-system'
+    subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
+  }
+  {
+    name: 'federated-ns_osdu-system'
+    subject: 'system:serviceaccount:osdu-system:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_elastic-search'
+    subject: 'system:serviceaccount:elastic-search:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_osdu-auth'
+    subject: 'system:serviceaccount:osdu-auth:workload-identity-sa'
+  }
+  {
+    name: 'federated-ns_osdu-reference'
+    subject: 'system:serviceaccount:osdu-reference:workload-identity-sa'
+  }
+]
+
+@batchSize(1)
+module federatedCredentials './federated_identity.bicep' = [for (cred, index) in federatedIdentityCredentials: {
+  name: '${bladeConfig.sectionName}-${cred.name}'
+  params: {
+    name: cred.name
     audiences: [
       'api://AzureADTokenExchange'
     ]
     issuer: cluster.outputs.aksOidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:default:workload-identity-sa'
+    subject: cred.subject
   }
   dependsOn: [
     cluster
   ]
-}
-
-module federatedCredsOsduCoreNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-core'
-  params: {
-    name: 'federated-ns_osdu-core'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:osdu-core:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsDefaultNamespace
-  ]
-}
-
-module federatedCredsAirflowNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_airflow'
-  params: {
-    name: 'federated-ns_airflow'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:airflow:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsOsduCoreNamespace
-  ]
-}
-
-module federatedCredsPostgreSqlNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_postgresql'
-  params: {
-    name: 'federated-ns_postgresql'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:postgresql:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsAirflowNamespace
-  ]
-}
-
-module federatedCredsConfigMapsNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_config-maps'
-  params: {
-    name: 'federated-ns_azappconfig-system'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider'
-  }
-  dependsOn: [
-    federatedCredsPostgreSqlNamespace
-  ]
-}
-
-module federatedCredsOsduSystem './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-system'
-  params: {
-    name: 'federated-ns_osdu-system'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:osdu-system:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsConfigMapsNamespace
-  ]
-}
-
-module federatedCredsElasticNamespace './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_elastic-search'
-  params: {
-    name: 'federated-ns_elastic-search'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:elastic-search:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsOsduSystem
-  ]
-}
-
-module federatedCredsOsduAuth './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-auth'
-  params: {
-    name: 'federated-ns_osdu-auth'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:osdu-auth:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsElasticNamespace
-  ]
-}
-
-module federatedCredsOsduReference './federated_identity.bicep' = {
-  name: '${bladeConfig.sectionName}-federated-cred-ns_osdu-reference'
-  params: {
-    name: 'federated-ns_osdu-reference'
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
-    userAssignedIdentityName: appIdentity.name
-    subject: 'system:serviceaccount:osdu-reference:workload-identity-sa'
-  }
-  dependsOn: [
-    federatedCredsOsduAuth
-  ]
-}
-
+}]
 
 module appRoleAssignments './app_assignments.bicep' = {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac'
@@ -531,15 +443,7 @@ module appRoleAssignments './app_assignments.bicep' = {
     storageName: storageName
   }
   dependsOn: [
-    federatedCredsDefaultNamespace
-    federatedCredsOsduCoreNamespace
-    federatedCredsAirflowNamespace
-    federatedCredsPostgreSqlNamespace
-    federatedCredsConfigMapsNamespace
-    federatedCredsElasticNamespace
-    federatedCredsOsduSystem
-    federatedCredsOsduAuth
-    federatedCredsOsduReference
+    federatedCredentials
   ]
 }
 
@@ -550,34 +454,30 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
     storageName: name
   }
   dependsOn: [
-    federatedCredsDefaultNamespace
-    federatedCredsOsduCoreNamespace
-    federatedCredsOsduReference
-    federatedCredsPostgreSqlNamespace
-    federatedCredsConfigMapsNamespace
+    federatedCredentials
   ]
 }]
 
 /////////////////
 // Helm Charts 
 /////////////////
-// module helmAppConfigProvider './aks-run-command/main.bicep' = {
-//   name: '${bladeConfig.sectionName}-helm-appconfig-provider'
-//   params: {
-//     aksName: cluster.outputs.aksClusterName
-//     location: location
-//     initialScriptDelay: '130s'
+module helmAppConfigProvider './aks-run-command/main.bicep' = {
+  name: '${bladeConfig.sectionName}-helm-appconfig-provider'
+  params: {
+    aksName: cluster.outputs.aksClusterName
+    location: location
+    initialScriptDelay: '130s'
 
-//     newOrExistingManagedIdentity: 'existing'
-//     managedIdentityName: managedIdentityName
-//     existingManagedIdentitySubId: subscription().subscriptionId
-//     existingManagedIdentityResourceGroupName:resourceGroup().name
+    newOrExistingManagedIdentity: 'existing'
+    managedIdentityName: managedIdentityName
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
 
-//     commands: [
-//       'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
-//     ]
-//   }
-// }
+    commands: [
+      'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
+    ]
+  }
+}
 
 
 
@@ -798,64 +698,6 @@ module appConfigMap './aks-config-map/main.bicep' = {
 |  | |_ | |  |     |  |     |  |  |  | |   ___/   \   \    
 |  |__| | |  |     |  |     |  `--'  | |  |   .----)   |   
  \______| |__|     |__|      \______/  | _|   |_______/                                                          
-*/
-
-//--------------Flux Config---------------
-module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
-  name: '${bladeConfig.sectionName}-cluster-gitops'
-  params: {
-    name: serviceLayerConfig.gitops.name
-    location: location
-    namespace: cluster.outputs.fluxReleaseNamespace
-    clusterName: cluster.outputs.aksClusterName
-    scope: 'cluster'
-    sourceKind: 'GitRepository'
-    gitRepository: {
-      url: serviceLayerConfig.gitops.url
-      timeoutInSeconds: 180
-      syncIntervalInSeconds: 300
-      repositoryRef: {
-        branch: serviceLayerConfig.gitops.branch
-        tag: serviceLayerConfig.gitops.tag
-      }
-    }
-    kustomizations: {
-      components: {
-        path: serviceLayerConfig.gitops.components
-        timeoutInSeconds: 300
-        syncIntervalInSeconds: 300
-        retryIntervalInSeconds: 300
-        prune: true
-      }
-      applications: {
-        path: serviceLayerConfig.gitops.applications
-        dependsOn: [
-          'components'
-        ]
-        timeoutInSeconds: 300
-        syncIntervalInSeconds: 300
-        retryIntervalInSeconds: 300
-        prune: true
-      }
-    } 
-  }
-  dependsOn: [
-    app_config
-    appConfigMap
-    pool1
-    pool2
-    pool3
-  ]
-}
-
-
-/*
-.___  ___.   ______   .__   __.  __  .___________.  ______   .______      
-|   \/   |  /  __  \  |  \ |  | |  | |           | /  __  \  |   _  \     
-|  \  /  | |  |  |  | |   \|  | |  | `---|  |----`|  |  |  | |  |_)  |    
-|  |\/|  | |  |  |  | |  . `  | |  |     |  |     |  |  |  | |      /     
-|  |  |  | |  `--'  | |  |\   | |  |     |  |     |  `--'  | |  |\  \----.
-|__|  |__|  \______/  |__| \__| |__|     |__|      \______/  | _| `._____|
 */
 
 var name = 'amw${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'

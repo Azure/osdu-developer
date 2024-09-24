@@ -700,6 +700,64 @@ module appConfigMap './aks-config-map/main.bicep' = {
  \______| |__|     |__|      \______/  | _|   |_______/                                                          
 */
 
+//--------------Flux Config---------------
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
+  name: '${bladeConfig.sectionName}-cluster-gitops'
+  params: {
+    name: serviceLayerConfig.gitops.name
+    location: location
+    namespace: cluster.outputs.fluxReleaseNamespace
+    clusterName: cluster.outputs.aksClusterName
+    scope: 'cluster'
+    sourceKind: 'GitRepository'
+    gitRepository: {
+      url: serviceLayerConfig.gitops.url
+      timeoutInSeconds: 180
+      syncIntervalInSeconds: 300
+      repositoryRef: {
+        branch: serviceLayerConfig.gitops.branch
+        tag: serviceLayerConfig.gitops.tag
+      }
+    }
+    kustomizations: {
+      components: {
+        path: serviceLayerConfig.gitops.components
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+      applications: {
+        path: serviceLayerConfig.gitops.applications
+        dependsOn: [
+          'components'
+        ]
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+    } 
+  }
+  dependsOn: [
+    app_config
+    appConfigMap
+    pool1
+    pool2
+    pool3
+  ]
+}
+
+
+/*
+.___  ___.   ______   .__   __.  __  .___________.  ______   .______      
+|   \/   |  /  __  \  |  \ |  | |  | |           | /  __  \  |   _  \     
+|  \  /  | |  |  |  | |   \|  | |  | `---|  |----`|  |  |  | |  |_)  |    
+|  |\/|  | |  |  |  | |  . `  | |  |     |  |     |  |  |  | |      /     
+|  |  |  | |  `--'  | |  |\   | |  |     |  |     |  `--'  | |  |\  \----.
+|__|  |__|  \______/  |__| \__| |__|     |__|      \______/  | _| `._____|
+*/
+
 var name = 'amw${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
 
 module prometheus 'aks_prometheus.bicep' = if(enableMonitoring) {

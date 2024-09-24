@@ -18,7 +18,7 @@ param applicationClientSecret string
 param applicationClientPrincipalOid string
 
 @description('Feature Flag: Enable Burstable Server Types')
-param enableBurstable bool = true
+param enableBurstable bool = false
 
 @description('Use customized server types.')
 param customVMSize string = ''

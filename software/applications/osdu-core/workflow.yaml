@@ -189,8 +189,8 @@ spec:
         description: "Manifest Ingest workflow for OSDU"
       - name: "Osdu_ingest_by_reference"
         description: "Manifest Ingest by reference workflow for OSDU"
-      # - name: 'csv-parser'
-      #   description: 'CSV Parser workflow for OSDU'
+      - name: 'csv-parser'
+        description: 'CSV Parser workflow for OSDU'
     partition: opendes
     clientSecret:
       name: active-directory

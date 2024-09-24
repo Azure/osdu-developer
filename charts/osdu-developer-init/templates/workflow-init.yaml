@@ -109,7 +109,6 @@ data:
         --header "accept: application/json" \
         --header "content-type: application/json" \
         --header "authorization: Bearer $TOKEN" \
-        --header "data-partition-id: ${PARTITION}" \
         --data "{
           \"workflowName\": \"$WORKFLOW_NAME\",
           \"description\": \"$WORKFLOW_DESCRIPTION\",

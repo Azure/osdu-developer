@@ -22,14 +22,18 @@ set -e
 # 
 # The SEARCH_AND_REPLACE variable is required for the script to perform the find/replace operations.
 
-
+# Ensure necessary packages are installed
+apk add --no-cache curl zip jq
 
 echo "Waiting on Identity RBAC replication (${initialDelay})"
 sleep "${initialDelay}"
-apk add --no-cache curl zip
+
+echo "###########################"
+echo "${SEARCH_AND_REPLACE}"
+echo "###########################"
 
 # Download the source code and extract it.
-url_basename=$(basename ${URL})
+url_basename=$(basename "${URL}")
 echo "Derived filename from URL: ${url_basename}"
 echo "Downloading file from ${URL} to ${url_basename}"
 curl -so "${url_basename}" "${URL}"
@@ -37,40 +41,94 @@ echo "Extracting tar.gz archive..."
 mkdir -p extracted_files
 tar -xzf "${url_basename}" --strip-components=1 -C extracted_files
 
-
-# Find and Replace.
+# Process the replacements
 csv_file="extracted_files/${FILE}/csv_ingestion_all_steps.py"
+output_file="extracted_files/${FILE}/csv-parser.py"
+
 if [ -f "${csv_file}" ]; then
     echo "Processing ${csv_file} file"
 
-    # Escape patterns for sed
-    escape_sed_pattern() {
-        printf '%s' "$1" | sed 's/[\/&]/\\&/g; s/[][$.*^]/\\&/g'
-    }
-    escape_sed_replacement() {
-        printf '%s' "$1" | sed 's/[\/&]/\\&/g'
-    }
+    # Number of replacements
+    num_replacements=$(echo "${SEARCH_AND_REPLACE}" | jq '. | length')
 
-    # Create sed script from search and replace JSON
-    sed_script_file="sed_script.sed"
+    # Initialize arrays
+    declare -a finds
+    declare -a replaces
+    declare -a replace_types
 
-    echo "${SEARCH_AND_REPLACE}" | jq -c '.[]' | while IFS= read -r item; do
-        find=$(echo "$item" | jq -r '.find')
-        replace=$(echo "$item" | jq -r '.replace')
-
-        find_escaped=$(escape_sed_pattern "$find")
-        replace_escaped=$(escape_sed_replacement "$replace")
-
-        echo "find: ${find_escaped}"
-        echo "replace: ${replace_escaped}"
-
-        echo "s/${find_escaped}/${replace_escaped}/g" >> "$sed_script_file"
+    # Build arrays
+    for (( idx=0; idx<${num_replacements}; idx++ )); do
+        finds[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].find")
+        replace_type=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].replace | type")
+        replace_types[$idx]=$replace_type
+        if [ "$replace_type" == "string" ]; then
+            replaces[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].replace")
+        else
+            replaces[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -c ".[$idx].replace")
+        fi
     done
 
-    echo "Running sed script:"
-    cat "$sed_script_file"
-    sed -f "$sed_script_file" "$csv_file" > "extracted_files/${FILE}/csv-parser.py"
-    rm "$sed_script_file"
+    # Empty the output file
+    > "$output_file"
+
+    # Read the input file line by line
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        replaced=0
+        # For each 'find'/'replace' pair
+        for idx in "${!finds[@]}"; do
+            find_placeholder="${finds[$idx]}"
+            replace_value="${replaces[$idx]}"
+            replace_type="${replace_types[$idx]}"
+
+            if [[ "$line" == *"$find_placeholder"* ]]; then
+                # Line contains the placeholder
+
+                if [ "$replace_type" == "object" ]; then
+                    # 'replace_value' is a JSON object
+
+                    # Split the line at the placeholder
+                    line_before_placeholder="${line%%$find_placeholder*}"
+                    line_after_placeholder="${line#*$find_placeholder}"
+
+                    # Get the indentation of the line up to the placeholder
+                    leading_spaces=$(echo "$line_before_placeholder" | sed -n 's/^\(\s*\).*$/\1/p')
+
+                    # Format the JSON with jq
+                    formatted_json=$(echo "$replace_value" | jq '.')
+
+                    # Indent the JSON
+                    indented_json=$(echo "$formatted_json" | sed "s/^/${leading_spaces}/")
+
+                    # Output the line before the placeholder (excluding placeholder)
+                    echo -n "$line_before_placeholder" >> "$output_file"
+
+                    # Output the indented JSON
+                    echo "$indented_json" >> "$output_file"
+
+                    # Output the rest of the line after the placeholder, if any
+                    if [ -n "$line_after_placeholder" ]; then
+                        echo "$line_after_placeholder" >> "$output_file"
+                    fi
+                else
+                    # 'replace_value' is a string
+
+                    # Replace the placeholder in the line
+                    replaced_line="${line//$find_placeholder/$replace_value}"
+
+                    # Output the modified line
+                    echo "$replaced_line" >> "$output_file"
+                fi
+                replaced=1
+                break  # Skip checking other placeholders for this line
+            fi
+        done
+        if [[ $replaced -eq 0 ]]; then
+            # Line did not contain any placeholder
+            echo "$line" >> "$output_file"
+        fi
+    done < "$csv_file"
+
+    # Remove the original file
     rm "$csv_file"
 fi
 

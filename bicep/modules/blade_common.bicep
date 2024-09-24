@@ -446,6 +446,10 @@ module csvDagShareUpload './script-share-csvdag/main.bicep' = {
     shareName: 'airflow-dags'
     filename: 'airflowdags'
     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
+    keyVaultUrl: keyvault.outputs.uri
+    insightsKey: insights.outputs.instrumentationKey
+    clientId: applicationClientId
+    clientSecret: applicationClientSecret
     useExistingManagedIdentity: true
     managedIdentityName: deploymentScriptIdentity
     existingManagedIdentitySubId: subscription().subscriptionId

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: osdu-developer-web
+spec:
+  containers:
+  - name: osdu-developer-web
+    image: ghcr.io/azure/osdu-developer-web@sha256:adae56db15596f294b296143b806e1c575b84d065104e8095de2241ad14369a0
+    ports:
+    - containerPort: 8080

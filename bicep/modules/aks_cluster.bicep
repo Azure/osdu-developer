@@ -710,7 +710,7 @@ resource aks_admin_role_assignment 'Microsoft.Authorization/roleAssignments@2022
   }
 }
 
-// Haven't figured out how to use existing managed identity to deploy appconfig provider
+// Haven't figured out how to use this properly yet.
 // resource appConfigExtension 'Microsoft.KubernetesConfiguration/extensions@2023-05-01' = {
 //   name: 'appconfigurationkubernetesprovider'
 //   scope: aks
@@ -718,7 +718,7 @@ resource aks_admin_role_assignment 'Microsoft.Authorization/roleAssignments@2022
 //     autoUpgradeMinorVersion: true
 //     configurationSettings: {
 //       'global.clusterType': 'managedclusters'
-//       replicaCount: '2'
+//       autoscaling.enabled: true
 //     }
 //     extensionType: 'microsoft.appconfiguration'
 //     releaseTrain: 'preview'

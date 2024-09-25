@@ -3,7 +3,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: default
-  namespace: podinfo
+  namespace: web-site
 spec:
   mtls:
     mode: STRICT
@@ -11,10 +11,10 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: podinfo-rule
-  namespace: podinfo
+  name: web-site-rule
+  namespace: web-site
 spec:
-  host: podinfo.podinfo.svc.cluster.local
+  host: osdu-developer-web-service.web-site.svc.cluster.local
   trafficPolicy:
     connectionPool:
       tcp:
@@ -25,8 +25,8 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: podinfo
-  namespace: podinfo
+  name: web-site
+  namespace: web-site
 spec:
   hosts:
     - "*"
@@ -39,6 +39,6 @@ spec:
             prefix: "/"
       route:
         - destination:
-            host: "podinfo.podinfo.svc.cluster.local"
+            host: "osdu-developer-web-service.web-site.svc.cluster.local"
             port:
-              number: 9898
+              number: 80

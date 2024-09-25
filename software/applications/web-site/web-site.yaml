@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: osdu-developer-web-service
+  namespace: web-site
+spec:
+  selector:
+    app: osdu-developer-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osdu-developer-web
+  namespace: web-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: osdu-developer-web
+  template:
+    metadata:
+      labels:
+        app: osdu-developer-web
+    spec:
+      containers:
+      - name: osdu-developer-web
+        image: ghcr.io/azure/osdu-developer-web:main
+        ports:
+        - containerPort: 8080

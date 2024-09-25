@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: osdu-developer-web
-  namespace: podifno
+  namespace: podinfo
 spec:
   containers:
   - name: osdu-developer-web

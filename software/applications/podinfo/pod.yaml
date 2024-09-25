@@ -6,6 +6,6 @@ metadata:
 spec:
   containers:
   - name: osdu-developer-web
-    image: ghcr.io/azure/osdu-developer-web@sha256:adae56db15596f294b296143b806e1c575b84d065104e8095de2241ad14369a0
+    image: ghcr.io/azure/osdu-developer-web:latst
     ports:
     - containerPort: 8080

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "12596840464775111595"
+      "version": "0.30.3.12046",
+      "templateHash": "13924199608065401236"
     }
   },
   "parameters": {
@@ -42,7 +42,7 @@
     },
     "enableBurstable": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Feature Flag: Enable Burstable Server Types"
       }
@@ -2723,8 +2723,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "15758492391386666349"
+              "version": "0.30.3.12046",
+              "templateHash": "12045495439191437354"
             }
           },
           "definitions": {
@@ -6434,8 +6434,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "13164503856605854094"
+              "version": "0.30.3.12046",
+              "templateHash": "10536620446948711342"
             }
           },
           "definitions": {
@@ -9824,8 +9824,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "14446374829066371704"
+                      "version": "0.30.3.12046",
+                      "templateHash": "5634874870603793956"
                     }
                   },
                   "parameters": {
@@ -9967,8 +9967,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "8917691388228346170"
+                      "version": "0.30.3.12046",
+                      "templateHash": "4408585520791152409"
                     },
                     "name": "SSH Key Pair",
                     "description": "This module creates a SSH Key Pair and stores it in an Azure Key Vault",
@@ -10210,8 +10210,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "8013250558188455393"
+                      "version": "0.30.3.12046",
+                      "templateHash": "3727121459426501422"
                     },
                     "name": "Key Vault Certificate",
                     "description": "This module creates a Key Vault Certificate and stores it in an Azure Key Vault",
@@ -10593,8 +10593,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1268765607862445897"
+                      "version": "0.30.3.12046",
+                      "templateHash": "7362171094959692262"
                     }
                   },
                   "parameters": {
@@ -10773,8 +10773,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1387341905440195071"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9962101337573956047"
                             }
                           },
                           "parameters": {
@@ -10895,8 +10895,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15828452477141958846"
+                              "version": "0.30.3.12046",
+                              "templateHash": "3768640963133954337"
                             }
                           },
                           "parameters": {
@@ -11102,8 +11102,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "11314640625553577874"
+                      "version": "0.30.3.12046",
+                      "templateHash": "2877460459862957830"
                     }
                   },
                   "parameters": {
@@ -11681,8 +11681,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "10642602546309979595"
+                              "version": "0.30.3.12046",
+                              "templateHash": "1008471461780882626"
                             }
                           },
                           "parameters": {
@@ -11803,8 +11803,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -11893,8 +11893,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -11983,8 +11983,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12073,8 +12073,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12163,8 +12163,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12253,8 +12253,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12343,8 +12343,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12433,8 +12433,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12523,8 +12523,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12613,8 +12613,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -12738,8 +12738,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1268765607862445897"
+                      "version": "0.30.3.12046",
+                      "templateHash": "7362171094959692262"
                     }
                   },
                   "parameters": {
@@ -12918,8 +12918,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1387341905440195071"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9962101337573956047"
                             }
                           },
                           "parameters": {
@@ -13040,8 +13040,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15828452477141958846"
+                              "version": "0.30.3.12046",
+                              "templateHash": "3768640963133954337"
                             }
                           },
                           "parameters": {
@@ -13226,8 +13226,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1430893790712936976"
+                      "version": "0.30.3.12046",
+                      "templateHash": "14693358046329652656"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13260,6 +13260,13 @@
                       "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
                       "metadata": {
                         "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "compress": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "If the file is a tar.gz, should the contents be zipped when uploaded"
                       }
                     },
                     "location": {
@@ -13332,7 +13339,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing required packages\napk add --no-cache curl zip\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    if [[ ${compress} == \"True\" ]]; then\n        echo \"Creating zip of contents of ${FILE} and uploading it compressed up to file share ${SHARE}\"\n        # Remove the original downloaded tar file\n        rm ${url_basename}\n        # Create a new zip file with the desired name\n        zip_filename=\"${url_basename%.tar.gz}.zip\"\n\n        # Save the current working directory\n        original_dir=$(pwd)\n\n        # Navigate to the extracted_files/${FILE} directory\n        cd extracted_files/${FILE}\n\n        # Create the zip from the contents without including the extracted_files/${FILE} path itself\n        zip -r ${original_dir}/${zip_filename} *\n        # Navigate back to the original directory\n        cd ${original_dir}\n        # Upload the zip file to the file share\n        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone\n        echo \"Zip file ${zip_filename} uploaded to file share ${SHARE}.\"\n    else\n        # Batch upload the extracted files to the file share using the specified pattern\n        echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    fi\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
                   },
                   "resources": [
                     {
@@ -13398,6 +13405,10 @@
                           {
                             "name": "initialDelay",
                             "value": "[parameters('initialScriptDelay')]"
+                          },
+                          {
+                            "name": "compress",
+                            "value": "[string(parameters('compress'))]"
                           }
                         ],
                         "scriptContent": "[variables('$fxv#0')]",
@@ -13459,8 +13470,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1430893790712936976"
+                      "version": "0.30.3.12046",
+                      "templateHash": "14693358046329652656"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13493,6 +13504,13 @@
                       "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
                       "metadata": {
                         "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "compress": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "If the file is a tar.gz, should the contents be zipped when uploaded"
                       }
                     },
                     "location": {
@@ -13565,7 +13583,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing required packages\napk add --no-cache curl zip\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    if [[ ${compress} == \"True\" ]]; then\n        echo \"Creating zip of contents of ${FILE} and uploading it compressed up to file share ${SHARE}\"\n        # Remove the original downloaded tar file\n        rm ${url_basename}\n        # Create a new zip file with the desired name\n        zip_filename=\"${url_basename%.tar.gz}.zip\"\n\n        # Save the current working directory\n        original_dir=$(pwd)\n\n        # Navigate to the extracted_files/${FILE} directory\n        cd extracted_files/${FILE}\n\n        # Create the zip from the contents without including the extracted_files/${FILE} path itself\n        zip -r ${original_dir}/${zip_filename} *\n        # Navigate back to the original directory\n        cd ${original_dir}\n        # Upload the zip file to the file share\n        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone\n        echo \"Zip file ${zip_filename} uploaded to file share ${SHARE}.\"\n    else\n        # Batch upload the extracted files to the file share using the specified pattern\n        echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    fi\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
                   },
                   "resources": [
                     {
@@ -13631,6 +13649,10 @@
                           {
                             "name": "initialDelay",
                             "value": "[parameters('initialScriptDelay')]"
+                          },
+                          {
+                            "name": "compress",
+                            "value": "[string(parameters('compress'))]"
                           }
                         ],
                         "scriptContent": "[variables('$fxv#0')]",
@@ -13692,8 +13714,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1430893790712936976"
+                      "version": "0.30.3.12046",
+                      "templateHash": "14693358046329652656"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13726,6 +13748,13 @@
                       "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
                       "metadata": {
                         "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "compress": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "If the file is a tar.gz, should the contents be zipped when uploaded"
                       }
                     },
                     "location": {
@@ -13798,7 +13827,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing required packages\napk add --no-cache curl zip\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    if [[ ${compress} == \"True\" ]]; then\n        echo \"Creating zip of contents of ${FILE} and uploading it compressed up to file share ${SHARE}\"\n        # Remove the original downloaded tar file\n        rm ${url_basename}\n        # Create a new zip file with the desired name\n        zip_filename=\"${url_basename%.tar.gz}.zip\"\n\n        # Save the current working directory\n        original_dir=$(pwd)\n\n        # Navigate to the extracted_files/${FILE} directory\n        cd extracted_files/${FILE}\n\n        # Create the zip from the contents without including the extracted_files/${FILE} path itself\n        zip -r ${original_dir}/${zip_filename} *\n        # Navigate back to the original directory\n        cd ${original_dir}\n        # Upload the zip file to the file share\n        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone\n        echo \"Zip file ${zip_filename} uploaded to file share ${SHARE}.\"\n    else\n        # Batch upload the extracted files to the file share using the specified pattern\n        echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    fi\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
                   },
                   "resources": [
                     {
@@ -13864,6 +13893,10 @@
                           {
                             "name": "initialDelay",
                             "value": "[parameters('initialScriptDelay')]"
+                          },
+                          {
+                            "name": "compress",
+                            "value": "[string(parameters('compress'))]"
                           }
                         ],
                         "scriptContent": "[variables('$fxv#0')]",
@@ -13901,10 +13934,13 @@
                     "value": "airflow-dags"
                   },
                   "filename": {
-                    "value": "osdu-ingest-r3.py"
+                    "value": "src/osdu_dags"
+                  },
+                  "compress": {
+                    "value": true
                   },
                   "fileurl": {
-                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3.py"
+                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
                   },
                   "useExistingManagedIdentity": {
                     "value": true
@@ -13925,8 +13961,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1430893790712936976"
+                      "version": "0.30.3.12046",
+                      "templateHash": "14693358046329652656"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -13959,6 +13995,13 @@
                       "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
                       "metadata": {
                         "description": "Name of the file as it is stored in the share"
+                      }
+                    },
+                    "compress": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "If the file is a tar.gz, should the contents be zipped when uploaded"
                       }
                     },
                     "location": {
@@ -14031,7 +14074,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing required packages\napk add --no-cache curl zip\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    if [[ ${compress} == \"True\" ]]; then\n        echo \"Creating zip of contents of ${FILE} and uploading it compressed up to file share ${SHARE}\"\n        # Remove the original downloaded tar file\n        rm ${url_basename}\n        # Create a new zip file with the desired name\n        zip_filename=\"${url_basename%.tar.gz}.zip\"\n\n        # Save the current working directory\n        original_dir=$(pwd)\n\n        # Navigate to the extracted_files/${FILE} directory\n        cd extracted_files/${FILE}\n\n        # Create the zip from the contents without including the extracted_files/${FILE} path itself\n        zip -r ${original_dir}/${zip_filename} *\n        # Navigate back to the original directory\n        cd ${original_dir}\n        # Upload the zip file to the file share\n        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone\n        echo \"Zip file ${zip_filename} uploaded to file share ${SHARE}.\"\n    else\n        # Batch upload the extracted files to the file share using the specified pattern\n        echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    fi\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
                   },
                   "resources": [
                     {
@@ -14097,6 +14140,10 @@
                           {
                             "name": "initialDelay",
                             "value": "[parameters('initialScriptDelay')]"
+                          },
+                          {
+                            "name": "compress",
+                            "value": "[string(parameters('compress'))]"
                           }
                         ],
                         "scriptContent": "[variables('$fxv#0')]",
@@ -14114,10 +14161,10 @@
                 "configStorage"
               ]
             },
-            "manifestRefDagShareUpload": {
+            "csvDagShareUpload": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('{0}-storage-dag-upload-manifest-by-ref', parameters('bladeConfig').sectionName)]",
+              "name": "[format('{0}-storage-dag-upload-csv', parameters('bladeConfig').sectionName)]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -14134,10 +14181,22 @@
                     "value": "airflow-dags"
                   },
                   "filename": {
-                    "value": "osdu-ingest-r3-by-reference.py"
+                    "value": "airflowdags"
                   },
                   "fileurl": {
-                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/raw/master/src/osdu_dags/osdu-ingest-r3-by-reference.py"
+                    "value": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz"
+                  },
+                  "keyVaultUrl": {
+                    "value": "[reference('keyvault').outputs.uri.value]"
+                  },
+                  "insightsKey": {
+                    "value": "[reference('insights').outputs.instrumentationKey.value]"
+                  },
+                  "clientId": {
+                    "value": "[parameters('applicationClientId')]"
+                  },
+                  "clientSecret": {
+                    "value": "[parameters('applicationClientSecret')]"
                   },
                   "useExistingManagedIdentity": {
                     "value": true
@@ -14158,8 +14217,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1430893790712936976"
+                      "version": "0.30.3.12046",
+                      "templateHash": "1563512430026851955"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -14189,7 +14248,7 @@
                     },
                     "fileurl": {
                       "type": "string",
-                      "defaultValue": "https://raw.githubusercontent.com/Azure/osdu-developer/main/README.md",
+                      "defaultValue": "https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz",
                       "metadata": {
                         "description": "Name of the file as it is stored in the share"
                       }
@@ -14261,10 +14320,77 @@
                       "metadata": {
                         "description": "When the script resource is cleaned up"
                       }
+                    },
+                    "keyVaultUrl": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Keyvault url"
+                      }
+                    },
+                    "insightsKey": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "App Insights Instrumentation Key"
+                      }
+                    },
+                    "clientId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Client Id for the service principal"
+                      }
+                    },
+                    "clientSecret": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Client Secret for the service principal"
+                      }
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#!/bin/bash\nset -e\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep ${initialDelay}\n\n# Installing curl\napk add --no-cache curl\n\n# Derive the filename from the URL\nurl_basename=$(basename ${URL})\necho \"Derived filename from URL: ${url_basename}\"\n\n# Download the file using curl\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so ${url_basename} ${URL}\n\n# Check if the URL indicates a tar.gz file\nif [[ ${URL} == *.tar.gz ]]; then\n    echo \"URL indicates a tar.gz archive. Extracting contents...\"\n    \n    # Create a directory for extracted files\n    mkdir -p extracted_files\n    \n    # Extract the tar.gz file\n    tar -xzf ${url_basename} --strip-components=1 -C extracted_files\n    \n    # Batch upload the extracted files to the file share using the specified pattern\n    echo \"Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**\"\n    az storage file upload-batch -d ${SHARE} --source extracted_files --pattern \"${FILE}/**\" --no-progress -onone\n    echo \"Files from ${url_basename} uploaded to file share ${SHARE}.\"\nelse\n    # Upload the file to the file share, overwriting if it exists\n    echo \"Uploading file ${FILE} to file share ${SHARE}\"\n    az storage file upload -s ${SHARE} --source ./${FILE} -onone\n    echo \"File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed.\"\nfi"
+                    "$fxv#0": "#!/bin/bash\nset -e\n\n# This script performs the following tasks:\n# 1. Waits for Identity RBAC replication.\n# 2. Installs required packages.\n# 3. Downloads a tar.gz file from a specified URL and extracts its contents.\n# 4. Processes a specific Python file within the extracted contents, performing complex find/replace operations based on a provided JSON configuration.\n# 5. Compresses the DAG and uploads it to a file share.\n# \n# The pattern of the SEARCH_AND_REPLACE variable is as follows:\n# [\n#   {\n#     \"find\": \"{| DAG_NAME |}\",\n#     \"replace\": \"csv-parser\"\n#   },\n#   {\n#     \"find\": \"{| DOCKER_IMAGE |}\",\n#     \"replace\": \"msosdu.azurecr.io/csv-parser-msi:v5\"\n#   }\n# ]\n# \n# The SEARCH_AND_REPLACE variable is required for the script to perform the find/replace operations.\n\n# Ensure necessary packages are installed\napk add --no-cache curl zip jq\n\necho \"Waiting on Identity RBAC replication (${initialDelay})\"\nsleep \"${initialDelay}\"\n\necho \"###########################\"\necho \"${SEARCH_AND_REPLACE}\"\necho \"###########################\"\n\n# Download the source code and extract it.\nurl_basename=$(basename \"${URL}\")\necho \"Derived filename from URL: ${url_basename}\"\necho \"Downloading file from ${URL} to ${url_basename}\"\ncurl -so \"${url_basename}\" \"${URL}\"\necho \"Extracting tar.gz archive...\"\nmkdir -p extracted_files\ntar -xzf \"${url_basename}\" --strip-components=1 -C extracted_files\n\n# Process the replacements\ncsv_file=\"extracted_files/${FILE}/csv_ingestion_all_steps.py\"\noutput_file=\"extracted_files/${FILE}/csv-parser.py\"\n\nif [ -f \"${csv_file}\" ]; then\n    echo \"Processing ${csv_file} file\"\n\n    # Number of replacements\n    num_replacements=$(echo \"${SEARCH_AND_REPLACE}\" | jq '. | length')\n\n    # Initialize arrays\n    declare -a finds\n    declare -a replaces\n    declare -a replace_types\n\n    # Build arrays\n    for (( idx=0; idx<${num_replacements}; idx++ )); do\n        finds[$idx]=$(echo \"${SEARCH_AND_REPLACE}\" | jq -r \".[$idx].find\")\n        replace_type=$(echo \"${SEARCH_AND_REPLACE}\" | jq -r \".[$idx].replace | type\")\n        replace_types[$idx]=$replace_type\n        if [ \"$replace_type\" == \"string\" ]; then\n            replaces[$idx]=$(echo \"${SEARCH_AND_REPLACE}\" | jq -r \".[$idx].replace\")\n        else\n            replaces[$idx]=$(echo \"${SEARCH_AND_REPLACE}\" | jq -c \".[$idx].replace\")\n        fi\n    done\n\n    # Empty the output file\n    > \"$output_file\"\n\n    # Read the input file line by line\n    while IFS= read -r line || [[ -n \"$line\" ]]; do\n        replaced=0\n        # For each 'find'/'replace' pair\n        for idx in \"${!finds[@]}\"; do\n            find_placeholder=\"${finds[$idx]}\"\n            replace_value=\"${replaces[$idx]}\"\n            replace_type=\"${replace_types[$idx]}\"\n\n            if [[ \"$line\" == *\"$find_placeholder\"* ]]; then\n                # Line contains the placeholder\n\n                if [ \"$replace_type\" == \"object\" ]; then\n                    # 'replace_value' is a JSON object\n\n                    # Split the line at the placeholder\n                    line_before_placeholder=\"${line%%$find_placeholder*}\"\n                    line_after_placeholder=\"${line#*$find_placeholder}\"\n\n                    # Get the indentation of the line up to the placeholder\n                    leading_spaces=$(echo \"$line_before_placeholder\" | sed -n 's/^\\(\\s*\\).*$/\\1/p')\n\n                    # Format the JSON with jq\n                    formatted_json=$(echo \"$replace_value\" | jq '.')\n\n                    # Indent the JSON\n                    indented_json=$(echo \"$formatted_json\" | sed \"s/^/${leading_spaces}/\")\n\n                    # Output the line before the placeholder (excluding placeholder)\n                    echo -n \"$line_before_placeholder\" >> \"$output_file\"\n\n                    # Output the indented JSON\n                    echo \"$indented_json\" >> \"$output_file\"\n\n                    # Output the rest of the line after the placeholder, if any\n                    if [ -n \"$line_after_placeholder\" ]; then\n                        echo \"$line_after_placeholder\" >> \"$output_file\"\n                    fi\n                else\n                    # 'replace_value' is a string\n\n                    # Replace the placeholder in the line\n                    replaced_line=\"${line//$find_placeholder/$replace_value}\"\n\n                    # Output the modified line\n                    echo \"$replaced_line\" >> \"$output_file\"\n                fi\n                replaced=1\n                break  # Skip checking other placeholders for this line\n            fi\n        done\n        if [[ $replaced -eq 0 ]]; then\n            # Line did not contain any placeholder\n            echo \"$line\" >> \"$output_file\"\n        fi\n    done < \"$csv_file\"\n\n    # Remove the original file\n    rm \"$csv_file\"\nfi\n\n# Compress the DAG folder and upload it to a file share.\nrm \"${url_basename}\"\nzip_filename=\"${url_basename%.tar.gz}.zip\"\ncurrent_dir=$(pwd)\ncd \"extracted_files/${FILE}\" || exit 1\nzip -r \"${current_dir}/${zip_filename}\" .\ncd - || exit 1\n\naz storage file upload -s \"${SHARE}\" --source \"${zip_filename}\" -onone\necho \"Zip file ${zip_filename} uploaded to file share ${SHARE}.\"",
+                    "findAndReplace": [
+                      {
+                        "find": "{| DAG_NAME |}",
+                        "replace": "csv-parser"
+                      },
+                      {
+                        "find": "{| DOCKER_IMAGE |}",
+                        "replace": "community.opengroup.org:5555/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/csv-parser-v0-27-0-azure-1:60747714ac490be0defe8f3e821497b3cce03390"
+                      },
+                      {
+                        "find": "{| NAMESPACE |}",
+                        "replace": "airflow"
+                      },
+                      {
+                        "find": "{| K8S_POD_OPERATOR_KWARGS or {} |}",
+                        "replace": {
+                          "labels": {
+                            "aadpodidbinding": "osdu-identity"
+                          },
+                          "annotations": {
+                            "sidecar.istio.io/inject": "false"
+                          }
+                        }
+                      },
+                      {
+                        "find": "{| ENV_VARS or {} |}",
+                        "replace": {
+                          "storage_service_endpoint": "http://storage.osdu-core.svc.cluster.local/api/storage/v2",
+                          "schema_service_endpoint": "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1",
+                          "search_service_endpoint": "http://search.osdu-core.svc.cluster.local/api/search/v2",
+                          "partition_service_endpoint": "http://partition.osdu-core.svc.cluster.local/api/partition/v1",
+                          "unit_service_endpoint": "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol",
+                          "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
+                          "KEYVAULT_URI": "[parameters('keyVaultUrl')]",
+                          "appinsights_key": "[parameters('insightsKey')]",
+                          "azure_paas_podidentity_isEnabled": "false",
+                          "AZURE_TENANT_ID": "[subscription().tenantId]",
+                          "AZURE_CLIENT_ID": "[parameters('clientId')]",
+                          "AZURE_CLIENT_SECRET": "[parameters('clientSecret')]",
+                          "aad_client_id": "[parameters('clientId')]"
+                        }
+                      }
+                    ]
                   },
                   "resources": [
                     {
@@ -14330,6 +14456,10 @@
                           {
                             "name": "initialDelay",
                             "value": "[parameters('initialScriptDelay')]"
+                          },
+                          {
+                            "name": "SEARCH_AND_REPLACE",
+                            "value": "[string(variables('findAndReplace'))]"
                           }
                         ],
                         "scriptContent": "[variables('$fxv#0')]",
@@ -14344,7 +14474,9 @@
                 }
               },
               "dependsOn": [
-                "configStorage"
+                "configStorage",
+                "insights",
+                "keyvault"
               ]
             },
             "database": {
@@ -14429,8 +14561,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "5221319877372577310"
+                      "version": "0.30.3.12046",
+                      "templateHash": "1303049203004909907"
                     }
                   },
                   "parameters": {
@@ -15027,8 +15159,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "16556052908927640261"
+                              "version": "0.30.3.12046",
+                              "templateHash": "14667731704386207190"
                             }
                           },
                           "parameters": {
@@ -15122,8 +15254,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.29.47.4906",
-                                      "templateHash": "6045809023459510097"
+                                      "version": "0.30.3.12046",
+                                      "templateHash": "8321777541831787967"
                                     }
                                   },
                                   "parameters": {
@@ -15300,8 +15432,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "11911423838386828107"
+                              "version": "0.30.3.12046",
+                              "templateHash": "18376017086349002355"
                             }
                           },
                           "parameters": {
@@ -15393,8 +15525,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.29.47.4906",
-                                      "templateHash": "5788108188261743535"
+                                      "version": "0.30.3.12046",
+                                      "templateHash": "8177876011056575373"
                                     }
                                   },
                                   "parameters": {
@@ -15555,8 +15687,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "11437483541600622074"
+                              "version": "0.30.3.12046",
+                              "templateHash": "587612120285912423"
                             }
                           },
                           "parameters": {
@@ -15700,8 +15832,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -15790,8 +15922,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -15880,8 +16012,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -15970,8 +16102,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -16060,8 +16192,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -16150,8 +16282,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -16296,8 +16428,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1268765607862445897"
+                      "version": "0.30.3.12046",
+                      "templateHash": "7362171094959692262"
                     }
                   },
                   "parameters": {
@@ -16476,8 +16608,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1387341905440195071"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9962101337573956047"
                             }
                           },
                           "parameters": {
@@ -16598,8 +16730,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15828452477141958846"
+                              "version": "0.30.3.12046",
+                              "templateHash": "3768640963133954337"
                             }
                           },
                           "parameters": {
@@ -18392,8 +18524,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "12345479266833750238"
+              "version": "0.30.3.12046",
+              "templateHash": "6096307126753133488"
             }
           },
           "definitions": {
@@ -19771,8 +19903,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "8935577803835489018"
+                      "version": "0.30.3.12046",
+                      "templateHash": "11909564410381666833"
                     }
                   },
                   "parameters": {
@@ -20097,8 +20229,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "10699533671994008782"
+              "version": "0.30.3.12046",
+              "templateHash": "10096797526153751803"
             }
           },
           "definitions": {
@@ -20692,8 +20824,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "11314640625553577874"
+                      "version": "0.30.3.12046",
+                      "templateHash": "2877460459862957830"
                     }
                   },
                   "parameters": {
@@ -21271,8 +21403,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "10642602546309979595"
+                              "version": "0.30.3.12046",
+                              "templateHash": "1008471461780882626"
                             }
                           },
                           "parameters": {
@@ -21393,8 +21525,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21483,8 +21615,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21573,8 +21705,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21663,8 +21795,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21753,8 +21885,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21843,8 +21975,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -21933,8 +22065,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -22023,8 +22155,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -22113,8 +22245,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -22203,8 +22335,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -22329,8 +22461,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1268765607862445897"
+                      "version": "0.30.3.12046",
+                      "templateHash": "7362171094959692262"
                     }
                   },
                   "parameters": {
@@ -22509,8 +22641,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1387341905440195071"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9962101337573956047"
                             }
                           },
                           "parameters": {
@@ -22631,8 +22763,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15828452477141958846"
+                              "version": "0.30.3.12046",
+                              "templateHash": "3768640963133954337"
                             }
                           },
                           "parameters": {
@@ -22835,8 +22967,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "5221319877372577310"
+                      "version": "0.30.3.12046",
+                      "templateHash": "1303049203004909907"
                     }
                   },
                   "parameters": {
@@ -23433,8 +23565,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "16556052908927640261"
+                              "version": "0.30.3.12046",
+                              "templateHash": "14667731704386207190"
                             }
                           },
                           "parameters": {
@@ -23528,8 +23660,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.29.47.4906",
-                                      "templateHash": "6045809023459510097"
+                                      "version": "0.30.3.12046",
+                                      "templateHash": "8321777541831787967"
                                     }
                                   },
                                   "parameters": {
@@ -23706,8 +23838,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "11911423838386828107"
+                              "version": "0.30.3.12046",
+                              "templateHash": "18376017086349002355"
                             }
                           },
                           "parameters": {
@@ -23799,8 +23931,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.29.47.4906",
-                                      "templateHash": "5788108188261743535"
+                                      "version": "0.30.3.12046",
+                                      "templateHash": "8177876011056575373"
                                     }
                                   },
                                   "parameters": {
@@ -23961,8 +24093,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "11437483541600622074"
+                              "version": "0.30.3.12046",
+                              "templateHash": "587612120285912423"
                             }
                           },
                           "parameters": {
@@ -24106,8 +24238,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24196,8 +24328,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24286,8 +24418,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24376,8 +24508,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24466,8 +24598,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24556,8 +24688,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15502641388312312580"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9751222143913764554"
                             }
                           },
                           "parameters": {
@@ -24703,8 +24835,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "1268765607862445897"
+                      "version": "0.30.3.12046",
+                      "templateHash": "7362171094959692262"
                     }
                   },
                   "parameters": {
@@ -24883,8 +25015,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1387341905440195071"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9962101337573956047"
                             }
                           },
                           "parameters": {
@@ -25005,8 +25137,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "15828452477141958846"
+                              "version": "0.30.3.12046",
+                              "templateHash": "3768640963133954337"
                             }
                           },
                           "parameters": {
@@ -29531,8 +29663,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "14496442914716334133"
+                      "version": "0.30.3.12046",
+                      "templateHash": "12731881725992655307"
                     },
                     "name": "Blob Upload",
                     "description": "This module uploads a file to a blob storage account",
@@ -29744,8 +29876,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "5377994249158521066"
+                      "version": "0.30.3.12046",
+                      "templateHash": "9021877655538335784"
                     }
                   },
                   "parameters": {
@@ -29977,8 +30109,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "14334788637825004735"
+              "version": "0.30.3.12046",
+              "templateHash": "6716645097568314225"
             }
           },
           "definitions": {
@@ -30282,7 +30414,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.35.0"
+              "release": "v0.36.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {
@@ -30311,6 +30443,44 @@
                 "vmSize": "Standard_D4s_v5"
               }
             },
+            "federatedIdentityCredentials": [
+              {
+                "name": "federated-ns_default",
+                "subject": "system:serviceaccount:default:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_osdu-core",
+                "subject": "system:serviceaccount:osdu-core:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_airflow",
+                "subject": "system:serviceaccount:airflow:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_postgresql",
+                "subject": "system:serviceaccount:postgresql:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_azappconfig-system",
+                "subject": "system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider"
+              },
+              {
+                "name": "federated-ns_osdu-system",
+                "subject": "system:serviceaccount:osdu-system:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_elastic-search",
+                "subject": "system:serviceaccount:elastic-search:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_osdu-auth",
+                "subject": "system:serviceaccount:osdu-auth:workload-identity-sa"
+              },
+              {
+                "name": "federated-ns_osdu-reference",
+                "subject": "system:serviceaccount:osdu-reference:workload-identity-sa"
+              }
+            ],
             "common_helm_values": [
               {
                 "name": "AZURE_ISTIOAUTH_ENABLED",
@@ -32630,8 +32800,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "14476728379346157501"
+                      "version": "0.30.3.12046",
+                      "templateHash": "18091574775464173585"
                     }
                   },
                   "parameters": {
@@ -33539,8 +33709,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "2021671042154384765"
+                      "version": "0.30.3.12046",
+                      "templateHash": "17907855726713676740"
                     }
                   },
                   "parameters": {
@@ -33726,8 +33896,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "2021671042154384765"
+                      "version": "0.30.3.12046",
+                      "templateHash": "17907855726713676740"
                     }
                   },
                   "parameters": {
@@ -33913,8 +34083,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "2021671042154384765"
+                      "version": "0.30.3.12046",
+                      "templateHash": "17907855726713676740"
                     }
                   },
                   "parameters": {
@@ -34049,10 +34219,16 @@
                 "cluster"
               ]
             },
-            "federatedCredsDefaultNamespace": {
+            "federatedCredentials": {
+              "copy": {
+                "name": "federatedCredentials",
+                "count": "[length(variables('federatedIdentityCredentials'))]",
+                "mode": "serial",
+                "batchSize": 1
+              },
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_default', parameters('bladeConfig').sectionName)]",
+              "name": "[format('{0}-{1}', parameters('bladeConfig').sectionName, variables('federatedIdentityCredentials')[copyIndex()].name)]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -34060,7 +34236,7 @@
                 "mode": "Incremental",
                 "parameters": {
                   "name": {
-                    "value": "federated-ns_default"
+                    "value": "[variables('federatedIdentityCredentials')[copyIndex()].name]"
                   },
                   "audiences": {
                     "value": [
@@ -34074,7 +34250,7 @@
                     "value": "[parameters('managedIdentityName')]"
                   },
                   "subject": {
-                    "value": "system:serviceaccount:default:workload-identity-sa"
+                    "value": "[variables('federatedIdentityCredentials')[copyIndex()].subject]"
                   }
                 },
                 "template": {
@@ -34083,8 +34259,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
+                      "version": "0.30.3.12046",
+                      "templateHash": "15702508837602262565"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -34164,934 +34340,6 @@
                 "cluster"
               ]
             },
-            "federatedCredsOsduCoreNamespace": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-core', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_osdu-core"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:osdu-core:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsDefaultNamespace"
-              ]
-            },
-            "federatedCredsAirflowNamespace": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_airflow', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_airflow"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:airflow:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsOsduCoreNamespace"
-              ]
-            },
-            "federatedCredsPostgreSqlNamespace": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_postgresql', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_postgresql"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:postgresql:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsAirflowNamespace"
-              ]
-            },
-            "federatedCredsConfigMapsNamespace": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_config-maps', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_azappconfig-system"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:azappconfig-system:az-appconfig-k8s-provider"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsPostgreSqlNamespace"
-              ]
-            },
-            "federatedCredsOsduSystem": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-system', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_osdu-system"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:osdu-system:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsConfigMapsNamespace"
-              ]
-            },
-            "federatedCredsElasticNamespace": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_elastic-search', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_elastic-search"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:elastic-search:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsOsduSystem"
-              ]
-            },
-            "federatedCredsOsduAuth": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-auth', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_osdu-auth"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:osdu-auth:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsElasticNamespace"
-              ]
-            },
-            "federatedCredsOsduReference": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('{0}-federated-cred-ns_osdu-reference', parameters('bladeConfig').sectionName)]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "name": {
-                    "value": "federated-ns_osdu-reference"
-                  },
-                  "audiences": {
-                    "value": [
-                      "api://AzureADTokenExchange"
-                    ]
-                  },
-                  "issuer": {
-                    "value": "[reference('cluster').outputs.aksOidcIssuerUrl.value]"
-                  },
-                  "userAssignedIdentityName": {
-                    "value": "[parameters('managedIdentityName')]"
-                  },
-                  "subject": {
-                    "value": "system:serviceaccount:osdu-reference:workload-identity-sa"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3716898257490923786"
-                    },
-                    "name": "User Assigned Identity Federated Identity Credential",
-                    "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
-                    "owner": "Azure/module-maintainers"
-                  },
-                  "parameters": {
-                    "userAssignedIdentityName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment."
-                      }
-                    },
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The name of the secret."
-                      }
-                    },
-                    "audiences": {
-                      "type": "array",
-                      "metadata": {
-                        "description": "Required. The list of audiences that can appear in the issued token. Should be set to api://AzureADTokenExchange for Azure AD. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Azure AD in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your IdP to serve as the audience of this token."
-                      }
-                    },
-                    "issuer": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The URL of the issuer to be trusted. Must match the issuer claim of the external token being exchanged."
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format, as each IdP uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Azure AD."
-                      }
-                    }
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
-                      "apiVersion": "2023-01-31",
-                      "name": "[format('{0}/{1}', parameters('userAssignedIdentityName'), parameters('name'))]",
-                      "properties": {
-                        "audiences": "[parameters('audiences')]",
-                        "issuer": "[parameters('issuer')]",
-                        "subject": "[parameters('subject')]"
-                      }
-                    }
-                  ],
-                  "outputs": {
-                    "name": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the federated identity credential."
-                      },
-                      "value": "[parameters('name')]"
-                    },
-                    "resourceId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The resource ID of the federated identity credential."
-                      },
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials', parameters('userAssignedIdentityName'), parameters('name'))]"
-                    },
-                    "resourceGroupName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the resource group the federated identity credential was created in."
-                      },
-                      "value": "[resourceGroup().name]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "appIdentity",
-                "cluster",
-                "federatedCredsOsduAuth"
-              ]
-            },
             "appRoleAssignments": {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
@@ -35118,8 +34366,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "14648755147209800152"
+                      "version": "0.30.3.12046",
+                      "templateHash": "12626763608752247989"
                     }
                   },
                   "parameters": {
@@ -35221,15 +34469,7 @@
               },
               "dependsOn": [
                 "appIdentity",
-                "federatedCredsAirflowNamespace",
-                "federatedCredsConfigMapsNamespace",
-                "federatedCredsDefaultNamespace",
-                "federatedCredsElasticNamespace",
-                "federatedCredsOsduAuth",
-                "federatedCredsOsduCoreNamespace",
-                "federatedCredsOsduReference",
-                "federatedCredsOsduSystem",
-                "federatedCredsPostgreSqlNamespace"
+                "federatedCredentials"
               ]
             },
             "appRoleAssignments2": {
@@ -35259,8 +34499,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "14648755147209800152"
+                      "version": "0.30.3.12046",
+                      "templateHash": "12626763608752247989"
                     }
                   },
                   "parameters": {
@@ -35362,11 +34602,7 @@
               },
               "dependsOn": [
                 "appIdentity",
-                "federatedCredsConfigMapsNamespace",
-                "federatedCredsDefaultNamespace",
-                "federatedCredsOsduCoreNamespace",
-                "federatedCredsOsduReference",
-                "federatedCredsPostgreSqlNamespace"
+                "federatedCredentials"
               ]
             },
             "helmAppConfigProvider": {
@@ -35412,8 +34648,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "15279236559168999217"
+                      "version": "0.30.3.12046",
+                      "templateHash": "10068132125254702974"
                     },
                     "name": "AKS Run Command Script",
                     "description": "An Azure CLI Deployment Script that allows you to run a command on a Kubernetes cluster.",
@@ -35669,8 +34905,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "12250854146919217996"
+                      "version": "0.30.3.12046",
+                      "templateHash": "9858860297147555405"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -36048,8 +35284,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "1582536925854098559"
+                              "version": "0.30.3.12046",
+                              "templateHash": "1019701618481517880"
                             }
                           },
                           "parameters": {
@@ -36173,8 +35409,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.29.47.4906",
-                              "templateHash": "7839211716433469277"
+                              "version": "0.30.3.12046",
+                              "templateHash": "9745500426970745541"
                             }
                           },
                           "parameters": {
@@ -36370,8 +35606,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "3910136647371065588"
+                      "version": "0.30.3.12046",
+                      "templateHash": "17314766511010655407"
                     },
                     "name": "AKS Config Map",
                     "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",
@@ -36881,8 +36117,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "12298167673955976093"
+                      "version": "0.30.3.12046",
+                      "templateHash": "10788538925105853092"
                     }
                   },
                   "parameters": {
@@ -37415,8 +36651,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.29.47.4906",
-                      "templateHash": "13412644579535244032"
+                      "version": "0.30.3.12046",
+                      "templateHash": "10825611494612241970"
                     }
                   },
                   "parameters": {

@@ -41,7 +41,7 @@ jobs:
             type=ref,event=branch,pattern=main,latest  # Also tag as 'latest' if built from the main branch
       
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       
       - name: Build and push Docker image
         id: push

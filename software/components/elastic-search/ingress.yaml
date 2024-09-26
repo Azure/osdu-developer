@@ -21,3 +21,5 @@ spec:
             host: "kibana-kb-http.elastic-search.svc.cluster.local"
             port:
               number: 5601
+      tls:
+        mode: SIMPLE

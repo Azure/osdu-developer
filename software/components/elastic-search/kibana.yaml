@@ -9,6 +9,8 @@ spec:
   elasticsearchRef:
     name: "elasticsearch"
   count: 3
+  config:
+    server.basePath: "/elastic"
   podTemplate:
     spec:
       tolerations:

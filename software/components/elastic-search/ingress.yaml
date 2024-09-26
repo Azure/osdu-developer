@@ -3,6 +3,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: kibana-destination
+  namespace: elastic-search
 spec:
   host: kibana-kb-http.elastic-search.svc.cluster.local 
   trafficPolicy:

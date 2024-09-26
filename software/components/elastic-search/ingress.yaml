@@ -8,7 +8,8 @@ spec:
   host: kibana-kb-http.elastic-search.svc.cluster.local 
   trafficPolicy:
     tls:
-      mode: SIMPLE 
+      mode: SIMPLE
+      insecureSkipVerify: true
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService

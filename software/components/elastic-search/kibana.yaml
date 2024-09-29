@@ -5,12 +5,13 @@ metadata:
   name: kibana
   namespace: elastic-search
 spec:
-  version: 8.15.2
+  version: 7.17.24
   elasticsearchRef:
     name: "elasticsearch"
   count: 3
   config:
-    server.basePath: "/elastic"
+    server.basePath: "/kibana"
+    server.rewriteBasePath: true
   podTemplate:
     spec:
       tolerations:

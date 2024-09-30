@@ -43,6 +43,7 @@ grant_type=refresh_token
 @WORKLFOW_HOST = {{HOST}}/api/workflow/v1
 @data_partition_id = opendes
 @source = wks
+@authority = osdu
 @kind = osdu:{{source}}:Manifest:1.0.0
 @workflow_name = Osdu_ingest
 @tag = {{data_partition_id}}-public-usa-check-1
@@ -148,13 +149,13 @@ data-partition-id: {{data_partition_id}}
       "ReferenceData": [
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:3D%20Kirchhoff%20Depth%20Migration",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -211,13 +212,13 @@ data-partition-id: {{data_partition_id}}
       "ReferenceData": [
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:3D%20Kirchhoff%20Depth%20Migration",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -237,13 +238,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Angle%20Mute",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -263,13 +264,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Conversion%20To%20PP%20TWT",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -289,13 +290,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Conversion%20To%20PS%20TWT",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -315,13 +316,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Convert%20Back%20To%20Depth",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -341,13 +342,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Deconvolution%20After%20Stack",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -367,13 +368,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Designature-Zerophase",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -393,13 +394,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Exponential%20Gain%20Correction",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -419,13 +420,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Geophone%20Matching%20Correction",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -445,13 +446,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Geophone%20Orientation%20Correction",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -471,13 +472,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:H-Mult%20Demultiple",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -497,13 +498,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Interpolation",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -523,13 +524,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Inverse%20Q-Compensation",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -549,13 +550,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Navigation%20Merge",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -575,13 +576,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Noise%20Band%20Editing",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -601,13 +602,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Output%20SEG-Y",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -627,13 +628,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Parabolic%20Radon%20Transform%20Demultiple",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -653,13 +654,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Pre-Radon%20Mild%20Dip%20Filter",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -679,13 +680,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Receiver%20Shear%20Static%20Correction",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -705,13 +706,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Reformat",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -731,13 +732,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Resample",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -757,13 +758,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Rotation%20To%20Radial",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -783,13 +784,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Stack",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -809,13 +810,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Taup%20Deconvolution",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -835,13 +836,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Taup%20Filter",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -861,13 +862,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Tidal%20Statics",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -887,13 +888,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Trace%20Editing",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -913,13 +914,13 @@ data-partition-id: {{data_partition_id}}
         },
         {
           "id": "{{data_partition_id}}:reference-data--ProcessingParameterType:Velocity%20Analysis%20and%20RMO%20Correction",
-          "kind": "{{data_partition_id}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
+          "kind": "{{authority}}:{{source}}:reference-data--ProcessingParameterType:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -976,13 +977,13 @@ data-partition-id: {{data_partition_id}}
       "MasterData": [
         {
           "id": "{{data_partition_id}}:master-data--Well:1111",
-          "kind": "{{data_partition_id}}:{{source}}:master-data--Well:1.0.0",
+          "kind": "{{authority}}:{{source}}:master-data--Well:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -1081,13 +1082,13 @@ data-partition-id: {{data_partition_id}}
       "Data": {
         "WorkProduct": {
           "id": "{{data_partition_id}}:work-product--WorkProduct:feb2-1",
-          "kind": "{{data_partition_id}}:{{source}}:work-product--WorkProduct:1.0.0",
+          "kind": "{{authority}}:{{source}}:work-product--WorkProduct:1.0.0",
           "acl": {
             "viewers": [
-              "data.default.viewers@{{data_partition_id}}.contoso.com"
+              "data.default.viewers@{{data_partition_id}}.dataservices.energy"
             ],
             "owners": [
-              "data.default.owners@{{data_partition_id}}.contoso.com"
+              "data.default.owners@{{data_partition_id}}.dataservices.energy"
             ]
           },
           "legal": {
@@ -1109,13 +1110,13 @@ data-partition-id: {{data_partition_id}}
         "WorkProductComponents": [
           {
             "id": "{{data_partition_id}}:work-product-component--WellboreMarkerSet:feb2:1",
-            "kind": "{{data_partition_id}}:{{source}}:work-product-component--WellboreMarkerSet:1.0.0",
+            "kind": "{{authority}}:{{source}}:work-product-component--WellboreMarkerSet:1.0.0",
             "acl": {
               "viewers": [
-                "data.default.viewers@{{data_partition_id}}.contoso.com"
+                "data.default.viewers@{{data_partition_id}}.dataservices.energy"
               ],
               "owners": [
-                "data.default.owners@{{data_partition_id}}.contoso.com"
+                "data.default.owners@{{data_partition_id}}.dataservices.energy"
               ]
             },
             "legal": {
@@ -1240,13 +1241,13 @@ data-partition-id: {{data_partition_id}}
         "Datasets": [
           {
             "id": "{{data_partition_id}}:dataset--File.Generic:44e3a00738b24c948fc4696bf37999999",
-            "kind": "{{data_partition_id}}:{{source}}:dataset--File.Generic:1.0.0",
+            "kind": "{{authority}}:{{source}}:dataset--File.Generic:1.0.0",
             "acl": {
               "viewers": [
-                "data.default.viewers@{{data_partition_id}}.contoso.com"
+                "data.default.viewers@{{data_partition_id}}.dataservices.energy"
               ],
               "owners": [
-                "data.default.owners@{{data_partition_id}}.contoso.com"
+                "data.default.owners@{{data_partition_id}}.dataservices.energy"
               ]
             },
             "legal": {
@@ -1286,7 +1287,7 @@ data-partition-id: {{data_partition_id}}
 # -----------------------
 # Search #TC-5
 # -----------------------
-## Search for Wellbores with WelboreID=
+## Search for Wellbores with Name=
 
 ###
 # @name searchRecord
@@ -1296,8 +1297,8 @@ Content-Type: application/json
 data-partition-id: {{data_partition_id}}
 
 {
-  "kind": "{{data_partition_id}}:{{source}}:work-product-component--WellboreMarkerSet:1.0.0",
-  "query": "(data.WellboreID: \"osdu:master-data--Wellbore:7587:\")",
+  "kind": "{{authority}}:{{source}}:work-product-component--WellboreMarkerSet:1.0.0",
+  "query": "(data.Name: \"7587.csv\")",
   "offset": 0,
   "limit": 1
 }

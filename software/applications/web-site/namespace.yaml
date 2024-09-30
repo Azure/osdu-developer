@@ -4,4 +4,4 @@ metadata:
   name: web-site
   labels:
     toolkit.fluxcd.io/tenant: dev-team
-    istio-injection: enabled
+    istio-injection: disabled

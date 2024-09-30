@@ -147,17 +147,14 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-@version = {{ListRecordVersions.response.body.versions[0]}}
 
 
 ###
 # @name GetRecordVersion
-GET {{STORAGE_HOST}}/records/{{id}}/{{version}}
+GET {{STORAGE_HOST}}/records/{{id}}/{{ListRecordVersions.response.body.versions[0]}}
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
-
-@dataID = {{GetRecordVersion.response.body.data.ID}}
 
 
 # -----------------------
@@ -172,7 +169,7 @@ data-partition-id: {{DATA_PARTITION}}
 
 {
   "kind": "{{kind}}",
-  "query": "data.ID:(\"{{dataID}}\")",
+  "query": "data.ID:(\"{{GetRecordVersion.response.body.data.ID}}\")",
   "offset": 0,
   "limit": 1
 }

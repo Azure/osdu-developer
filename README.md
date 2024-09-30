@@ -35,6 +35,11 @@ Supported services of OSDU are based on the release branch of OSDU as specified 
 | [CRS Catalog Service](https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service) | Provides API endpoints to work with geodetic reference data, allowing developers to retrieve CRS definitions, select appropriate CRSs for data ingestion, and search for CRSs based on various constraints. |
 | [CRS Conversion Service](https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service)  | Enables the conversion of coordinates from one coordinate reference system (CRS) to another. |
 
+| **Airflow DAGS**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Manifest Ingestion DAG](https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags)    | Used for ingesting single or multiple metadata artifacts about datasets into OSDU.                                             |
+| [CSV Parser DAG:](https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser)    | Helps in parsing CSV files into a format for ingestion and processing.                                             |
+
 ## Getting Started
 
 > **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/before_you_start/) registered. 

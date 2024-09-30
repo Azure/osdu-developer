@@ -1,6 +1,6 @@
 {{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
-{{- if and $enabled .Values.jobs.userInit }}
+{{- if and $enabled .Values.jobs.adminUI }}
 ---
 apiVersion: batch/v1
 kind: Job

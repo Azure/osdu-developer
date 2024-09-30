@@ -1,43 +1,44 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: build-admin-ui
-#   namespace: admin-ui
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-#     fluxcd.io/retrigger: "initial"  # Update this to a new value each time
-# spec:
-#   dependsOn:
-#     - name: osdu-developer-base-adminui
-#       namespace: default
-#   targetNamespace: admin-ui
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-init
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     installationType: adminUi
-#     jobs:
-#     clientSecret:
-#       name: active-directory
-#       key: principal-clientpassword
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: configmap-software
-#       valuesKey: value.yaml
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: clientId
-#       valuesKey: client_id
-#     - kind: ConfigMap
-#       name: configmap-services
-#       targetPath: tenantId
-#       valuesKey: tenant_id
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: build-admin-ui
+  namespace: admin-ui
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial"  # Update this to a new value each time
+spec:
+  dependsOn:
+    - name: osdu-developer-base-adminui
+      namespace: default
+  targetNamespace: admin-ui
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-init
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    installationType: adminUi
+    jobs:
+      adminUI: true
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id

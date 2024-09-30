@@ -551,14 +551,14 @@ Content-Type: application/json
 data-partition-id: {{data_partition_id}}
 
 
-@FILE_ID = {{uploadURL.response.body.FileID}}
-@FILE_URL = {{uploadURL.response.body.Location.SignedURL}}
-@FILE_SOURCE = {{uploadURL.response.body.Location.FileSource}}
+# @FILE_ID = {{uploadURL.response.body.FileID}}
+# @FILE_URL = {{uploadURL.response.body.Location.SignedURL}}
+# @FILE_SOURCE = {{uploadURL.response.body.Location.FileSource}}
 
 
 ###
 # @name uploadFile
-PUT {{FILE_URL}}
+PUT {{uploadURL.response.body.Location.SignedURL}}
 x-ms-blob-type: BlockBlob
 
 < ./sample.csv
@@ -601,7 +601,7 @@ data-partition-id: {{data_partition_id}}
     "Checksum": "string",
     "DatasetProperties": {
       "FileSourceInfo": {
-        "FileSource": "{{FILE_SOURCE}}",
+        "FileSource": "{{uploadURL.response.body.Location.FileSource}}",
         "Name": "sample.csv"
       }
     },

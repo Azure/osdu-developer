@@ -6,7 +6,7 @@ metadata:
   annotations:
     eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
 spec:
-  version: 7.17.22
+  version: 8.15.2
   http:
     tls:
       selfSignedCertificate:

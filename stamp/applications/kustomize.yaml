@@ -125,3 +125,24 @@ spec:
     - kind: Deployment
       name: crs-conversion
       namespace: osdu-reference
+
+
+######################
+## OSDU Admin UI
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: application-osdu-admin-ui
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/applications/admin-ui
+  prune: true
+  wait: true

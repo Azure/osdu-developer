@@ -78,6 +78,7 @@ var commonLayerConfig = {
       'unit'
       'airflow-logs'
       'airflow-dags'
+      'admin-ui'
     ]
   }
   database: {
@@ -450,6 +451,23 @@ module csvDagShareUpload './script-share-csvdag/main.bicep' = {
     insightsKey: insights.outputs.instrumentationKey
     clientId: applicationClientId
     clientSecret: applicationClientSecret
+    useExistingManagedIdentity: true
+    managedIdentityName: deploymentScriptIdentity
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName:resourceGroup().name
+  }
+}
+
+module adminuiShareUpload './script-share-adminui/main.bicep' = {
+  name: '${bladeConfig.sectionName}-storage-share-upload-adminui'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    shareName: 'admin-ui'
+    filename: 'OSDUApp'
+    fileurl: 'https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz'
+    insightsKey: insights.outputs.instrumentationKey
+    clientId: applicationClientId
     useExistingManagedIdentity: true
     managedIdentityName: deploymentScriptIdentity
     existingManagedIdentitySubId: subscription().subscriptionId

@@ -1,0 +1,69 @@
+{{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- if and $enabled .Values.jobs.userInit }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: admin-ui
+  namespace: admin-ui  # Ensure the correct namespace
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      volumes:
+      - name: script
+        configMap:
+          name: admin-ui-build
+          defaultMode: 0500
+      initContainers:
+      - name: data-seed
+        image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl jq && \
+          /script/init.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+        env:
+          - name: AZURE_TENANT_ID
+            value: {{ .Values.tenantId | quote }}
+          - name: AZURE_CLIENT_ID
+            value: {{ .Values.clientId | quote }}
+          - name: EMAIL_ADDRESS
+            value: {{ .Values.emailAddress | quote }}
+          - name: AZURE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.clientSecret.name | quote }}
+                key: {{ .Values.clientSecret.key | quote }}
+      containers:
+      - name: sleep
+        image: istio/base
+        command: ["/bin/sleep", "30"]
+        volumeMounts:  # Ensure this container also mounts the volume if needed
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-ui-build
+  namespace: admin-ui  # Ensure the correct namespace
+data:
+  init.sh: |
+    #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
+
+    echo "=================================================================="
+    echo "  Downloading Admin UI Source Code       "
+    echo "=================================================================="
+
+
+    exit 0
+{{- end }}

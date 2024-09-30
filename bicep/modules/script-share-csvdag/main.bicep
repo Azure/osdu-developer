@@ -53,6 +53,7 @@ param insightsKey string
 @description('Client Id for the service principal')
 param clientId string
 
+@secure()
 @description('Client Secret for the service principal')
 param clientSecret string
 

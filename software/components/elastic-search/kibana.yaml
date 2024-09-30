@@ -5,17 +5,10 @@ metadata:
   name: kibana
   namespace: elastic-search
 spec:
-  # version: 7.17.24
   version: 8.15.2
   elasticsearchRef:
     name: "elasticsearch"
   count: 3
-  # config:
-  #   server.port: 5601
-  #   server.publicBaseUrl: "https://localhost:5601/kibana"
-  #   server.host: "localhost"
-  #   server.basePath: "/kibana"
-    # server.rewriteBasePath: true
   podTemplate:
     spec:
       tolerations:
@@ -42,16 +35,6 @@ spec:
                       - "$(REGION)-3"
       containers:
         - name: kibana
-          # readinessProbe:
-          #   failureThreshold: 3
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 10
-          #   successThreshold: 1
-          #   exec:
-          #     command:
-          #       - /bin/bash
-          #       - -c
-          #       - curl -o /dev/null -w "%{http_code}" https://localhost:5601/kibana/login -k -s
           env:
             - name: xpack.encryptedSavedObjects.encryptionKey
               valueFrom:

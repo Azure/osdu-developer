@@ -112,10 +112,6 @@ Accept: application/json
 Content-Type: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-@FILE_ID = {{uploadURL.response.body.FileID}}
-@FILE_URL = {{uploadURL.response.body.Location.SignedURL}}
-@FILE_SOURCE = {{uploadURL.response.body.Location.FileSource}}
-
 
 ###
 # @name getFileList
@@ -137,10 +133,10 @@ data-partition-id: {{DATA_PARTITION}}
 
 ###
 # @name uploadFile
-PUT {{FILE_URL}}
+PUT {{uploadURL.response.body.Location.SignedURL}}
 x-ms-blob-type: BlockBlob
 
-< ./README.md
+< ./sample.las
 
 
 ###
@@ -181,7 +177,7 @@ data-partition-id: {{DATA_PARTITION}}
         "SchemaFormatTypeID": "osdu:reference-data--SchemaFormatType:LAS2:",
         "DatasetProperties": {
             "FileSourceInfo": {
-                "FileSource": "{{FILE_SOURCE}}",
+                "FileSource": "{{uploadURL.response.body.Location.FileSource}}",
                 "Name": "sample.las"
             }
         },
@@ -212,12 +208,10 @@ Accept: application/json
 Content-Type: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-@URL = {{getDownloadUrl.response.body.SignedUrl}}
-
 
 ###
 # @name Download
-GET {{URL}}
+GET {{getDownloadUrl.response.body.SignedUrl}}
 
 
 

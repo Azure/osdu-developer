@@ -89,6 +89,9 @@ param enableOsduCore bool = true
 @description('Feature Flag to Load OSDU Reference.')
 param enableOsdureference bool = true
 
+@description('Feature Flag to Load Admin UI.')
+param enableAdminUI bool = true
+
 @allowed([
   'release-0-24'
   'release-0-25'
@@ -416,6 +419,10 @@ var federatedIdentityCredentials = [
     name: 'federated-ns_osdu-reference'
     subject: 'system:serviceaccount:osdu-reference:workload-identity-sa'
   }
+  {
+    name: 'federated-ns_admin-ui'
+    subject: 'system:serviceaccount:admin-ui:workload-identity-sa'
+  }
 ]
 
 @batchSize(1)
@@ -529,6 +536,12 @@ var osdu_applications = [
   {
     name: 'osduReferenceEnabled'
     value: toLower(string(enableOsdureference))
+    contentType: 'text/plain'
+    label: 'configmap-osdu-applications'
+  }
+  {
+    name: 'adminUIEnabled'
+    value: toLower(string(enableAdminUI))
     contentType: 'text/plain'
     label: 'configmap-osdu-applications'
   }

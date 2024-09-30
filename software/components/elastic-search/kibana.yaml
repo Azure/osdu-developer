@@ -11,13 +11,25 @@ spec:
     name: "elasticsearch"
   count: 3
   config:
-    server.port: 5601
-    server.publicBaseUrl: "http://localhost:5601/kibana"
-    server.host: "localhost"
-    server.basePath: "/kibana"
+    # server.port: 5601
+    # server.publicBaseUrl: "http://localhost:5601/kibana"
+    # server.host: "localhost"
+    # server.basePath: "/kibana"
     # server.rewriteBasePath: true
   podTemplate:
     spec:
+      containers:
+        - name: kibana
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
       tolerations:
         - effect: NoSchedule
           key: app

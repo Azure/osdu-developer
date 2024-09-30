@@ -15,7 +15,7 @@ spec:
     server.publicBaseUrl: "http://localhost:5601/kibana"
     server.host: "localhost"
     server.basePath: "/kibana"
-    server.rewriteBasePath: true
+    # server.rewriteBasePath: true
   podTemplate:
     spec:
       tolerations:

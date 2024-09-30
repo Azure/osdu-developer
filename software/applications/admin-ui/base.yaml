@@ -24,6 +24,5 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
-    enableRequestAuthentication: true
     azure:
       enabled: true

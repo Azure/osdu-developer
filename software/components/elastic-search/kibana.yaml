@@ -41,7 +41,7 @@ spec:
                       - "$(REGION)-2"
                       - "$(REGION)-3"
       containers:
-        # - name: kibana
+        - name: kibana
         #   readinessProbe:
         #     failureThreshold: 3
         #     initialDelaySeconds: 10

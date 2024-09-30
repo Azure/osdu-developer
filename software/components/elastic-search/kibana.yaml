@@ -51,7 +51,7 @@ spec:
               command:
                 - /bin/bash
                 - -c
-                - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/kibana/login -k -s
+                - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
           env:
             - name: xpack.encryptedSavedObjects.encryptionKey
               valueFrom:

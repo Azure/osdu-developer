@@ -41,17 +41,17 @@ spec:
                       - "$(REGION)-2"
                       - "$(REGION)-3"
       containers:
-        - name: kibana
-          readinessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            exec:
-              command:
-                - /bin/bash
-                - -c
-                - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
+        # - name: kibana
+        #   readinessProbe:
+        #     failureThreshold: 3
+        #     initialDelaySeconds: 10
+        #     periodSeconds: 10
+        #     successThreshold: 1
+        #     exec:
+        #       command:
+        #         - /bin/bash
+        #         - -c
+        #         - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
           env:
             - name: xpack.encryptedSavedObjects.encryptionKey
               valueFrom:

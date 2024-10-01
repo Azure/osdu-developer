@@ -31,9 +31,9 @@ spec:
     driver: file.csi.azure.com
     volumeHandle: adminui-unique-volume-id
     volumeAttributes:
+      clientID: {{ .Values.insightsKey | quote }}
       storageaccount: {{ .Values.storageAccount | quote }}
       shareName: admin-ui
-      clientID: {{ .Values.storageAccount | quote }}
       # resourcegroup: ${STORAGE_RESOURCE_GROUP}
       # tenantID: ${IDENTITY_TENANT}
       # subscriptionid: ${SUBSCRIPTION}

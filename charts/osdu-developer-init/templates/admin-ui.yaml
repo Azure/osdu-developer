@@ -83,7 +83,31 @@ data:
     cp providers/azure/routing.ts ./src/app/
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
 
-    # Perform JQ replace here.
+    # Perform JQ replace here
+    jq --arg appinnsights "$APP_INSIGHTS" \
+    --arg client "$AZURE_CLIENT_ID" \
+    --arg domain "$DATA_DOMAIN" \
+    --arg partition "$DATA_PARTITION" \
+    --arg redirect "$REDIRECT_URI" \
+    --arg tenant "$AZURE_TENANT_ID" \
+    '.settings.appInsights.instrumentationKey = $appinnsights | \
+     .settings.data_partition = $partition | \
+     .settings.domain_name = $domain | \
+     .settings.idp.tenant_id = $tenant | \
+     .settings.idp.client_id = $client | \
+     .settings.idp.redirect_uri = $redirect | \
+     .settings.idp.scope = $client + "/.default" | \
+     .settings.api_endpoints.entitlement_endpoint = http://entitlements.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.storage_endpoint = http://storage.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.search_endpoint = http://search.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.legal_endpoint = http://legal.osdu-core.svc.cluster.local/api/| \
+     .settings.api_endpoints.schema_endpoint = http://schema.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.file_endpoint = http://file.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" | \
+     .settings.api_endpoints.workflow_endpoint = http://entitlements.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.secrets_endpoint = http://secrets.osdu-core.svc.cluster.local/api/ | \
+     .settings.api_endpoints.wddms_endpoint = http://wddms.osdu-core.svc.cluster.local/api/' \
+    src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     # Build and copy to share
     ng build

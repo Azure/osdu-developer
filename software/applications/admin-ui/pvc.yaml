@@ -47,3 +47,4 @@ spec:
     requests:
       storage: 5Gi
   volumeName: adminui-pv
+  storageClassName: azurefile-csi  # Add this line to match the PV's storageClassName

@@ -12,13 +12,13 @@ metadata:
   annotations:
     pv.kubernetes.io/provisioned-by: file.csi.azure.com
 spec:
+  storageClassName: azurefile-csi
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: azurefile-csi
-  volumeMode: Filesystem  # Explicitly stating the volume mode
   mountOptions:
     - dir_mode=0777
     - file_mode=0777
@@ -44,13 +44,14 @@ metadata:
   name: adminui-pvc
   namespace: admin-ui
 spec:
-  accessModes:
-    - ReadWriteMany
+  storageClassName: azurefile-csi
+  volumeName: adminui-pv
   resources:
     requests:
       storage: 5Gi
-  volumeName: adminui-pv
-  storageClassName: azurefile-csi  # Add this line to match the PV's storageClassName
+  accessModes:
+    - ReadWriteMany
+  
 ---
 apiVersion: batch/v1
 kind: Job

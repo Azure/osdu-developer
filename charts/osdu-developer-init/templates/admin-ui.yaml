@@ -67,7 +67,8 @@ data:
     set -euo pipefail
     set -o nounset
 
-    NODE_OPTIONS=--max_old_space_size=4096
+    # Increase Node.js memory limit
+    export NODE_OPTIONS="--max-old-space-size=4096"
 
     echo "=================================================================="
     echo "  Downloading Admin UI Source Code       "
@@ -120,7 +121,7 @@ data:
     # src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     # Build and copy to share
-    ng build
+    ng build --configuration production
     cp -r dist/* /adminui-data
 
     exit 0

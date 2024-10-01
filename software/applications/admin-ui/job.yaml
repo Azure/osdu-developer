@@ -27,9 +27,6 @@ spec:
     installationType: adminUI
     jobs:
       adminUI: true
-    clientSecret:
-      name: active-directory
-      key: principal-clientpassword
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software

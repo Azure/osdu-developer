@@ -35,7 +35,7 @@ spec:
             mountPath: "/adminui-data"
         env:
           - name: APP_INSIGHTS
-            value: {{ .Values.appInsights | quote }}
+            value: {{ .Values.insightsKey | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
           - name: AZURE_CLIENT_ID
@@ -51,8 +51,8 @@ spec:
           # These are used for the PVC
           - name: STORAGE_ACCOUNT
             value: {{ .Values.storageAccount | quote }}
-          # - name: USER_ASSIGNED_CLIENT_ID
-          #   value: {{ .Values.adminUI.azureFile.userAssignedClientId | quote }}
+          - name: USER_ASSIGNED_CLIENT_ID
+            value: {{ .Values.msi_client_id | quote }}
         resources:
           requests:
             memory: "4Gi"

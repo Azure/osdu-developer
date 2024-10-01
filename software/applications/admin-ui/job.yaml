@@ -40,3 +40,15 @@ spec:
       name: configmap-services
       targetPath: tenantId
       valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: msi_client_id
+      valuesKey: azure_msi_client_id
+    - kind: Secret
+      name: adminui-secrets
+      targetPath: storageAccount
+      valuesKey: azurestorageaccountname
+    - kind: Secret
+      name: adminui-secrets
+      targetPath: insightsKey
+      valuesKey: azureinsightskey

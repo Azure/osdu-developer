@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: admin-ui
+  name: osdu-experimental
   labels:
     toolkit.fluxcd.io/tenant: dev-team
     istio-injection: false

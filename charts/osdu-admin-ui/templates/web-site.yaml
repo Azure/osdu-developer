@@ -1,10 +1,10 @@
-{{- $namespace := .Release.Namespace -}}
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ $namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: {{ .Release.Name }}
@@ -17,7 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ $namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -40,3 +40,4 @@ spec:
       - name: adminui-storage  # Changed to match the name in job.yaml
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
+{{- end }}

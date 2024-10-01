@@ -2,16 +2,15 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: azure-keyvault-adminui
+  name: osdu-developer-base-experimental
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  targetNamespace: admin-ui
-  releaseName: keyvault-adminui
+  targetNamespace: osdu-experimental
   chart:
     spec:
-      chart: ./charts/keyvault-secrets
+      chart: ./charts/osdu-developer-base
       sourceRef:
         kind: GitRepository
         name: flux-system
@@ -25,13 +24,5 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
-    identity: false
-    secrets:
-      - secretName: adminui-secrets 
-        data:
-          - key: azurestorageaccountname
-            vaultSecret: system-storage
-          - key: azurestorageaccountkey
-            vaultSecret: system-storage-key
-          - key: azureinsightskey
-            vaultSecret: insights-key
+    azure:
+      enabled: true

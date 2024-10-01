@@ -3,15 +3,15 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: admin-ui
-  namespace: admin-ui
+  namespace: osdu-experimental
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
     fluxcd.io/retrigger: "initial"  # Update this to a new value each time
 spec:
   dependsOn:
-    - name: osdu-developer-base-adminui
+    - name: osdu-developer-base-experimental
       namespace: default
-  targetNamespace: admin-ui
+  targetNamespace: osdu-experimental
   chart:
     spec:
       chart: ./charts/osdu-admin-ui

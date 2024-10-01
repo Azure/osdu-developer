@@ -1,12 +1,10 @@
-{{- $enabled := eq (include "osdu-admin-ui.isEnabled" .) "1" -}}
-{{- $namespace := .Release.Namespace -}}
-{{- if $enabled }}
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: {{ .Release.Name }}-azurefile-csi
-  namespace: {{ $namespace }}
+  namespace: {{ .Release.Namespace }}
 provisioner: file.csi.azure.com
 allowVolumeExpansion: true
 mountOptions:
@@ -26,7 +24,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-pvc
-  namespace: {{ $namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   storageClassName: {{ .Release.Name }}-azurefile-csi
   accessModes:

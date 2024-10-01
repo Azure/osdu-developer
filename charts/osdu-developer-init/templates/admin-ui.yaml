@@ -40,6 +40,13 @@ spec:
             value: {{ .Values.clientId | quote }}
           - name: URL
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
       containers:
       - name: sleep
         image: istio/base
@@ -59,6 +66,8 @@ data:
     #!/usr/bin/env sh
     set -euo pipefail
     set -o nounset
+
+    NODE_OPTIONS=--max_old_space_size=4096
 
     echo "=================================================================="
     echo "  Downloading Admin UI Source Code       "

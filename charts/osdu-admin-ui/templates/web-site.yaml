@@ -1,0 +1,42 @@
+{{- $namespace := .Release.Namespace -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ $namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  # Changed to 80 for nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ $namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: nginx:latest  # Changed to nginx image
+        ports:
+        - containerPort: 80  # Changed to 80 for nginx
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: shared-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-pvc

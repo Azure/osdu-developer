@@ -15,7 +15,7 @@ metadata:
 spec:
   storageClassName: azurefile-csi
   volumeMode: Filesystem
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   capacity:
     storage: 5Gi
   accessModes:

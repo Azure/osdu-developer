@@ -1,50 +1,50 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: adminui-pv
-  namespace: admin-ui
-  labels:
-    usage: adminui-pv
-  annotations:
-    pv.kubernetes.io/provisioned-by: file.csi.azure.com
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: azurefile-csi
-  volumeMode: Filesystem  # Explicitly stating the volume mode
-  mountOptions:
-    - dir_mode=0777
-    - file_mode=0777
-    - uid=50000
-    - gid=0
-    - mfsymlinks
-    - cache=strict
-    - nosharesock
-  csi:
-    driver: file.csi.azure.com
-    volumeHandle: adminui-unique-volume-id
-    volumeAttributes:
-      storageaccount: ${STORAGE_ACCOUNT}
-      shareName: admin-ui
-      clientID: ${USER_ASSIGNED_CLIENT_ID}
-      # resourcegroup: ${STORAGE_RESOURCE_GROUP}
-      # tenantID: ${IDENTITY_TENANT}
-      # subscriptionid: ${SUBSCRIPTION}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: adminui-pvc
-  namespace: admin-ui
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 5Gi
-  volumeName: adminui-pv
-  storageClassName: azurefile-csi  # Add this line to match the PV's storageClassName
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: adminui-pv
+#   namespace: admin-ui
+#   labels:
+#     usage: adminui-pv
+#   annotations:
+#     pv.kubernetes.io/provisioned-by: file.csi.azure.com
+# spec:
+#   capacity:
+#     storage: 5Gi
+#   accessModes:
+#     - ReadWriteMany
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: azurefile-csi
+#   volumeMode: Filesystem  # Explicitly stating the volume mode
+#   mountOptions:
+#     - dir_mode=0777
+#     - file_mode=0777
+#     - uid=50000
+#     - gid=0
+#     - mfsymlinks
+#     - cache=strict
+#     - nosharesock
+#   csi:
+#     driver: file.csi.azure.com
+#     volumeHandle: adminui-unique-volume-id
+#     volumeAttributes:
+#       storageaccount: ${STORAGE_ACCOUNT}
+#       shareName: admin-ui
+#       clientID: ${USER_ASSIGNED_CLIENT_ID}
+#       # resourcegroup: ${STORAGE_RESOURCE_GROUP}
+#       # tenantID: ${IDENTITY_TENANT}
+#       # subscriptionid: ${SUBSCRIPTION}
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: adminui-pvc
+#   namespace: admin-ui
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   volumeName: adminui-pv
+#   storageClassName: azurefile-csi  # Add this line to match the PV's storageClassName

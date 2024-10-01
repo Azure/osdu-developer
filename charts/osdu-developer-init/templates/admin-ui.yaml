@@ -2,6 +2,56 @@
 {{- $namespace := .Release.Namespace -}}
 {{- if and $enabled .Values.jobs.adminUI }}
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: adminui-pv
+  namespace: admin-ui
+  labels:
+    usage: adminui-pv
+  annotations:
+    pv.kubernetes.io/provisioned-by: file.csi.azure.com
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azurefile-csi
+  volumeMode: Filesystem  # Explicitly stating the volume mode
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=50000
+    - gid=0
+    - mfsymlinks
+    - cache=strict
+    - nosharesock
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: adminui-unique-volume-id
+    volumeAttributes:
+      storageaccount: {{ .Values.storageAccount | quote }}
+      shareName: admin-ui
+      clientID: {{ .Values.storageAccount | quote }}
+      # resourcegroup: ${STORAGE_RESOURCE_GROUP}
+      # tenantID: ${IDENTITY_TENANT}
+      # subscriptionid: ${SUBSCRIPTION}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adminui-pvc
+  namespace: admin-ui
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: adminui-pv
+  storageClassName: azurefile-csi  # Add this line to match the PV's storageClassName
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -48,11 +98,6 @@ spec:
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
           - name: NODE_OPTIONS  # Add this environment variable
             value: "--max-old-space-size=4096"
-          # These are used for the PVC
-          - name: STORAGE_ACCOUNT
-            value: {{ .Values.storageAccount | quote }}
-          - name: USER_ASSIGNED_CLIENT_ID
-            value: {{ .Values.msi_client_id | quote }}
         resources:
           requests:
             memory: "4Gi"

@@ -16,6 +16,9 @@ spec:
         configMap:
           name: admin-ui-build
           defaultMode: 0500
+      - name: adminui-storage  # Add this new volume
+        persistentVolumeClaim:
+          claimName: adminui-pvc
       initContainers:
       - name: data-seed
         image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
@@ -28,18 +31,24 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
+          - name: adminui-storage  # Add this mount
+            mountPath: "/adminui-data"
         env:
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
           - name: AZURE_CLIENT_ID
             value: {{ .Values.clientId | quote }}
+          - name: URL
+            value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
       containers:
       - name: sleep
         image: istio/base
         command: ["/bin/sleep", "30"]
-        volumeMounts:  # Ensure this container also mounts the volume if needed
+        volumeMounts:
           - name: script
             mountPath: "/script"
+          - name: adminui-storage  # Add this mount
+            mountPath: "/share"
       restartPolicy: Never
 ---
 apiVersion: v1
@@ -57,6 +66,17 @@ data:
     echo "  Downloading Admin UI Source Code       "
     echo "=================================================================="
 
+    url_basename=$(basename ${URL})
+    echo "Derived filename from URL: ${url_basename}"
+
+    # Download the file using curl
+    echo "Downloading file from ${URL} to ${url_basename}"
+    curl -so ${url_basename} ${URL}
+
+    pwd
+    ls -l
+
+    ls /share
 
     exit 0
 {{- end }}

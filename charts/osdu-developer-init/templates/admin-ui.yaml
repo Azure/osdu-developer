@@ -47,8 +47,6 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
-          - name: adminui-storage  # Add this mount
-            mountPath: "/share"
       restartPolicy: Never
 ---
 apiVersion: v1
@@ -73,10 +71,23 @@ data:
     echo "Downloading file from ${URL} to ${url_basename}"
     curl -so ${url_basename} ${URL}
 
-    pwd
-    ls -l
+    # Extract the tar.gz file
+    mkdir -p extracted_files
+    tar -xzf ${url_basename} --strip-components=1 -C extracted_files
+    cd extracted_files
 
-    ls /share
+    # Install Packages
+    npm install -g @angular/cli && npm install && npm ci
+
+    # Copy custom Files
+    cp providers/azure/routing.ts ./src/app/
+    cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
+
+    # Perform JQ replace here.
+
+    # Build and copy to share
+    ng build
+    cp -r dist/* /adminui-data
 
     exit 0
 {{- end }}

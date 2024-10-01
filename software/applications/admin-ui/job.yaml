@@ -24,7 +24,7 @@ spec:
     remediation:
       retries: 3
   values:
-    installationType: adminUi
+    installationType: adminUI
     jobs:
       adminUI: true
     clientSecret:

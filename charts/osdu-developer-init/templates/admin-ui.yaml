@@ -90,6 +90,7 @@ data:
     npm install -g @angular/cli && npm install && npm ci
 
     # Copy custom Files
+    echo "Copying the azure custom code."
     cp providers/azure/routing.ts ./src/app/
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
 
@@ -119,8 +120,12 @@ data:
     #  .settings.api_endpoints.wddms_endpoint = http://wddms.osdu-core.svc.cluster.local/api/' \
     # src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
-    # Build and copy to share
-    ng build --configuration production
+    # Building Angular code
+    echo "Building Angular code."
+    ng build
+
+    # Copy to share
+    echo "Copying the build to the share."
     cp -r dist/* /adminui-data
 
     exit 0

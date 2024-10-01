@@ -1,0 +1,36 @@
+{{- $enabled := eq (include "osdu-admin-ui.isEnabled" .) "1" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- if $enabled }}
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-azurefile-csi
+provisioner: file.csi.azure.com
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=50000
+  - gid=0
+  - mfsymlinks
+  - cache=strict
+  - actimeo=30
+  - nobrl
+parameters:
+  skuName: Standard_LRS
+  # Add any other Azure-specific parameters here if needed
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-pvc
+  namespace: {{ $namespace }}
+spec:
+  storageClassName: {{ .Release.Name }}-azurefile-csi
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

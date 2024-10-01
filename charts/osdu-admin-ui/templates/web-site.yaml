@@ -34,9 +34,9 @@ spec:
         ports:
         - containerPort: 80  # Changed to 80 for nginx
         volumeMounts:
-        - name: shared-data
+        - name: adminui-storage  # Changed to match the name in job.yaml
           mountPath: /usr/share/nginx/html
       volumes:
-      - name: shared-data
+      - name: adminui-storage  # Changed to match the name in job.yaml
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc

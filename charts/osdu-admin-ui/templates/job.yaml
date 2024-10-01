@@ -17,7 +17,7 @@ spec:
         configMap:
           name: admin-ui-build
           defaultMode: 0500
-      - name: adminui-storage  # Add this new volume
+      - name: adminui-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
       initContainers:
@@ -32,8 +32,8 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
-          - name: adminui-storage  # Add this mount
-            mountPath: "/adminui-data"
+          - name: adminui-storage
+            mountPath: "/dist"
         env:
           - name: APP_INSIGHTS
             value: {{ .Values.insightsKey | quote }}
@@ -47,7 +47,7 @@ spec:
             value: 'opendes'
           - name: URL
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
-          - name: NODE_OPTIONS  # Add this environment variable
+          - name: NODE_OPTIONS
             value: "--max-old-space-size=4096"
         resources:
           requests:
@@ -135,7 +135,7 @@ data:
 
     # Copy to share
     echo "Copying the build to the share."
-    cp -r dist/OSDUApp/* /adminui-data
+    cp -r dist/OSDUApp/* /dist
 
     exit 0
 {{- end }}

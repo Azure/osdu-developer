@@ -752,7 +752,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
         prune: true
       }
       experimental: {
-        path: serviceLayerConfig.gitops.applications
+        path: serviceLayerConfig.gitops.experimental
         dependsOn: [
           'applications'
         ]

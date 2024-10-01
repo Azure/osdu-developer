@@ -45,10 +45,10 @@ spec:
       targetPath: msi_client_id
       valuesKey: azure_msi_client_id
     - kind: Secret
-      name: adminui-secrets
+      name: experimental-secrets
       targetPath: storageAccount
       valuesKey: azurestorageaccountname
     - kind: Secret
-      name: adminui-secrets
+      name: experimental-secrets
       targetPath: insightsKey
       valuesKey: azureinsightskey

@@ -34,6 +34,8 @@ spec:
           - name: adminui-storage  # Add this mount
             mountPath: "/adminui-data"
         env:
+          - name: APP_INSIGHTS
+            value: {{ .Values.appInsights | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
           - name: AZURE_CLIENT_ID

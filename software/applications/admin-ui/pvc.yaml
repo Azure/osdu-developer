@@ -6,36 +6,44 @@ metadata:
   namespace: admin-ui
   labels:
     usage: adminui-pv
+  annotations:
+    pv.kubernetes.io/provisioned-by: file.csi.azure.com
 spec:
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteMany
-  azureFile:
-    secretName: adminui-secrets
-    shareName: admin-ui
-  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azurefile-csi
+  volumeMode: Filesystem  # Explicitly stating the volume mode
   mountOptions:
-  - dir_mode=0777
-  - file_mode=0777
-  - uid=50000
-  - gid=0
-  - mfsymlinks
-  - nobrl
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=50000
+    - gid=0
+    - mfsymlinks
+    - cache=strict
+    - nosharesock
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: adminui-unique-volume-id
+    volumeAttributes:
+      storageaccount: ${ACCOUNT}
+      shareName: admin-ui
+      clientID: ${USER_ASSIGNED_CLIENT_ID}
+      # resourcegroup: ${STORAGE_RESOURCE_GROUP}
+      # tenantID: ${IDENTITY_TENANT}
+      # subscriptionid: ${SUBSCRIPTION}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: adminui-pvc
   namespace: admin-ui
-  annotations:
-    volume.beta.kubernetes.io/storage-class: ""
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
-  selector:
-    matchLabels:
-      usage: adminui-pv
+  volumeName: adminui-pv

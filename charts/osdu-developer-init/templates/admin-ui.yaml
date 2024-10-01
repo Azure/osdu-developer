@@ -62,6 +62,7 @@ spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
+      serviceAccountName: workload-identity-sa  # Add this line
       volumes:
       - name: script
         configMap:

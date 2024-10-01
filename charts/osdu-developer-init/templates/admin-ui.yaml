@@ -29,9 +29,9 @@ spec:
     - nosharesock
   csi:
     driver: file.csi.azure.com
-    volumeHandle: adminui-unique-volume-id
+    volumeHandle: {{ .Values.storageAccount }}_admin-ui
     volumeAttributes:
-      clientID: {{ .Values.insightsKey | quote }}
+      clientID: {{ .Values.msi_client_id | quote }}
       storageaccount: {{ .Values.storageAccount | quote }}
       shareName: admin-ui
       # resourcegroup: ${STORAGE_RESOURCE_GROUP}

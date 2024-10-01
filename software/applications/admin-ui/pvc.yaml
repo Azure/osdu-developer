@@ -28,7 +28,7 @@ spec:
     driver: file.csi.azure.com
     volumeHandle: adminui-unique-volume-id
     volumeAttributes:
-      storageaccount: ${ACCOUNT}
+      storageaccount: ${STORAGE_ACCOUNT}
       shareName: admin-ui
       clientID: ${USER_ASSIGNED_CLIENT_ID}
       # resourcegroup: ${STORAGE_RESOURCE_GROUP}

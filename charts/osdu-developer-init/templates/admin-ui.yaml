@@ -48,6 +48,11 @@ spec:
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
           - name: NODE_OPTIONS  # Add this environment variable
             value: "--max-old-space-size=4096"
+          # These are used for the PVC
+          - name: STORAGE_ACCOUNT
+            value: {{ .Values.storageAccount | quote }}
+          # - name: USER_ASSIGNED_CLIENT_ID
+          #   value: {{ .Values.adminUI.azureFile.userAssignedClientId | quote }}
         resources:
           requests:
             memory: "4Gi"

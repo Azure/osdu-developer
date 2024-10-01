@@ -164,6 +164,7 @@ var serviceLayerConfig = {
     tag: softwareTag == '' && softwareBranch == '' ? version.release : softwareTag
     components: './stamp/components'
     applications: './stamp/applications'
+    experimental: './stamp/experimental'
   }
 }
 
@@ -420,8 +421,8 @@ var federatedIdentityCredentials = [
     subject: 'system:serviceaccount:osdu-reference:workload-identity-sa'
   }
   {
-    name: 'federated-ns_admin-ui'
-    subject: 'system:serviceaccount:admin-ui:workload-identity-sa'
+    name: 'federated-ns_osdu-experimental'
+    subject: 'system:serviceaccount:osdu-experimental:workload-identity-sa'
   }
 ]
 
@@ -744,6 +745,16 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
         path: serviceLayerConfig.gitops.applications
         dependsOn: [
           'components'
+        ]
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+      experimental: {
+        path: serviceLayerConfig.gitops.applications
+        dependsOn: [
+          'applications'
         ]
         timeoutInSeconds: 300
         syncIntervalInSeconds: 300

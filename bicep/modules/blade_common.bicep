@@ -78,7 +78,6 @@ var commonLayerConfig = {
       'unit'
       'airflow-logs'
       'airflow-dags'
-      'admin-ui'
     ]
   }
   database: {

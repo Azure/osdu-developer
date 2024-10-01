@@ -1,0 +1,42 @@
+######################
+## OSDU Experimental Base
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: experimental-osdu-base
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/experimental/experimental-base
+  prune: true
+  wait: true
+  
+
+######################
+## OSDU Admin UI
+######################
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: experimental-osdu-admin-ui
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: experimental-osdu-base
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./software/experimental/admin-ui
+  prune: true
+  wait: true

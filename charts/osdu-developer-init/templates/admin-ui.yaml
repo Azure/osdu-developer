@@ -73,8 +73,8 @@ data:
 
     # Extract the tar.gz file
     mkdir -p extracted_files
-    tar -xzf ${url_basename} --strip-components=1 -C extracted_files OSDUApp
-    cd extracted_files
+    tar -xzf ${url_basename} --strip-components=1 -C extracted_files
+    cd extracted_files/OSDUApp
     ls -l
 
     # Install Packages

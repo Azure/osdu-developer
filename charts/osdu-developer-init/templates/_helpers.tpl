@@ -68,12 +68,6 @@ Determine if the installation type is enabled
     {{- else -}}
       {{- 0 -}}
     {{- end -}}
-  {{- else if eq $installationType "adminUI" -}}
-    {{- if hasKey .Values "adminUIEnabled" -}}
-      {{- if eq .Values.adminUIEnabled "true" }}1{{else}}0{{end -}}
-    {{- else -}}
-      {{- 0 -}}
-    {{- end -}}
   {{- else -}}
     {{- 0 -}}
   {{- end -}}

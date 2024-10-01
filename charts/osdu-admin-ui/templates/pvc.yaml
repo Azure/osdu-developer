@@ -1,0 +1,55 @@
+{{- $enabled := eq (include "osdu-admin-ui.isEnabled" .) "1" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- if $enabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-pv
+  namespace: {{ $namespace }}
+  labels:
+    usage: {{ .Release.Name }}-pv
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    pv.kubernetes.io/provisioned-by: file.csi.azure.com
+spec:
+  storageClassName: azurefile-csi
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=50000
+    - gid=0
+    - mfsymlinks
+    - cache=strict
+    - nosharesock
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: {{ .Values.storageAccount }}_{{ .Release.Name }}-{{ .Values.share }}
+    volumeAttributes:
+      clientID: {{ .Values.msi_client_id | quote }}
+      shareName: {{ .Values.share }}
+      # storageaccount: {{ .Values.storageAccount | quote }}
+      # resourcegroup: {{ .Values.resourceGroup | quote }}
+      # tenantID: ${{ .Values.tenantId | quote }}
+      # subscriptionid: {{ .Values.subscriptionId | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-pvc
+  namespace: {{ $namespace }}
+spec:
+  storageClassName: azurefile-csi
+  volumeName: {{ .Release.Name }}-pv
+  resources:
+    requests:
+      storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+{{- end }}

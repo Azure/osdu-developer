@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: build-admin-ui
+  name: admin-ui
   namespace: admin-ui
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
@@ -14,7 +14,7 @@ spec:
   targetNamespace: admin-ui
   chart:
     spec:
-      chart: ./charts/osdu-developer-init
+      chart: ./charts/osdu-admin-ui
       sourceRef:
         kind: GitRepository
         name: flux-system

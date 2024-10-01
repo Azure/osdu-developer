@@ -1,68 +1,17 @@
-{{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
+{{- $enabled := eq (include "osdu-admin-ui.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
-{{- if and $enabled .Values.jobs.adminUI }}
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: adminui-pv
-  namespace: admin-ui
-  labels:
-    usage: adminui-pv
-  annotations:
-    pv.kubernetes.io/provisioned-by: file.csi.azure.com
-spec:
-  storageClassName: azurefile-csi
-  volumeMode: Filesystem
-  persistentVolumeReclaimPolicy: Retain
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  mountOptions:
-    - dir_mode=0777
-    - file_mode=0777
-    - uid=50000
-    - gid=0
-    - mfsymlinks
-    - cache=strict
-    - nosharesock
-  csi:
-    driver: file.csi.azure.com
-    volumeHandle: {{ .Values.storageAccount }}_admin-ui
-    volumeAttributes:
-      clientID: {{ .Values.msi_client_id | quote }}
-      storageaccount: {{ .Values.storageAccount | quote }}
-      shareName: admin-ui
-      # resourcegroup: ${STORAGE_RESOURCE_GROUP}
-      # tenantID: ${IDENTITY_TENANT}
-      # subscriptionid: ${SUBSCRIPTION}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: adminui-pvc
-  namespace: admin-ui
-spec:
-  storageClassName: azurefile-csi
-  volumeName: adminui-pv
-  resources:
-    requests:
-      storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  
+{{- if $enabled }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: admin-ui
-  namespace: admin-ui  # Ensure the correct namespace
+  name: {{ .Release.Name }}-build
+  namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
-      serviceAccountName: workload-identity-sa  # Add this line
+      serviceAccountName: workload-identity-sa
       volumes:
       - name: script
         configMap:
@@ -70,7 +19,7 @@ spec:
           defaultMode: 0500
       - name: adminui-storage  # Add this new volume
         persistentVolumeClaim:
-          claimName: adminui-pvc
+          claimName: {{ .Release.Name }}-pvc
       initContainers:
       - name: data-seed
         image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
@@ -119,8 +68,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: admin-ui-build
-  namespace: admin-ui  # Ensure the correct namespace
+  name: {{ .Release.Name }}-build
+  namespace: {{ $namespace }}
 data:
   init.sh: |
     #!/usr/bin/env sh

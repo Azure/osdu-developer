@@ -23,7 +23,7 @@ spec:
   install:
     remediation:
       retries: 3
-    timeout: 10m  # Add this line to increase the timeout to 15 minutes
+    timeout: 15m  # Add this line to increase the timeout to 15 minutes
   values:
     installationType: adminUI
     jobs:

@@ -40,6 +40,8 @@ spec:
             value: {{ .Values.clientId | quote }}
           - name: URL
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
+          - name: NODE_OPTIONS  # Add this environment variable
+            value: "--max-old-space-size=4096"
         resources:
           requests:
             memory: "2Gi"
@@ -66,9 +68,6 @@ data:
     #!/usr/bin/env sh
     set -euo pipefail
     set -o nounset
-
-    # Increase Node.js memory limit
-    export NODE_OPTIONS="--max-old-space-size=4096"
 
     echo "=================================================================="
     echo "  Downloading Admin UI Source Code       "

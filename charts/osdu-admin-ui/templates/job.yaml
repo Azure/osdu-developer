@@ -143,12 +143,14 @@ data:
 
     # Remove trailing % from APP_INSIGHTS if present
     APP_INSIGHTS=$(echo "$APP_INSIGHTS" | sed 's/%$//')
+    ENDPOINT=$(echo "http://$EXTERNAL_IP/api")
     echo "APP_INSIGHTS: $APP_INSIGHTS"
     echo "AZURE_CLIENT_ID: $AZURE_CLIENT_ID"
     echo "DATA_DOMAIN: $DATA_DOMAIN"
     echo "DATA_PARTITION: $DATA_PARTITION"
     echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
     echo "REDIRECT_URI: $REDIRECT_URI"
+
 
     # Perform JQ replace here
     jq \
@@ -163,16 +165,16 @@ data:
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |
      .settings.idp.redirect_uri = $redirect | 
-     .settings.api_endpoints.entitlement_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.storage_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.search_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.legal_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.schema_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.file_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.entitlement_endpoint = $ENDPOINT |
+     .settings.api_endpoints.storage_endpoint = $ENDPOINT |
+     .settings.api_endpoints.search_endpoint = $ENDPOINT |
+     .settings.api_endpoints.legal_endpoint = $ENDPOINT |
+     .settings.api_endpoints.schema_endpoint = $ENDPOINT |
+     .settings.api_endpoints.file_endpoint = $ENDPOINT |
      .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" |
-     .settings.api_endpoints.workflow_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.secrets_endpoint = "http://${EXTERNAL_IP}/api/" |
-     .settings.api_endpoints.wddms_endpoint = "http://${EXTERNAL_IP}/api/"' \
+     .settings.api_endpoints.workflow_endpoint = $ENDPOINT |
+     .settings.api_endpoints.secrets_endpoint = $ENDPOINT |
+     .settings.api_endpoints.wddms_endpoint = $ENDPOINT' \
     src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     cat src/config/config.json

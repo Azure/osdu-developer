@@ -89,7 +89,6 @@ data:
     mkdir -p extracted_files
     tar -xzf ${url_basename} --strip-components=1 -C extracted_files
     cd extracted_files/OSDUApp
-    ls -l
 
     # Install Packages
     npm install -g @angular/cli && npm install && npm ci
@@ -114,7 +113,7 @@ data:
      .settings.api_endpoints.entitlement_endpoint = http://entitlements.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.storage_endpoint = http://storage.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.search_endpoint = http://search.osdu-core.svc.cluster.local/api/ | \
-     .settings.api_endpoints.legal_endpoint = http://legal.osdu-core.svc.cluster.local/api/| \
+     .settings.api_endpoints.legal_endpoint = http://legal.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.schema_endpoint = http://schema.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.file_endpoint = http://file.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" | \
@@ -131,7 +130,7 @@ data:
 
     # Copy to share
     echo "Copying the build to the share."
-    cp -r dist/OSDUApp/* /dist
+    cp -r dist/OSDUApp/* /dist/adminui
 
     exit 0
 {{- end }}

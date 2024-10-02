@@ -104,14 +104,12 @@ data:
     --arg client "$AZURE_CLIENT_ID" \
     --arg domain "$DATA_DOMAIN" \
     --arg partition "$DATA_PARTITION" \
-    --arg redirect "$REDIRECT_URI" \
     --arg tenant "$AZURE_TENANT_ID" \
     '.settings.appInsights.instrumentationKey = $appinnsights | \
      .settings.data_partition = $partition | \
      .settings.domain_name = $domain | \
      .settings.idp.tenant_id = $tenant | \
      .settings.idp.client_id = $client | \
-     .settings.idp.redirect_uri = $redirect | \
      .settings.idp.scope = $client + "/.default" | \
      .settings.api_endpoints.entitlement_endpoint = http://entitlements.osdu-core.svc.cluster.local/api/ | \
      .settings.api_endpoints.storage_endpoint = http://storage.osdu-core.svc.cluster.local/api/ | \

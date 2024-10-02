@@ -105,12 +105,12 @@ data:
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
 
     # Add baseHref to angular.json
-    jq '.projects.OSDUApp.architect.build.options += {"baseHref": "/adminui/"}' angular.json > temp.json && mv temp.json angular.json
+    #jq '.projects.OSDUApp.architect.build.options += {"baseHref": "/adminui/"}' angular.json > temp.json && mv temp.json angular.json
     cat angular.json
 
     # Copy app.module.ts
-    echo "Copying the app.module.ts file."
-    cp /code/app.module.ts ./src/app/app.module.ts
+    #echo "Copying the app.module.ts file."
+    #cp /code/app.module.ts ./src/app/app.module.ts
 
     # Remove trailing % from APP_INSIGHTS if present
     APP_INSIGHTS=$(echo "$APP_INSIGHTS" | sed 's/%$//')
@@ -126,10 +126,10 @@ data:
     --arg domain "$DATA_DOMAIN" \
     --arg partition "$DATA_PARTITION" \
     --arg tenant "$AZURE_TENANT_ID" \
-    --arg appinsights "$APP_INSIGHTS" \
+    # --arg appinsights "$APP_INSIGHTS" \
     '.settings.data_partition = $partition |
      .settings.domain_name = $domain |
-     .settings.appInsights.instrumentationKey = $appinsights | \
+    #  .settings.appInsights.instrumentationKey = $appinsights | \
      .settings.idp.tenant_id = $tenant |
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |
@@ -153,8 +153,8 @@ data:
 
     # Copy to share
     echo "Copying the build to the share."
-    mkdir -p /dist/adminui
-    cp -r dist/OSDUApp/* /dist/adminui
+    # mkdir -p /dist/adminui
+    cp -r dist/OSDUApp/* /dist
 
     exit 0
 {{- end }}

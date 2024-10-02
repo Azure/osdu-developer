@@ -45,7 +45,7 @@ spec:
       initContainers:
       - name: wait-for-build
         image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-        command: ['sh', '-c', 'until [ -f /usr/share/nginx/html/adminui/index.html ]; do echo "Waiting for build to complete..."; sleep 5; done']
+        command: ['sh', '-c', 'until [ -f /usr/share/nginx/html/index.html ]; do echo "Waiting for build to complete..."; sleep 5; done']
         volumeMounts:
         - name: adminui-storage  # Changed to match the name in job.yaml
           mountPath: /usr/share/nginx/html

@@ -105,8 +105,8 @@ data:
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
 
     # Add baseHref to angular.json
-    jq '.projects.OSDUApp.architect.build.options += {"baseHref": "/adminui/"}' src/angular.json > temp.json && mv temp.json src/angular.json
-    cat src/angular.json
+    jq '.projects.OSDUApp.architect.build.options += {"baseHref": "/adminui/"}' angular.json > temp.json && mv temp.json angular.json
+    cat angular.json
 
     # Copy app.module.ts
     echo "Copying the app.module.ts file."

@@ -159,6 +159,7 @@ data:
     --arg partition "$DATA_PARTITION" \
     --arg tenant "$AZURE_TENANT_ID" \
     --arg redirect "$REDIRECT_URI" \
+    --arg redirect "$ENDPOINT" \
     '.settings.data_partition = $partition |
      .settings.domain_name = $domain |
      .settings.idp.tenant_id = $tenant |

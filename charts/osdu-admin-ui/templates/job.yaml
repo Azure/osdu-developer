@@ -95,23 +95,19 @@ data:
     echo "  Waiting for IstioGateway External IP       "
     echo "=================================================================="
 
-   
-
-    SERVICE_NAME="istio-ingressgateway"
+    SERVICE_NAME="istio-ingress-external"
     NAMESPACE="istio-system"
 
-    kubectl get svc -n istio-system
-
-    # while true; do
-    #   EXTERNAL_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    #   if [ -n "$EXTERNAL_IP" ]; then
-    #     echo "External IP is $EXTERNAL_IP"
-    #     break
-    #   else
-    #     echo "External IP not assigned yet. Retrying in 10 seconds..."
-    #     sleep 10
-    #   fi
-    # done
+    while true; do
+      EXTERNAL_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+      if [ -n "$EXTERNAL_IP" ]; then
+        echo "External IP is $EXTERNAL_IP"
+        break
+      else
+        echo "External IP not assigned yet. Retrying in 10 seconds..."
+        sleep 10
+      fi
+    done
 
     echo "=================================================================="
     echo "  Downloading Admin UI Source Code       "
@@ -167,16 +163,16 @@ data:
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |
      .settings.idp.redirect_uri = $redirect | 
-     .settings.api_endpoints.entitlement_endpoint = "http://entitlements.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.storage_endpoint = "http://storage.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.search_endpoint = "http://search.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.legal_endpoint = "http://legal.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.schema_endpoint = "http://schema.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.file_endpoint = "http://file.osdu-core.svc.cluster.local/api/" |
+     .settings.api_endpoints.entitlement_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.storage_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.search_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.legal_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.schema_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.file_endpoint = "http://${EXTERNAL_IP}/api/" |
      .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" |
-     .settings.api_endpoints.workflow_endpoint = "http://entitlements.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.secrets_endpoint = "http://secrets.osdu-core.svc.cluster.local/api/" |
-     .settings.api_endpoints.wddms_endpoint = "http://wddms.osdu-core.svc.cluster.local/api/"' \
+     .settings.api_endpoints.workflow_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.secrets_endpoint = "http://${EXTERNAL_IP}/api/" |
+     .settings.api_endpoints.wddms_endpoint = "http://${EXTERNAL_IP}/api/"' \
     src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     cat src/config/config.json

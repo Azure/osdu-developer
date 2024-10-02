@@ -161,6 +161,7 @@ data:
 
     # Copy to share
     echo "Copying the build to the share."
+    mkdir -p /dist/adminui
     cp -r dist/OSDUApp/* /dist/adminui
 
     exit 0

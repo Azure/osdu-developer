@@ -30,7 +30,7 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
-          - name: {{ .Release.Name }}--storage
+          - name: {{ .Release.Name }}-storage
             mountPath: "/dist"
         env:
           - name: APP_INSIGHTS

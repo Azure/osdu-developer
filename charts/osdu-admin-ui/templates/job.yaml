@@ -106,8 +106,6 @@ data:
     echo "DATA_PARTITION: $DATA_PARTITION"
     echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
 
-    sleep 1000000
-
     # Perform JQ replace here
     jq \
     --arg client "$AZURE_CLIENT_ID" \
@@ -132,7 +130,7 @@ data:
     src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     #jq \
-    #--arg appinsights "$APP_INSIGHTS" \
+    # --arg appinsights "$APP_INSIGHTS" \
     # --arg client "$AZURE_CLIENT_ID" \
     # --arg domain "$DATA_DOMAIN" \
     # --arg partition "$DATA_PARTITION" \

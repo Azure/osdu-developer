@@ -1,32 +1,12 @@
 {{- if (include "osdu-admin-ui.isEnabled" .) }}
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: {{ .Release.Name }}-azurefile-csi
-  namespace: {{ .Release.Namespace }}
-provisioner: file.csi.azure.com
-allowVolumeExpansion: true
-mountOptions:
-  - dir_mode=0777
-  - file_mode=0777
-  - uid=50000
-  - gid=0
-  - mfsymlinks
-  - cache=strict
-  - actimeo=30
-  - nobrl
-parameters:
-  skuName: Standard_LRS
-  # Add any other Azure-specific parameters here if needed
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-pvc
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: {{ .Release.Name }}-azurefile-csi
+  storageClassName: osdu-managed-disk
   accessModes:
     - ReadWriteMany
   resources:

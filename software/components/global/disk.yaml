@@ -1,0 +1,11 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: osdu-managed-disk
+  namespace: default
+provisioner: disk.csi.azure.com
+allowVolumeExpansion: true
+parameters:
+  skuName: Standard_LRS  # Changed from StandardSSD_LRS to Standard_LRS
+  kind: Managed

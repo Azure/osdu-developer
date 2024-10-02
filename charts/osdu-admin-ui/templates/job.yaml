@@ -83,6 +83,33 @@ data:
     set -o nounset
 
     echo "=================================================================="
+    echo "  Installing Kubectl       "
+    echo "=================================================================="
+
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin/
+    kubectl version --client
+
+    echo "=================================================================="
+    echo "  Waiting for IstioGateway External IP       "
+    echo "=================================================================="
+
+    SERVICE_NAME="istio-ingressgateway"
+    NAMESPACE="istio-system"
+
+    while true; do
+      EXTERNAL_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+      if [ -n "$EXTERNAL_IP" ]; then
+        echo "External IP is $EXTERNAL_IP"
+        break
+      else
+        echo "External IP not assigned yet. Retrying in 10 seconds..."
+        sleep 10
+      fi
+    done
+
+    echo "=================================================================="
     echo "  Downloading Admin UI Source Code       "
     echo "=================================================================="
 

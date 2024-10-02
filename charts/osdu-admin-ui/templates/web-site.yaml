@@ -28,6 +28,13 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
+      initContainers:
+      - name: wait-for-build
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ['sh', '-c', 'until [ -d /usr/share/nginx/html/adminui ]; do echo "Waiting for build to complete..."; sleep 5; done']
+        volumeMounts:
+        - name: adminui-storage  # Changed to match the name in job.yaml
+          mountPath: /usr/share/nginx/html
       containers:
       - name: {{ .Release.Name }}
         image: nginx:latest  # Changed to nginx image

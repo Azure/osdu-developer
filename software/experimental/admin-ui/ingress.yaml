@@ -14,8 +14,6 @@ spec:
     - match:
         - uri:
             prefix: "/adminui"
-      rewrite:
-        uri: "/"
       route:
         - destination:
             host: "osdu-experimental-admin-ui.osdu-experimental.svc.cluster.local"

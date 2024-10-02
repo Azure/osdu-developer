@@ -95,10 +95,12 @@ data:
     echo "  Waiting for IstioGateway External IP       "
     echo "=================================================================="
 
-    kubectl get svc
+   
 
     SERVICE_NAME="istio-ingressgateway"
     NAMESPACE="istio-system"
+
+    kubectl get svc -n istio-system
 
     # while true; do
     #   EXTERNAL_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')

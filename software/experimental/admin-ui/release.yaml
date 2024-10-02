@@ -26,6 +26,7 @@ spec:
     timeout: 15m  # Add this line to increase the timeout to 15 minutes
   values:
     enabled: true
+    redirectUri: "http://localhost:8080"
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software

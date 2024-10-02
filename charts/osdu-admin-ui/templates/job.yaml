@@ -49,6 +49,8 @@ spec:
             value: ".dataservices.energy"
           - name: DATA_PARTITION
             value: 'opendes'
+          - name: REDIRECT_URI
+            value: {{ .Values.redirectUri | quote }}
           - name: URL
             value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
           - name: NODE_OPTIONS
@@ -119,6 +121,7 @@ data:
     echo "DATA_DOMAIN: $DATA_DOMAIN"
     echo "DATA_PARTITION: $DATA_PARTITION"
     echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
+    echo "REDIRECT_URI: $REDIRECT_URI"
 
     # Perform JQ replace here
     jq \
@@ -126,11 +129,13 @@ data:
     --arg domain "$DATA_DOMAIN" \
     --arg partition "$DATA_PARTITION" \
     --arg tenant "$AZURE_TENANT_ID" \
+    --arg redirect "$REDIRECT_URI" \
     '.settings.data_partition = $partition |
      .settings.domain_name = $domain |
      .settings.idp.tenant_id = $tenant |
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |
+     .settings.idp.redirect_uri = $redirect | 
      .settings.api_endpoints.entitlement_endpoint = "http://entitlements.osdu-core.svc.cluster.local/api/" |
      .settings.api_endpoints.storage_endpoint = "http://storage.osdu-core.svc.cluster.local/api/" |
      .settings.api_endpoints.search_endpoint = "http://search.osdu-core.svc.cluster.local/api/" |

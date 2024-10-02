@@ -1,6 +1,23 @@
 {{- if (include "osdu-admin-ui.isEnabled" .) }}
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-nginx-config
+  namespace: {{ .Release.Namespace }}
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html;
+        location / {
+            try_files $uri $uri/ /adminui/index.html;
+        }
+    }
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}
@@ -43,8 +60,14 @@ spec:
         volumeMounts:
         - name: adminui-storage  # Changed to match the name in job.yaml
           mountPath: /usr/share/nginx/html
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
       volumes:
       - name: adminui-storage  # Changed to match the name in job.yaml
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
+      - name: nginx-config
+        configMap:
+          name: {{ .Release.Name }}-nginx-config
 {{- end }}

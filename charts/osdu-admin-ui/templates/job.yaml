@@ -13,9 +13,9 @@ spec:
       volumes:
       - name: script
         configMap:
-          name: admin-ui-build
+          name: {{ .Release.Name }}-build
           defaultMode: 0500
-      - name: adminui-storage
+      - name: {{ .Release.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
       initContainers:
@@ -30,7 +30,7 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
-          - name: adminui-storage
+          - name: {{ .Release.Name }}--storage
             mountPath: "/dist"
         env:
           - name: APP_INSIGHTS

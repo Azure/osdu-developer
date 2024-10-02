@@ -115,7 +115,7 @@ data:
     --arg appinsights "$APP_INSIGHTS" \
     '.settings.data_partition = $partition |
      .settings.domain_name = $domain |
-     .settings.appInsights.instrumentationKey = $appinnsights | \
+     .settings.appInsights.instrumentationKey = $appinsights | \
      .settings.idp.tenant_id = $tenant |
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |

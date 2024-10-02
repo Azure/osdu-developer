@@ -62,18 +62,3 @@ Determine if the installation is enabled
 {{- end -}}
 {{- end }}
 
-{{/*
-Determine if the installation type is enabled
-*/}}
-{{- define "osdu-admin-ui.isEnabled" -}}
-  {{- $installationType := .Values.installationType | default "adminUI" -}}
-  {{- if eq $installationType "adminUI" -}}
-    {{- if hasKey .Values "adminUIEnabled" -}}
-      {{- if eq .Values.adminUIEnabled "true" }}1{{else}}0{{end -}}
-    {{- else -}}
-      {{- 0 -}}
-    {{- end -}}
-  {{- else -}}
-    {{- 0 -}}
-  {{- end -}}
-{{- end }}

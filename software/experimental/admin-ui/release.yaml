@@ -25,9 +25,7 @@ spec:
       retries: 3
     timeout: 15m  # Add this line to increase the timeout to 15 minutes
   values:
-    installationType: adminUI
-    jobs:
-      adminUI: true
+    enabled: true
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software

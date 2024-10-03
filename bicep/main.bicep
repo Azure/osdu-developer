@@ -84,8 +84,8 @@ param clusterSoftware object = {
 
 @description('(Optional) Experimental Software Override - {enable/adminUI} --> true/false')
 param experimentalSoftware object = {
-  enable: true
-  adminUI: true
+  enable: false
+  adminUI: false
 }
 
 // This would be a type but bugs exist for ARM Templates so is object instead.

@@ -83,6 +83,9 @@ param clusterIngress string = 'External'
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool = true
 
+@description('Feature Flag to Load Experimental Software.')
+param enableExperimental bool = true
+
 @description('Feature Flag to Load OSDU Core.')
 param enableOsduCore bool = true
 
@@ -733,7 +736,7 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
         tag: serviceLayerConfig.gitops.tag
       }
     }
-    kustomizations: {
+    kustomizations: enableExperimental ? {
       components: {
         path: serviceLayerConfig.gitops.components
         timeoutInSeconds: 300
@@ -761,7 +764,25 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
         retryIntervalInSeconds: 300
         prune: true
       }
-    } 
+    } : {
+      components: {
+        path: serviceLayerConfig.gitops.components
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+      applications: {
+        path: serviceLayerConfig.gitops.applications
+        dependsOn: [
+          'components'
+        ]
+        timeoutInSeconds: 300
+        syncIntervalInSeconds: 300
+        retryIntervalInSeconds: 300
+        prune: true
+      }
+    }
   }
   dependsOn: [
     app_config

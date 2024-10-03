@@ -22,9 +22,9 @@ spec:
       - name: {{ .Release.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
-      - name: admin-ui-environment-ts
+      - name: environment-ts
         configMap:
-          name: admin-ui-environment-ts
+          name: environment-ts
       initContainers:
       - name: data-seed
         image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
@@ -39,9 +39,7 @@ spec:
             mountPath: "/script"
           - name: {{ .Release.Name }}-storage
             mountPath: "/dist"
-          - name: app-module-ts
-            mountPath: "/code"
-          - name: admin-ui-environment-ts
+          - name: environment-ts
             mountPath: "/code/environment.ts"
             subPath: environment.ts
         env:

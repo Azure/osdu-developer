@@ -1,0 +1,29 @@
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-ts
+  namespace: {{ .Release.Namespace }}
+data:
+  environment.ts: |
+    import json from '../config/config.json';
+    import { Environment } from './environment.model';
+
+    export const environment: Environment = json as Environment;
+
+    export const scopeProctedURLs: () => any = () => {
+      const splittedScopes = environment.settings.idp.scope.split(' ');
+
+      const osdu_api = Object.values(environment.settings.api_endpoints).map(
+        (url) => [url, splittedScopes]
+      );
+
+      const graphAPI = [
+        environment.settings.api_endpoints.graphAPI_endpoint,
+        ['User.Read'],
+      ];
+
+      return [...osdu_api, graphAPI];
+    };
+{{- end }}

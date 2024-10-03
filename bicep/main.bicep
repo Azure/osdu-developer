@@ -76,6 +76,7 @@ param clusterSoftware object = {
   enable: true
   osduCore: true
   osduReference: true
+  adminUI: true
   osduVersion: ''
   repository: ''
   branch: ''
@@ -402,6 +403,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
+    enableAdminUI: clusterSoftware.adminUI == 'false' ? false : true
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

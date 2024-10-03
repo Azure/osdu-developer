@@ -62,6 +62,7 @@
         "osduVersion": "${SOFTWARE_VERSION}",
         "osduCore": "${ENABLE_OSDU_CORE}",
         "osduReference": "${ENABLE_OSDU_REFERENCE}",
+        "adminUI": "${ENABLE_ADMIN_UI}",
         "repository": "${SOFTWARE_REPOSITORY}",
         "branch": "${SOFTWARE_BRANCH}",
         "tag": "${SOFTWARE_TAG}"

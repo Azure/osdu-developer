@@ -1,0 +1,190 @@
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-build
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      volumes:
+      - name: script
+        configMap:
+          name: admin-ui-build-script
+          defaultMode: 0500
+      - name: app-module-ts
+        configMap:
+          name: admin-ui-app-module-ts
+          defaultMode: 0500
+      - name: {{ .Release.Name }}-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-pvc
+      - name: environment-ts
+        configMap:
+          name: environment-ts
+      initContainers:
+      - name: data-seed
+        image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl jq tar && \
+          /script/init.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+          - name: {{ .Release.Name }}-storage
+            mountPath: "/dist"
+          - name: environment-ts
+            mountPath: "/code/environment.ts"
+            subPath: environment.ts
+        env:
+          - name: APP_INSIGHTS
+            value: {{ .Values.insightsKey | quote }}
+          - name: AZURE_TENANT_ID
+            value: {{ .Values.tenantId | quote }}
+          - name: AZURE_CLIENT_ID
+            value: {{ .Values.clientId | quote }}
+          - name: DATA_DOMAIN
+            value: ".dataservices.energy"
+          - name: DATA_PARTITION
+            value: 'opendes'
+          - name: REDIRECT_URI
+            value: {{ .Values.redirectUri | quote }}
+          - name: URL
+            value: https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies/-/archive/main/admin-ui-totalenergies-main.tar.gz
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=4096"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+      containers:
+      - name: sleep
+        image: istio/base
+        command: ["/bin/sleep", "30"]
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-ui-build-script
+  namespace: {{ .Release.Namespace }}
+data:
+  init.sh: |
+    #!/usr/bin/env sh
+    set -euo pipefail
+    set -o nounset
+
+    echo "=================================================================="
+    echo "  Installing Kubectl       "
+    echo "=================================================================="
+
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin/
+    kubectl version --client
+
+    echo "=================================================================="
+    echo "  Waiting for IstioGateway External IP       "
+    echo "=================================================================="
+
+    SERVICE_NAME="istio-ingress-external"
+    NAMESPACE="istio-system"
+
+    while true; do
+      EXTERNAL_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+      if [ -n "$EXTERNAL_IP" ]; then
+        echo "External IP is $EXTERNAL_IP"
+        break
+      else
+        echo "External IP not assigned yet. Retrying in 10 seconds..."
+        sleep 10
+      fi
+    done
+
+    echo "=================================================================="
+    echo "  Downloading Admin UI Source Code       "
+    echo "=================================================================="
+
+    url_basename=$(basename ${URL})
+    echo "Derived filename from URL: ${url_basename}"
+
+    # Download the file using curl
+    echo "Downloading file from ${URL} to ${url_basename}"
+    curl -so ${url_basename} ${URL}
+
+    # Extract the tar.gz file
+    mkdir -p extracted_files
+    tar -xzf ${url_basename} --strip-components=1 -C extracted_files
+    cd extracted_files/OSDUApp
+
+    # Install Packages
+    npm install -g @angular/cli && npm install && npm ci
+
+    # Copy custom Files
+    echo "Copying the custom code."
+    cp /code/environment.ts ./src/environments/environment.ts
+    cp providers/azure/routing.ts ./src/app/
+    cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
+
+    # Remove trailing % from APP_INSIGHTS if present
+    APP_INSIGHTS=$(echo "$APP_INSIGHTS" | sed 's/%$//')
+    ENDPOINT=$(echo "http://$EXTERNAL_IP/api")
+    echo "APP_INSIGHTS: $APP_INSIGHTS"
+    echo "AZURE_CLIENT_ID: $AZURE_CLIENT_ID"
+    echo "DATA_DOMAIN: $DATA_DOMAIN"
+    echo "DATA_PARTITION: $DATA_PARTITION"
+    echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
+    echo "REDIRECT_URI: $REDIRECT_URI"
+    echo "ENDPOINT: $ENDPOINT"
+
+    # Perform JQ replace here
+    jq \
+    --arg client "$AZURE_CLIENT_ID" \
+    --arg domain "$DATA_DOMAIN" \
+    --arg partition "$DATA_PARTITION" \
+    --arg tenant "$AZURE_TENANT_ID" \
+    --arg redirect "$REDIRECT_URI" \
+    --arg endpoint "$ENDPOINT" \
+    '.settings.data_partition = $partition |
+     .settings.domain_name = $domain |
+     .settings.idp.tenant_id = $tenant |
+     .settings.idp.client_id = $client |
+     .settings.idp.scope = $client + "/.default" |
+     .settings.idp.redirect_uri = $redirect | 
+     .settings.api_endpoints.entitlement_endpoint = $endpoint |
+     .settings.api_endpoints.storage_endpoint = $endpoint |
+     .settings.api_endpoints.search_endpoint = $endpoint |
+     .settings.api_endpoints.legal_endpoint = $endpoint |
+     .settings.api_endpoints.schema_endpoint = $endpoint |
+     .settings.api_endpoints.file_endpoint = $endpoint |
+     .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" |
+     .settings.api_endpoints.workflow_endpoint = $endpoint |
+     .settings.api_endpoints.secrets_endpoint = $endpoint |
+     .settings.api_endpoints.wddms_endpoint = $endpoint' \
+    src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
+
+    cat src/config/config.json
+
+    # Building Angular code
+    echo "Building Angular code."
+    ng build
+
+    # Copy to share
+    echo "Copying the build to the share."
+    # mkdir -p /dist/adminui
+    cp -r dist/OSDUApp/* /dist
+
+    exit 0
+{{- end }}

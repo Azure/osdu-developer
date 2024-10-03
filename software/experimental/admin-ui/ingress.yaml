@@ -1,0 +1,23 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: admin-ui
+  namespace: osdu-experimental
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - istio-system/internal-gateway
+    - istio-system/external-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/adminui"
+      rewrite:
+        uri: "/"
+      route:
+        - destination:
+            host: "osdu-experimental-admin-ui.osdu-experimental.svc.cluster.local"
+            port:
+              number: 80

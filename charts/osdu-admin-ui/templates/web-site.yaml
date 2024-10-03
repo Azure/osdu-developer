@@ -1,0 +1,70 @@
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-nginx-config
+  namespace: {{ .Release.Namespace }}
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  # Changed to 80 for nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: wait-for-build
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ['sh', '-c', 'until [ -f /usr/share/nginx/html/index.html ]; do echo "Waiting for build to complete..."; sleep 5; done']
+        volumeMounts:
+        - name: adminui-storage  # Changed to match the name in job.yaml
+          mountPath: /usr/share/nginx/html
+      containers:
+      - name: {{ .Release.Name }}
+        image: nginx:latest  # Changed to nginx image
+        ports:
+        - containerPort: 80  # Changed to 80 for nginx
+        volumeMounts:
+        - name: adminui-storage  # Changed to match the name in job.yaml
+          mountPath: /usr/share/nginx/html
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
+      volumes:
+      - name: adminui-storage  # Changed to match the name in job.yaml
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-pvc
+      - name: nginx-config
+        configMap:
+          name: {{ .Release.Name }}-nginx-config
+{{- end }}

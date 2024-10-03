@@ -1,0 +1,15 @@
+{{- if (include "osdu-admin-ui.isEnabled" .) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: osdu-managed-disk
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

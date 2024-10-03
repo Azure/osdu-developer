@@ -1,0 +1,53 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: admin-ui
+  namespace: osdu-experimental
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+    fluxcd.io/retrigger: "initial"  # Update this to a new value each time
+spec:
+  dependsOn:
+    - name: osdu-developer-base-experimental
+      namespace: default
+  targetNamespace: osdu-experimental
+  chart:
+    spec:
+      chart: ./charts/osdu-admin-ui
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+    timeout: 15m  # Add this line to increase the timeout to 15 minutes
+  values:
+    enabled: true
+    redirectUri: "http://localhost:8080"
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: msi_client_id
+      valuesKey: azure_msi_client_id
+    - kind: Secret
+      name: experimental-secrets
+      targetPath: storageAccount
+      valuesKey: azurestorageaccountname
+    - kind: Secret
+      name: experimental-secrets
+      targetPath: insightsKey
+      valuesKey: azureinsightskey

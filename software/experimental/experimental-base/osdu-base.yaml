@@ -1,15 +1,16 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: istio-ingress
+  name: osdu-developer-base-experimental
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
-  targetNamespace: istio-system
+  targetNamespace: osdu-experimental
   chart:
     spec:
-      chart: ./charts/istio-ingress
+      chart: ./charts/osdu-developer-base
       sourceRef:
         kind: GitRepository
         name: flux-system
@@ -22,3 +23,6 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+  values:
+    azure:
+      enabled: true

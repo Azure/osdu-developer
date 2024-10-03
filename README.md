@@ -15,7 +15,6 @@ For detailed instructions, view our online [Documentation](https://azure.github.
 
 Supported services of OSDU are based on the release branch of OSDU as specified in the [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones). (ie: release/0.25 release/0.26, release/0.27, master etc.)
 
-
 | **Core Services**                                                                               | **Description**                                                                                 |
 |-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)             | Manages data partitions to ensure efficient data management and scalability.                    |
@@ -39,6 +38,15 @@ Supported services of OSDU are based on the release branch of OSDU as specified 
 |-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [Manifest Ingestion DAG](https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags)    | Used for ingesting single or multiple metadata artifacts about datasets into OSDU.                                             |
 | [CSV Parser DAG:](https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser)    | Helps in parsing CSV files into a format for ingestion and processing.                                             |
+
+## Experimental Software
+
+OSDU offers different experimental capabilities that are very new or community contributions. These services are not yet fully mature but are available for early adopters to test and provide feedback.  This solution supports the concepts of experimental software with opt in feature flags.
+
+| **Experimental Services**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Admin UI](https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies)    | A community supported Angular Administration UI for OSDU.                                             |
+
 
 ## Getting Started
 

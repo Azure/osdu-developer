@@ -22,6 +22,9 @@ spec:
       - name: {{ .Release.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-pvc
+      - name: admin-ui-environment-ts
+        configMap:
+          name: admin-ui-environment-ts
       initContainers:
       - name: data-seed
         image: mcr.microsoft.com/cbl-mariner/base/nodejs:18
@@ -38,6 +41,9 @@ spec:
             mountPath: "/dist"
           - name: app-module-ts
             mountPath: "/code"
+          - name: admin-ui-environment-ts
+            mountPath: "/code/environment.ts"
+            subPath: environment.ts
         env:
           - name: APP_INSIGHTS
             value: {{ .Values.insightsKey | quote }}
@@ -129,17 +135,10 @@ data:
     npm install -g @angular/cli && npm install && npm ci
 
     # Copy custom Files
-    echo "Copying the azure custom code."
+    echo "Copying the custom code."
+    cp /source/environment.ts ./src/environments/environment.ts
     cp providers/azure/routing.ts ./src/app/
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
-
-    # Add baseHref to angular.json
-    #jq '.projects.OSDUApp.architect.build.options += {"baseHref": "/adminui/"}' angular.json > temp.json && mv temp.json angular.json
-    cat angular.json
-
-    # Copy app.module.ts
-    #echo "Copying the app.module.ts file."
-    #cp /code/app.module.ts ./src/app/app.module.ts
 
     # Remove trailing % from APP_INSIGHTS if present
     APP_INSIGHTS=$(echo "$APP_INSIGHTS" | sed 's/%$//')

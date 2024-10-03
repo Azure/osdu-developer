@@ -410,7 +410,7 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
 
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
-    enableAdminUI: experimentalSoftware.enable == 'true' ? true : false
+    enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

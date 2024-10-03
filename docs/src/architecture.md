@@ -7,17 +7,19 @@
     This provides valuable insights into best practices and design
     considerations of azure workloads.
 
-#### Desired State Configuration
+#### IaC: Declarative Resource Definition
 
-Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Infrastructure as Code (IaC). Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
+Infrastructure as Code (IaC) uses declarative definitions to specify the desired state of cloud resources. Bicep is a domain-specific language (DSL) used for deploying Azure resources declaratively. It simplifies authoring ARM templates and allows you to define the desired state of your Infrastructure as Code (IaC). Azure Resource Manager (ARM) processes the Bicep file to ensure the Azure environment matches the defined desired state, correcting any drift through redeployment.
 
 !!! Note
     Microsoft recommends when developing with Bicep to use official [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/).
 
 
-#### Desired State Management
+#### GitOps: Declarative Configuration Management
 
-[GitOps](https://opengitops.dev) uses Git as a single source of truth for declarative components and applications. It ensures that the actual state of the components or application matches the desired state defined in the Git repository, automating updates through continuous monitoring and Git commits.
+[GitOps](https://opengitops.dev) a term introduced by [WeaveWorks](https://www.weave.works/blog/the-history-of-gitops_) uses declarative configurations like Kustomize configs, Helm charts to manage software. Instead of scripting everything manually, GitOps uses a set of declarative configuration files that define a software desired state.
+
+GitOps uses versioned CI/CD on top of a declarative infrastructure, allowing developers to "[stop scripting and start shipping](https://twitter.com/kelseyhightower/status/953638870888849408)," as Kelsey Hightower put it. This declarative configuration is helpful to define the entire softwarestack as code and continuously deliver changes with confidence to environments.
 
 
 ## Command Sequence

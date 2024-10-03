@@ -150,7 +150,7 @@ data:
     echo "DATA_PARTITION: $DATA_PARTITION"
     echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
     echo "REDIRECT_URI: $REDIRECT_URI"
-
+    echo "ENDPOINT: $ENDPOINT"
 
     # Perform JQ replace here
     jq \
@@ -159,23 +159,23 @@ data:
     --arg partition "$DATA_PARTITION" \
     --arg tenant "$AZURE_TENANT_ID" \
     --arg redirect "$REDIRECT_URI" \
-    --arg redirect "$ENDPOINT" \
+    --arg endpoint "$ENDPOINT" \
     '.settings.data_partition = $partition |
      .settings.domain_name = $domain |
      .settings.idp.tenant_id = $tenant |
      .settings.idp.client_id = $client |
      .settings.idp.scope = $client + "/.default" |
      .settings.idp.redirect_uri = $redirect | 
-     .settings.api_endpoints.entitlement_endpoint = $ENDPOINT |
-     .settings.api_endpoints.storage_endpoint = $ENDPOINT |
-     .settings.api_endpoints.search_endpoint = $ENDPOINT |
-     .settings.api_endpoints.legal_endpoint = $ENDPOINT |
-     .settings.api_endpoints.schema_endpoint = $ENDPOINT |
-     .settings.api_endpoints.file_endpoint = $ENDPOINT |
+     .settings.api_endpoints.entitlement_endpoint = $endpoint |
+     .settings.api_endpoints.storage_endpoint = $endpoint |
+     .settings.api_endpoints.search_endpoint = $endpoint |
+     .settings.api_endpoints.legal_endpoint = $endpoint |
+     .settings.api_endpoints.schema_endpoint = $endpoint |
+     .settings.api_endpoints.file_endpoint = $endpoint |
      .settings.api_endpoints.graphAPI_endpoint = "https://graph.microsoft.com/v1.0/" |
-     .settings.api_endpoints.workflow_endpoint = $ENDPOINT |
-     .settings.api_endpoints.secrets_endpoint = $ENDPOINT |
-     .settings.api_endpoints.wddms_endpoint = $ENDPOINT' \
+     .settings.api_endpoints.workflow_endpoint = $endpoint |
+     .settings.api_endpoints.secrets_endpoint = $endpoint |
+     .settings.api_endpoints.wddms_endpoint = $endpoint' \
     src/config/config.json > src/config/tmp.json && mv src/config/tmp.json src/config/config.json
 
     cat src/config/config.json

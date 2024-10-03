@@ -134,7 +134,7 @@ data:
 
     # Copy custom Files
     echo "Copying the custom code."
-    cp /source/environment.ts ./src/environments/environment.ts
+    cp /code/environment.ts ./src/environments/environment.ts
     cp providers/azure/routing.ts ./src/app/
     cp src/config/config.azure.json ./src/config/config.json && rm src/config/config.*.json
 

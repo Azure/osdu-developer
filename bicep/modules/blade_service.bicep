@@ -83,6 +83,9 @@ param clusterIngress string = 'External'
 @description('Feature Flag to Load Software.')
 param enableSoftwareLoad bool = true
 
+@description('Feature Flag to Load Experimental Software.')
+param enableExperimental bool = true
+
 @description('Feature Flag to Load OSDU Core.')
 param enableOsduCore bool = true
 
@@ -714,6 +717,38 @@ module appConfigMap './aks-config-map/main.bicep' = {
  \______| |__|     |__|      \______/  | _|   |_______/                                                          
 */
 
+var componentKustomization = {
+  path: serviceLayerConfig.gitops.components
+  timeoutInSeconds: 300
+  syncIntervalInSeconds: 300
+  retryIntervalInSeconds: 300
+  prune: true
+}
+
+var applicationKustomization = {
+  path: serviceLayerConfig.gitops.applications
+  dependsOn: [
+    'components'
+  ]
+  timeoutInSeconds: 300
+  syncIntervalInSeconds: 300
+  retryIntervalInSeconds: 300
+  prune: true
+}
+
+var experimentalKustomization = {
+  experimental: {
+    path: serviceLayerConfig.gitops.experimental
+    dependsOn: [
+      'applications'
+    ]
+    timeoutInSeconds: 300
+    syncIntervalInSeconds: 300
+    retryIntervalInSeconds: 300
+    prune: true
+  }
+}
+
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
   name: '${bladeConfig.sectionName}-cluster-gitops'
@@ -733,35 +768,11 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
         tag: serviceLayerConfig.gitops.tag
       }
     }
-    kustomizations: {
-      components: {
-        path: serviceLayerConfig.gitops.components
-        timeoutInSeconds: 300
-        syncIntervalInSeconds: 300
-        retryIntervalInSeconds: 300
-        prune: true
-      }
-      applications: {
-        path: serviceLayerConfig.gitops.applications
-        dependsOn: [
-          'components'
-        ]
-        timeoutInSeconds: 300
-        syncIntervalInSeconds: 300
-        retryIntervalInSeconds: 300
-        prune: true
-      }
-      experimental: {
-        path: serviceLayerConfig.gitops.experimental
-        dependsOn: [
-          'applications'
-        ]
-        timeoutInSeconds: 300
-        syncIntervalInSeconds: 300
-        retryIntervalInSeconds: 300
-        prune: true
-      }
-    } 
+
+    kustomizations: union(
+      componentKustomization, 
+      applicationKustomization, 
+      enableExperimental ? experimentalKustomization : {})
   }
   dependsOn: [
     app_config

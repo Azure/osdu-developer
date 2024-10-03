@@ -38,6 +38,15 @@ Software customizations can be managed and modified using the following feature 
 | SOFTWARE_BRANCH           | Customizes the branch used for software definition                          |
 
 
+## Experimental Software
+
+Experimental Software can be managed and modified using the following feature flags.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| ENABLE_EXPERIMENTAL       | Enables loading of experimental software (False by default)                 |
+| ENABLE_ADMIN_UI           | Enables loading of the Admin UI (False by default)                          |
+
 ## Storage Access
 
 Control public access to Storage.

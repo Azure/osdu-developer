@@ -76,11 +76,16 @@ param clusterSoftware object = {
   enable: true
   osduCore: true
   osduReference: true
-  adminUI: true
   osduVersion: ''
   repository: ''
   branch: ''
   tag: ''
+}
+
+@description('(Optional) Experimental Software Override - {enable/adminUI} --> true/false')
+param experimentalSoftware object = {
+  enable: true
+  adminUI: true
 }
 
 // This would be a type but bugs exist for ARM Templates so is object instead.
@@ -403,7 +408,9 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
-    enableAdminUI: clusterSoftware.adminUI == 'false' ? false : true
+
+    enableExperimental: experimentalSoftware.enable == 'true' ? true : false
+    enableAdminUI: experimentalSoftware.enable == 'true' ? true : false
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

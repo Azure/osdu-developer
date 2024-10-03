@@ -1,4 +1,4 @@
-{{- if (include "osdu-admin-ui.isEnabled" .) }}
+{{- if ne (.Values.adminUIEnabled | toString | lower) "false" }}
 ---
 apiVersion: v1
 kind: ConfigMap

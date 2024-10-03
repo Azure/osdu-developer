@@ -55,7 +55,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Determine if the installation is enabled
 */}}
 {{- define "osdu-admin-ui.isEnabled" -}}
-{{- if .Values.enabled }}
+{{- if .Values.adminUIEnabled }}
 {{- true -}}
 {{- else -}}
 {{- false -}}

@@ -22,3 +22,29 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+  values:
+    ingress:
+      internalGateway:
+        cors:
+          allowOrigins:
+            - https://example.com
+          allowMethods:
+            - GET
+            - POST
+            - OPTIONS
+          allowHeaders:
+            - Authorization
+            - Content-Type
+          maxAge: "24h"
+      externalGateway:
+        cors:
+          allowOrigins:
+            - https://example.com
+          allowMethods:
+            - GET
+            - POST
+            - OPTIONS
+          allowHeaders:
+            - Authorization
+            - Content-Type
+          maxAge: "24h"

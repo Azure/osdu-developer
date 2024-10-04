@@ -7,6 +7,9 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-developer-base-reference
+      namespace: default
   targetNamespace: osdu-reference
   chart:
     spec:
@@ -61,11 +64,13 @@ spec:
           - "/api/crs/converter/api-docs*"
           - "/api/crs/converter/webjars/*"
       pvc:
-      - name: crs-conversion
+      - name: osdu-reference-osdu-developer-base-reference
+        existing: true
         volume: shared-data
       mount:
       - name: shared-data
         path: /mnt/crs_conversion
+        subPath: crs-conversion
       env:
       - name: AZURE_TENANT_ID
         secret:

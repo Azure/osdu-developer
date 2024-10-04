@@ -141,6 +141,9 @@ spec:
           {{- range .mount }}
           - name: {{ .name }}
             mountPath: {{ .path }}
+            {{- if .subPath }}
+            subPath: {{ .subPath }}
+            {{- end }}
           {{- end }}
           {{- if $configMap }}
           envFrom:

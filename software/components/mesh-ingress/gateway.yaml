@@ -27,24 +27,30 @@ spec:
       internalGateway:
         cors:
           allowOrigins:
-            - https://example.com
+            - http://localhost:8080
           allowMethods:
             - GET
+            - PUT
             - POST
+            - DELETE
             - OPTIONS
           allowHeaders:
             - Authorization
             - Content-Type
           maxAge: "24h"
+          allow_credentials: true
       externalGateway:
         cors:
           allowOrigins:
-            - https://example.com
+            - http://localhost:8080
           allowMethods:
             - GET
+            - PUT
             - POST
+            - DELETE
             - OPTIONS
           allowHeaders:
             - Authorization
             - Content-Type
           maxAge: "24h"
+          allow_credentials: true

@@ -33,7 +33,7 @@ spec:
         - OPTIONS
         allowOrigins:
         {{- range .cors }}
-        - {{ . }}
+        - exact: {{ . }}
         {{- end }}
         maxAge: 24h
       {{- end }}

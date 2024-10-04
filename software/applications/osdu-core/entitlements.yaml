@@ -39,7 +39,7 @@ spec:
     - service: entitlements
       path: /api/entitlements/v2/
       hosts:
-      - "*"
+        - "*"
       cors:
         - "http://localhost:8080"
       gateways:

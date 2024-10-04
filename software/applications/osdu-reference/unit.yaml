@@ -61,7 +61,8 @@ spec:
           - "/api/unit/api-docs*"
           - "/api/unit/webjars/*"
       pvc:
-      - name: unit
+      - name: osdu-reference-osdu-developer-base-reference
+        existing: true
         volume: shared-data
       mount:
       - name: shared-data

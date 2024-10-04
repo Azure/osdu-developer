@@ -32,7 +32,7 @@ spec:
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"
     share:
-      enabled: false
+      enabled: true
       items:
         - name: unit
           file: "unit_catalog_v2.json"

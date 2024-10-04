@@ -22,3 +22,34 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+  values:
+    internalGateway:
+      cors:
+        allowOrigins:
+          - http://localhost:8080
+        allowMethods:
+          - GET
+          - PUT
+          - POST
+          - DELETE
+          - OPTIONS
+        allowHeaders:
+          - Authorization
+          - Content-Type
+        maxAge: "24h"
+        allow_credentials: true
+    externalGateway:
+      cors:
+        allowOrigins:
+          - http://localhost:8080
+        allowMethods:
+          - GET
+          - PUT
+          - POST
+          - DELETE
+          - OPTIONS
+        allowHeaders:
+          - Authorization
+          - Content-Type
+        maxAge: "24h"
+        allow_credentials: true

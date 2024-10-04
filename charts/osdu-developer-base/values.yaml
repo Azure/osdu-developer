@@ -35,3 +35,14 @@ resourceLimits:
   defaultMemoryRequests: "4Gi"
   defaultCpuLimits: "1"
   defaultMemoryLimits: "4Gi"
+
+share:
+  enabled: false
+  items:
+    - name: folder
+      file: "file"
+      url: "https://example.com/folder/file.json"
+    - name: item2
+      url: "https://example.com/archive.tar.gz"
+      file: "folder_in_archive"
+      compress: true

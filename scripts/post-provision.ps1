@@ -198,10 +198,11 @@ function Update-Application {
         if ($redirectUris.Count -gt 0) {
             Write-Host "  Adding Redirect URIs: $($redirectUris -join ', ')"
             $webUris = $($redirectUris | ConvertTo-Json -Compress)
-            $spaUris = $($redirectUris | ForEach-Object { "$_`/spa/" } | ConvertTo-Json -Compress)
+            $spaUris = $($redirectUris | ForEach-Object { "$_`spa/" } | ConvertTo-Json -Compress)
             # Replace double quotes with single quotes in the JSON strings
             $webUris = $webUris -replace '"', "'"
             $spaUris = $spaUris -replace '"', "'"
+            $spaUris += "http://localhost:8080"
             $jsonPayload = @"
             {
                 'web': {'redirectUris': $($webUris),'implicitGrantSettings': {'enableAccessTokenIssuance': false,'enableIdTokenIssuance': false}},

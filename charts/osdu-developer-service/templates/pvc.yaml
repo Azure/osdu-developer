@@ -3,6 +3,7 @@
 {{- range .Values.configuration }}
 {{- if and $enabled .pvc }}
 {{- range .pvc }}
+{{- if not .existing }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -43,6 +44,7 @@ spec:
   selector:
     matchLabels:
       usage: {{ .name }}-pv
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

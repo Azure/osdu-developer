@@ -7,6 +7,9 @@ metadata:
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
 spec:
+  dependsOn:
+    - name: osdu-developer-base-reference
+      namespace: default
   targetNamespace: osdu-reference
   chart:
     spec:
@@ -67,6 +70,7 @@ spec:
       mount:
       - name: shared-data
         path: /mnt/unit_catalogs
+        subPath: unit
       env:
       - name: AZURE_TENANT_ID
         secret:
@@ -118,4 +122,3 @@ spec:
         value: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
       - name: ENTITLEMENT_URL
         value: "http://entitlements.osdu-core.svc.cluster.local/api/entitlements/v2"
-       

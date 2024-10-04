@@ -1,0 +1,146 @@
+{{- if .Values.share.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: osdu-managed-disk
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+{{- range $index, $item := .Values.share.items }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-build-{{ $index }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      volumes:
+      - name: script
+        configMap:
+          name: storage-share-script
+          defaultMode: 0500
+      - name: {{ $.Release.Name }}-storage
+        persistentVolumeClaim:
+          claimName: {{ $.Release.Name }}-pvc
+      initContainers:
+      - name: data-seed
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl tar zip && \
+          /script/init.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+          - name: {{ $.Release.Name }}-storage
+            mountPath: "/share"
+        env:
+          - name: URL
+            value: {{ $item.url | quote }}
+          - name: SHARE
+            value: {{ $item.name | quote }}
+          - name: COMPRESS
+            value: {{ $item.compress | default false | quote }}
+          - name: FILE
+            value: {{ $item.file | quote }}
+      containers:
+      - name: sleep
+        image: istio/base
+        command: ["/bin/sleep", "30"]
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storage-share-script
+  namespace: {{ .Release.Namespace }}
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+
+    # Derive the filename from the URL
+    url_basename=$(basename ${URL})
+    echo "Derived filename from URL: ${url_basename}"
+
+    # Download the file using curl with retry mechanism
+    echo "Downloading file from ${URL} to ${url_basename}"
+    retry_count=0
+    max_retries=3
+    while [ $retry_count -lt $max_retries ]; do
+      if curl -so ${url_basename} ${URL}; then
+        break
+      else
+        retry_count=$((retry_count + 1))
+        echo "Attempt $retry_count failed. Retrying in 5 seconds..." >&2
+        sleep 5
+      fi
+    done
+    if [ $retry_count -eq $max_retries ]; then
+      echo "Error: Failed to download file from ${URL} after $max_retries attempts." >&2
+      exit 1
+    fi
+
+    # Create the target directory in /share mounted volume
+    mkdir -p /share/${SHARE}
+
+    # Check if the URL indicates a tar.gz file
+    if [[ ${URL} == *.tar.gz ]]; then
+        echo "URL indicates a tar.gz archive. Extracting contents..."
+        
+        # Create a directory for extracted files
+        mkdir -p extracted_files
+        
+        # Extract the tar.gz file
+        tar -xzf ${url_basename} --strip-components=1 -C extracted_files
+        
+        if [[ ${compress} == "True" ]]; then
+            echo "Creating zip of contents of ${FILE} and copying it to /share"
+            # Remove the original downloaded tar file
+            rm ${url_basename}
+            # Create a new zip file with the desired name
+            zip_filename="${url_basename%.tar.gz}.zip"
+
+            # Save the current working directory
+            original_dir=$(pwd)
+
+            # Navigate to the extracted_files/${FILE} directory
+            cd extracted_files/${FILE}
+
+            # Create the zip from the contents without including the extracted_files/${FILE} path itself
+            zip -r ${original_dir}/${zip_filename} *
+    
+            # Navigate back to the original directory
+            cd ${original_dir}
+    
+            # Copy the zip file to the /share mounted volume
+            cp ${zip_filename} /share/${SHARE}
+            echo "Zip file ${zip_filename} copied to /share."
+        else
+            # Batch copy the extracted files to the /share mounted volume
+            echo "Copying extracted files to /share with pattern ${FILE}/**"
+            cp -r extracted_files/${FILE} /share/${SHARE}
+        fi
+        echo "Files from ${url_basename} copied to /share."
+    else
+        # Copy the file to the /share mounted volume
+        echo "Copying file ${FILE} to /share"
+        cp ${FILE} /share/${SHARE}
+        echo "File ${FILE} copied to /share."
+    fi
+{{- end }}

@@ -31,3 +31,15 @@ spec:
       defaultMemoryRequests: "500Mi"
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"
+    share:
+      enabled: false
+      items:
+        - name: unit
+          file: "unit_catalog_v2.json"
+          url: "https://community.opengroup.org/osdu/platform/system/reference/unit-service/-/raw/master/data/unit_catalog_v2.json"
+        - name: crs
+          file: "crs_catalog_v2.json"
+          url: "https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service/-/raw/master/data/crs_catalog_v2.json"
+        - name: crs-conversion
+          file: "apachesis_setup"
+          url: "https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service/-/archive/master/crs-conversion-service-master.tar.gz"

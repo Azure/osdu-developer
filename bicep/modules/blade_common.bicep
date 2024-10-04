@@ -73,9 +73,6 @@ var commonLayerConfig = {
       'partitionInfo'
     ]
     shares: [
-      'crs'
-      'crs-conversion'
-      'unit'
       'airflow-logs'
       'airflow-dags'
     ]

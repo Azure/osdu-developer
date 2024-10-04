@@ -83,7 +83,7 @@ data:
     retry_count=0
     max_retries=3
     while [ $retry_count -lt $max_retries ]; do
-      if curl -so ${url_basename} ${URL}; then
+      if curl -kso ${url_basename} ${URL}; then
         break
       else
         retry_count=$((retry_count + 1))

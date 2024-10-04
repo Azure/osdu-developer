@@ -19,5 +19,23 @@ spec:
         - destination:
             host: {{ .service }}.{{ $namespace }}.svc.cluster.local
             subset: {{ $subset }}
+      {{- if .cors }}
+      corsPolicy:
+        allowCredentials: true
+        allowHeaders:
+        - Authorization
+        - Content-Type
+        allowMethods:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - OPTIONS
+        allowOrigins:
+        {{- range .cors }}
+        - {{ . }}
+        {{- end }}
+        maxAge: 24h
+      {{- end }}
 {{- end }}
 {{- end }}

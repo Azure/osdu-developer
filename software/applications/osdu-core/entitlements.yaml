@@ -40,6 +40,8 @@ spec:
       path: /api/entitlements/v2/
       hosts:
       - "*"
+      cors:
+      - "http://localhost:8080"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway

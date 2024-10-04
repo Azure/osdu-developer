@@ -20,10 +20,6 @@ spec:
         {{- else }}
         - "*"
         {{- end }}
-      {{- if .cors }}
-      corsPolicy:
-        {{- toYaml .cors | nindent 8 }}
-      {{- end }}
     - port:
         name: https
         number: 443
@@ -42,10 +38,6 @@ spec:
         {{- end }}
         {{- with .tls }}
         {{- toYaml . | nindent 8 }}  
-        {{- end }}
-      {{- if .cors }}
-      corsPolicy:
-        {{- toYaml .cors | nindent 8 }}
       {{- end }}
 {{- end }}
 
@@ -53,7 +45,7 @@ spec:
   {{- if hasKey .Values.ingress "internalGateway" }}
     {{- if .Values.ingress.internalGateway.enabled }}
 ---
-{{- $internalGateway := merge (dict "gatewayType" "internal" "requireSSL" .Values.ingress.internalGateway.requireSSL "cors" .Values.internalGateway.cors) .Values.ingress.internalGateway -}}
+{{- $internalGateway := merge (dict "gatewayType" "internal" "requireSSL" .Values.ingress.internalGateway.requireSSL) .Values.ingress.internalGateway -}}
 {{ include "gateway" $internalGateway }}
     {{- end }}
   {{- end }}
@@ -61,7 +53,7 @@ spec:
   {{- if hasKey .Values.ingress "externalGateway" }}
     {{- if .Values.ingress.externalGateway.enabled }}
 ---
-{{- $externalGateway := merge (dict "gatewayType" "external" "requireSSL" .Values.ingress.externalGateway.requireSSL "cors" .Values.externalGateway.cors) .Values.ingress.externalGateway -}}
+{{- $externalGateway := merge (dict "gatewayType" "external" "requireSSL" .Values.ingress.externalGateway.requireSSL) .Values.ingress.externalGateway -}}
 {{ include "gateway" $externalGateway }}
     {{- end }}
   {{- end }}

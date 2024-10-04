@@ -20,10 +20,23 @@ spec:
         {{- else }}
         - "*"
         {{- end }}
+      {{- if .cors }}
       corsPolicy:
-        {{- if .cors }}
-        {{- toYaml .cors | nindent 8 }}
-        {{- end }}
+        allowOrigins:
+          {{- range .cors.allowOrigins }}
+          - exact: {{ . | quote }}
+          {{- end }}
+        allowMethods:
+          {{- range .cors.allowMethods }}
+          - {{ . | quote }}
+          {{- end }}
+        allowHeaders:
+          {{- range .cors.allowHeaders }}
+          - {{ . | quote }}
+          {{- end }}
+        maxAge: {{ .cors.maxAge | quote }}
+        allowCredentials: {{ .cors.allow_credentials }}
+      {{- end }}
     - port:
         name: https
         number: 443
@@ -43,10 +56,23 @@ spec:
         {{- with .tls }}
         {{- toYaml . | nindent 8 }}  
         {{- end }}
+      {{- if .cors }}
       corsPolicy:
-        {{- if .cors }}
-        {{- toYaml .cors | nindent 8 }}
-        {{- end }}
+        allowOrigins:
+          {{- range .cors.allowOrigins }}
+          - exact: {{ . | quote }}
+          {{- end }}
+        allowMethods:
+          {{- range .cors.allowMethods }}
+          - {{ . | quote }}
+          {{- end }}
+        allowHeaders:
+          {{- range .cors.allowHeaders }}
+          - {{ . | quote }}
+          {{- end }}
+        maxAge: {{ .cors.maxAge | quote }}
+        allowCredentials: {{ .cors.allow_credentials }}
+      {{- end }}
 {{- end }}
 
 {{- if .Values.ingress }}

@@ -41,7 +41,7 @@ spec:
       hosts:
       - "*"
       cors:
-      - "http://localhost:8080"
+        - "http://localhost:8080"
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway

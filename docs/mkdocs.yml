@@ -1,33 +1,120 @@
+# Project information
 site_name: OSDU Developer
 site_author: Microsoft Azure Energy
+site_name: OSDU Developer
+site_url: https://azure.github.io/osdu-developer/
+site_author: Daniel Scholl
+site_description: >-
+  OSDU Developer - Personal Instances : Simplified
+
 docs_dir: src
 
-theme: readthedocs
+# Repository
+repo_name: azure/osdu-developer
+repo_url: https://github.com/azure/osdu-developer
 
-extra_css:
-  - css/override.css
+# Copyright
+copyright: Copyright &copy; Microsoft Corporation.
+
+extra:
+  generator: false
+
+# Configuration
+theme:
+  name: material
+  logo: images/favicon.png
+  favicon: images/favicon.ico
+  # custom_dir: overrides
+  font:
+    text: Inter
+    code: Fira Code
+  features:
+    - content.code.copy
+    - navigation.collapsible
+    - navigation.instant
+    - navigation.instant.preview
+    - navigation.tabs
+    - navigation.sections
+    - search.highlight
+    - search.share
+    - search.suggest
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+    # # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
 
 markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - admonition
   - def_list
-  - attr_list
 
+# Plugins
 plugins:
-  - search
-  - mermaid2
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+
+extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/tablesort.js
+extra_css:
+  - stylesheets/extra.css
 
 nav:
-  - index.md
-  - before_you_start.md
-  - architecture.md
-  - software.md
-  - feature_flags.md
+  - Concepts:
+    - concepts_overview.md
+    - before_you_start.md
+    - feature_flags.md
+    - Architecture:
+      - architecture.md
+      - software.md
   - Tutorials:
-    - tutorial_cli.md
-    - tutorial_click.md
-    - tutorial_rest.md
-    - tutorial_vnet.md
-  - OSDU Services:
-    - osdu_source.md
-    - osdu_core.md
-    - osdu_reference.md
+    - tutorials_overview.md
+    - Deployment:
+      - tutorial_cli.md
+      - tutorial_click.md
+      - tutorial_rest.md
+    - Debugging:
+      - tutorial_logs.md
+      - tutorial_metrics.md
+    - Advanced Scenarios:
+      - tutorial_vnet.md
+  - Services:
+    - services_overview.md
+    - services_core.md
+    - services_reference.md

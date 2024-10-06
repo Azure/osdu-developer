@@ -1,4 +1,4 @@
-# Core Services
+# OSDU Core
 
 This repository can be used to hold the source code for the OSDU Core Services.
 

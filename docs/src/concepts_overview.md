@@ -1,6 +1,5 @@
-# OSDU Developer
+# Overview
 
-## Overview
 
 OSDU Developer is an open-source solution designed to enable the creation of lightweight, personal instances of [OSDU™](https://osduforum.org/osdu-data-platform-primer-1/) running on the Azure Public Cloud. These personal instances are tailored specifically for developers and work with the [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). This allows engineers to explore and author applications or work directly on technology prior to the transition to a fully managed service offering. A simplified one-click deployment capability with less development features is also available.
 

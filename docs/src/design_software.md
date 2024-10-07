@@ -1,4 +1,4 @@
-# Software Management
+# Software
 
 ### Stamp Layout
 

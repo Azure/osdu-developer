@@ -1,4 +1,4 @@
-# Before you start
+# Getting Started
 
 Before starting it is important to ensure the Azure Subscription is properly configured for a personal instance.
 

@@ -34,7 +34,9 @@ theme:
     - navigation.instant
     - navigation.instant.preview
     - navigation.tabs
-    - navigation.sections
+    # - navigation.tabs.sticky
+    # - navigation.sections
+    - navigation.expand
     - search.highlight
     - search.share
     - search.suggest
@@ -63,6 +65,7 @@ theme:
 
 markdown_extensions:
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -70,8 +73,11 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.details
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -88,6 +94,13 @@ plugins:
       separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      enabled: !ENV [CI, false]
+  - git-committers:
+      repository: azure/osdu-developer
+      branch: main
+      enabled: !ENV [CI, false]
 
 extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
@@ -97,24 +110,28 @@ extra_css:
 
 nav:
   - Concepts:
-    - concepts_overview.md
-    - before_you_start.md
+    - overview.md
+    - getting_started.md
     - feature_flags.md
-    - Architecture:
-      - architecture.md
-      - software.md
+    - Design:
+      - design_architecture.md
+      - design_infrastructure.md
+      - design_software.md
   - Tutorials:
-    - tutorials_overview.md
     - Deployment:
       - tutorial_cli.md
-      - tutorial_click.md
-      - tutorial_rest.md
+      - tutorial_arm.md
     - Debugging:
-      - tutorial_logs.md
-      - tutorial_metrics.md
+      - debugging_rest.md
+      - debugging_istio.md
+      - debugging_airflow.md
+      - debugging_kibana.md
     - Advanced Scenarios:
-      - tutorial_vnet.md
+      - advanced_vnet.md
   - Services:
     - services_overview.md
-    - services_core.md
-    - services_reference.md
+    - OSDU:
+      - services_core.md
+      - services_reference.md
+    - Experimental:
+      - experimental_adminui.md

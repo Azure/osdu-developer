@@ -94,13 +94,13 @@ plugins:
       separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
-  - git-revision-date-localized:
-      enable_creation_date: true
-      enabled: !ENV [CI, false]
-  - git-committers:
-      repository: azure/osdu-developer
-      branch: main
-      enabled: !ENV [CI, false]
+  # - git-revision-date-localized:
+  #     enable_creation_date: true
+  #     enabled: !ENV [CI, false]
+  # - git-committers:
+  #     repository: azure/osdu-developer
+  #     branch: main
+      # enabled: !ENV [CI, false]
 
 extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
@@ -110,7 +110,7 @@ extra_css:
 
 nav:
   - Concepts:
-    - overview.md
+    - index.md
     - getting_started.md
     - feature_flags.md
     - Design:

@@ -9,7 +9,7 @@
 
 OSDU Developer enables the deployment of personal instances of the [OSDU™](https://community.opengroup.org/osdu/platform) data platform. 
 
-For detailed instructions, view our online [Documentation](https://azure.github.io/osdu-developer/concepts_overview/) and see what the team is currently working by looking through the [Roadmap](https://github.com/orgs/Azure/projects/696/views/2).
+For detailed instructions, view our online [Documentation](https://azure.github.io/osdu-developer/) and see what the team is currently working by looking through the [Roadmap](https://github.com/orgs/Azure/projects/696/views/2).
 
 ## OSDU Services
 

@@ -1,4 +1,4 @@
-# Deploy using AZD
+# Command Line (AZD)
 
 The process for working with the solution using the Azure Developer CLI is the recommended way for deployent offering the most flexibility.  This process can be used if working directly with the solution on a computer, working in a Visual Studio Code remote container, or using a cloud environment like Github Codespaces.
 

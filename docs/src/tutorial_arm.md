@@ -1,4 +1,4 @@
-# Deploy using One Click
+# Portal Template (ARM)
 
 The solution is a native bicep solution and includes a transpiled ARM template from the latest release.  This ARM template can then be easily used as a custom template deployment.
 

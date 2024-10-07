@@ -41,7 +41,7 @@ The Open Subsurface Data Universe (OSDU) platform is utilized by a variety of pe
     Analyze large volumes of subsurface data to derive insights using machine learning and statistical methods.
 
 
--   :fontawesome-solid-cloud:{ .lg .middle } __IT and Cloud Architects__
+-   :fontawesome-solid-cloud:{ .lg .middle } __Cloud Architects__
 
     ---
 
@@ -55,7 +55,17 @@ The Open Subsurface Data Universe (OSDU) platform is utilized by a variety of pe
     Utilize their specialized knowledge to develop domain-specific applications and services on the OSDU platform.
 
 
+-   :fontawesome-brands-git-alt:{ .lg .middle } __DevOps Engineers__
+
+    ---
+
+    Streamline the deployment, monitoring, and maintenance of OSDU platform applications, ensuring efficient development and operations.
+
 </div>
+
+
+
+- **DevOps Engineers**: Focus on the deployment, monitoring, and maintenance of applications on the OSDU platform, ensuring streamlined and efficient development and operational processes.
 
 ## Benefits
 

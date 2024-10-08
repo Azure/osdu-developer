@@ -1,10 +1,67 @@
 # Getting Started
 
-Before starting it is important to ensure the Azure Subscription is properly configured for a personal instance.
+Prerequisites and configuration steps for deploying personal OSDU™ instances in an Azure Subscription.
+
+## Subscription Quota
+
+It is recommended to have at least 50 vCPUs in a region along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults for MSDN accounts can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
+
+!!! note "Ensure Sufficient Quota"
+    The choice between BS and DS family vCPUs depends on your specific deployment requirements:
+
+    - Increase DS family vCPU quota if necessary.
+    - Increase BS family vCPU quota if using `ENABLE_BATCH`.
+
+| Quota Name | Minimum Quantity |
+|------------|------------------|
+| Total Regional vCPUs | 100 |
+| Standard BS Family vCPUs | 50 |
+| Standard DS Family vCPUs | 50 |
+
+
+!!! tip "Available Cosmos DB Regions"
+    Use the following command to determine the availability of Cosmos DB regions:
+
+    === "Bash"
+        ```bash
+        az provider show --namespace Microsoft.DocumentDB \
+          --query "resourceTypes[?resourceType=='databaseAccounts'].locations" \
+          --output json
+        ```
+
+    === "PowerShell"
+        ```powershell
+        az provider show --namespace Microsoft.DocumentDB `
+          --query "resourceTypes[?resourceType=='databaseAccounts'].locations" `
+          --output json
+        ```
+
+
+## Estimating Costs
+
+Costs will vary widely based on the selected region, instance size, and usage. The following table provides a rough guideline for an idle instance.
+
+!!! note "Costs Will Vary"
+    Idle instance with no activity consumes approximately __$40.00__ per day.
+
+| Resource | Daily | Resource | Daily |
+|----------|--------------|----------|--------------|
+| Virtual Machines | $14.59 | Load Balancer | $0.60 |
+| Log Analytics | $9.76 | Redis Cache | $0.49 |
+| Storage | $2.75 | Key Vault | $0.09 |
+| Azure Cosmos DB | $2.46 | Virtual Network | $0.08 |
+| Microsoft Defender for Cloud | $1.82 | Container Registry | $0.06 |
+| Container Instances | $0.03 | Bandwidth | $0.004 |
+| Service Bus | $0.001 | | |
+
+
 
 ## Resource Providers
 
-To ensure the successful deployment, the following Azure Resource Providers must be registered in the subscription.
+The following Azure Resource Providers must be registered in your subscription.
+
+!!! tip "Register Resource Providers"
+    For instructions to register providers refer to the [Azure Resource Providers and Types documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types).
 
 | Resource Provider                 | Description                                                                 |
 |-----------------------------------|-----------------------------------------------------------------------------|
@@ -30,24 +87,41 @@ To ensure the successful deployment, the following Azure Resource Providers must
 | Microsoft.ServiceBus              | Provides reliable messaging and publish/subscribe capabilities              |
 | Microsoft.Storage                 | Manages Azure Storage accounts and resources                                |
 
-### Registering Resource Providers
+## Required Role Assignments
 
-To register the necessary resource providers for your subscription, please refer to the [Azure Resource Providers and Types documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types).
+To deploy and manage an OSDU™ personal instance, you need the following Azure role assignments:
 
-This documentation provides detailed instructions on how to register resource providers using the Azure portal, Azure CLI, and other methods.
+!!! tip "Assigning Roles"
+    For instructions on assigning roles, refer to the [Azure Role Assignments documentation](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps).
 
-## Role Assignments
+| Role                                    | Purpose                                                                                   |
+|-----------------------------------------|-------------------------------------------------------------------------------------------|
+| Contributor                             | Manage all resources in the subscription, except for assigning roles or managing policies |
+| Role Based Access Control Administrator | Manage access to Azure resources by assigning roles using Azure RBAC                      |
+| Resource Policy Contributor             | Create and manage resource policies                                                       |
 
-The following role assignments are required for users within the subscription to ensure the proper functioning of this solution:
+## Microsoft Entra App Registration
 
-| Role                          | Purpose                                                                                                  | Role ID                                          |
-|-------------------------------|----------------------------------------------------------------------------------------------------------|--------------------------------------------------|
-| Contributor                   | Grants full access to manage all resources, but does not allow you to assign roles in Azure RBAC, manage assignments in Azure Blueprints, or share image galleries. | `b24988ac-6180-42a0-ab88-20f7382dd24c`           |
-| Role Based Access Control Administrator | Manages access to Azure resources by assigning roles using Azure RBAC. This role does not allow you to manage access using other ways, such as Azure Policy. | `f58310d9-a9f6-439a-9e8d-f62e7b41a168`           |
-| Resource Policy Contributor   | Users with rights to create/modify resource policies, create support tickets, and read resources/hierarchy. This role is essential for managing resource policies effectively. | `36243c78-bf99-498c-9df9-86d9f8d28608`           |
+Register an application in Microsoft Entra ID.  This is required for OSDU™ personal instance integration with Microsoft Entra ID and delegate access with identity management.
 
-### Assigning Roles
+These credentials will be used in your ARM template deployment to authenticate and authorize the deployment process.
 
-To assign roles to users within your Azure subscription, follow the steps outlined in the [Azure Role Assignments documentation](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps).
+!!! important
+    Only required when using custom ARM template deployments or using CLI feature setting overrides.
 
-This documentation provides you with detailed instructions on how to assign roles using the Azure portal, Azure CLI, and other methods.
+!!! tip "Registering Applications"
+    For instructions on registering applications, refer to the [Quickstart documentation](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=certificate).
+
+
+| Name | Description/Value |
+|------|-------------|  
+| Directory (tenant) ID | Unique identifier for the Microsoft Entra tenant |
+| Application (client) ID | Unique identifier for the registered application |
+| Object ID | Unique identifier for the application object in Microsoft Entra |
+| Application (client) Secret | Confidential key used to authenticate the application |
+| Single-page application redirect URI | http://localhost:8080 |
+
+!!! warning "Secure Your Secret"
+    The client secret is sensitive information. Make sure to store it securely and never commit it to version control systems.
+
+

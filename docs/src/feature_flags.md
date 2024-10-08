@@ -1,10 +1,38 @@
 # Feature Flags
 
-Feature flags can be set prior to running provision with the command `azd env set <FLAG> <VALUE>`
+Feature flags are configuration settings used to modify the default behavior of an OSDU™ personal instance.
 
-## Reusable Entra App
+<div class="grid cards" markdown>
 
-Entra App configurations are by default automatically created but one can be reused or created manually as well.
+- :material-toggle-switch-outline: __Toggle__ alternate functionality
+- :material-cloud-outline: __Deploy__  alternate infrastructure
+- :material-cog-outline: __Override__ default settings
+- :material-wrench-outline: __Configure__ custom software 
+
+</div>
+
+
+!!! warning "CLI Deployment Only"
+    Feature flags are implemented as named environment variables which correspond to ARM template parameter objects.
+
+!!! tip "Setting Feature Flags"
+    Set feature flags prior to provisioning.
+    ```bash
+    azd env set <FLAG> <VALUE>
+    ```
+
+## Azure Region and Subscription
+
+Azure subscriptions and region location are set interactively by default but can be directly specified.
+
+| Feature Flag              | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| AZURE_SUBSCRIPTION_ID    | Azure subscription ID for resource deployment                              |
+| AZURE_LOCATION           | Azure location for resource deployment                                      |
+
+## Microsoft Entra ID Application Registration
+
+Application registrations are created automatically with a naming convention of osdu-{environment}-{subscription} but can be manually created and provided.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
@@ -13,20 +41,23 @@ Entra App configurations are by default automatically created but one can be reu
 | AZURE_CLIENT_PRINCIPAL_OID| Skip Principal ID lookup and use provided.                                  |
 | AZURE_TENANT_ID           | Skip Tenant ID lookup and use provided.                                     |
 
-## Custom Infrastructure
+## Deploy Custom Infrastructure
 
-Infrastructure customizations can be managed and modified using the following feature flags.
+Infrastructure customizations can be modified using the following feature flags.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_BURSTABLE          | User cheaper Burstable server types in the cluster                          |
 | CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
 | CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
+| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
+| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
 
 
-## Custom Software
 
-Software customizations can be managed and modified using the following feature flags.
+## Configure Custom Software
+
+Software customizations can be modified using the following feature flags.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
@@ -38,43 +69,17 @@ Software customizations can be managed and modified using the following feature 
 | SOFTWARE_BRANCH           | Customizes the branch used for software definition                          |
 
 
-## Experimental Software
+## Configure Experimental Software
 
-Experimental Software can be managed and modified using the following feature flags.
+Experimental Software can be enabled using the following feature flags.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_EXPERIMENTAL       | Enables loading of experimental software (False by default)                 |
 | ENABLE_ADMIN_UI           | Enables loading of the Admin UI (False by default)                          |
 
-## Storage Access
 
-Control public access to Storage.
-
-| Feature Flag              | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
-
-
-## Private Access
-
-Modify the infrastructure and network by enabling Bastion Host with a virtual machine to use for access.
-
-| Feature Flag              | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
-
-
-## Cluster Network
-
-Modify the cluster network configuration to utilize Azure CNI with Dynamic IP allocation.
-
-| Feature Flag              | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| ENABLE_POD_SUBNET         | Enables a separate subnet for pod networking in the AKS cluster             |
-
-
-## Virtual Network Injection
+## Enable Virtual Network Injection
 
 Modify the network configuration for use with a pre-existing virtual network.
 

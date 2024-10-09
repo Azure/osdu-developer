@@ -50,7 +50,7 @@ OSDU offers different experimental capabilities that are very new or community c
 
 ## Getting Started
 
-> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/before_you_start/) registered. 
+> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription** with [these namespaces](https://azure.github.io/osdu-developer/getting_started/#resource-providers/) registered. 
 
 
 ### Prerequisites
@@ -105,13 +105,13 @@ azd down --force --purge
 ```
 
 
-### One Click Deployment  (Alternative)
+### Portal Template Deployment  (Alternative)
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
 Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
 
-Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_click/) for a quick overview of One Click deployments.
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_arm/) for a quick overview of One Click deployments.
 
 **Important Parameter Requirement:**
 

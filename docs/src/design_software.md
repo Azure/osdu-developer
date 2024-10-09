@@ -1,34 +1,42 @@
 # Software
 
-### Stamp Layout
+The OSDU™ private instance design utilizes a stamp-based pattern for software deployment, complementing the infrastructure design. This approach enables adheres to the principles of independent deployment of stamps with varying software configurations.
 
-In our software architecture design, we define two primary software Kustomizations that describe a **stamp**. A Kustomization is a Flux resource representing a set of defined manifests that Flux should reconcile to the cluster, with dependencies between them. Structuring our Kustomizations this way ensures clarity and separation of concerns, making it easier to manage and organize both components and applications.
+## Key Concepts
 
-1. **Components**: Middleware layers that provide essential services to the platform, necessary to support OSDU Services.
-2. **Applications**: The OSDU platform services themselves, organized into logical groups of capabilities.
+<div class="grid cards" markdown>
 
+- :material-view-grid-outline:{ .lg .middle } __Stamp__: A complete, independent softwaredeployment of the OSDU platform
+- :material-puzzle-outline:{ .lg .middle } __Components__: Middleware layers providing essential services to support OSDU Services
+- :material-application-brackets:{ .lg .middle } __Applications__: OSDU platform services organized into logical groups of capabilities
+
+</div>
+
+## Software Layout
+
+In our software architecture design, we define three primary software Kustomizations that describe the **stamp**. A Kustomization is a Flux resource representing a set of defined manifests that Flux should reconcile to the cluster, with dependencies between them.
 
 ```mermaid
 flowchart TD
   FluxSystemComponents("flux-system-components")
   FluxSystemApplications("flux-system-applications")
+  FluxSystemExperimental("flux-system-experimental")
   FluxSystemComponents-->FluxSystemApplications
+  FluxSystemApplications-->FluxSystemExperimental
 ```
 
 ```bash
 ├── applications
 │   └── kustomize.yaml
-└── components
+├── components
+│   └── kustomize.yaml
+└── experimental
     └── kustomize.yaml
 ```
 
- 
+## Components Structure
 
-### Component Structure
-
-The Components directory is organized to facilitate the management of various middleware layers essential for our infrastructure. Below is the layout:
-
-Components are organized to facilitate the logical understanding of the middleware software installations.  Components have dependency structures in the sequence of configuration.  A naming pattern is used to help facilitate understanding.
+The Components directory is organized to facilitate the management of various middleware layers essential for our infrastructure. Components have dependency structures in the sequence of configuration, and a naming pattern is used to help facilitate understanding.
 
 ```mermaid
 flowchart TD
@@ -111,7 +119,7 @@ flowchart TD
         └── reloader.yaml
 ```
 
-__Applications Structure__
+## Applications Structure
 
 The Applications directory is organized to facilitate the management of applications that are installed in the platform. 
 
@@ -128,7 +136,6 @@ flowchart TD
   FluxSystemApplications-->OSDUReference
   FluxSystemApplications-->OSDUAuth
 ```
-
 
 ```bash
 ── applications
@@ -161,7 +168,7 @@ flowchart TD
 │       └── source.yaml
 ```
 
-__OSDU Core Structure__
+## OSDU Core Structure
 
 The OSDU Core application is organized to facilitate the management of the OSDU core platform services. Below is the layout:
 
@@ -215,7 +222,7 @@ flowchart TD
    └── workflow.yaml
 ```
 
-__OSDU Reference Structure__
+## OSDU Reference Structure
 
 The OSDU Reference application is organized to facilitate the management of the OSDU reference platform services. Below is the layout:
 
@@ -238,4 +245,31 @@ flowchart TD
    ├── crs-conversion.yaml
    ├── namespace.yaml
    └── unit.yaml
+```
+
+
+## Experimental Features
+
+The Experimental directory is organized to facilitate the management of experimental features.
+
+```mermaid
+  flowchart TD
+    FluxSystemExperimental("flux-system-experimental")
+    ExperimentalBase("experimental-base")
+    AdminUI("experimental-admin-ui")
+
+    FluxSystemExperimental-->ExperimentalBase
+    ExperimentalBase-->AdminUI
+```
+
+```bash
+── experimental
+   ├── admin-ui
+   │   ├── README.md
+   │   ├── ingress.yaml
+   │   └── release.yaml
+   └── experimental-base
+       ├── namespace.yaml
+       ├── osdu-base.yaml
+       └── vault-secrets.yaml
 ```

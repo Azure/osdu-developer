@@ -109,9 +109,9 @@ azd down --force --purge
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fosdu-developer%2Fmain%2Fazuredeploy.json)
 
-Deploying the resources is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options can be challenging.
+Deploying the solution is efficient and straightforward using an ARM (Azure Resource Manager) template. While this method utilizes default settings for ease of use, navigating parameter options and modifications can be challenging.
 
-Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_arm/) for a quick overview of One Click deployments.
+Follow this [tutorial](https://azure.github.io/osdu-developer/tutorial_arm/) for a quick overview of an ARM template deployment.
 
 **Important Parameter Requirement:**
 

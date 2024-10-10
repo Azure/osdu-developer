@@ -1,4 +1,4 @@
-# Feature Flags
+# Configuration Flags
 
 Feature flags are configuration settings used to modify the default behavior of an OSDU™ personal instance.
 

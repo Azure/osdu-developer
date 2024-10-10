@@ -112,11 +112,18 @@ nav:
   - Concepts:
     - index.md
     - getting_started.md
-    - feature_flags.md
   - Design:
     - design_architecture.md
     - design_infrastructure.md
     - design_software.md
+  - Services:
+    - services_overview.md
+    - services_source.md
+    - OSDU:
+      - services_core.md
+      - services_reference.md
+    - Experimental:
+      - experimental_adminui.md
   - Features:
     - feature_flags.md
   - Installation:
@@ -132,11 +139,4 @@ nav:
       - debugging_kibana.md
     - Advanced Scenarios:
       - advanced_vnet.md
-  - Services:
-    - services_overview.md
-    - services_source.md
-    - OSDU:
-      - services_core.md
-      - services_reference.md
-    - Experimental:
-      - experimental_adminui.md
+  

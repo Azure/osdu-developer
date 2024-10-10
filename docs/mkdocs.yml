@@ -130,6 +130,7 @@ nav:
       - advanced_vnet.md
   - Services:
     - services_overview.md
+    - services_source.md
     - OSDU:
       - services_core.md
       - services_reference.md

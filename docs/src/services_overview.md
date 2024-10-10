@@ -1,63 +1,44 @@
-# Source Code
+# Supported Services
 
-Welcome to the OSDU Source Code directory! This directory is structured to help you easily clone down the OSDU services and related repositories using the `gita` command.
+Supported services of OSDU are primarily deployed from the current master branch. However, it is also possible to deploy release branches of OSDU as specified in the [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones) (e.g., release/0.25, release/0.26, release/0.27, etc.).
 
-> It is recommended to not do this in a Remote Container or Github Codespace.  Working with OSDU services is best suited for direct execution on a local machine.
+## Core Services
 
-## Overview
+| **Name**                                                                               | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Partition Service](https://community.opengroup.org/osdu/platform/system/partition)             | Manages data partitions to ensure efficient data management and scalability.                    |
+| [Entitlement Service](https://community.opengroup.org/osdu/platform/security-and-compliance/entitlements) | Provides access control and permissions management for data within the OSDU platform. |
+| [Legal Service](https://community.opengroup.org/osdu/platform/security-and-compliance/legal)   | Ensures that data compliance and legal requirements are met, including data privacy and governance. |
+| [Indexer Service](https://community.opengroup.org/osdu/platform/system/indexer-service)        | Indexes and categorizes data to enable efficient search and retrieval.                           |
+| [Indexer Queue](https://community.opengroup.org/osdu/platform/system/indexer-queue)            | Manages the queue for processing indexing tasks, ensuring data is indexed in a timely manner.    |
+| [Schema Service](https://community.opengroup.org/osdu/platform/system/schema-service)          | Manages and provides access to data schemas that define the structure and format of data.        |
+| [Storage Service](https://community.opengroup.org/osdu/platform/system/storage)                | Provides scalable storage solutions for managing and retrieving large volumes of data.           |
+| [Search Service](https://community.opengroup.org/osdu/platform/system/search-service)          | Facilitates searching and querying across data stored within the OSDU platform.                  |
+| [File Service](https://community.opengroup.org/osdu/platform/system/file)                      | Handles file operations such as storage, retrieval, and management of data files.                |
+| [Workflow Service](https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-workflow/)  | Initiates business processes within the system. During the prototype phase, it facilitates CRUD operations on workflow metadata and triggers workflows in Apache Airflow. Additionally, the service manages process startup records, acting as a wrapper around Airflow functions.. |
 
-The directory is organized into the following structure:
+## Reference Services
 
-```
-src/
-├── lib
-├── core
-└── reference
-```
+| **Name**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Unit Service](https://community.opengroup.org/osdu/platform/system/reference/unit-service)    | Provides dimension/measurement and unit definitions.                                             |
+| [CRS Catalog Service](https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service) | Provides API endpoints to work with geodetic reference data, allowing developers to retrieve CRS definitions, select appropriate CRSs for data ingestion, and search for CRSs based on various constraints. |
+| [CRS Conversion Service](https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service)  | Enables the conversion of coordinates from one coordinate reference system (CRS) to another. |
 
-### Explanation:
-- **lib**: This directory is designated for libraries and shared components.
-- **core**: This directory contains the core OSDU services repositories.
-- **reference**: This directory holds reference implementations and example projects.
+## Airflow DAGS
 
-## Cloning
+| **Name**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Manifest Ingestion DAG](https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags)    | Used for ingesting single or multiple metadata artifacts about datasets into OSDU.                                             |
+| [CSV Parser DAG:](https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser)    | Helps in parsing CSV files into a format for ingestion and processing.                                             |
 
-To clone the OSDU services into this directory structure, you can use the `gita` command. `gita` is a tool that simplifies the management of multiple Git repositories. If you haven't already installed `gita`, you can do so by following these instructions:
+## Experimental Software
 
-### Installing `gita`
+OSDU offers various experimental capabilities that are either very new or community contributions. These services are not yet fully mature but are available for early adopters to test and provide feedback. This solution supports the concept of experimental software through opt-in feature flags, allowing users to selectively enable and test these new features.
 
-To install `gita`, use pip:
+!!! note
+    Experimental software is often less stable with contains less documentation.
 
-```bash
-pip install gita
-```
-
-For more details on `gita`, please visit the official [gita documentation](https://github.com/nosarthur/gita).
-
-### Using `gita` to Clone Repositories
-
-Once `gita` is installed, navigate to the appropriate subdirectory (e.g., `lib`, `core`, or `reference`) and use the `gita` command to clone down the required OSDU services and auto create a group.
-
-Here's an example:
-
-```bash
-# Clone OSDU Repositories
-(cd lib && gita clone -f repos)
-(cd core && gita clone -f repos)
-(cd reference && gita clone -f repos)
-
-# Create the Groups
-gita add -a lib && gita group rename lib osdu-lib
-gita add -a core && gita group rename core osdu-core
-gita add -a reference && gita group rename reference osdu-reference
-
-# Set the Auto Context
-gita context auto
-
-# Switch to the release branch and pull code
-gita super switch release/0.27
-gita pull
-```
-
-Repeat the above steps for each directory, ensuring they are placed in the correct subdirectory.
-
+| **Name**                                                                   | **Description**                                                                                 |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [Admin UI](https://community.opengroup.org/osdu/ui/admin-ui-group/admin-ui-totalenergies/admin-ui-totalenergies)    | A community supported Angular Administration UI for OSDU.                        

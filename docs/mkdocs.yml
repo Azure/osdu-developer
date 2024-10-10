@@ -113,10 +113,14 @@ nav:
     - index.md
     - getting_started.md
     - feature_flags.md
-    - Design:
-      - design_architecture.md
-      - design_infrastructure.md
-      - design_software.md
+  - Design:
+    - design_architecture.md
+    - design_infrastructure.md
+    - design_software.md
+  - Features:
+    - feature_flags.md
+  - Installation:
+    - install_prerequisites.md
   - Tutorials:
     - Deployment:
       - tutorial_cli.md

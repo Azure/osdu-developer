@@ -2,23 +2,6 @@
 
 Prerequisites and configuration steps for deploying personal OSDU™ instances in an Azure Subscription.
 
-
-## Software Tools
-
-!!! tip "Install Required Software"
-    Install the following software locally.
-
-| Software | Description | Download Link |
-|----------|-------------|---------------|
-| Visual Studio Code | Code editor with REST Client Extension | [Download](https://code.visualstudio.com/download) |
-| PowerShell Core | Cross-platform task automation solution | [Download](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4) |
-| Azure CLI | Command-line tool for managing Azure resources | [Download](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) |
-| Azure Developer CLI | Command-line tool for Azure development | [Download](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd) |
-
-!!! note "Visual Studio Code Extension"
-    After installing Visual Studio Code, make sure to install the [REST Client Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
-
-
 ## Subscription Quota
 
 It is recommended to have at least 50 vCPUs in a region along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults for MSDN accounts can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).

@@ -1,6 +1,18 @@
-# Supported Services
+# Overview
 
-Supported services of OSDU are primarily deployed from the current master branch. However, it is also possible to deploy release branches of OSDU as specified in the [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones) (e.g., release/0.25, release/0.26, release/0.27, etc.).
+Personal OSDU™ instances offer flexibility in service deployments. Latest master is deployed by default although users have the option to select milestone releases.
+
+<div class="grid cards" markdown>
+- :material-source-branch: __Master Branch__ - Current code
+- :material-tag-outline: __Release Branches__ - Milestone code
+</div>
+
+
+!!! tip "Deploy Milestones"
+    Use Feature Flag _`SOFTWARE_VERSION`_ to deploy release branches.
+    
+    For available releases, see [OSDU Milestones](https://community.opengroup.org/osdu/platform/-/milestones).
+
 
 ## Core Services
 
@@ -37,7 +49,7 @@ Supported services of OSDU are primarily deployed from the current master branch
 OSDU offers various experimental capabilities that are either very new or community contributions. These services are not yet fully mature but are available for early adopters to test and provide feedback. This solution supports the concept of experimental software through opt-in feature flags, allowing users to selectively enable and test these new features.
 
 !!! note
-    Experimental software is often less stable with contains less documentation.
+    Experimental software is often less stable and contains less documentation.
 
 | **Name**                                                                   | **Description**                                                                                 |
 |-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|

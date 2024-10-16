@@ -1,22 +1,17 @@
-# Source Code
+# OSDU Source Code
 
-Welcome to working with OSDU Source Code! The `src` directory is structured to help you easily clone down the OSDU services and related repositories using the `gita` command.
+This section provides comprehensive guidance for working with the community code and integrates automatically with an OSDU™ Personal Instance. The preconfigured `src` directory structure optimizes the organization of repositories to enable efficiency. A personal instance includes generated environment variables to streamline the development process.
 
+!!! tip
+    Environment variables can be referenced in IntelliJ with the [EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile) plugin.
 
 !!! warning
-    Avoid using containers, instead use a local machine when working with OSDU source code.
+    Avoid using containers, always use a local machine when working with OSDU™ source code.
 
 
 ## Overview
 
 The directory is organized into the following structure:
-
-```
-src/
-├── lib
-├── core
-└── reference
-```
 
 
 <div class="grid cards" markdown>

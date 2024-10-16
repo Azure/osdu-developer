@@ -34,6 +34,7 @@ theme:
     - navigation.instant
     - navigation.instant.preview
     - navigation.tabs
+    - navigation.footer
     # - navigation.tabs.sticky
     # - navigation.sections
     - navigation.expand
@@ -112,22 +113,34 @@ nav:
   - Concepts:
     - index.md
     - getting_started.md
-  - Design:
-    - design_architecture.md
-    - design_infrastructure.md
-    - design_software.md
+  - Installation:
+    - install_prerequisites.md
+  - Features:
+    - feature_flags.md
   - Services:
     - services_overview.md
     - services_source.md
     - OSDU:
-      - services_core.md
-      - services_reference.md
+      - Core Services:
+        - services_core_partition.md
+        - services_core_entitlements.md
+        - services_core_legal.md
+        - services_core_schema.md
+        - services_core_storage.md
+        - services_core_indexer.md
+        - services_core_search.md
+        - services_core_file.md
+        - services_core_workflow.md
+      - Reference Services:
+        - services_reference_unit.md
+        - services_reference_crs.md
+        - services_reference_conversion.md
     - Experimental:
       - experimental_adminui.md
-  - Features:
-    - feature_flags.md
-  - Installation:
-    - install_prerequisites.md
+  - Design:
+    - design_architecture.md
+    - design_infrastructure.md
+    - design_software.md
   - Tutorials:
     - Deployment:
       - tutorial_cli.md

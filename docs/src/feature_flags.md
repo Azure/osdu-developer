@@ -30,7 +30,7 @@ Azure subscriptions and region location are set interactively by default but can
 | AZURE_SUBSCRIPTION_ID    | Azure subscription ID for resource deployment                              |
 | AZURE_LOCATION           | Azure location for resource deployment                                      |
 
-## Microsoft Entra ID Application Registration
+## Microsoft Entra ID Application
 
 Application registrations are created automatically with a naming convention of osdu-{environment}-{subscription} but can be manually created and provided.
 
@@ -41,7 +41,8 @@ Application registrations are created automatically with a naming convention of 
 | AZURE_CLIENT_PRINCIPAL_OID| Skip Principal ID lookup and use provided.                                  |
 | AZURE_TENANT_ID           | Skip Tenant ID lookup and use provided.                                     |
 
-## Deploy Custom Infrastructure
+
+## Custom Infrastructure
 
 Infrastructure customizations can be modified using the following feature flags.
 
@@ -55,7 +56,7 @@ Infrastructure customizations can be modified using the following feature flags.
 
 
 
-## Configure Custom Software
+## Custom Software
 
 Software customizations can be modified using the following feature flags.
 
@@ -69,7 +70,7 @@ Software customizations can be modified using the following feature flags.
 | SOFTWARE_BRANCH           | Customizes the branch used for software definition                          |
 
 
-## Configure Experimental Software
+## Experimental Software
 
 Experimental Software can be enabled using the following feature flags.
 
@@ -79,7 +80,7 @@ Experimental Software can be enabled using the following feature flags.
 | ENABLE_ADMIN_UI           | Enables loading of the Admin UI (False by default)                          |
 
 
-## Enable Virtual Network Injection
+## Enable VNET Injection
 
 Modify the network configuration for use with a pre-existing virtual network.
 

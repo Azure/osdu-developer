@@ -4,7 +4,7 @@ Prerequisites and configuration steps for deploying personal OSDU™ instances i
 
 ## Subscription Quota
 
-It is recommended to have at least 50 vCPUs in a region along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults for MSDN accounts can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
+It is recommended to have at least 50 vCPUs in a region along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
 
 !!! note "Ensure Sufficient Quota"
     The choice between BS and DS family vCPUs depends on your specific deployment requirements:
@@ -35,26 +35,6 @@ It is recommended to have at least 50 vCPUs in a region along with the ability t
           --query "resourceTypes[?resourceType=='databaseAccounts'].locations" `
           --output json
         ```
-
-
-## Estimating Costs
-
-Costs will vary widely based on the selected region, instance size, and usage. The following table provides a rough guideline for an idle instance.
-
-!!! note "Costs Will Vary"
-    Idle instance with no activity consumes approximately __$40.00__ per day.
-
-| Resource | Daily | Resource | Daily |
-|----------|--------------|----------|--------------|
-| Virtual Machines | $14.59 | Load Balancer | $0.60 |
-| Log Analytics | $9.76 | Redis Cache | $0.49 |
-| Storage | $2.75 | Key Vault | $0.09 |
-| Azure Cosmos DB | $2.46 | Virtual Network | $0.08 |
-| Microsoft Defender for Cloud | $1.82 | Container Registry | $0.06 |
-| Container Instances | $0.03 | Bandwidth | $0.004 |
-| Service Bus | $0.001 | | |
-
-
 
 ## Resource Providers
 

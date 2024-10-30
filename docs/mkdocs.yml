@@ -115,6 +115,8 @@ nav:
     - getting_started.md
   - Installation:
     - install_prerequisites.md
+    - install_cli.md
+    - install_portal.md
   - Features:
     - feature_flags.md
   - Services:

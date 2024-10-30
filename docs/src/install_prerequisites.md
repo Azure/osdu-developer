@@ -1,5 +1,12 @@
 # Prerequisites
 
+??? info "_Article Audience_"
+    :fontawesome-solid-code:{ .lg .middle } __Application Developer__: Working with Services and Applications
+
+    :fontawesome-solid-cloud:{ .lg .middle } __Cloud Architects__: Working with Infrastructure and Software
+
+    :fontawesome-brands-git-alt:{ .lg .middle } __DevOps Engineers__: Automation and Deployment Customizations
+
 This guide outlines the software tools you need installed locally to work with the solution. 
 
 #### Operating System Support
@@ -14,31 +21,28 @@ This guide outlines the software tools you need installed locally to work with t
 
 </div>
 
-??? info "Audience"
-    :fontawesome-solid-code:{ .lg .middle } __Application Developer__: Working with Services and Applications
 
-    :fontawesome-solid-cloud:{ .lg .middle } __Cloud Architects__: Working with Infrastructure and Software
 
 
 ### Visual Studio Code
 Visual Studio Code is a lightweight but powerful source code editor. Install it along with the REST Client Extension for testing and interacting with REST APIs.
 
-[Download Visual Studio Code](https://code.visualstudio.com/download)
+:material-download:{ .lg .middle } [Download Visual Studio Code](https://code.visualstudio.com/download)
 
 ### PowerShell Core
 PowerShell Core is a cross-platform task automation solution, useful for scripting and automation tasks in our solution.
 
-[Download PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
+:material-download:{ .lg .middle } [Download PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
 
 ### Azure CLI
 The Azure Command-Line Interface (CLI) is a set of commands used to create and manage Azure resources. It's essential for managing your Azure environment.
 
-[Download Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+:material-download:{ .lg .middle } [Download Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 ### Azure Developer CLI
 The Azure Developer CLI (azd) is a command-line tool designed to accelerate the time it takes to get started on Azure. It's particularly useful for Azure development tasks.
 
-[Download Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
+:material-download:{ .lg .middle } [Download Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
 
 ### Visual Studio Code Extensions
 

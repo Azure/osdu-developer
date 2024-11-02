@@ -79,6 +79,8 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -141,6 +143,7 @@ nav:
       - experimental_adminui.md
   - Design:
     - design_architecture.md
+    - design_platform.md
     - design_infrastructure.md
     - design_software.md
   - Tutorials:

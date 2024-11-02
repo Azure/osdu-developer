@@ -81,13 +81,6 @@ param enableAdminUI bool = true
 @description('Specify the OSDU version.')
 param osduVersion string = 'master'
 
-@allowed([
-  'Intel'
-  'ARM'
-])
-@description('Specify the server type.')
-param serverType string = 'ARM'
-
 @minLength(9)
 @maxLength(18)
 @description('The address range to use for services')
@@ -147,8 +140,9 @@ var serviceLayerConfig = {
     // D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.
     // D2s_v5 with 2 vCPUs and 8 GiB of memory. Available in 50 regions starting from $70.08 per month.
     // D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
-    vmSize: serverType == 'Intel' ? 'Standard_D4s_v5' : 'Standard_D4pds_v5'  // Choose between Intel (D4s_v5 - 4 vCPUs/16GB) or ARM (D4pds_v5)
-    poolSize: serverType == 'Intel' ? 'Standard_D2s_v5' : 'Standard_D2pds_v5'  // Choose between Intel (D2s_v5 - 2 vCPUs/8GB) or ARM (D2pds_v5)
+    vmSize: 'Standard_D4pds_v5' 
+    poolSize: 'Standard_D2pds_v5'  
+    defaultSize: 'Standard_D4s_v5' // OSDU Java Services don't run on ARM?
   }
   gitops: {
     name: 'flux-system'
@@ -392,7 +386,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'default'
         mode: 'User'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.vmSize : vmSize
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.defaultSize : vmSize
         enableAutoScaling: true
         minCount: 4
         maxCount: 20

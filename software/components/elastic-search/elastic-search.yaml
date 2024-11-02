@@ -72,9 +72,10 @@ spec:
                       fieldPath: metadata.annotations['topology.kubernetes.io/zone']
               resources:
                 requests:
+                  memory: 2Gi
                   cpu: 0.2
                 limits:
-                  memory: 8Gi
+                  memory: 2Gi
                   cpu: 2
           topologySpreadConstraints:
             - maxSkew: 1

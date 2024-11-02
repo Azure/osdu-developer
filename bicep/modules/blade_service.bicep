@@ -1,25 +1,6 @@
 /////////////////
 // Service Blade 
 /////////////////
-// import * as type from 'types.bicep'
-
-type bladeSettings = {
-  @description('The name of the section name')
-  sectionName: string
-  @description('The display name of the section')
-  displayName: string
-}
-
-type appConfigItem = {
-  @description('The App Configuration Key')
-  name: string
-  @description('The App Configuration Value')
-  value: string
-  @description('The App Configuration Content Type')
-  contentType: string
-  @description('The App Configuration Label')
-  label: string
-}
 
 @description('The configuration for the blade section.')
 param bladeConfig bladeSettings
@@ -36,13 +17,8 @@ param enableTelemetry bool
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
 
-param networkPlugin string
-
-@description('The size of the solution')
-param clusterSize string
-
-@description('Override the default server type.')
-param customVMSize string = ''
+@description('A Custom VM Size for Internal Pool')
+param vmSize string
 
 @description('The name of the Key Vault where the secret exists')
 param kvName string 
@@ -105,9 +81,6 @@ param enableAdminUI bool = true
 @description('Specify the OSDU version.')
 param osduVersion string = 'master'
 
-@description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
-param clusterAdminIds array
-
 @minLength(9)
 @maxLength(18)
 @description('The address range to use for services')
@@ -119,9 +92,10 @@ param serviceCidr string
 @description('The IP address to reserve for DNS')
 param dnsServiceIP string
 
-
+@description('The id of the subnet to deploy the AKS nodes')
 param aksSubnetId string
 
+@description('The id of the subnet to deploy AKS pods')
 param podSubnetId string = ''
 
 @description('The managed identity name for deployment scripts')
@@ -136,10 +110,12 @@ param partitionStorageNames string[]
 @description('The name of the partition service bus namespaces')
 param partitionServiceBusNames string[]
 
-
-
-@description('Feature Flag to Enable Managed Observability.')
-param enableMonitoring bool = false
+@allowed([
+  'azureBlob'
+  'gitRepository'
+])
+@description('Flux source location for software definition.')
+param sourceHost string = 'azureBlob'
 
 param appSettings appConfigItem[]
 
@@ -156,9 +132,17 @@ var serviceLayerConfig = {
     sku: 'Basic'
   }
   cluster: {
+    tier: 'Standard'
     aksVersion: '1.30'
     meshVersion: 'asm-1-22'
-    networkPlugin: networkPlugin
+
+    // D2pds v5 with 2 vCPUs and 8 GiB of memory. Available in 22 regions starting from $44.09 per month.
+    // D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.
+    // D2s_v5 with 2 vCPUs and 8 GiB of memory. Available in 50 regions starting from $70.08 per month.
+    // D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
+    vmSize: 'Standard_D4pds_v5' 
+    poolSize: 'Standard_D2pds_v5'  
+    defaultSize: 'Standard_D4s_v5' // OSDU Java Services don't run on ARM?
   }
   gitops: {
     name: 'flux-system'
@@ -168,6 +152,7 @@ var serviceLayerConfig = {
     components: './stamp/components'
     applications: './stamp/applications'
     experimental: './stamp/experimental'
+    enablePrivateSoftware: sourceHost == 'azureBlob'
   }
 }
 
@@ -200,8 +185,6 @@ resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 |  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |     
 | _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|                                                                                                                              
 */
-
-
 
 module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
   name: '${bladeConfig.sectionName}-container-registry'
@@ -257,19 +240,13 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
 |__|\__\  \______/  |______/  |_______|| _| `._____||__| \__| |_______|    |__|     |_______|_______/    
 */
 
-// This is used to help determine what the default subnet should be for the Pods if vnet injected is enabled
-// var defaultPodSubnetId = enableVnetInjection ? '${resourceId(networkConfiguration.group, 'Microsoft.Network/virtualNetworks', networkConfiguration.name)}/subnets/${podSubnetName}' : '${network.outputs.resourceId}/subnets/${podSubnetName}'
-
-module cluster './aks_cluster.bicep' = {
+module cluster './managed-cluster/main.bicep' = {
   name: '${bladeConfig.sectionName}-aks-cluster'
   params: {
-    // Basic Details
-    resourceName: bladeConfig.sectionName
+    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
-    aksVersion: serviceLayerConfig.cluster.aksVersion
-    aad_tenant_id: subscription().tenantId
-    clusterSize: clusterSize
-    networkPlugin: serviceLayerConfig.cluster.networkPlugin
+    skuTier: serviceLayerConfig.cluster.tier
+    kubernetesVersion: serviceLayerConfig.cluster.aksVersion
 
     // Assign Tags
     tags: union(
@@ -279,109 +256,303 @@ module cluster './aks_cluster.bicep' = {
       }
     )
 
-    // Configure Linking Items
-    aksSubnetId: aksSubnetId
-    aksPodSubnetId: podSubnetId == '' ? null : podSubnetId
-    identityId: identityId
-    workspaceId: workspaceResourceId
+    enableTelemetry: enableTelemetry
+
+    // Hook up Diagnostics
+    diagnosticSettings: [
+      {
+        workspaceResourceId: workspaceResourceId
+      }
+    ]
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Azure Kubernetes Service RBAC Cluster Admin'
+        principalId: appIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+      }
+      // Role Assignment required for different extensions.
+      {
+        roleDefinitionIdOrName: 'Kubernetes Agentless Operator'
+        principalId: appIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+      }
+    ]
+
+    aksServicePrincipalProfile: {
+      clientId: 'msi'
+    }
+    managedIdentities: {
+      systemAssigned: false  
+      userAssignedResourcesIds: [
+        identityId
+      ]
+    }
+
+    // Network Settings
+    networkPlugin: 'azure'
+    networkPluginMode: empty(podSubnetId) ? 'overlay' : null
+    networkDataplane: 'cilium'
+    publicNetworkAccess: 'Enabled'
+    outboundType: empty(aksSubnetId) ? 'managedNATGateway' : 'loadBalancer'
+    enablePrivateCluster: false
+
+    // Access Settings
+    disableLocalAccounts: true
+    enableRBAC: true
+    aadProfileManaged: true
+    nodeResourceGroupLockDown: true
+
+    // Observability Settings
+    enableAzureDefender: true
+    enableContainerInsights: true
+    monitoringWorkspaceId: workspaceResourceId
+    enableAzureMonitorProfileMetrics: true
+    costAnalysisEnabled: true
+
+    // Ingress Settings
+    webApplicationRoutingEnabled: false
+    openServiceMeshEnabled: false
 
     // Configure VNET Injection
     serviceCidr: serviceCidr
     dnsServiceIP: dnsServiceIP
 
-    // Configure Istio
-    serviceMeshProfile: enableMonitoring ? 'Istio' : null
-    istioRevision: enableMonitoring ? serviceLayerConfig.cluster.meshVersion : null
-    istioIngressGatewayMode: enableMonitoring ? clusterIngress : null
-
-    // Configure Add Ons
-    enable_aad: empty(clusterAdminIds) == true ? false : true
-    admin_ids: clusterAdminIds
-    workloadIdentityEnabled: true
-    oidcIssuer: true
-    keyvaultEnabled: true
-    fluxGitOpsAddon: true
+    // Plugin Software
+    enableStorageProfileDiskCSIDriver: true
+    enableStorageProfileFileCSIDriver: true
+    enableStorageProfileSnapshotController: true
+    enableStorageProfileBlobCSIDriver: true    
+    enableKeyvaultSecretsProvider: true
+    enableSecretRotation: true
     enableImageCleaner: true
-    fileCSIDriver: true
-    blobCSIDriver: true
-    azurepolicy: 'audit'
-  }
-}
+    imageCleanerIntervalHours: 168
+    enableOidcIssuerProfile: true
+    enableWorkloadIdentity: true
+    azurePolicyEnabled: true
+    omsAgentEnabled: true
 
+    // Auto-Scaling
+    vpaAddon: true
+    kedaAddon: true
+    enableNodeAutoProvisioning: false
+    
+    maintenanceConfiguration: {
+      maintenanceWindow: {
+        schedule: {
+          daily: null
+          weekly: {
+            intervalWeeks: 1
+            dayOfWeek: 'Sunday'
+          }
+          absoluteMonthly: null
+          relativeMonthly: null
+        }
+        durationHours: 4
+        utcOffset: '+00:00'
+        startDate: '2024-10-01'
+        startTime: '00:00'
+      }
+    }
 
-
-/////////////////
-// Elastic Configuration 
-/////////////////
-var elasticPoolPresets = {
-  Burstable : {
-    vmSize: 'Standard_B4ms'
-  }
-  Standard : {
-    vmSize: 'Standard_D4s_v5'
-  }
-}
-
-module pool1 './aks_agent_pool.bicep' = {
-  name: '${bladeConfig.sectionName}-pool1'
-  params: {
-    AksName: cluster.outputs.aksClusterName
-    PoolName: 'poolz1'
-    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
-    agentCount: 1
-    agentCountMax: 3
-    availabilityZones: [
-      '1'
+    primaryAgentPoolProfile: [
+      {
+        name: 'system'
+        mode: 'System'
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.vmSize : vmSize
+        enableAutoScaling: true
+        minCount: 2
+        maxCount: 6
+        securityProfile: {
+          sshAccess: 'Disabled'
+        }
+        osType: 'Linux'
+        osSKU: 'AzureLinux'
+        availabilityZones: [
+          '1'
+          '2'
+          '3'
+        ]
+        vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+        podSubnetId: !empty(podSubnetId) ? podSubnetId : null
+        nodeTaints: [
+          'CriticalAddonsOnly=true:NoSchedule'
+        ]
+      }
     ]
-    subnetId: aksSubnetId
-    podSubnetId: podSubnetId
-    nodeTaints: ['app=cluster:NoSchedule']
-    nodeLabels: {
-      app: 'cluster'
+
+    // Additional Agent Pool Configurations
+    agentPools: [
+      {
+        name: 'default'
+        mode: 'User'
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.defaultSize : vmSize
+        enableAutoScaling: true
+        minCount: 4
+        maxCount: 20
+        sshAccess: 'Disabled'
+        osType: 'Linux'
+        osSku: 'AzureLinux'
+        availabilityZones: [
+          '1'
+          '2'
+          '3'
+        ]
+        vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+        podSubnetId: !empty(podSubnetId) ? podSubnetId : null
+      }
+      {
+        name: 'poolz1'
+        mode: 'User'
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        enableAutoScaling: true
+        minCount: 1
+        maxCount: 3
+        sshAccess: 'Disabled'
+        osType: 'Linux'
+        osSku: 'AzureLinux'
+        availabilityZones: [
+          '1'
+        ]
+        vnetSubnetID: aksSubnetId
+        podSubnetId: podSubnetId
+        nodeTaints: ['app=cluster:NoSchedule']
+        nodeLabels: {
+          app: 'cluster'
+        }
+      }
+      {
+        name: 'poolz2'
+        mode: 'User'
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        enableAutoScaling: true
+        minCount: 1
+        maxCount: 3
+        sshAccess: 'Disabled'
+        osType: 'Linux'
+        osSku: 'AzureLinux'
+        availabilityZones: [
+          '2'
+        ]
+        vnetSubnetID: aksSubnetId
+        podSubnetId: podSubnetId
+        nodeTaints: ['app=cluster:NoSchedule']
+        nodeLabels: {
+          app: 'cluster'
+        }
+      }
+      {
+        name: 'poolz3'
+        mode: 'User'
+        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        enableAutoScaling: true
+        minCount: 1
+        maxCount: 3
+        sshAccess: 'Disabled'
+        osType: 'Linux'
+        osSku: 'AzureLinux'
+        availabilityZones: [
+          '3'
+        ]
+        vnetSubnetID: aksSubnetId
+        podSubnetId: podSubnetId
+        nodeTaints: ['app=cluster:NoSchedule']
+        nodeLabels: {
+          app: 'cluster'
+        }
+      }
+    ]
+
+  }
+}
+
+// Policy Assignments custom module to apply the policies to the cluster.
+module policy './managed-cluster/aks_policy.bicep' = {
+  name: '${bladeConfig.sectionName}-aks-policy'
+  params: {
+    clusterName: cluster.outputs.name
+  }
+  dependsOn: [
+    cluster
+  ]
+}
+
+// AKS Extensions custom module to apply the app config provider extension to the cluster.
+module appConfigExtension './managed-cluster/aks_appconfig_extension.bicep' = {
+  name: '${bladeConfig.sectionName}-aks-extension-appconfig'
+  params: {
+    clusterName: cluster.outputs.name
+  }
+  dependsOn: [
+    cluster
+  ]
+}
+
+// AVM doesn't support output of the principalId from the extension module so we have to use a deployment script to get it.
+module fluxExtension './flux-extension/main.bicep' = {
+  name: '${bladeConfig.sectionName}-flux-extension'
+  params: {
+    clusterName: cluster.outputs.name
+    location: location
+    extensionType: 'microsoft.flux'
+    name: 'flux'    
+    releaseNamespace: 'flux-system'
+    releaseTrain: 'Stable'
+
+    configurationSettings: {
+      'multiTenancy.enforce': 'false'
+      'helm-controller.enabled': 'true'
+      'source-controller.enabled': 'true'
+      'kustomize-controller.enabled': 'true'
+      'notification-controller.enabled': 'true'
+      'image-automation-controller.enabled': 'false'
+      'image-reflector-controller.enabled': 'false'
     }
   }
 }
 
-module pool2 './aks_agent_pool.bicep' = {
-  name: '${bladeConfig.sectionName}-pool2'
+module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' = if (serviceLayerConfig.gitops.enablePrivateSoftware) {
+  name: '${bladeConfig.sectionName}-script-clientId'
+  
   params: {
-    AksName: cluster.outputs.aksClusterName
-    PoolName: 'poolz2'
-    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
-    agentCount: 1
-    agentCountMax: 3
-    availabilityZones: [
-      '2'
-    ]
-    subnetId: aksSubnetId
-    podSubnetId: podSubnetId
-    nodeTaints: ['app=cluster:NoSchedule']
-    nodeLabels: {
-      app: 'cluster'
+    kind: 'AzureCLI'
+    name: 'aksExtensionClientId'
+    azCliVersion: '2.63.0'
+    location: location
+    managedIdentities: {
+      userAssignedResourcesIds: [
+        appIdentity.id
+      ]
     }
-  }
-}
 
-module pool3 './aks_agent_pool.bicep' = {
-  name: '${bladeConfig.sectionName}-pool3'
-  params: {
-    AksName: cluster.outputs.aksClusterName
-    PoolName: 'poolz3'
-    agentVMSize: empty(customVMSize) ? elasticPoolPresets[clusterSize].vmSize : customVMSize
-    agentCount: 1
-    agentCountMax: 3
-    availabilityZones: [
-      '3'
+    environmentVariables: [
+      {
+        name: 'rgName'
+        value: '${resourceGroup().name}_aks_${cluster.outputs.name}_nodes'
+      }
+      {
+        name: 'principalId'
+        value: fluxExtension.outputs.principalId
+      }
     ]
-    subnetId: aksSubnetId
-    podSubnetId: podSubnetId
-    nodeTaints: ['app=cluster:NoSchedule']
-    nodeLabels: {
-      app: 'cluster'
-    }
-  }
-}
+    
+    timeout: 'PT30M'
+    retentionInterval: 'PT1H'
 
+    scriptContent: '''
+      az login --identity
+
+      echo "Looking up client ID for $principalId in ResourceGroup $rgName"
+      clientId=$(az identity list --resource-group $rgName --query "[?principalId=='$principalId'] | [0].clientId" -otsv)
+      
+      echo "Found ClientId: $clientId"
+      echo "{\"clientId\":\"$clientId\"}" | jq -c '.' > $AZ_SCRIPTS_OUTPUT_PATH
+    '''
+  }
+  dependsOn: [
+    fluxExtension
+  ]
+}
 
 /////////////////
 // Federated
@@ -437,7 +608,7 @@ module federatedCredentials './federated_identity.bicep' = [for (cred, index) in
     audiences: [
       'api://AzureADTokenExchange'
     ]
-    issuer: cluster.outputs.aksOidcIssuerUrl
+    issuer: cluster.outputs.oidcIssuerUrl
     userAssignedIdentityName: appIdentity.name
     subject: cred.subject
   }
@@ -468,28 +639,6 @@ module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in par
     federatedCredentials
   ]
 }]
-
-/////////////////
-// Helm Charts 
-/////////////////
-module helmAppConfigProvider './aks-run-command/main.bicep' = {
-  name: '${bladeConfig.sectionName}-helm-appconfig-provider'
-  params: {
-    aksName: cluster.outputs.aksClusterName
-    location: location
-    initialScriptDelay: '130s'
-
-    newOrExistingManagedIdentity: 'existing'
-    managedIdentityName: managedIdentityName
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
-
-    commands: [
-      'helm install azureappconfiguration.kubernetesprovider oci://mcr.microsoft.com/azure-app-configuration/helmchart/kubernetes-provider --namespace azappconfig-system --create-namespace'
-    ]
-  }
-}
-
 
 
 /*
@@ -681,7 +830,7 @@ values.yaml: |
 module appConfigMap './aks-config-map/main.bicep' = {
   name: '${bladeConfig.sectionName}-cluster-appconfig-configmap'
   params: {
-    aksName: cluster.outputs.aksClusterName
+    aksName: cluster.outputs.name
     location: location
     name: 'config-map-values'
     namespace: 'default'
@@ -717,14 +866,16 @@ module appConfigMap './aks-config-map/main.bicep' = {
  \______| |__|     |__|      \______/  | _|   |_______/                                                          
 */
 
+
+
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
   name: '${bladeConfig.sectionName}-cluster-gitops'
   params: {
     name: serviceLayerConfig.gitops.name
     location: location
-    namespace: cluster.outputs.fluxReleaseNamespace
-    clusterName: cluster.outputs.aksClusterName
+    namespace: 'flux-system'
+    clusterName: cluster.outputs.name
     scope: 'cluster'
     sourceKind: 'GitRepository'
     gitRepository: {
@@ -787,65 +938,9 @@ module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-config
   dependsOn: [
     app_config
     appConfigMap
-    pool1
-    pool2
-    pool3
   ]
 }
 
-
-/*
-.___  ___.   ______   .__   __.  __  .___________.  ______   .______      
-|   \/   |  /  __  \  |  \ |  | |  | |           | /  __  \  |   _  \     
-|  \  /  | |  |  |  | |   \|  | |  | `---|  |----`|  |  |  | |  |_)  |    
-|  |\/|  | |  |  |  | |  . `  | |  |     |  |     |  |  |  | |      /     
-|  |  |  | |  `--'  | |  |\   | |  |     |  |     |  `--'  | |  |\  \----.
-|__|  |__|  \______/  |__| \__| |__|     |__|      \______/  | _| `._____|
-*/
-
-var name = 'amw${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
-
-module prometheus 'aks_prometheus.bicep' = if(enableMonitoring) {
-  name: '${bladeConfig.sectionName}-managed-prometheus'
-  params: {
-    // Basic Details
-    name: length(name) > 23 ? substring(name, 0, 23) : name
-    location: location
-    tags: union(
-      tags,
-      {
-        layer: bladeConfig.displayName
-      }
-    )
-
-    publicNetworkAccess: 'Enabled'    
-    clusterName: cluster.outputs.aksClusterName
-    actionGroupId: ''
-  }
-}
-
-module grafana 'aks_grafana.bicep' = if(enableMonitoring){
-  name: '${bladeConfig.sectionName}-managed-grafana'
-  params: {
-    // Basic Details
-    name: length(name) > 23 ? substring(name, 0, 23) : name
-    location: location
-    tags: union(
-      tags,
-      {
-        layer: bladeConfig.displayName
-      }
-    )
-
-    skuName: 'Standard'
-    apiKey: 'Enabled'
-    autoGeneratedDomainNameLabelScope: 'TenantReuse'
-    deterministicOutboundIP: 'Disabled'
-    publicNetworkAccess: 'Enabled'
-    zoneRedundancy: 'Disabled'
-    prometheusName: prometheus.outputs.name
-  }
-}
 
 @description('The name of the container registry.')
 output registryName string = registry.outputs.name
@@ -854,4 +949,24 @@ output registryName string = registry.outputs.name
 output appConfigName string = app_config.outputs.name
 
 @description('The name of the cluster.')
-output clusterName string = cluster.outputs.aksClusterName
+output clusterName string = cluster.outputs.name
+
+
+
+type bladeSettings = {
+  @description('The name of the section name')
+  sectionName: string
+  @description('The display name of the section')
+  displayName: string
+}
+
+type appConfigItem = {
+  @description('The App Configuration Key')
+  name: string
+  @description('The App Configuration Value')
+  value: string
+  @description('The App Configuration Content Type')
+  contentType: string
+  @description('The App Configuration Label')
+  label: string
+}

@@ -216,7 +216,7 @@ Use the following commands set up the network with a required subnet for the clu
     --query "id" -o tsv)
 
     # role_assignment
-    az role assignment create --assignee $IDENTITY_ID \
+    az role assignment create --assignee $IDENTITY_PID \
     --role "Network Contributor" \
     --scope $NETWORK_ID
     ```

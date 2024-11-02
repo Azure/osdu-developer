@@ -1,14 +1,6 @@
 /////////////////
 // Partition Blade 
 /////////////////
-// import * as type from 'types.bicep'
-
-type bladeSettings = {
-  @description('The name of the section name')
-  sectionName: string
-  @description('The display name of the section')
-  displayName: string
-}
 
 @description('The configuration for the blade section.')
 param bladeConfig bladeSettings
@@ -46,13 +38,6 @@ param storageDNSZoneId string
 
 @description('Cosmos DNS Zone Id')
 param cosmosDNSZoneId string
-
-@allowed([
-  'Burstable'
-  'Standard'
-])
-@description('The Partition Size')
-param partitionSize string = 'Burstable'
 
 @description('List of Data Partitions')
 param partitions array = [
@@ -128,12 +113,7 @@ var partitionLayerConfig = {
   }
   database: {
     name: 'osdu-db'
-    Burstable : {
-      throughput: 2000
-    }
-    Standard: {
-      throughput: 4000
-    }
+    throughput: 4000
     backup: 'Continuous'
     containers: [
       {
@@ -297,13 +277,6 @@ var partitionLayerConfig = {
           '/partitionKey'
         ]
       }
-      // {
-      //   name: 'WorkflowTasksSharingInfoV2'
-      //   kind: 'Hash'
-      //   paths: [
-      //     '/partitionKey'
-      //   ]
-      // }
       {
         name: 'WorkflowV2'
         kind: 'Hash'
@@ -579,7 +552,7 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
       array(partitionDatabase)
     ) : array(partitionDatabase)
   
-    maxThroughput: partitionLayerConfig.database[partitionSize].throughput
+    maxThroughput: partitionLayerConfig.database.throughput
     backupPolicyType: partitionLayerConfig.database.backup
 
     // Hookup Customer Managed Encryption Key
@@ -704,3 +677,11 @@ module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, 
 // Output partitionStorage names
 output partitionStorageNames string[] = [for (partition, index) in partitions: partitionStorage[index].outputs.name]
 output partitionServiceBusNames string[] = [for (partition, index) in partitions: partitonNamespace[index].outputs.name]
+
+
+type bladeSettings = {
+  @description('The name of the section name')
+  sectionName: string
+  @description('The display name of the section')
+  displayName: string
+}

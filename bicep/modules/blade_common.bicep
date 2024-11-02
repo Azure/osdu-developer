@@ -34,6 +34,9 @@ param workspaceResourceId string
 @description('The Diagnostics Workspace Name')
 param workspaceName string
 
+@description('Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment.')
+param userAssignedIdentityName string
+
 @description('The managed identity name for deployment scripts')
 param deploymentScriptIdentity string
 
@@ -68,6 +71,7 @@ var commonLayerConfig = {
       'system'
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
+      'gitops'
     ]
     tables: [
       'partitionInfo'
@@ -91,6 +95,10 @@ var commonLayerConfig = {
       }
     ]
   }
+}
+
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: userAssignedIdentityName
 }
 
 module insights 'br/public:avm/res/insights/component:0.3.0' = {
@@ -239,42 +247,6 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
   }
 }
 
-// Deployment Scripts are not enabled yet for Private Link
-// https://github.com/Azure/bicep/issues/6540
-module sshKey './script-sshkeypair/main.bicep' = {
-  name: '${bladeConfig.sectionName}-keyvault-sshkey'
-  params: {
-    kvName: keyvault.outputs.name
-    location: location
-
-    useExistingManagedIdentity: true
-    managedIdentityName: deploymentScriptIdentity
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
-
-    sshKeyName: 'PrivateLinkSSHKey-'
-  }
-}
-
-module certificates './script-kv-certificate/main.bicep' = {
-  name: '${bladeConfig.sectionName}-keyvault-cert'
-  params: {
-    kvName: keyvault.outputs.name
-    location: location
-
-    useExistingManagedIdentity: true
-    managedIdentityName: deploymentScriptIdentity
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName: resourceGroup().name
-
-    certificateNames: [
-      'https-certificate'
-    ]
-    initialScriptDelay: '0'
-    validity: 24
-  }
-}
-
 resource vaultDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
   name: 'privatelink.vaultcore.azure.net'
   location: 'global'
@@ -351,6 +323,35 @@ module configStorage './storage-account/main.bicep' = {
     isSystem: true
   }
 }
+
+// var directoryUploads = [
+//   {
+//     directory: 'software'
+//   }
+//   {
+//     directory: 'charts'
+//   }
+//   {
+//     directory: 'stamp'
+//   }
+// ]
+
+// @batchSize(1)
+// module gitOpsUpload './software-upload/main.bicep' = [for item in directoryUploads: {
+//   name: '${bladeConfig.sectionName}-storage-${item.directory}-upload'
+//   params: {
+//     storageAccountName: configStorage.outputs.name
+//     location: location
+//     useExistingManagedIdentity: true
+//     managedIdentityName: userAssignedIdentity.name
+//     existingManagedIdentitySubId: subscription().subscriptionId
+//     existingManagedIdentityResourceGroupName: resourceGroup().name
+//     directoryName: item.directory
+//   }
+//   dependsOn: [
+//     configStorage
+//   ]
+// }]
 
 resource storageDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
   name: storageDnsZoneName

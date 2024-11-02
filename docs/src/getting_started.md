@@ -4,19 +4,21 @@ Prerequisites and configuration steps for deploying personal OSDU™ instances i
 
 ## Subscription Quota
 
-It is recommended to have at least 50 vCPUs in a region along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
+It is recommended to have at least 50 vCPUs in a region for vCPU families along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
 
 !!! note "Ensure Sufficient Quota"
-    The choice between BS and DS family vCPUs depends on your specific deployment requirements:
+    The deployment requires quota for the following VM families:
 
-    - Increase DS family vCPU quota if necessary.
-    - Increase BS family vCPU quota if using `ENABLE_BATCH`.
+    - Standard_D4pds_v5 nodes for system workloads
+    - Standard_D2pds_v5 nodes for zonal workloads  
+    - Standard_D4s_v5 nodes for default workloads
+
 
 | Quota Name | Minimum Quantity |
 |------------|------------------|
 | Total Regional vCPUs | 100 |
-| Standard BS Family vCPUs | 50 |
-| Standard DS Family vCPUs | 50 |
+| Standard DPDSv5 Family vCPUs | 50 |
+| Standard DSv5 Family vCPUs | 50 |
 
 
 !!! tip "Available Cosmos DB Regions"

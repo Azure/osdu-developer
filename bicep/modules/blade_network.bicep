@@ -1,40 +1,6 @@
 /////////////////
 // Network Blade 
 /////////////////
-// import * as type from 'types.bicep'
-
-type bladeSettings = {
-  @description('The name of the section name')
-  sectionName: string
-  @description('The display name of the section')
-  displayName: string
-}
-
-type subnetSettings = {
-  @description('The name of the subnet')
-  name: string
-  @description('The address range to use for the subnet')
-  prefix: string
-}
-
-type vnetSettings = {
-  @description('The name of the resource group that contains the Virtual Network')
-  group: string
-  @description('The name of the Virtual Network')
-  name: string
-  @description('The address range to use for the Virtual Network')
-  prefix: string
-  @description('The Managed Identity ')
-  identityId: string
-  @description('The cluster subnet')
-  aksSubnet: subnetSettings
-  @description('The pod subnet')
-  podSubnet: subnetSettings
-  @description('The machine subnet')
-  vmSubnet: subnetSettings
-  @description('The bastion subnet')
-  bastionSubnet: subnetSettings
-}
 
 @description('The configuration for the blade section.')
 param bladeConfig bladeSettings
@@ -55,7 +21,7 @@ param workspaceResourceId string
 param vnetConfiguration vnetSettings
 
 @description('Feature Flag to Enable Bastion')
-param enableBastion bool
+param enableBastion bool = false
 
 @description('Feature Flag to Enable a Pod Subnet')
 param enablePodSubnet bool
@@ -420,3 +386,37 @@ output vnetId string = enableVnetInjection ? resourceId(networkConfiguration.gro
 output aksSubnetId string = enableVnetInjection ? '${resourceId(networkConfiguration.group, 'Microsoft.Network/virtualNetworks', networkConfiguration.name)}/subnets/${networkConfiguration.aksSubnet.name}' : '${network.outputs.resourceId}/subnets/${networkConfiguration.aksSubnet.name}'
 output vmSubnetId string = enableVnetInjection ? '${resourceId(networkConfiguration.group, 'Microsoft.Network/virtualNetworks', networkConfiguration.name)}/subnets/${networkConfiguration.vmSubnet.name}' : '${network.outputs.resourceId}/subnets/${networkConfiguration.vmSubnet.name}'
 output podSubnetId string = enableVnetInjection ? '${resourceId(networkConfiguration.group, 'Microsoft.Network/virtualNetworks', networkConfiguration.name)}/subnets/${networkConfiguration.podSubnet.name}' : '${network.outputs.resourceId}/subnets/${networkConfiguration.podSubnet.name}'
+
+
+type bladeSettings = {
+  @description('The name of the section name')
+  sectionName: string
+  @description('The display name of the section')
+  displayName: string
+}
+
+type subnetSettings = {
+  @description('The name of the subnet')
+  name: string
+  @description('The address range to use for the subnet')
+  prefix: string
+}
+
+type vnetSettings = {
+  @description('The name of the resource group that contains the Virtual Network')
+  group: string
+  @description('The name of the Virtual Network')
+  name: string
+  @description('The address range to use for the Virtual Network')
+  prefix: string
+  @description('The Managed Identity ')
+  identityId: string
+  @description('The cluster subnet')
+  aksSubnet: subnetSettings
+  @description('The pod subnet')
+  podSubnet: subnetSettings
+  @description('The machine subnet')
+  vmSubnet: subnetSettings
+  @description('The bastion subnet')
+  bastionSubnet: subnetSettings
+}

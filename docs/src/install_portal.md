@@ -42,7 +42,6 @@ The Azure Resource Manager (ARM) custom template deployment provides a simple wa
 4. Modify the optional parameters as desired.
 
     === "Optional Parameters"
-        - Enable Burstable: _`Feature Flag: Enable burstable server types.`_
         - Custom VM Size: _`Set Custom VM size cluster nodes.`_
         - Ingress Type: _`Switch: Ingress type to use.`_
         - Enable Blob Public Access: _`Feature Flag: Enable Blob Storage public access.`_

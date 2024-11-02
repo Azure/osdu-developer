@@ -10,12 +10,12 @@ It is recommended to have at least 50 vCPUs in a region along with the ability t
     The choice between BS and DS family vCPUs depends on your specific deployment requirements:
 
     - Increase DS family vCPU quota if necessary.
-    - Increase BS family vCPU quota if using `ENABLE_BATCH`.
+
 
 | Quota Name | Minimum Quantity |
 |------------|------------------|
 | Total Regional vCPUs | 100 |
-| Standard BS Family vCPUs | 50 |
+| Standard DPDSv5 Family vCPUs | 50 |
 | Standard DS Family vCPUs | 50 |
 
 

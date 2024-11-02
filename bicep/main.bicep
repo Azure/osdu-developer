@@ -17,10 +17,7 @@ param applicationClientSecret string
 @description('Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)')
 param applicationClientPrincipalOid string
 
-@description('Feature Flag: Enable Burstable Server Types')
-param enableBurstable bool = false
-
-@description('Use customized server types.')
+@description('The size of the VM to use for the cluster.')
 param customVMSize string = ''
 
 @allowed([
@@ -34,12 +31,6 @@ param ingressType string = 'External'
 
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
-
-@description('Feature Flag: Enable management with a virtual machine and bastion host.')
-param enableManage bool = false
-
-@description('(Optional) If manage then the ssh user name for the virtual machine.')
-param vmAdminUsername string = 'azureUser'
 
 @description('Feature Flag: Enable AKS Enhanced Subnet Support (Azure CNI)')
 param enablePodSubnet bool = false
@@ -88,6 +79,7 @@ param experimentalSoftware object = {
   adminUI: false
 }
 
+
 // This would be a type but bugs exist for ARM Templates so is object instead.
 @description('Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dnsServiceIP}')
 param clusterNetwork object = {
@@ -95,16 +87,6 @@ param clusterNetwork object = {
   serviceCidr: ''
   dnsServiceIP: ''
 }
-
-@allowed([
-  'kubenet'
-  'azure'
-])
-@description('The network plugin to use for the Kubernetes cluster.')
-param clusterNetworkPlugin string = 'azure'
-
-@description('Optional: Specify the AD Users and/or Groups that can manage the cluster.')
-param clusterAdminIds array = []
 
 /////////////////////////////////
 //  Configuration 
@@ -210,7 +192,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
 //*****************************************************************//
 //  Network Resources                                              //
 //*****************************************************************//
-module networkBlade 'modules/blade_network.bicep' = {
+module networkBlade 'modules/blade_network.bicep' = if (enableVnetInjection) {
   name: 'network-blade'
   params: {
     bladeConfig: {
@@ -228,7 +210,6 @@ module networkBlade 'modules/blade_network.bicep' = {
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: stampIdentity.outputs.principalId
 
-    enableBastion: enableManage
     enablePodSubnet: enablePodSubnet
     enableVnetInjection: enableVnetInjection
     
@@ -281,10 +262,12 @@ module commonBlade 'modules/blade_common.bicep' = {
     enableTelemetry: enableTelemetry
     deploymentScriptIdentity: stampIdentity.outputs.name
 
+    userAssignedIdentityName: stampIdentity.outputs.name
+
     workspaceResourceId: logAnalytics.outputs.resourceId
     workspaceName: logAnalytics.outputs.name
 
-    subnetId: networkBlade.outputs.aksSubnetId
+    subnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
     cmekConfiguration: cmekConfiguration
 
     enablePrivateLink: enablePrivateLink
@@ -294,59 +277,10 @@ module commonBlade 'modules/blade_common.bicep' = {
     applicationClientSecret: applicationClientSecret
     applicationClientPrincipalOid: applicationClientPrincipalOid
   }
-  dependsOn: [
+  dependsOn: enableVnetInjection ? [
     networkBlade
-  ]
+  ] :[]
 }
-
-
-//*****************************************************************//
-//  Manage Resources                                               //
-//*****************************************************************//
-module manageBlade 'modules/blade_manage.bicep' = {
-  name: 'manage-blade'
-  params: {
-    bladeConfig: {
-      sectionName: 'manageblade'
-      displayName: 'Manage Resources'
-    }
-
-    tags: {
-      id: rg_unique_id
-    }
-
-    manageLayerConfig: {
-      machine: {
-        vmSize: 'Standard_DS3_v2'
-        imagePublisher: 'Canonical'
-        imageOffer: 'UbuntuServer'
-        imageSku: '18.04-LTS'
-        authenticationType: 'password'
-      }
-      bastion: {
-        skuName: 'Basic'
-      }
-    }
-
-    location: location
-    enableTelemetry: enableTelemetry
-
-    workspaceName: logAnalytics.outputs.name
-    kvName: commonBlade.outputs.keyvaultName
-
-    // Feature Flags
-    enableBastion: enableManage
-    
-    vmAdminUsername: vmAdminUsername
-    vnetId: networkBlade.outputs.vnetId
-    vmSubnetId: networkBlade.outputs.vmSubnetId
-  }
-  dependsOn: [
-    networkBlade
-    commonBlade
-  ]
-}
-
 
 //*****************************************************************//
 //  Partition Resources                                            //
@@ -367,7 +301,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     workspaceResourceId: logAnalytics.outputs.resourceId
 
     kvName: commonBlade.outputs.keyvaultName
-    subnetId: networkBlade.outputs.aksSubnetId
+    subnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
 
     enableBlobPublicAccess: enableBlobPublicAccess
     enablePrivateLink: enablePrivateLink
@@ -375,12 +309,13 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     storageDNSZoneId: commonBlade.outputs.storageDNSZoneId
     cosmosDNSZoneId: commonBlade.outputs.cosmosDNSZoneId
 
-    partitionSize: enableBurstable ? 'Burstable' : 'Standard'
     partitions: configuration.partitions
     managedIdentityName: stampIdentity.outputs.name
   }
-  dependsOn: [
+  dependsOn: enableVnetInjection ? [
     networkBlade
+    commonBlade
+  ] :[
     commonBlade
   ]
 }
@@ -424,16 +359,13 @@ module serviceBlade 'modules/blade_service.bicep' = {
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     
-    aksSubnetId: networkBlade.outputs.aksSubnetId
-    podSubnetId: enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
-    customVMSize: customVMSize
-    clusterSize: enableBurstable ? 'Burstable' : 'Standard'
-    clusterAdminIds: clusterAdminIds
+    aksSubnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
+    podSubnetId: enableVnetInjection && enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
+    vmSize: customVMSize
 
     clusterIngress: ingressType == '' ? 'External' : ingressType
     serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
-    dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.v
-    networkPlugin: enablePodSubnet ? 'azure' : clusterNetworkPlugin
+    dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.vnet
 
     softwareBranch: clusterSoftware.branch
     softwareRepository: clusterSoftware.repository
@@ -455,7 +387,6 @@ module serviceBlade 'modules/blade_service.bicep' = {
     ]
   }
   dependsOn: [
-    networkBlade
     commonBlade
     partitionBlade
   ]

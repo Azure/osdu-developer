@@ -13,10 +13,10 @@ Feature flags are configuration settings used to modify the default behavior of 
 
 
 !!! warning "CLI Deployment Only"
-    Feature flags are implemented as named environment variables which correspond to ARM template parameter objects.
+    Feature flags are implemented as named environment variables which correspond to ARM template parameter objects and are set prior to provisioning.
 
-!!! tip "Setting Feature Flags"
-    Set feature flags prior to provisioning.
+=== "Command"
+    
     ```bash
     azd env set <FLAG> <VALUE>
     ```
@@ -48,12 +48,9 @@ Infrastructure customizations can be modified using the following feature flags.
 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
-| ENABLE_BURSTABLE          | User cheaper Burstable server types in the cluster                          |
 | CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
 | CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
 | ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
-| ENABLE_MANAGE             | Enables a Bastion Host with a virtual machine for private admin access      |
-
 
 
 ## Custom Software

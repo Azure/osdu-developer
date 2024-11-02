@@ -7,8 +7,6 @@ graph TD
   MonitoringResources["Monitoring Resources: logAnalytics"]
   ConditionalNetwork["Network Resources: Conditional Deployments"]
   ClusterNSG["clusterNetworkSecurityGroup - !vnetInjection"]
-  BastionNSG["bastionNetworkSecurityGroup - !vnetInjection and enableBastion"]
-  MachineNSG["machineNetworkSecurityGroup - !vnetInjection and enableBastion"]
   Network["network - !vnetInjection"]
   CommonResources["Common Resources"]
   AppInsights["appInsights"]
@@ -20,9 +18,6 @@ graph TD
   ScriptFileShares["scriptFileShares"]
   CommonDatabase["commonDatabase"]
   RedisCache["redisCache"]
-  ManageResources["Manage Resources"]
-  BastionHost["bastionHost - enableBastion"]
-  VirtualMachine["virtualMachine - enableBastion"]
   PartitionResources["Partition Resources"]
   PartitionStorage["partitionStorage"]
   PartitionDatabase["partitionDatabase"]
@@ -48,8 +43,6 @@ graph TD
   IdentityResources --> MonitoringResources
   MonitoringResources --> ConditionalNetwork
   ConditionalNetwork -->|"!vnetInjection"| ClusterNSG
-  ConditionalNetwork -->|"!vnetInjection and enableBastion"| BastionNSG
-  ConditionalNetwork -->|"!vnetInjection and enableBastion"| MachineNSG
   ConditionalNetwork -->|"!vnetInjection"| Network
   ClusterNSG --> CommonResources
   BastionNSG --> CommonResources
@@ -64,9 +57,6 @@ graph TD
   CommonStorage --> ScriptFileShares
   KeyVault --> CommonDatabase
   CommonResources --> RedisCache
-  CommonResources --> ManageResources
-  ManageResources -->|"enableBastion"| BastionHost
-  BastionHost --> |"enableBastion"| VirtualMachine
   CommonResources --> PartitionResources
   PartitionResources --> PartitionStorage
   PartitionResources --> PartitionDatabase

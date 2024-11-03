@@ -83,7 +83,7 @@ This solution implements comprehensive best practices across security controls a
 
     ---
 
-    - [x] [Managed Disks](https://learn.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys)
+    - [ ] [Managed Disks](https://learn.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys)
     
         Secure block-level storage volumes with encryption and access controls.
 
@@ -109,7 +109,7 @@ This solution implements comprehensive best practices across security controls a
 
     ---
 
-    - [x] [Pod Security Context](https://learn.microsoft.com/en-us/azure/aks/developer-best-practices-pod-security)
+    - [ ] [Pod Security Context](https://learn.microsoft.com/en-us/azure/aks/developer-best-practices-pod-security)
     
         Limit access to processes and services through security context settings, implementing principle of least privilege.
 

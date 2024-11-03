@@ -38,6 +38,36 @@ It is recommended to have at least 50 vCPUs in a region for vCPU families along 
           --output json
         ```
 
+## Preview Features
+
+To use AKS Automatic in preview, you must register several feature flags. Register the following features using the [az feature register](https://learn.microsoft.com/en-us/cli/azure/feature?view=azure-cli-latest#az-feature-register) command.
+
+=== "Command"
+    ```bash
+    az feature register --namespace Microsoft.ContainerService --name EnableAPIServerVnetIntegrationPreview
+    az feature register --namespace Microsoft.ContainerService --name NRGLockdownPreview
+    az feature register --namespace Microsoft.ContainerService --name SafeguardsPreview
+    az feature register --namespace Microsoft.ContainerService --name NodeAutoProvisioningPreview
+    az feature register --namespace Microsoft.ContainerService --name DisableSSHPreview
+    az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPreview
+    ```
+
+After the features are registered, refresh the registration of the Microsoft.ContainerService resource provider:
+
+=== "Command"
+    ```bash
+    az provider register --namespace Microsoft.ContainerService
+    ```
+
+!!! tip "Verify Registration Status"
+    Check the registration status using the following command. It may take a few minutes for the status to show *Registered*:
+
+    === "Command"
+        ```bash
+        az feature show --namespace Microsoft.ContainerService --name AutomaticSKUPreview
+        ```
+
+
 ## Resource Providers
 
 The following Azure Resource Providers must be registered in your subscription.

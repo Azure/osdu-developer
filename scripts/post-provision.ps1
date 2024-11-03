@@ -202,7 +202,7 @@ function Update-Application {
             # Replace double quotes with single quotes in the JSON strings
             $webUris = $webUris -replace '"', "'"
             $spaUris = $spaUris -replace '"', "'"
-            $spaUris += "http://localhost:8080"
+            # $spaUris += "http://localhost:8080"
             $jsonPayload = @"
             {
                 'web': {'redirectUris': $($webUris),'implicitGrantSettings': {'enableAccessTokenIssuance': false,'enableIdTokenIssuance': false}},

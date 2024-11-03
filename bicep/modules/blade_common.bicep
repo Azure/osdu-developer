@@ -324,34 +324,35 @@ module configStorage './storage-account/main.bicep' = {
   }
 }
 
-// var directoryUploads = [
-//   {
-//     directory: 'software'
-//   }
-//   {
-//     directory: 'charts'
-//   }
-//   {
-//     directory: 'stamp'
-//   }
-// ]
+var directoryUploads = [
+  {
+    directory: 'software'
+  }
+  {
+    directory: 'charts'
+  }
+  {
+    directory: 'stamp'
+  }
+]
 
-// @batchSize(1)
-// module gitOpsUpload './software-upload/main.bicep' = [for item in directoryUploads: {
-//   name: '${bladeConfig.sectionName}-storage-${item.directory}-upload'
-//   params: {
-//     storageAccountName: configStorage.outputs.name
-//     location: location
-//     useExistingManagedIdentity: true
-//     managedIdentityName: userAssignedIdentity.name
-//     existingManagedIdentitySubId: subscription().subscriptionId
-//     existingManagedIdentityResourceGroupName: resourceGroup().name
-//     directoryName: item.directory
-//   }
-//   dependsOn: [
-//     configStorage
-//   ]
-// }]
+@batchSize(1)
+module gitOpsUpload './software-upload/main.bicep' = [for item in directoryUploads: {
+  name: '${bladeConfig.sectionName}-storage-${item.directory}-upload'
+  params: {
+    storageAccountName: configStorage.outputs.name
+    location: location
+    useExistingManagedIdentity: true
+    managedIdentityName: userAssignedIdentity.name
+    existingManagedIdentitySubId: subscription().subscriptionId
+    existingManagedIdentityResourceGroupName: resourceGroup().name
+    directoryName: item.directory
+    rbacRoleNeeded: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
+  }
+  dependsOn: [
+    configStorage
+  ]
+}]
 
 resource storageDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
   name: storageDnsZoneName

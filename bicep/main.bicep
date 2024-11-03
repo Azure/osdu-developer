@@ -35,7 +35,29 @@ param enableBlobPublicAccess bool = false
 @description('Feature Flag: Enable AKS Enhanced Subnet Support (Azure CNI)')
 param enablePodSubnet bool = false
 
-// This would be a type but bugs exist for ARM Templates so is object instead.
+@description('Optional: Cluster Configuration Overrides')
+param clusterConfiguration object = {
+  enablePrivateCluster: ''
+  enableNodeAutoProvisioning: ''
+}
+
+@description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
+param clusterSoftware object = {
+  enable: true
+  osduCore: true
+  osduReference: true
+  osduVersion: ''
+  repository: ''
+  branch: ''
+  tag: ''
+}
+
+@description('(Optional) Experimental Software Override - {enable/adminUI} --> true/false')
+param experimentalSoftware object = {
+  enable: false
+  adminUI: false
+}
+
 @description('Optional. Bring your own Virtual Network.')
 param vnetConfiguration object = {
   group: ''
@@ -59,26 +81,6 @@ param vnetConfiguration object = {
     prefix: ''
   }
 }
-
-
-
-@description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
-param clusterSoftware object = {
-  enable: true
-  osduCore: true
-  osduReference: true
-  osduVersion: ''
-  repository: ''
-  branch: ''
-  tag: ''
-}
-
-@description('(Optional) Experimental Software Override - {enable/adminUI} --> true/false')
-param experimentalSoftware object = {
-  enable: false
-  adminUI: false
-}
-
 
 // This would be a type but bugs exist for ARM Templates so is object instead.
 @description('Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dnsServiceIP}')
@@ -113,7 +115,6 @@ var cmekConfiguration = {
 }
 
 // <- Internal Feature Flags End
-
 
 @description('Internal Configuration Object')
 var configuration = {
@@ -343,6 +344,9 @@ module serviceBlade 'modules/blade_service.bicep' = {
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
+
+    enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
+    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'true' ? true : false
 
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
     enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false

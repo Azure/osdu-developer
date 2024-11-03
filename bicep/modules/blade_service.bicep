@@ -121,6 +121,13 @@ param appSettings appConfigItem[]
 
 param dateStamp string = utcNow()
 
+
+@description('Feature Flag to Enable Node Auto Provisioning')
+param enableNodeAutoProvisioning bool = true
+
+@description('Feature Flag to Enable Private Cluster')
+param enablePrivateCluster bool = true
+
 /////////////////////////////////
 // Configuration 
 /////////////////////////////////
@@ -295,7 +302,7 @@ module cluster './managed-cluster/main.bicep' = {
     networkDataplane: 'cilium'
     publicNetworkAccess: 'Enabled'
     outboundType: empty(aksSubnetId) ? 'managedNATGateway' : 'loadBalancer'
-    enablePrivateCluster: false
+    enablePrivateCluster: enablePrivateCluster
 
     // Access Settings
     disableLocalAccounts: true
@@ -326,7 +333,7 @@ module cluster './managed-cluster/main.bicep' = {
     enableKeyvaultSecretsProvider: true
     enableSecretRotation: true
     enableImageCleaner: true
-    imageCleanerIntervalHours: 168
+    imageCleanerIntervalHours: 24
     enableOidcIssuerProfile: true
     enableWorkloadIdentity: true
     azurePolicyEnabled: true
@@ -335,7 +342,7 @@ module cluster './managed-cluster/main.bicep' = {
     // Auto-Scaling
     vpaAddon: true
     kedaAddon: true
-    enableNodeAutoProvisioning: false
+    enableNodeAutoProvisioning: enableNodeAutoProvisioning
     
     maintenanceConfiguration: {
       maintenanceWindow: {
@@ -360,9 +367,10 @@ module cluster './managed-cluster/main.bicep' = {
         name: 'system'
         mode: 'System'
         vmSize: empty(vmSize) ? serviceLayerConfig.cluster.vmSize : vmSize
-        enableAutoScaling: true
-        minCount: 2
-        maxCount: 6
+        enableAutoScaling: !enableNodeAutoProvisioning
+        count: enableNodeAutoProvisioning ? 2 : null
+        minCount: enableNodeAutoProvisioning ? null : 2
+        maxCount: enableNodeAutoProvisioning ? null : 6
         securityProfile: {
           sshAccess: 'Disabled'
         }
@@ -387,9 +395,10 @@ module cluster './managed-cluster/main.bicep' = {
         name: 'default'
         mode: 'User'
         vmSize: empty(vmSize) ? serviceLayerConfig.cluster.defaultSize : vmSize
-        enableAutoScaling: true
-        minCount: 4
-        maxCount: 20
+        enableAutoScaling: !enableNodeAutoProvisioning
+        count: enableNodeAutoProvisioning ? 4 : null
+        minCount: enableNodeAutoProvisioning ? null : 4
+        maxCount: enableNodeAutoProvisioning ? null : 20
         sshAccess: 'Disabled'
         osType: 'Linux'
         osSku: 'AzureLinux'
@@ -405,9 +414,10 @@ module cluster './managed-cluster/main.bicep' = {
         name: 'poolz1'
         mode: 'User'
         vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
-        enableAutoScaling: true
-        minCount: 1
-        maxCount: 3
+        enableAutoScaling: !enableNodeAutoProvisioning
+        minCount: enableNodeAutoProvisioning ? null : 1
+        maxCount: enableNodeAutoProvisioning ? null : 3
+        count: enableNodeAutoProvisioning ? 1 : null
         sshAccess: 'Disabled'
         osType: 'Linux'
         osSku: 'AzureLinux'
@@ -425,9 +435,10 @@ module cluster './managed-cluster/main.bicep' = {
         name: 'poolz2'
         mode: 'User'
         vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
-        enableAutoScaling: true
-        minCount: 1
-        maxCount: 3
+        enableAutoScaling: !enableNodeAutoProvisioning
+        minCount: enableNodeAutoProvisioning ? null : 1
+        maxCount: enableNodeAutoProvisioning ? null : 3
+        count: enableNodeAutoProvisioning ? 1 : null
         sshAccess: 'Disabled'
         osType: 'Linux'
         osSku: 'AzureLinux'
@@ -445,9 +456,10 @@ module cluster './managed-cluster/main.bicep' = {
         name: 'poolz3'
         mode: 'User'
         vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
-        enableAutoScaling: true
-        minCount: 1
-        maxCount: 3
+        enableAutoScaling: !enableNodeAutoProvisioning
+        minCount: enableNodeAutoProvisioning ? null : 1
+        maxCount: enableNodeAutoProvisioning ? null : 3
+        count: enableNodeAutoProvisioning ? 1 : null
         sshAccess: 'Disabled'
         osType: 'Linux'
         osSku: 'AzureLinux'

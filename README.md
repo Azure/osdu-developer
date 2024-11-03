@@ -21,6 +21,14 @@ This project provides simplified personal deployments of the [OSDU™](https://c
 
 ### Getting Started
 
+This project uses the following Azure Container Service preview features:
+
+- [API Server VNet Integration](https://learn.microsoft.com/en-us/azure/aks/api-server-vnet-integration)
+- [Node Resource Group Lockdown](https://learn.microsoft.com/en-us/azure/aks/node-resource-group-lockdown)
+- [AKS Safeguards](https://learn.microsoft.com/en-us/azure/aks/deployment-safeguards)
+- [Node Auto Provisioning](https://learn.microsoft.com/en-us/azure/aks/node-autoprovision?tabs=azure-cli)
+- [SSH Disable](https://learn.microsoft.com/en-us/azure/aks/manage-ssh-node-access?tabs=node-shell#disable-ssh-overview)
+
 Review the [Getting Started](https://azure.github.io/osdu-developer/getting_started/) documentation prior to proceeding.
 
 ### CLI Quickstart

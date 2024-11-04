@@ -51,6 +51,8 @@ Infrastructure customizations can be modified using the following feature flags.
 | CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
 | CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
 | ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
+| ENABLE_NODE_AUTO_PROVISIONING | Enables node auto provisioning (True by default)                        |
+| ENABLE_PRIVATE_CLUSTER    | Enables private cluster (False by default)                                  |
 
 
 ## Custom Software

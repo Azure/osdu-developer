@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "11197593129532448033"
+      "templateHash": "3696260988485813069"
     }
   },
   "parameters": {
@@ -67,23 +67,6 @@
         "description": "Feature Flag: Enable Storage accounts public access."
       }
     },
-    "enablePodSubnet": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Feature Flag: Enable AKS Enhanced Subnet Support (Azure CNI)"
-      }
-    },
-    "clusterConfiguration": {
-      "type": "object",
-      "defaultValue": {
-        "enablePrivateCluster": "",
-        "enableNodeAutoProvisioning": ""
-      },
-      "metadata": {
-        "description": "Optional: Cluster Configuration Overrides"
-      }
-    },
     "clusterSoftware": {
       "type": "object",
       "defaultValue": {
@@ -107,6 +90,16 @@
       },
       "metadata": {
         "description": "(Optional) Experimental Software Override - {enable/adminUI} --> true/false"
+      }
+    },
+    "clusterConfiguration": {
+      "type": "object",
+      "defaultValue": {
+        "enableNodeAutoProvisioning": true,
+        "enablePrivateCluster": false
+      },
+      "metadata": {
+        "description": "Optional: Cluster Configuration Overrides"
       }
     },
     "vnetConfiguration": {
@@ -135,17 +128,6 @@
       },
       "metadata": {
         "description": "Optional. Bring your own Virtual Network."
-      }
-    },
-    "clusterNetwork": {
-      "type": "object",
-      "defaultValue": {
-        "ingress": "",
-        "serviceCidr": "",
-        "dnsServiceIP": ""
-      },
-      "metadata": {
-        "description": "Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dnsServiceIP}"
       }
     }
   },
@@ -2664,9 +2646,7 @@
           "identityId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-user-managed-identity', variables('configuration').name)), '2022-09-01').outputs.principalId.value]"
           },
-          "enablePodSubnet": {
-            "value": "[parameters('enablePodSubnet')]"
-          },
+          "enablePodSubnet": "[if(and(not(equals(parameters('vnetConfiguration').podSubnet.name, '')), not(equals(parameters('vnetConfiguration').podSubnet.prefix, ''))), createObject('value', true()), createObject('value', false()))]",
           "enableVnetInjection": {
             "value": "[variables('enableVnetInjection')]"
           },
@@ -27194,12 +27174,12 @@
           "enableTelemetry": {
             "value": "[variables('enableTelemetry')]"
           },
+          "enableNodeAutoProvisioning": "[if(equals(parameters('clusterConfiguration').enableNodeAutoProvisioning, 'false'), createObject('value', false()), createObject('value', true()))]",
+          "enablePrivateCluster": "[if(equals(parameters('clusterConfiguration').enablePrivateCluster, 'false'), createObject('value', false()), createObject('value', true()))]",
           "osduVersion": "[if(equals(parameters('clusterSoftware').osduVersion, ''), createObject('value', 'master'), createObject('value', parameters('clusterSoftware').osduVersion))]",
           "enableSoftwareLoad": "[if(equals(parameters('clusterSoftware').enable, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsduCore": "[if(equals(parameters('clusterSoftware').osduCore, 'false'), createObject('value', false()), createObject('value', true()))]",
           "enableOsdureference": "[if(equals(parameters('clusterSoftware').osduReference, 'false'), createObject('value', false()), createObject('value', true()))]",
-          "enableNodeAutoProvisioning": "[if(equals(parameters('clusterConfiguration').enableNodeAutoProvisioning, 'false'), createObject('value', false()), createObject('value', true()))]",
-          "enablePrivateCluster": "[if(equals(parameters('clusterConfiguration').enablePrivateCluster, 'true'), createObject('value', true()), createObject('value', false()))]",
           "enableExperimental": "[if(equals(parameters('experimentalSoftware').enable, 'true'), createObject('value', true()), createObject('value', false()))]",
           "enableAdminUI": "[if(equals(parameters('experimentalSoftware').adminUI, 'true'), createObject('value', true()), createObject('value', false()))]",
           "emailAddress": {
@@ -27234,13 +27214,11 @@
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'partition-blade'), '2022-09-01').outputs.partitionServiceBusNames.value]"
           },
           "aksSubnetId": "[if(variables('enableVnetInjection'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.aksSubnetId.value), createObject('value', ''))]",
-          "podSubnetId": "[if(and(variables('enableVnetInjection'), parameters('enablePodSubnet')), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.podSubnetId.value), createObject('value', ''))]",
+          "podSubnetId": "[if(variables('enableVnetInjection'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-blade'), '2022-09-01').outputs.podSubnetId.value), createObject('value', ''))]",
           "vmSize": {
             "value": "[parameters('customVMSize')]"
           },
           "clusterIngress": "[if(equals(parameters('ingressType'), ''), createObject('value', 'External'), createObject('value', parameters('ingressType')))]",
-          "serviceCidr": "[if(equals(parameters('clusterNetwork').serviceCidr, ''), createObject('value', '172.16.0.0/16'), createObject('value', parameters('clusterNetwork').serviceCidr))]",
-          "dnsServiceIP": "[if(equals(parameters('clusterNetwork').dnsServiceIP, ''), createObject('value', '172.16.0.10'), createObject('value', parameters('clusterNetwork').vnet))]",
           "softwareBranch": {
             "value": "[parameters('clusterSoftware').branch]"
           },
@@ -27275,7 +27253,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "17516859332590438736"
+              "templateHash": "17781756411834994781"
             }
           },
           "definitions": {
@@ -27484,6 +27462,7 @@
             },
             "serviceCidr": {
               "type": "string",
+              "defaultValue": "172.16.0.0/16",
               "minLength": 9,
               "maxLength": 18,
               "metadata": {
@@ -27492,6 +27471,7 @@
             },
             "dnsServiceIP": {
               "type": "string",
+              "defaultValue": "172.16.0.10",
               "minLength": 7,
               "maxLength": 15,
               "metadata": {
@@ -27601,7 +27581,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.39.0"
+              "release": "v0.40.0"
             },
             "version": "[variables('$fxv#0')]",
             "serviceLayerConfig": {

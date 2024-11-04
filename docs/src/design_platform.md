@@ -63,6 +63,14 @@ This solution implements comprehensive best practices across security controls a
 
     ---
 
+    - [x] [API VNet Integration](https://learn.microsoft.com/en-us/azure/aks/api-server-vnet-integration)
+    
+        Kubernetes API server projection into the VNET where AKS is deployed.
+
+    - [x] [Private Cluster](https://learn.microsoft.com/en-us/azure/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal)
+    
+        Enable private cluster mode providing public network access without exposure of the AKS API server to the internet.
+
     - [x] [CNI Overlay](https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay)
     
         Enhanced network security with overlay networking, providing logical separation between pod and node networks.

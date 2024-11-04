@@ -32,15 +32,6 @@ param ingressType string = 'External'
 @description('Feature Flag: Enable Storage accounts public access.')
 param enableBlobPublicAccess bool = false
 
-@description('Feature Flag: Enable AKS Enhanced Subnet Support (Azure CNI)')
-param enablePodSubnet bool = false
-
-@description('Optional: Cluster Configuration Overrides')
-param clusterConfiguration object = {
-  enablePrivateCluster: ''
-  enableNodeAutoProvisioning: ''
-}
-
 @description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
@@ -56,6 +47,12 @@ param clusterSoftware object = {
 param experimentalSoftware object = {
   enable: false
   adminUI: false
+}
+
+@description('Optional: Cluster Configuration Overrides')
+param clusterConfiguration object = {
+  enableNodeAutoProvisioning: true
+  enablePrivateCluster: false
 }
 
 @description('Optional. Bring your own Virtual Network.')
@@ -80,14 +77,6 @@ param vnetConfiguration object = {
     name: ''
     prefix: ''
   }
-}
-
-// This would be a type but bugs exist for ARM Templates so is object instead.
-@description('Cluster Network Overrides - {ingress} (Both/Internal/External), {serviceCidr}, {dnsServiceIP}')
-param clusterNetwork object = {
-  ingress: ''
-  serviceCidr: ''
-  dnsServiceIP: ''
 }
 
 /////////////////////////////////
@@ -211,7 +200,7 @@ module networkBlade 'modules/blade_network.bicep' = if (enableVnetInjection) {
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: stampIdentity.outputs.principalId
 
-    enablePodSubnet: enablePodSubnet
+    enablePodSubnet: vnetConfiguration.podSubnet.name != '' && vnetConfiguration.podSubnet.prefix != '' ? true: false
     enableVnetInjection: enableVnetInjection
     
     vnetConfiguration: {
@@ -340,14 +329,13 @@ module serviceBlade 'modules/blade_service.bicep' = {
     location: location
     enableTelemetry: enableTelemetry
 
+    enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
+    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'false' ? false : true
+
     osduVersion: clusterSoftware.osduVersion == '' ? 'master' : clusterSoftware.osduVersion
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true
     enableOsduCore: clusterSoftware.osduCore == 'false' ? false : true
     enableOsdureference: clusterSoftware.osduReference == 'false' ? false : true
-
-    enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
-    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'true' ? true : false
-
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
     enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false
 
@@ -364,12 +352,10 @@ module serviceBlade 'modules/blade_service.bicep' = {
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     
     aksSubnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
-    podSubnetId: enableVnetInjection && enablePodSubnet ? networkBlade.outputs.podSubnetId : ''
+    podSubnetId: enableVnetInjection ? networkBlade.outputs.podSubnetId : ''
     vmSize: customVMSize
 
     clusterIngress: ingressType == '' ? 'External' : ingressType
-    serviceCidr: clusterNetwork.serviceCidr == '' ? '172.16.0.0/16' : clusterNetwork.serviceCidr
-    dnsServiceIP: clusterNetwork.dnsServiceIP == '' ? '172.16.0.10' : clusterNetwork.vnet
 
     softwareBranch: clusterSoftware.branch
     softwareRepository: clusterSoftware.repository

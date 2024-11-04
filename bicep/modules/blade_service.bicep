@@ -84,13 +84,13 @@ param osduVersion string = 'master'
 @minLength(9)
 @maxLength(18)
 @description('The address range to use for services')
-param serviceCidr string
+param serviceCidr string = '172.16.0.0/16'
 
 
 @minLength(7)
 @maxLength(15)
 @description('The IP address to reserve for DNS')
-param dnsServiceIP string
+param dnsServiceIP string = '172.16.0.10'
 
 @description('The id of the subnet to deploy the AKS nodes')
 param aksSubnetId string

@@ -85,17 +85,6 @@ This solution implements comprehensive best practices across security controls a
 
 </div>
 
-<div class="grid cards" markdown>
-
--   :material-database:{ .lg .middle } __Storage Security__
-
-    ---
-
-    - [ ] [Managed Disks](https://learn.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys)
-    
-        Secure block-level storage volumes with encryption and access controls.
-
-</div>
 
 ### Application Security
 
@@ -116,10 +105,6 @@ This solution implements comprehensive best practices across security controls a
 -   :material-shield-lock:{ .lg .middle } __Pod Security__
 
     ---
-
-    - [ ] [Pod Security Context](https://learn.microsoft.com/en-us/azure/aks/developer-best-practices-pod-security)
-    
-        Limit access to processes and services through security context settings, implementing principle of least privilege.
 
     - [x] [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview)
     

@@ -26,7 +26,7 @@ param kvName string
 @description('The Uri of the Key Vault where the secret exists')
 param kvUri string 
 
-@description('The name of the Storage Account')
+@description('The name of the Common Storage Account')
 param storageName string 
 
 @description('Specify the User Email.')
@@ -566,6 +566,13 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
   ]
 }
 
+module natClusterIP './managed-cluster/nat_public_ip.bicep' = {
+  name: '${bladeConfig.sectionName}-nat-public-ip'
+  params: {
+    publicIpResourceId: cluster.outputs.outboundIpResourceId
+  }
+}
+
 /////////////////
 // Federated
 /////////////////
@@ -641,7 +648,7 @@ module appRoleAssignments './app_assignments.bicep' = {
   ]
 }
 
-module appRoleAssignments2 './app_assignments.bicep' = [for (name, index) in partitionStorageNames: {
+module appRoleAssignmentsPartition './app_assignments.bicep' = [for (name, index) in partitionStorageNames: {
   name: '${bladeConfig.sectionName}-user-managed-identity-rbac-${name}'
   params: {
     identityprincipalId: appIdentity.properties.principalId
@@ -806,8 +813,33 @@ module app_config './app-configuration/main.bicep' = {
   }
   dependsOn: [
     appRoleAssignments
-    appRoleAssignments2
+    appRoleAssignmentsPartition
   ]
+}
+
+// Network ACL for Storage Accounts
+module networkAclStorage './network_acl_storage.bicep' = [for name in union([storageName], partitionStorageNames): {
+  name: '${bladeConfig.sectionName}-network-acl-storage-${replace(name, '-', '')}'
+  params: {
+    storageName: name
+    location: location
+    natClusterIP: natClusterIP.outputs.ipAddress
+  }
+}]
+
+
+module networkAclKeyVault './network_acl_vault.bicep' = {
+  name: '${bladeConfig.sectionName}-network-acl-keyvault'
+  params: {
+    keyVaultName: keyVault.name
+    location: location
+    natClusterIP: natClusterIP.outputs.ipAddress
+    enableRbacAuthorization: keyVault.properties.enableRbacAuthorization
+    enableSoftDelete: keyVault.properties.enableSoftDelete
+    softDeleteRetentionInDays: keyVault.properties.softDeleteRetentionInDays
+    skuFamily: keyVault.properties.sku.family
+    skuName: keyVault.properties.sku.name
+  }
 }
 
 @description('The name of the azure keyvault.')
@@ -877,8 +909,6 @@ module appConfigMap './aks-config-map/main.bicep' = {
 |  |__| | |  |     |  |     |  `--'  | |  |   .----)   |   
  \______| |__|     |__|      \______/  | _|   |_______/                                                          
 */
-
-
 
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {

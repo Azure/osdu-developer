@@ -91,9 +91,6 @@ var enableTelemetry = false
 @description('Feature Flag: Enable Vnet Injection')
 var enableVnetInjection = vnetConfiguration.group != '' && vnetConfiguration.name != '' && vnetConfiguration.prefix != ''
 
-// This feature is not ready yet.
-@description('Feature Flag to Enable Private Link')
-var enablePrivateLink = false
 
 // This feature is not ready yet.
 @description('Optional. Customer Managed Encryption Key.')
@@ -250,17 +247,13 @@ module commonBlade 'modules/blade_common.bicep' = {
 
     location: location
     enableTelemetry: enableTelemetry
-    deploymentScriptIdentity: stampIdentity.outputs.name
-
-    userAssignedIdentityName: stampIdentity.outputs.name
+    identityName: stampIdentity.outputs.name
 
     workspaceResourceId: logAnalytics.outputs.resourceId
     workspaceName: logAnalytics.outputs.name
 
-    subnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
     cmekConfiguration: cmekConfiguration
 
-    enablePrivateLink: enablePrivateLink
     enableBlobPublicAccess: enableBlobPublicAccess
 
     applicationClientId: applicationClientId
@@ -291,13 +284,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     workspaceResourceId: logAnalytics.outputs.resourceId
 
     kvName: commonBlade.outputs.keyvaultName
-    subnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
-
     enableBlobPublicAccess: enableBlobPublicAccess
-    enablePrivateLink: enablePrivateLink
-
-    storageDNSZoneId: commonBlade.outputs.storageDNSZoneId
-    cosmosDNSZoneId: commonBlade.outputs.cosmosDNSZoneId
 
     partitions: configuration.partitions
     managedIdentityName: stampIdentity.outputs.name

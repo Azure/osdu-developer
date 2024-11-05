@@ -2,14 +2,6 @@
 // Common Blade 
 /////////////////
 
-type bladeSettings = {
-  @description('The name of the section name')
-  sectionName: string
-  @description('The display name of the section')
-  displayName: string
-}
-
-
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
@@ -25,9 +17,6 @@ param enableTelemetry bool
 @description('The configuration for the blade section.')
 param bladeConfig bladeSettings
 
-@description('Feature Flag to Enable Private Link')
-param enablePrivateLink bool
-
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
 
@@ -35,13 +24,7 @@ param workspaceResourceId string
 param workspaceName string
 
 @description('Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment.')
-param userAssignedIdentityName string
-
-@description('The managed identity name for deployment scripts')
-param deploymentScriptIdentity string
-
-@description('The subnet id for Private Endpoints')
-param subnetId string
+param identityName string
 
 @description('Optional. Customer Managed Encryption Key.')
 param cmekConfiguration object = {
@@ -98,7 +81,7 @@ var commonLayerConfig = {
 }
 
 resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  name: userAssignedIdentityName
+  name: identityName
 }
 
 module insights 'br/public:avm/res/insights/component:0.3.0' = {
@@ -247,29 +230,6 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
   }
 }
 
-resource vaultDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
-  name: 'privatelink.vaultcore.azure.net'
-  location: 'global'
-  properties: {}
-}
-
-module vaultEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-keyvault-pep'
-  params: {
-    resourceName: keyvault.outputs.name
-    subnetResourceId: subnetId
-
-    groupIds: [ 'vault']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [vaultDNSZone.id]
-    }
-    serviceResourceId: keyvault.outputs.resourceId
-  }
-  dependsOn: [
-    vaultDNSZone
-  ]
-}
-
 /*   _______.___________.  ______   .______          ___       _______  _______ 
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
    |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
@@ -279,9 +239,6 @@ module vaultEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
 */
 
 
-
-var storageDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
-var storageDnsZoneName = 'privatelink.${storageDNSZoneForwarder}'
 
 module configStorage './storage-account/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage'
@@ -340,63 +297,41 @@ var directoryUploads = [
 module gitOpsUpload './software-upload/main.bicep' = [for item in directoryUploads: {
   name: '${bladeConfig.sectionName}-storage-${item.directory}-upload'
   params: {
-    storageAccountName: configStorage.outputs.name
     location: location
-    useExistingManagedIdentity: true
-    managedIdentityName: userAssignedIdentity.name
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName: resourceGroup().name
+    storageAccountName: configStorage.outputs.name
+    identityName: userAssignedIdentity.name
+
     directoryName: item.directory
-    rbacRoleNeeded: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
   }
   dependsOn: [
     configStorage
   ]
 }]
 
-resource storageDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
-  name: storageDnsZoneName
-  location: 'global'
-  properties: {}
-}
-
-module storageEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-storage-endpoint'
-  params: {
-    resourceName: configStorage.outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: configStorage.outputs.id
-    groupIds: [ 'blob']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [storageDNSZone.id]
-    }
-  }
-  dependsOn: [
-    storageDNSZone
-  ]
-}
-
 module manifestDagShareUpload './script-share-upload/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage-dag-upload-manifest'
   params: {
-    storageAccountName: configStorage.outputs.name
     location: location
+    storageAccountName: configStorage.outputs.name
+    identityName: userAssignedIdentity.name
+
     shareName: 'airflow-dags'
     filename: 'src/osdu_dags'
     compress: true
     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
-    useExistingManagedIdentity: true
-    managedIdentityName: deploymentScriptIdentity
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
   }
+  dependsOn: [
+    configStorage
+  ]
 }
 
 module csvDagShareUpload './script-share-csvdag/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage-dag-upload-csv'
   params: {
-    storageAccountName: configStorage.outputs.name
     location: location
+    storageAccountName: configStorage.outputs.name
+    identityName: userAssignedIdentity.name
+    
     shareName: 'airflow-dags'
     filename: 'airflowdags'
     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
@@ -404,11 +339,10 @@ module csvDagShareUpload './script-share-csvdag/main.bicep' = {
     insightsKey: insights.outputs.instrumentationKey
     clientId: applicationClientId
     clientSecret: applicationClientSecret
-    useExistingManagedIdentity: true
-    managedIdentityName: deploymentScriptIdentity
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
   }
+  dependsOn: [
+    configStorage
+  ]
 }
 
 /*
@@ -419,8 +353,6 @@ module csvDagShareUpload './script-share-csvdag/main.bicep' = {
 |  |__| | |  |\  \----./  _____  \  |  |      |  |  |  | 
  \______| | _| `._____/__/     \__\ | _|      |__|  |__| 
 */
-
-var cosmosDnsZoneName = 'privatelink.documents.azure.com'
 
 module database './cosmos-db/main.bicep' = {
   name: '${bladeConfig.sectionName}-cosmos-db'
@@ -482,28 +414,6 @@ module database './cosmos-db/main.bicep' = {
   }
 }
 
-resource cosmosDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
-  name: cosmosDnsZoneName
-  location: 'global'
-  properties: {}
-}
-
-module graphEndpoint './private-endpoint/main.bicep' = if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-cosmos-db-endpoint'
-  params: {
-    resourceName: database.outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: database.outputs.id
-    groupIds: [ 'sql']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [cosmosDNSZone.id]
-    }
-  }
-  dependsOn: [
-    cosmosDNSZone
-  ]
-}
-
 /*
   ______     ___       ______  __    __   _______ 
  /      |   /   \     /      ||  |  |  | |   ____|
@@ -531,6 +441,13 @@ output keyvaultName string = keyvault.outputs.name
 output keyvaultUri string = keyvault.outputs.uri
 output storageAccountName string = configStorage.outputs.name
 output storageAccountResourceId string = configStorage.outputs.id
-output storageDNSZoneId string = storageDNSZone.id
-output cosmosDNSZoneId string = cosmosDNSZone.id
 output instrumentationKey string = insights.outputs.instrumentationKey
+
+
+
+type bladeSettings = {
+  @description('The name of the section name')
+  sectionName: string
+  @description('The display name of the section')
+  displayName: string
+}

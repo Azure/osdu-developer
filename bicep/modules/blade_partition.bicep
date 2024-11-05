@@ -14,14 +14,8 @@ param tags object = {}
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
-@description('Feature Flag to Enable Private Link')
-param enablePrivateLink bool
-
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
-
-@description('The subnet id for Private Endpoints')
-param subnetId string
 
 @description('Optional. Customer Managed Encryption Key.')
 param cmekConfiguration object = {
@@ -32,12 +26,6 @@ param cmekConfiguration object = {
 
 @description('The name of the Key Vault where the secret exists')
 param kvName string 
-
-@description('Storage DNS Zone Id')
-param storageDNSZoneId string
-
-@description('Cosmos DNS Zone Id')
-param cosmosDNSZoneId string
 
 @description('List of Data Partitions')
 param partitions array = [
@@ -509,19 +497,6 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
   }
 }]
 
-module partitionStorageEndpoint './private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-azure-storage-endpoint-${index}'
-  params: {
-    resourceName: partitionStorage[index].outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: partitionStorage[index].outputs.id
-    groupIds: [ 'blob']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [storageDNSZoneId]
-    }
-  }
-}]
-
 module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partitions: { 
   name: '${bladeConfig.sectionName}-cosmos-db-${index}'
   params: {
@@ -568,19 +543,6 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     databaseEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosEndpoint}'
     databasePrimaryKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosPrimaryKey}'
     databaseConnectionStringSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosConnectionString}'
-  }
-}]
-
-module partitionDbEndpoint './private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-cosmos-db-endpoint-${index}'
-  params: {
-    resourceName: partitionDb[index].outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: partitionDb[index].outputs.id
-    groupIds: [ 'sql']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [cosmosDNSZoneId]
-    }
   }
 }]
 

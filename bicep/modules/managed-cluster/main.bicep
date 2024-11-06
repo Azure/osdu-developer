@@ -1014,8 +1014,8 @@ output addonProfiles object = managedCluster.properties.?addonProfiles ?? {}
 @description('The Object ID of Web Application Routing.')
 output webAppRoutingIdentityObjectId string = managedCluster.properties.?ingressProfile.?webAppRouting.?identity.?objectId ?? ''
 
-// @description('The public IP address of the managed cluster.')
-// output outboundIpResourceId string = managedCluster.properties.networkProfile.natGatewayProfile.effectiveOutboundIPs[0].id
+@description('The public IP address of the managed cluster.')
+output outboundIpResourceId string = managedCluster.properties.networkProfile.natGatewayProfile.effectiveOutboundIPs[0].id
 
 // =============== //
 //   Definitions   //

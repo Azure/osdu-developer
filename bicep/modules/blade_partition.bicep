@@ -14,14 +14,8 @@ param tags object = {}
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param enableBlobPublicAccess bool
 
-@description('Feature Flag to Enable Private Link')
-param enablePrivateLink bool
-
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
-
-@description('The subnet id for Private Endpoints')
-param subnetId string
 
 @description('Optional. Customer Managed Encryption Key.')
 param cmekConfiguration object = {
@@ -33,12 +27,6 @@ param cmekConfiguration object = {
 @description('The name of the Key Vault where the secret exists')
 param kvName string 
 
-@description('Storage DNS Zone Id')
-param storageDNSZoneId string
-
-@description('Cosmos DNS Zone Id')
-param cosmosDNSZoneId string
-
 @description('List of Data Partitions')
 param partitions array = [
   {
@@ -48,6 +36,9 @@ param partitions array = [
 
 @description('The managed identity name for deployment scripts')
 param managedIdentityName string
+
+@description('The NAT Cluster IP')
+param natClusterIP string
 
 /////////////////////////////////
 // Configuration 
@@ -459,25 +450,37 @@ var partitionDatabase = {
   containers: partitionLayerConfig.database.containers
 }
 
+/////////////////////////////////
+// Existing Resources
+/////////////////////////////////
 
-/*
-.______      ___      .______     .___________. __  .___________. __    ______   .__   __.      _______.
-|   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  |     /       |
-|  |_)  |  /  ^  \    |  |_)  |   `---|  |----`|  | `---|  |----`|  | |  |  |  | |   \|  |    |   (----`
-|   ___/  /  /_\  \   |      /        |  |     |  |     |  |     |  | |  |  |  | |  . `  |     \   \    
-|  |     /  _____  \  |  |\  \----.   |  |     |  |     |  |     |  | |  `--'  | |  |\   | .----)   |   
-| _|    /__/     \__\ | _| `._____|   |__|     |__|     |__|     |__|  \______/  |__| \__| |_______/                                 
+resource stampIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: managedIdentityName
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: kvName
+}
+
+
+/*   _______.___________.  ______   .______          ___       _______  _______ 
+    /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
+   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
+    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|  
+.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____ 
+|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
 */
+// AVM Module Customized due to required Secrets.
 
-module partitionStorage './storage-account/main.bicep' = [for (partition, index) in partitions:  {
+module storage 'storage-account/main.bicep' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-azure-storage-${index}'
+
   params: {
-    #disable-next-line BCP335 BCP332
     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
     location: location
+    skuName: partitionLayerConfig.storage.sku
 
     // Assign Tags
-
     tags: union(
       tags,
       {
@@ -486,41 +489,104 @@ module partitionStorage './storage-account/main.bicep' = [for (partition, index)
         purpose: 'data'
       }
     )
-
+    
     // Hook up Diagnostics
-    diagnosticWorkspaceId: workspaceResourceId
-    diagnosticLogsRetentionInDays: 0
+    diagnosticSettings: [
+      {
+        workspaceResourceId: workspaceResourceId
+      }
+    ]
+
+     // Configure Service
+     blobServices: {
+      containers: map(concat(partitionLayerConfig.storage.containers, [partition.name]), container => {
+        name: container
+      })
+    }
+
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Storage Blob Data Contributor'
+        principalId: stampIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+      }
+    ]
 
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
+    publicNetworkAccess: 'Enabled'
 
-    // Configure Service
-    sku: partitionLayerConfig.storage.sku
-    containers: concat(partitionLayerConfig.storage.containers, [partition.name])
-
-    // Hookup Customer Managed Encryption Key
-    cmekConfiguration: cmekConfiguration
+    // TODO: Deployment Scripts don't support this yet.
+    // allowSharedKeyAccess: true
+    // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
+    networkAcls: {
+      bypass: 'AzureServices'
+      defaultAction: 'Allow'     // <--- Allow all traffic.  Should be changed to Deny.
+      ipRules: [
+        {
+          value: natClusterIP
+        }
+      ]
+    }
 
     // Persist Secrets to Vault
-    keyVaultName: kvName
-    storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
-    storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
-    storageAccountBlobEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
-  }
-}]
-
-module partitionStorageEndpoint './private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-azure-storage-endpoint-${index}'
-  params: {
-    resourceName: partitionStorage[index].outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: partitionStorage[index].outputs.id
-    groupIds: [ 'blob']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [storageDNSZoneId]
+    secretsExportConfiguration: {
+      keyVaultResourceId: keyVault.id
+      accountName: [
+        '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
+      ]
+      accessKey1: [
+        '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
+      ]  
+      blobEndpoint: [
+        '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
+      ]
     }
   }
 }]
+
+
+
+// module partitionStorage './storage-account-orig/main.bicep' = [for (partition, index) in partitions:  {
+//   name: '${bladeConfig.sectionName}-azure-storage-${index}'
+//   params: {
+//     #disable-next-line BCP335 BCP332
+//     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
+//     location: location
+
+//     // Assign Tags
+
+//     tags: union(
+//       tags,
+//       {
+//         layer: bladeConfig.displayName
+//         partition: partition.name
+//         purpose: 'data'
+//       }
+//     )
+
+//     // Hook up Diagnostics
+//     diagnosticWorkspaceId: workspaceResourceId
+//     diagnosticLogsRetentionInDays: 0
+
+//     // Apply Security
+//     allowBlobPublicAccess: enableBlobPublicAccess
+
+//     // Configure Service
+//     sku: partitionLayerConfig.storage.sku
+//     containers: concat(partitionLayerConfig.storage.containers, [partition.name])
+
+//     // Hookup Customer Managed Encryption Key
+//     cmekConfiguration: cmekConfiguration
+
+//     // Persist Secrets to Vault
+//     keyVaultName: kvName
+//     storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
+//     storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
+//     storageAccountBlobEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
+//   }
+// }]
 
 module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partitions: { 
   name: '${bladeConfig.sectionName}-cosmos-db-${index}'
@@ -571,21 +637,8 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
   }
 }]
 
-module partitionDbEndpoint './private-endpoint/main.bicep' = [for (partition, index) in partitions: if (enablePrivateLink) {
-  name: '${bladeConfig.sectionName}-cosmos-db-endpoint-${index}'
-  params: {
-    resourceName: partitionDb[index].outputs.name
-    subnetResourceId: subnetId
-    serviceResourceId: partitionDb[index].outputs.id
-    groupIds: [ 'sql']
-    privateDnsZoneGroup: {
-      privateDNSResourceIds: [cosmosDNSZoneId]
-    }
-  }
-}]
 
-
-module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.0' = [for (partition, index) in partitions:  {
+module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-service-bus-${index}'
   params: {
     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
@@ -654,7 +707,7 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.0' = [for 
 module blobUpload './script-blob-upload/main.bicep' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
   params: {
-    storageAccountName: partitionStorage[index].outputs.name
+    storageAccountName: storage[index].outputs.name
     location: location
 
     useExistingManagedIdentity: true
@@ -674,10 +727,17 @@ module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, 
 }]
 
 
-// Output partitionStorage names
-output partitionStorageNames string[] = [for (partition, index) in partitions: partitionStorage[index].outputs.name]
+// =============== //
+//   Outputs       //
+// =============== //
+
+output partitionStorageNames string[] = [for (partition, index) in partitions: storage[index].outputs.name]
 output partitionServiceBusNames string[] = [for (partition, index) in partitions: partitonNamespace[index].outputs.name]
 
+
+// =============== //
+//   Definitions   //
+// =============== //
 
 type bladeSettings = {
   @description('The name of the section name')

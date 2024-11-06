@@ -20,11 +20,14 @@ param bladeConfig bladeSettings
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
 
-@description('The Diagnostics Workspace Name')
-param workspaceName string
+@description('The Application Insights Instrumentation Key')
+param insightsKey string
 
 @description('Conditional. The name of the parent user assigned identity. Required if the template is used in a standalone deployment.')
 param identityName string
+
+@description('The IP address of the NAT cluster.')
+param natClusterIP string
 
 @description('Optional. Customer Managed Encryption Key.')
 param cmekConfiguration object = {
@@ -84,29 +87,6 @@ resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@
   name: identityName
 }
 
-module insights 'br/public:avm/res/insights/component:0.3.0' = {
-  name: '${bladeConfig.sectionName}-insights'
-  params: {
-    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
-    location: location
-    enableTelemetry: enableTelemetry
-    kind: commonLayerConfig.insights.sku
-    workspaceResourceId: workspaceResourceId
-    
-    diagnosticSettings: [
-      {
-        metricCategories: [
-          {
-            category: 'AllMetrics'
-          }
-        ]
-        name: 'customSetting'
-        workspaceResourceId: workspaceResourceId
-      }
-    ]
-  }
-}
-
 /*
  __  ___  ___________    ____ ____    ____  ___      __    __   __      .___________.
 |  |/  / |   ____\   \  /   / \   \  /   / /   \    |  |  |  | |  |     |           |
@@ -116,119 +96,127 @@ module insights 'br/public:avm/res/insights/component:0.3.0' = {
 |__|\__\ |_______|   |__|         \__/ /__/     \__\ \______/  |_______|    |__|                                                                     
 */
 
-var name = '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+// var name = '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
 
-@description('The list of secrets to persist to the Key Vault')
-var vaultSecrets = [ 
-  {
-    secretName: 'tenant-id'
-    secretValue: subscription().tenantId
-  }
-  {
-    secretName: 'app-dev-sp-tenant-id'
-    secretValue: subscription().tenantId
-  }
-  {
-    secretName: 'subscription-id'
-    secretValue: subscription().subscriptionId
-  }
-  // Azure AD Secrets
-  {
-    secretName: 'app-dev-sp-password'
-    secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
-  }
-  {
-    secretName: 'app-dev-sp-id'
-    secretValue: applicationClientId
-  }
-  {
-    secretName: 'cpng-user-name'
-    secretValue: 'dbuser'
-  }
-  {
-    secretName: 'cpng-user-password'
-    secretValue: substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)
-  }
-  {
-    secretName: 'cpng-superuser-name'
-    secretValue: 'dbadmin'
-  }
-  {
-    secretName: 'cpng-superuser-password'
-    secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
-  }
-  {
-    secretName: 'airflow-db-connection'
-    secretValue: 'postgresql://dbuser:${substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db'
-  }
-  {
-    secretName: 'airflow-admin-username'
-    secretValue: 'admin'
-  }
-  {
-    secretName: 'airflow-admin-password'
-    secretValue: substring(uniqueString('airflow', resourceGroup().id, bladeConfig.sectionName), 0, 8)
-  }
-  {
-    secretName: 'airflow-fernet-key'
-    secretValue: substring(uniqueString('airflow-fernet', resourceGroup().id, bladeConfig.sectionName), 0, 8)
-  }
-  {
-    secretName: 'airflow-webserver-key'
-    secretValue: substring(uniqueString('airflow-webserver', resourceGroup().id, bladeConfig.sectionName), 0, 8)
-  }
-]
+// @description('The list of secrets to persist to the Key Vault')
+// var vaultSecrets = [ 
+//   {
+//     secretName: 'tenant-id'
+//     secretValue: subscription().tenantId
+//   }
+//   {
+//     secretName: 'app-dev-sp-tenant-id'
+//     secretValue: subscription().tenantId
+//   }
+//   {
+//     secretName: 'subscription-id'
+//     secretValue: subscription().subscriptionId
+//   }
+//   // Azure AD Secrets
+//   {
+//     secretName: 'app-dev-sp-password'
+//     secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
+//   }
+//   {
+//     secretName: 'app-dev-sp-id'
+//     secretValue: applicationClientId
+//   }
+//   {
+//     secretName: 'cpng-user-name'
+//     secretValue: 'dbuser'
+//   }
+//   {
+//     secretName: 'cpng-user-password'
+//     secretValue: substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+//   }
+//   {
+//     secretName: 'cpng-superuser-name'
+//     secretValue: 'dbadmin'
+//   }
+//   {
+//     secretName: 'cpng-superuser-password'
+//     secretValue: substring(uniqueString('dbadmin', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+//   }
+//   {
+//     secretName: 'airflow-db-connection'
+//     secretValue: 'postgresql://dbuser:${substring(uniqueString('dbuser', resourceGroup().id, bladeConfig.sectionName), 0, 8)}@airflow-cluster-rw.postgresql.svc.cluster.local:5432/airflow-db'
+//   }
+//   {
+//     secretName: 'airflow-admin-username'
+//     secretValue: 'admin'
+//   }
+//   {
+//     secretName: 'airflow-admin-password'
+//     secretValue: substring(uniqueString('airflow', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+//   }
+//   {
+//     secretName: 'airflow-fernet-key'
+//     secretValue: substring(uniqueString('airflow-fernet', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+//   }
+//   {
+//     secretName: 'airflow-webserver-key'
+//     secretValue: substring(uniqueString('airflow-webserver', resourceGroup().id, bladeConfig.sectionName), 0, 8)
+//   }
+// ]
 
-var roleAssignment = {
-  roleDefinitionIdOrName: 'Key Vault Secrets User'
-  principalId: applicationClientPrincipalOid
-  principalType: 'ServicePrincipal'
-}
-
-module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
-  name: '${bladeConfig.sectionName}-keyvault'
-  params: {
-    name: length(name) > 24 ? substring(name, 0, 24) : name
-    location: location
-    enableTelemetry: enableTelemetry
+// module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
+//   name: '${bladeConfig.sectionName}-keyvault'
+//   params: {
+//     name: length(name) > 24 ? substring(name, 0, 24) : name
+//     location: location
+//     enableTelemetry: enableTelemetry
     
-    // Assign Tags
-    tags: union(
-      tags,
-      {
-        layer: bladeConfig.displayName
-      }
-    )
+//     // Assign Tags
+//     tags: union(
+//       tags,
+//       {
+//         layer: bladeConfig.displayName
+//       }
+//     )
 
-    enablePurgeProtection: false
+//     diagnosticSettings: [
+//       {
+//         workspaceResourceId: workspaceResourceId
+//       }
+//     ]
+
+//     enablePurgeProtection: false
     
-    // Configure RBAC
-    enableRbacAuthorization: true
-    roleAssignments: union(
-      applicationClientPrincipalOid != '' ? array(roleAssignment) : [],
-      []
-    )
+//     // Configure RBAC
+//     enableRbacAuthorization: true
+//     roleAssignments: union(
+//       applicationClientPrincipalOid != '' ? [
+//         {
+//           roleDefinitionIdOrName: 'Key Vault Secrets User'
+//           principalId: applicationClientPrincipalOid
+//           principalType: 'ServicePrincipal'
+//         }
+//       ] : [],
+//       []
+//     )
 
-    // Configure Secrets
-    secrets: {
-      secureList: [for secret in vaultSecrets: {
-        name: secret.secretName
-        value: secret.secretValue
-      }]
-    }
-  }
-}
+//     // Configure Network Access
+//     publicNetworkAccess: 'Enabled'
+//     networkAcls: {
+//       bypass: 'AzureServices'
+//       defaultAction: 'Deny'
+//       ipRules: [
+//         {
+//           value: natClusterIP
+//         }
+//       ]
+//     }
 
-module keyvaultSecrets './keyvault_secrets.bicep' = {
-  name: '${bladeConfig.sectionName}-diag-secrets'
-  params: {
-    // Persist Secrets to Vault
-    keyVaultName: keyvault.outputs.name
-    workspaceName: workspaceName
-    insightsName: insights.outputs.name
-    cacheName: redis.outputs.name
-  }
-}
+//     // Configure Secrets
+//     secrets: {
+//       secureList: [for secret in vaultSecrets: {
+//         name: secret.secretName
+//         value: secret.secretValue
+//       }]
+//     }
+//   }
+// }
+
 
 /*   _______.___________.  ______   .______          ___       _______  _______ 
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
@@ -237,49 +225,168 @@ module keyvaultSecrets './keyvault_secrets.bicep' = {
 .----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____ 
 |_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
 */
+// AVM Module Customized due to required Secrets.
+// module storage './storage-account/main.bicep' = {
+//   name: '${bladeConfig.sectionName}-storage'
+//   params: {
+//     name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
+//     location: location
+//     skuName: commonLayerConfig.storage.sku
+
+//     // Assign Tags
+//     tags: union(
+//       tags,
+//       {
+//         layer: bladeConfig.displayName
+//       }
+//     )
+    
+//     // Hook up Diagnostics
+//     diagnosticSettings: [
+//       {
+//         workspaceResourceId: workspaceResourceId
+//       }
+//     ]
+
+//      // Configure Service
+//      blobServices: {
+//       containers: map(commonLayerConfig.storage.containers, container => {
+//         name: container
+//       })
+//     }
+//     tableServices: {
+//       tables: map(commonLayerConfig.storage.tables, table => {
+//         name: table
+//       })
+//     }
+//     fileServices: {
+//       shares: map(commonLayerConfig.storage.shares, share => {
+//         name: share
+//       })
+//     }
+
+//     // Apply Security
+//     allowBlobPublicAccess: enableBlobPublicAccess
+    
+//     publicNetworkAccess: 'Enabled'
+
+//     // TODO: Deployment Scripts don't support this yet.
+//     // allowSharedKeyAccess: true
+//     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
+//     networkAcls: {
+//       bypass: 'AzureServices'
+//       defaultAction: 'Allow'     // <--- Allow all traffic.  Should be changed to Deny.
+//       ipRules: [
+//         {
+//           value: natClusterIP
+//         }
+//       ]
+//     }
+
+//     // Persist Secrets to Vault
+//     secretsExportConfiguration: {
+//       keyVaultResourceId: keyvault.outputs.resourceId
+//       accountName: [
+//         'system-storage'
+//         'tbl-storage'
+//       ]
+//       accessKey1: [
+//         'system-storage-key'
+//         'tbl-storage-key'
+//       ]
+//       connectionString1: [
+//         'system-storage-connection'
+//       ]     
+//       blobEndpoint: [
+//         'system-storage-blob-endpoint'
+//       ]
+//       tableEndpoint: [
+//         'tbl-storage-endpoint'
+//       ]
+//     }
+//   }
+// }
 
 
+/*
+  _______ .______          ___      .______    __    __  
+ /  _____||   _  \        /   \     |   _  \  |  |  |  | 
+|  |  __  |  |_)  |      /  ^  \    |  |_)  | |  |__|  | 
+|  | |_ | |      /      /  /_\  \   |   ___/  |   __   | 
+|  |__| | |  |\  \----./  _____  \  |  |      |  |  |  | 
+ \______| | _| `._____/__/     \__\ | _|      |__|  |__| 
+*/
+// AVM Module Customized due to required Secrets.
+// module database './cosmos-db/main.bicep' = {
+//   name: '${bladeConfig.sectionName}-cosmos-db'
+//   params: {
+//     resourceName: bladeConfig.sectionName
+//     resourceLocation: location
 
-module configStorage './storage-account/main.bicep' = {
-  name: '${bladeConfig.sectionName}-storage'
-  params: {
-    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
-    location: location
+//     // Assign Tags
+//     tags: union(
+//       tags,
+//       {
+//         layer: bladeConfig.displayName
+//       }
+//     )
 
-    // Assign Tags
-    tags: union(
-      tags,
-      {
-        layer: bladeConfig.displayName
-      }
-    )
+//     // Hook up Diagnostics
+//     diagnosticWorkspaceId: workspaceResourceId
+//     diagnosticLogsRetentionInDays: 0
 
-    // Hook up Diagnostics
-    diagnosticWorkspaceId: workspaceResourceId
-    diagnosticLogsRetentionInDays: 0
+//     // Configure Service
+//     capabilitiesToAdd: [
+//       'EnableGremlin'
+//     ]
+//     gremlinDatabases: [
+//       {
+//         name: commonLayerConfig.database.name
+//         graphs: commonLayerConfig.database.graphs
+//       }
+//     ]
+//     throughput: commonLayerConfig.database.throughput
+//     backupPolicyType: commonLayerConfig.database.backup
 
-    // Configure Service
-    sku: commonLayerConfig.storage.sku
-    tables: commonLayerConfig.storage.tables
-    shares: commonLayerConfig.storage.shares
-    containers: commonLayerConfig.storage.containers
+//     // Hookup Customer Managed Encryption Key
+//     systemAssignedIdentity: false
+//     userAssignedIdentities: !empty(cmekConfiguration.identityId) ? {
+//       '${cmekConfiguration.identityId}': {}
+//     } : {}
+//     defaultIdentity: !empty(cmekConfiguration.identityId) ? cmekConfiguration.identityId : ''
+//     kvKeyUri: !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) ? '${cmekConfiguration.kvUrl}/keys/${cmekConfiguration.keyName}' : ''
 
-    // Apply Security
-    allowBlobPublicAccess: enableBlobPublicAccess
+//     // Persist Secrets to Vault
+//     keyVaultName: keyvault.outputs.name
+//     databaseEndpointSecretName: 'graph-db-endpoint'
+//     databasePrimaryKeySecretName: 'graph-db-primary-key'
+//     databaseConnectionStringSecretName: 'graph-db-connection'
+    
 
-    // Hookup Customer Managed Encryption Key
-    cmekConfiguration: cmekConfiguration
+//     roleAssignments: [
+//       {
+//         roleDefinitionIdOrName: 'Contributor'
+//         principals: [
+//           {
+//             id: applicationClientPrincipalOid
+//           }
+//         ]
+//         principalType: 'ServicePrincipal'
+//       }
+//     ]
+//   }
+// }
 
-    // Persist Secrets to Vault
-    keyVaultName: keyvault.outputs.name
-    storageAccountSecretName: 'tbl-storage'
-    storageAccountKeySecretName: 'tbl-storage-key'
-    storageAccountTableEndpointSecretName: 'tbl-storage-endpoint'
 
-    // Use as System Storage Account
-    isSystem: true
-  }
-}
+/*
+     _______.  ______ .______       __  .______   .___________.    _______.
+    /       | /      ||   _  \     |  | |   _  \  |           |   /       |
+   |   (----`|  ,----'|  |_)  |    |  | |  |_)  | `---|  |----`  |   (----`
+    \   \    |  |     |      /     |  | |   ___/      |  |        \   \    
+.----)   |   |  `----.|  |\  \----.|  | |  |          |  |    .----)   |   
+|_______/     \______|| _| `._____||__| | _|          |__|    |_______/    
+*/
+
 
 var directoryUploads = [
   {
@@ -297,22 +404,24 @@ var directoryUploads = [
 module gitOpsUpload './software-upload/main.bicep' = [for item in directoryUploads: {
   name: '${bladeConfig.sectionName}-storage-${item.directory}-upload'
   params: {
+    newStorageAccount: true
     location: location
-    storageAccountName: configStorage.outputs.name
+    storageAccountName: storage.outputs.name
     identityName: userAssignedIdentity.name
 
     directoryName: item.directory
   }
   dependsOn: [
-    configStorage
+    storage
   ]
 }]
 
 module manifestDagShareUpload './script-share-upload/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage-dag-upload-manifest'
   params: {
+    newStorageAccount: true
     location: location
-    storageAccountName: configStorage.outputs.name
+    storageAccountName: storage.outputs.name
     identityName: userAssignedIdentity.name
 
     shareName: 'airflow-dags'
@@ -321,129 +430,45 @@ module manifestDagShareUpload './script-share-upload/main.bicep' = {
     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
   }
   dependsOn: [
-    configStorage
+    storage
   ]
 }
 
 module csvDagShareUpload './script-share-csvdag/main.bicep' = {
   name: '${bladeConfig.sectionName}-storage-dag-upload-csv'
   params: {
+    newStorageAccount: true
     location: location
-    storageAccountName: configStorage.outputs.name
+    storageAccountName: storage.outputs.name
     identityName: userAssignedIdentity.name
     
     shareName: 'airflow-dags'
     filename: 'airflowdags'
     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
     keyVaultUrl: keyvault.outputs.uri
-    insightsKey: insights.outputs.instrumentationKey
+    insightsKey: insightsKey
     clientId: applicationClientId
     clientSecret: applicationClientSecret
   }
   dependsOn: [
-    configStorage
+    storage
   ]
 }
 
-/*
-  _______ .______          ___      .______    __    __  
- /  _____||   _  \        /   \     |   _  \  |  |  |  | 
-|  |  __  |  |_)  |      /  ^  \    |  |_)  | |  |__|  | 
-|  | |_ | |      /      /  /_\  \   |   ___/  |   __   | 
-|  |__| | |  |\  \----./  _____  \  |  |      |  |  |  | 
- \______| | _| `._____/__/     \__\ | _|      |__|  |__| 
-*/
 
-module database './cosmos-db/main.bicep' = {
-  name: '${bladeConfig.sectionName}-cosmos-db'
-  params: {
-    resourceName: bladeConfig.sectionName
-    resourceLocation: location
-
-    // Assign Tags
-    tags: union(
-      tags,
-      {
-        layer: bladeConfig.displayName
-      }
-    )
-
-    // Hook up Diagnostics
-    diagnosticWorkspaceId: workspaceResourceId
-    diagnosticLogsRetentionInDays: 0
-
-    // Configure Service
-    capabilitiesToAdd: [
-      'EnableGremlin'
-    ]
-    gremlinDatabases: [
-      {
-        name: commonLayerConfig.database.name
-        graphs: commonLayerConfig.database.graphs
-      }
-    ]
-    throughput: commonLayerConfig.database.throughput
-    backupPolicyType: commonLayerConfig.database.backup
-
-    // Hookup Customer Managed Encryption Key
-    systemAssignedIdentity: false
-    userAssignedIdentities: !empty(cmekConfiguration.identityId) ? {
-      '${cmekConfiguration.identityId}': {}
-    } : {}
-    defaultIdentity: !empty(cmekConfiguration.identityId) ? cmekConfiguration.identityId : ''
-    kvKeyUri: !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) ? '${cmekConfiguration.kvUrl}/keys/${cmekConfiguration.keyName}' : ''
-
-    // Persist Secrets to Vault
-    keyVaultName: keyvault.outputs.name
-    databaseEndpointSecretName: 'graph-db-endpoint'
-    databasePrimaryKeySecretName: 'graph-db-primary-key'
-    databaseConnectionStringSecretName: 'graph-db-connection'
-    
-
-    roleAssignments: [
-      {
-        roleDefinitionIdOrName: 'Contributor'
-        principals: [
-          {
-            id: applicationClientPrincipalOid
-          }
-        ]
-        principalType: 'ServicePrincipal'
-      }
-    ]
-  }
-}
-
-/*
-  ______     ___       ______  __    __   _______ 
- /      |   /   \     /      ||  |  |  | |   ____|
-|  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__   
-|  |      /  /_\  \  |  |     |   __   | |   __|  
-|  `----./  _____  \ |  `----.|  |  |  | |  |____ 
- \______/__/     \__\ \______||__|  |__| |_______|                             
-*/
-
-module redis 'br/public:avm/res/cache/redis:0.3.2' = {
-  name: '${bladeConfig.sectionName}-cache'
-  params: {
-    name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
-    location: location
-    skuName: 'Basic' 
-    capacity: 1
-    replicasPerMaster: 1
-    replicasPerPrimary: 1
-    zoneRedundant: false
-    enableNonSslPort: true
-  }
-}
+// =============== //
+//   Outputs       //
+// =============== //
 
 output keyvaultName string = keyvault.outputs.name
 output keyvaultUri string = keyvault.outputs.uri
-output storageAccountName string = configStorage.outputs.name
-output storageAccountResourceId string = configStorage.outputs.id
-output instrumentationKey string = insights.outputs.instrumentationKey
+output storageAccountName string = storage.outputs.name
+output storageAccountResourceId string = storage.outputs.resourceId
 
 
+// =============== //
+//   Definitions   //
+// =============== //
 
 type bladeSettings = {
   @description('The name of the section name')

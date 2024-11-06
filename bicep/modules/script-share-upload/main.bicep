@@ -18,6 +18,8 @@ param initialScriptDelay string = '30s'
 param rbacRoleNeeded string = '0c867c2a-1d8c-454a-a3db-ab2ea1bdc8bb' // Storage File Data SMB Share Contributor
 
 // Custom Parameters
+@description('Whether to create a new storage account or use an existing one')
+param newStorageAccount bool = true
 
 @description('Name of the file share')
 param shareName string = 'sample-share'
@@ -65,7 +67,8 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = 
         identity.id
       ]
     }
-    storageAccountResourceId: storageAccount.id
+    
+    storageAccountResourceId: newStorageAccount ? '' : storageAccount.id
 
     kind: 'AzureCLI'
     azCliVersion: '2.63.0'

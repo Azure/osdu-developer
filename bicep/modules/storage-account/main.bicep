@@ -1,574 +1,813 @@
-targetScope = 'resourceGroup'
+metadata name = 'Storage Accounts'
+metadata description = 'This module deploys a Storage Account.'
+metadata owner = 'Azure/module-maintainers'
 
-@description('Used to name all resources')
+@maxLength(24)
+@description('Required. Name of the Storage Account. Must be lower-case.')
 param name string
 
-@description('Resource Location.')
+@description('Optional. Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Tags.')
-param tags object = {}
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. Array of role assignments to create.')
+param roleAssignments roleAssignmentType[]?
+
+import { managedIdentityAllType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. The managed identity definition for this resource.')
+param managedIdentities managedIdentityAllType?
 
 @allowed([
-  'CanNotDelete'
-  'NotSpecified'
-  'ReadOnly'
+  'Storage'
+  'StorageV2'
+  'BlobStorage'
+  'FileStorage'
+  'BlockBlobStorage'
 ])
-@description('Optional. Specify the type of lock.')
-param lock string = 'NotSpecified'
+@description('Optional. Type of Storage Account to create.')
+param kind string = 'StorageV2'
 
-@description('Specifies the storage account sku type.')
 @allowed([
   'Standard_LRS'
-  'Premium_LRS'
   'Standard_GRS'
+  'Standard_RAGRS'
+  'Standard_ZRS'
+  'Premium_LRS'
+  'Premium_ZRS'
+  'Standard_GZRS'
+  'Standard_RAGZRS'
 ])
-param sku string = 'Standard_LRS'
+@description('Optional. Storage Account Sku Name.')
+param skuName string = 'Standard_GRS'
 
-@description('Specifies the storage account access tier.')
 @allowed([
-  'Cool'
+  'Premium'
   'Hot'
+  'Cool'
 ])
+@description('Conditional. Required if the Storage Account kind is set to BlobStorage. The access tier is used for billing. The "Premium" access tier is the default value for premium block blobs storage account type and it cannot be changed for the premium block blobs storage account type.')
 param accessTier string = 'Hot'
 
-
-@description('Optional. Array of Storage Containers to be created.')
-param containers array = [
-  /* example
-  'one'
-  'two'
-  */
-]
-
-@description('Optional. Array of Storage Tables to be created.')
-param tables array = [
-  /* example
-  'one'
-  'two'
-  */
-]
-
-@description('Optional. Array of Storage Shares to be created.')
-param shares array = [
-  /* example
-  'one'
-  'two'
-  */
-]
-
-@description('Optional. The maximum size of the share, in gigabytes. Must be greater than 0, and less than or equal to 5120 (5TB). For Large File Shares, the maximum size is 102400 (100TB).')
-param shareQuota int = 5120
-
 @allowed([
-  'NFS'
-  'SMB'
+  'Disabled'
+  'Enabled'
 ])
-@description('Optional. The authentication protocol that is used for the file share. Can only be specified when creating a share.')
-param enabledProtocols string = 'SMB'
+@description('Optional. Allow large file shares if sets to \'Enabled\'. It cannot be disabled once it is enabled. Only supported on locally redundant and zone redundant file shares. It cannot be set on FileStorage storage accounts (storage accounts for premium file shares).')
+param largeFileSharesState string = 'Disabled'
 
+@description('Optional. Provides the identity based authentication settings for Azure Files.')
+param azureFilesIdentityBasedAuthentication object = {}
+
+@description('Optional. A boolean flag which indicates whether the default authentication is OAuth or not.')
+param defaultToOAuthAuthentication bool = false
+
+@description('Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD). The default value is null, which is equivalent to true.')
+param allowSharedKeyAccess bool = true
+
+import { privateEndpointMultiServiceType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.')
+param privateEndpoints privateEndpointMultiServiceType[]?
+
+@description('Optional. The Storage Account ManagementPolicies Rules.')
+param managementPolicyRules array?
+
+@description('Optional. Networks ACLs, this value contains IPs to whitelist and/or Subnet information. If in use, bypass needs to be supplied. For security reasons, it is recommended to set the DefaultAction Deny.')
+param networkAcls networkAclsType?
+
+@description('Optional. A Boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest. For security reasons, it is recommended to set it to true.')
+param requireInfrastructureEncryption bool = true
+
+@description('Optional. Allow or disallow cross AAD tenant object replication.')
+param allowCrossTenantReplication bool = false
+
+@description('Optional. Sets the custom domain name assigned to the storage account. Name is the CNAME source.')
+param customDomainName string = ''
+
+@description('Optional. Indicates whether indirect CName validation is enabled. This should only be set on updates.')
+param customDomainUseSubDomainName bool = false
+
+@description('Optional. Allows you to specify the type of endpoint. Set this to AzureDNSZone to create a large number of accounts in a single subscription, which creates accounts in an Azure DNS Zone and the endpoint URL will have an alphanumeric DNS Zone identifier.')
 @allowed([
-  'AllSquash'
-  'NoRootSquash'
-  'RootSquash'
+  ''
+  'AzureDnsZone'
+  'Standard'
 ])
-@description('Optional. Permissions for NFS file shares are enforced by the client OS rather than the Azure Files service. Toggling the root squash behavior reduces the rights of the root user for NFS shares.')
-param rootSquash string = 'NoRootSquash'
+param dnsEndpointType string = ''
 
-@description('Optional. Indicates if the module is used in a cross tenant scenario. If true, a resourceId must be provided in the role assignment\'s principal object.')
-param crossTenant bool = false
+@description('Optional. Blob service and containers to deploy.')
+param blobServices object = kind != 'FileStorage'
+  ? {
+      containerDeleteRetentionPolicyEnabled: true
+      containerDeleteRetentionPolicyDays: 7
+      deleteRetentionPolicyEnabled: true
+      deleteRetentionPolicyDays: 6
+    }
+  : {}
 
-@description('Optional. Array of objects that describe RBAC permissions, format { roleDefinitionResourceId (string), principalId (string), principalType (enum), enabled (bool) }. Ref: https://docs.microsoft.com/en-us/azure/templates/microsoft.authorization/roleassignments?tabs=bicep')
-param roleAssignments array = [
-  /* example
-      {
-        roleDefinitionIdOrName: 'Reader'
-        principals: [
-          {
-            id: '222222-2222-2222-2222-2222222222'
-            resourceId: '/subscriptions/111111-1111-1111-1111-1111111111/resourcegroups/rg-osdu-bicep/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-ManagedIdentityName'
-          }
-        ]
-        principalType: 'ServicePrincipal'
-      }
-  */
-]
+@description('Optional. File service and shares to deploy.')
+param fileServices object = {}
 
-@description('Optional. Resource ID of the diagnostic log analytics workspace.')
-param diagnosticWorkspaceId string = ''
+@description('Optional. Queue service and queues to create.')
+param queueServices object = {}
 
-@description('Optional. Resource ID of the diagnostic storage account.')
-param diagnosticStorageAccountId string = ''
-
-@description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
-param diagnosticEventHubAuthorizationRuleId string = ''
-
-@description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
-param diagnosticEventHubName string = ''
-
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
-@description('Optional. The name of logs that will be streamed.')
-@allowed([
-  'StorageRead'
-  'StorageWrite'
-  'StorageDelete'
-])
-param logsToEnable array = [
-  'StorageRead'
-  'StorageWrite'
-  'StorageDelete'
-]
-
-@description('Optional. The name of metrics that will be streamed.')
-@allowed([
-  'AllMetrics'
-])
-param metricsToEnable array = [
-  'AllMetrics'
-]
-
-@description('Optional. Customer Managed Encryption Key.')
-param cmekConfiguration object = {
-  kvUrl: ''
-  keyName: ''
-  identityId: ''
-}
-
-@description('Amount of days the soft deleted data is stored and available for recovery. 0 is off.')
-@minValue(0)
-@maxValue(7)
-param deleteRetention int = 0
+@description('Optional. Table service and tables to create.')
+param tableServices object = {}
 
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
 param allowBlobPublicAccess bool = false
 
-@description('Optional. Indicates whether shared key access is enabled for the storage account.')
-param allowSharedKeyAccess bool = true
+@allowed([
+  'TLS1_2'
+  'TLS1_3'
+])
+@description('Optional. Set the minimum TLS version on request to storage. The TLS versions 1.0 and 1.1 are deprecated and not supported anymore.')
+param minimumTlsVersion string = 'TLS1_2'
 
-@description('Optional. Default to Microsoft Entra authorization in the Azure portal.')
-param defaultToOAuthAuthentication bool = true
+@description('Conditional. If true, enables Hierarchical Namespace for the storage account. Required if enableSftp or enableNfsV3 is set to true.')
+param enableHierarchicalNamespace bool = false
 
-var enableCMEK = !empty(cmekConfiguration.kvUrl) && !empty(cmekConfiguration.keyName) && !empty(cmekConfiguration.identityId) ? true : false
+@description('Optional. If true, enables Secure File Transfer Protocol for the storage account. Requires enableHierarchicalNamespace to be true.')
+param enableSftp bool = false
 
-var diagnosticsLogs = [for log in logsToEnable: {
-  category: log
-  enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
+@description('Optional. Local users to deploy for SFTP authentication.')
+param localUsers array = []
+
+@description('Optional. Enables local users feature, if set to true.')
+param isLocalUserEnabled bool = false
+
+@description('Optional. If true, enables NFS 3.0 support for the storage account. Requires enableHierarchicalNamespace to be true.')
+param enableNfsV3 bool = false
+
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. The diagnostic settings of the service.')
+param diagnosticSettings diagnosticSettingFullType[]?
+
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. The lock settings of the service.')
+param lock lockType?
+
+@description('Optional. Tags of the resource.')
+param tags object?
+
+@description('Optional. Enable/Disable usage telemetry for module.')
+param enableTelemetry bool = true
+
+@description('Optional. Restrict copy to and from Storage Accounts within an AAD tenant or with Private Links to the same VNet.')
+@allowed([
+  ''
+  'AAD'
+  'PrivateLink'
+])
+param allowedCopyScope string = ''
+
+@description('Optional. Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set and networkAcls are not set.')
+@allowed([
+  ''
+  'Enabled'
+  'Disabled'
+])
+param publicNetworkAccess string = ''
+
+@description('Optional. Allows HTTPS traffic only to storage service if sets to true.')
+param supportsHttpsTrafficOnly bool = true
+
+import { customerManagedKeyType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('Optional. The customer managed key definition.')
+param customerManagedKey customerManagedKeyType?
+
+@description('Optional. The SAS expiration period. DD.HH:MM:SS.')
+param sasExpirationPeriod string = ''
+
+@description('Optional. The keyType to use with Queue & Table services.')
+@allowed([
+  'Account'
+  'Service'
+])
+param keyType string?
+
+@description('Optional. Key vault reference and secret settings for the module\'s secrets export.')
+param secretsExportConfiguration secretsExportConfigurationType?
+
+param dateStamp string = utcNow()
+
+var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
+var supportsFileService = kind == 'FileStorage' || kind == 'StorageV2' || kind == 'Storage'
+
+var formattedUserAssignedIdentities = reduce(
+  map((managedIdentities.?userAssignedResourceIds ?? []), (id) => { '${id}': {} }),
+  {},
+  (cur, next) => union(cur, next)
+) // Converts the flat array to an object like { '${id1}': {}, '${id2}': {} }
+
+var identity = !empty(managedIdentities)
+  ? {
+      type: (managedIdentities.?systemAssigned ?? false)
+        ? (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned')
+        : (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'UserAssigned' : 'None')
+      userAssignedIdentities: !empty(formattedUserAssignedIdentities) ? formattedUserAssignedIdentities : null
+    }
+  : null
+
+var builtInRoleNames = {
+  Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+  Owner: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')
+  Reader: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
+  'Reader and Data Access': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'c12c1c16-33a1-487b-954d-41c89c60f349'
+  )
+  'Role Based Access Control Administrator': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'f58310d9-a9f6-439a-9e8d-f62e7b41a168'
+  )
+  'Storage Account Backup Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1'
+  )
+  'Storage Account Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+  )
+  'Storage Account Key Operator Service Role': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '81a9662b-bebf-436f-a333-f67b29880f12'
+  )
+  'Storage Blob Data Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  )
+  'Storage Blob Data Owner': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+  )
+  'Storage Blob Data Reader': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+  )
+  'Storage Blob Delegator': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'db58b8e5-c6ad-4a2a-8342-4190687cbf4a'
+  )
+  'Storage File Data Privileged Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '69566ab7-960f-475b-8e7c-b3118f30c6bd'
+  )
+  'Storage File Data Privileged Reader': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'b8eda974-7b85-4f76-af95-65846b26df6d'
+  )
+  'Storage File Data SMB Share Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '0c867c2a-1d8c-454a-a3db-ab2ea1bdc8bb'
+  )
+  'Storage File Data SMB Share Elevated Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'a7264617-510b-434b-a828-9731dc254ea7'
+  )
+  'Storage File Data SMB Share Reader': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'aba4ae5f-2193-4029-9191-0cb91df5e314'
+  )
+  'Storage Queue Data Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+  )
+  'Storage Queue Data Message Processor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '8a0f0c08-91a1-4084-bc3d-661d67233fed'
+  )
+  'Storage Queue Data Message Sender': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    'c6a89b2d-59bc-44d0-9896-0f6e12d7b80a'
+  )
+  'Storage Queue Data Reader': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '19e7f393-937e-4f77-808e-94535e297925'
+  )
+  'Storage Table Data Contributor': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+  )
+  'Storage Table Data Reader': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '76199698-9eea-4c19-bc75-cec21354c6b6'
+  )
+  'User Access Administrator': subscriptionResourceId(
+    'Microsoft.Authorization/roleDefinitions',
+    '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9'
+  )
+}
+
+var formattedRoleAssignments = [
+  for (roleAssignment, index) in (roleAssignments ?? []): union(roleAssignment, {
+    roleDefinitionId: builtInRoleNames[?roleAssignment.roleDefinitionIdOrName] ?? (contains(
+        roleAssignment.roleDefinitionIdOrName,
+        '/providers/Microsoft.Authorization/roleDefinitions/'
+      )
+      ? roleAssignment.roleDefinitionIdOrName
+      : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName))
+  })
+]
+
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.storage-storageaccount.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
+        }
+      }
+    }
   }
-}]
+}
 
-var diagnosticsMetrics = [for metric in metricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
+resource cMKKeyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (!empty(customerManagedKey.?keyVaultResourceId)) {
+  name: last(split((customerManagedKey.?keyVaultResourceId ?? 'dummyVault'), '/'))
+  scope: resourceGroup(
+    split((customerManagedKey.?keyVaultResourceId ?? '//'), '/')[2],
+    split((customerManagedKey.?keyVaultResourceId ?? '////'), '/')[4]
+  )
+
+  resource cMKKey 'keys@2023-02-01' existing = if (!empty(customerManagedKey.?keyVaultResourceId) && !empty(customerManagedKey.?keyName)) {
+    name: customerManagedKey.?keyName ?? 'dummyKey'
   }
-}]
+}
 
+resource cMKUserAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(customerManagedKey.?userAssignedIdentityResourceId)) {
+  name: last(split(customerManagedKey.?userAssignedIdentityResourceId ?? 'dummyMsi', '/'))
+  scope: resourceGroup(
+    split((customerManagedKey.?userAssignedIdentityResourceId ?? '//'), '/')[2],
+    split((customerManagedKey.?userAssignedIdentityResourceId ?? '////'), '/')[4]
+  )
+}
 
-
-// Create Storage Account
-resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
-  name: length(name) > 24 ? substring(name, 0, 24) : name
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: name
   location: location
-  tags: tags
+  kind: kind
   sku: {
-    name: sku
+    name: skuName
   }
-  kind: 'StorageV2'
-
-  identity: enableCMEK ? {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${cmekConfiguration.identityId}': {}
-    }
-  } : null
-
+  identity: identity
+  tags: tags
   properties: {
-    accessTier: accessTier
-    minimumTlsVersion: 'TLS1_2'
-
-    encryption: enableCMEK ? {
-      identity: {
-        userAssignedIdentity: cmekConfiguration.identityId
-      }
-      services: {
-         blob: {
-           enabled: true
-         }
-         table: {
-            enabled: true
-         }
-         file: {
-            enabled: true
-         }
-      }
-      keySource: 'Microsoft.Keyvault'
-      keyvaultproperties: {
-        keyname: cmekConfiguration.keyName
-        keyvaulturi: cmekConfiguration.kvUrl
-      }
-    } : {
-      services: {
-         blob: {
-           enabled: true
-         }
-         table: {
-            enabled: true
-         }
-         file: {
-            enabled: true
-         }
-      }
-      keySource: 'Microsoft.Storage'
-    }
-
-    allowBlobPublicAccess: allowBlobPublicAccess
-    defaultToOAuthAuthentication: defaultToOAuthAuthentication
     allowSharedKeyAccess: allowSharedKeyAccess
-
-    networkAcls: enablePrivateLink ? {
-      bypass: 'AzureServices'
-      defaultAction: 'Deny'
-    } : {
-      bypass: 'AzureServices'
-      defaultAction: 'Allow'
+    defaultToOAuthAuthentication: defaultToOAuthAuthentication
+    allowCrossTenantReplication: allowCrossTenantReplication
+    allowedCopyScope: !empty(allowedCopyScope) ? allowedCopyScope : null
+    customDomain: {
+      name: customDomainName
+      useSubDomainName: customDomainUseSubDomainName
     }
-  }
-}
-
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
-  parent: storage
-  name: 'default'
-  properties: deleteRetention > 0 ? {
-    changeFeed: {
-      enabled: true
-    }
-    restorePolicy: {
-      enabled: true
-      days: 7
-    }
-    isVersioningEnabled: true
-    deleteRetentionPolicy: {
-      enabled: true
-      days: max(deleteRetention, 1)
-    }
-  } : {
-    deleteRetentionPolicy: {
-      enabled: false
-      allowPermanentDelete: false
-    }
-  }
-}
-
-resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2023-01-01' = {
-  name: 'default'
-  parent: storage
-  properties: {}
-}
-
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
-  name: 'default'
-  parent: storage
-  properties: {
-    protocolSettings: {}
-    shareDeleteRetentionPolicy: {
-      enabled: true
-      days: 7
-    }
-  }
-}
-
-resource storage_containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for item in containers: {
-  parent: blobServices
-  name: item
-  properties: {
-    defaultEncryptionScope:      '$account-encryption-key'
-    denyEncryptionScopeOverride: false
-    publicAccess:                'None'
-  }
-}]
-
-resource storage_tables 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = [for item in tables: {
-  parent: tableServices
-  name: item
-}]
-
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = [for item in shares: {
-  parent: fileServices
-  name: item
-  properties: {
-    shareQuota: shareQuota
-    rootSquash: enabledProtocols == 'NFS' ? rootSquash : null
-    enabledProtocols: enabledProtocols
-  }
-}]
-
-// Apply Resource Lock
-resource resource_lock 'Microsoft.Authorization/locks@2020-05-01' = if (lock != 'NotSpecified') {
-  name: '${storage.name}-${lock}-lock'
-  properties: {
-    level: lock
-    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
-  }
-  scope: storage
-}
-
-module storage_rbac '.bicep/nested_rbac.bicep' = [for (roleAssignment, index) in roleAssignments: {
-  name: '${deployment().name}-rbac-${index}'
-  params: {
-    description: roleAssignment.?description ?? ''
-    principals: roleAssignment.principals
-    roleDefinitionIdOrName: roleAssignment.roleDefinitionIdOrName
-    principalType: roleAssignment.?principalType ?? ''
-    resourceId: storage.id
-    crossTenant: crossTenant
-  }
-}]
-
-
-
-// Hook up Diagnostics
-resource storage_diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
-  name: 'storage-diagnostics'
-  scope: blobServices
-  properties: {
-    storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
-    workspaceId: !empty(diagnosticWorkspaceId) ? diagnosticWorkspaceId : null
-    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
-    eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
-    metrics: diagnosticsMetrics
-    logs: diagnosticsLogs
-  }
-  dependsOn: [
-    storage
-  ]
-}
-
-@description('The resource ID.')
-output id string = storage.id
-
-@description('The name of the resource.')
-output name string = storage.name
-
-////////////////
-// Private Link
-////////////////
-
-@description('Settings Required to Enable Private Link')
-param privateLinkSettings object = {
-  subnetId: '1' // Specify the Subnet for Private Endpoint
-  vnetId: '1'  // Specify the Virtual Network for Virtual Network Link
-}
-
-var enablePrivateLink = privateLinkSettings.vnetId != '1' && privateLinkSettings.subnetId != '1'
-
-
-@description('Specifies the name of the private link to the Resource.')
-var privateEndpointName = '${name}-PrivateEndpoint'
-
-var publicDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
-var privateDnsZoneName = 'privatelink.${publicDNSZoneForwarder}'
-
-resource privateDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
-  name: privateDnsZoneName
-  location: 'global'
-  properties: {}
-}
-
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = if (enablePrivateLink) {
-  name: privateEndpointName
-  location: location
-  properties: {
-    privateLinkServiceConnections: [
+    dnsEndpointType: !empty(dnsEndpointType) ? dnsEndpointType : null
+    isLocalUserEnabled: isLocalUserEnabled
+    encryption: union(
       {
-        name: privateEndpointName
-        properties: {
-          privateLinkServiceId: storage.id
-          groupIds: [
-            'blob'
+        keySource: !empty(customerManagedKey) ? 'Microsoft.Keyvault' : 'Microsoft.Storage'
+        services: {
+          blob: supportsBlobService
+            ? {
+                enabled: true
+              }
+            : null
+          file: supportsFileService
+            ? {
+                enabled: true
+              }
+            : null
+          table: {
+            enabled: true
+            keyType: keyType
+          }
+          queue: {
+            enabled: true
+            keyType: keyType
+          }
+        }
+        keyvaultproperties: !empty(customerManagedKey)
+          ? {
+              keyname: customerManagedKey!.keyName
+              keyvaulturi: cMKKeyVault.properties.vaultUri
+              keyversion: !empty(customerManagedKey.?keyVersion ?? '')
+                ? customerManagedKey!.keyVersion
+                : last(split(cMKKeyVault::cMKKey.properties.keyUriWithVersion, '/'))
+            }
+          : null
+        identity: {
+          userAssignedIdentity: !empty(customerManagedKey.?userAssignedIdentityResourceId)
+            ? cMKUserAssignedIdentity.id
+            : null
+        }
+      },
+      (requireInfrastructureEncryption
+        ? {
+            requireInfrastructureEncryption: kind != 'Storage' ? requireInfrastructureEncryption : null
+          }
+        : {})
+    )
+    accessTier: (kind != 'Storage' && kind != 'BlockBlobStorage') ? accessTier : null
+    sasPolicy: !empty(sasExpirationPeriod)
+      ? {
+          expirationAction: 'Log'
+          sasExpirationPeriod: sasExpirationPeriod
+        }
+      : null
+    supportsHttpsTrafficOnly: supportsHttpsTrafficOnly
+    isHnsEnabled: enableHierarchicalNamespace
+    isSftpEnabled: enableSftp
+    isNfsV3Enabled: enableNfsV3 ? enableNfsV3 : any('')
+    largeFileSharesState: (skuName == 'Standard_LRS') || (skuName == 'Standard_ZRS') ? largeFileSharesState : null
+    minimumTlsVersion: minimumTlsVersion
+    networkAcls: !empty(networkAcls)
+      ? union(
+          {
+            resourceAccessRules: networkAcls.?resourceAccessRules
+            defaultAction: networkAcls.?defaultAction ?? 'Deny'
+            virtualNetworkRules: networkAcls.?virtualNetworkRules
+            ipRules: networkAcls.?ipRules
+          },
+          (contains(networkAcls!, 'bypass') ? { bypass: networkAcls.?bypass } : {}) // setting `bypass` to `null`is not supported
+        )
+      : {
+          // New default case that enables the firewall by default
+          bypass: 'AzureServices'
+          defaultAction: 'Deny'
+        }
+    allowBlobPublicAccess: allowBlobPublicAccess
+    publicNetworkAccess: !empty(publicNetworkAccess)
+      ? any(publicNetworkAccess)
+      : (!empty(privateEndpoints) && empty(networkAcls) ? 'Disabled' : null)
+    azureFilesIdentityBasedAuthentication: !empty(azureFilesIdentityBasedAuthentication)
+      ? azureFilesIdentityBasedAuthentication
+      : null
+  }
+}
+
+resource storageAccount_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [
+  for (diagnosticSetting, index) in (diagnosticSettings ?? []): {
+    name: diagnosticSetting.?name ?? '${name}-diagnosticSettings'
+    properties: {
+      storageAccountId: diagnosticSetting.?storageAccountResourceId
+      workspaceId: diagnosticSetting.?workspaceResourceId
+      eventHubAuthorizationRuleId: diagnosticSetting.?eventHubAuthorizationRuleResourceId
+      eventHubName: diagnosticSetting.?eventHubName
+      metrics: [
+        for group in (diagnosticSetting.?metricCategories ?? [{ category: 'AllMetrics' }]): {
+          category: group.category
+          enabled: group.?enabled ?? true
+          timeGrain: null
+        }
+      ]
+      marketplacePartnerId: diagnosticSetting.?marketplacePartnerResourceId
+      logAnalyticsDestinationType: diagnosticSetting.?logAnalyticsDestinationType
+    }
+    scope: storageAccount
+  }
+]
+
+resource storageAccount_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock ?? {}) && lock.?kind != 'None') {
+  name: lock.?name ?? 'lock-${name}'
+  properties: {
+    level: lock.?kind ?? ''
+    notes: lock.?kind == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot delete or modify the resource or child resources.'
+  }
+  scope: storageAccount
+}
+
+resource storageAccount_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for (roleAssignment, index) in (formattedRoleAssignments ?? []): {
+    name: roleAssignment.?name ?? guid(storageAccount.id, roleAssignment.principalId, roleAssignment.roleDefinitionId)
+    properties: {
+      roleDefinitionId: roleAssignment.roleDefinitionId
+      principalId: roleAssignment.principalId
+      description: roleAssignment.?description
+      principalType: roleAssignment.?principalType
+      condition: roleAssignment.?condition
+      conditionVersion: !empty(roleAssignment.?condition) ? (roleAssignment.?conditionVersion ?? '2.0') : null // Must only be set if condtion is set
+      delegatedManagedIdentityResourceId: roleAssignment.?delegatedManagedIdentityResourceId
+    }
+    scope: storageAccount
+  }
+]
+
+module storageAccount_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.7.1' = [
+  for (privateEndpoint, index) in (privateEndpoints ?? []): {
+    name: '${uniqueString(deployment().name, location)}-storageAccount-PrivateEndpoint-${index}'
+    scope: resourceGroup(privateEndpoint.?resourceGroupName ?? '')
+    params: {
+      name: privateEndpoint.?name ?? 'pep-${last(split(storageAccount.id, '/'))}-${privateEndpoint.service}-${index}'
+      privateLinkServiceConnections: privateEndpoint.?isManualConnection != true
+        ? [
+            {
+              name: privateEndpoint.?privateLinkServiceConnectionName ?? '${last(split(storageAccount.id, '/'))}-${privateEndpoint.service}-${index}'
+              properties: {
+                privateLinkServiceId: storageAccount.id
+                groupIds: [
+                  privateEndpoint.service
+                ]
+              }
+            }
           ]
-        }
-      }
-    ]
-    subnet: {
-      id: privateLinkSettings.subnetId
+        : null
+      manualPrivateLinkServiceConnections: privateEndpoint.?isManualConnection == true
+        ? [
+            {
+              name: privateEndpoint.?privateLinkServiceConnectionName ?? '${last(split(storageAccount.id, '/'))}-${privateEndpoint.service}-${index}'
+              properties: {
+                privateLinkServiceId: storageAccount.id
+                groupIds: [
+                  privateEndpoint.service
+                ]
+                requestMessage: privateEndpoint.?manualConnectionRequestMessage ?? 'Manual approval required.'
+              }
+            }
+          ]
+        : null
+      subnetResourceId: privateEndpoint.subnetResourceId
+      enableTelemetry: privateEndpoint.?enableTelemetry ?? enableTelemetry
+      location: privateEndpoint.?location ?? reference(
+        split(privateEndpoint.subnetResourceId, '/subnets/')[0],
+        '2020-06-01',
+        'Full'
+      ).location
+      lock: privateEndpoint.?lock ?? lock
+      privateDnsZoneGroup: privateEndpoint.?privateDnsZoneGroup
+      roleAssignments: privateEndpoint.?roleAssignments
+      tags: privateEndpoint.?tags ?? tags
+      customDnsConfigs: privateEndpoint.?customDnsConfigs
+      ipConfigurations: privateEndpoint.?ipConfigurations
+      applicationSecurityGroupResourceIds: privateEndpoint.?applicationSecurityGroupResourceIds
+      customNetworkInterfaceName: privateEndpoint.?customNetworkInterfaceName
     }
   }
-  dependsOn: [
-    storage
-  ]
-}
+]
 
-resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = if (enablePrivateLink) {
-  parent: privateEndpoint
-  name: 'dnsgroupname'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'dnsConfig'
-        properties: {
-          privateDnsZoneId: privateDNSZone.id
-        }
-      }
-    ]
+// Lifecycle Policy
+module storageAccount_managementPolicies 'management-policy/main.bicep' = if (!empty(managementPolicyRules ?? [])) {
+  name: '${uniqueString(deployment().name, location)}-Storage-ManagementPolicies'
+  params: {
+    storageAccountName: storageAccount.name
+    rules: managementPolicyRules ?? []
   }
   dependsOn: [
-    privateDNSZone
+    storageAccount_blobServices // To ensure the lastAccessTimeTrackingPolicy is set first (if used in rule)
   ]
 }
 
-#disable-next-line BCP081
-resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateLink) {
-  parent: privateDNSZone
-  name: 'link_to_vnet'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: privateLinkSettings.vnetId
+// SFTP user settings
+module storageAccount_localUsers 'local-user/main.bicep' = [
+  for (localUser, index) in localUsers: {
+    name: '${uniqueString(deployment().name, location)}-Storage-LocalUsers-${index}'
+    params: {
+      storageAccountName: storageAccount.name
+      name: localUser.name
+      hasSshKey: localUser.hasSshKey
+      hasSshPassword: localUser.hasSshPassword
+      permissionScopes: localUser.permissionScopes
+      hasSharedKey: localUser.?hasSharedKey
+      homeDirectory: localUser.?homeDirectory
+      sshAuthorizedKeys: localUser.?sshAuthorizedKeys
     }
   }
-  dependsOn: [
-    privateDNSZone
-  ]
+]
+
+// Containers
+module storageAccount_blobServices 'blob-service/main.bicep' = if (!empty(blobServices)) {
+  name: '${uniqueString(deployment().name, location)}-Storage-BlobServices'
+  params: {
+    storageAccountName: storageAccount.name
+    containers: blobServices.?containers
+    automaticSnapshotPolicyEnabled: blobServices.?automaticSnapshotPolicyEnabled
+    changeFeedEnabled: blobServices.?changeFeedEnabled
+    changeFeedRetentionInDays: blobServices.?changeFeedRetentionInDays
+    containerDeleteRetentionPolicyEnabled: blobServices.?containerDeleteRetentionPolicyEnabled
+    containerDeleteRetentionPolicyDays: blobServices.?containerDeleteRetentionPolicyDays
+    containerDeleteRetentionPolicyAllowPermanentDelete: blobServices.?containerDeleteRetentionPolicyAllowPermanentDelete
+    corsRules: blobServices.?corsRules
+    defaultServiceVersion: blobServices.?defaultServiceVersion
+    deleteRetentionPolicyAllowPermanentDelete: blobServices.?deleteRetentionPolicyAllowPermanentDelete
+    deleteRetentionPolicyEnabled: blobServices.?deleteRetentionPolicyEnabled
+    deleteRetentionPolicyDays: blobServices.?deleteRetentionPolicyDays
+    isVersioningEnabled: blobServices.?isVersioningEnabled
+    lastAccessTimeTrackingPolicyEnabled: blobServices.?lastAccessTimeTrackingPolicyEnabled
+    restorePolicyEnabled: blobServices.?restorePolicyEnabled
+    restorePolicyDays: blobServices.?restorePolicyDays
+    diagnosticSettings: blobServices.?diagnosticSettings
+  }
 }
 
-////////////////
-// Secrets
-////////////////
+// File Shares
+module storageAccount_fileServices 'file-service/main.bicep' = if (!empty(fileServices)) {
+  name: '${uniqueString(deployment().name, location)}-Storage-FileServices'
+  params: {
+    storageAccountName: storageAccount.name
+    diagnosticSettings: fileServices.?diagnosticSettings
+    protocolSettings: fileServices.?protocolSettings
+    shareDeleteRetentionPolicy: fileServices.?shareDeleteRetentionPolicy
+    shares: fileServices.?shares
+  }
+}
 
-@description('Optional: Key Vault Name to store secrets into')
-param keyVaultName string = ''
+// Queue
+module storageAccount_queueServices 'queue-service/main.bicep' = if (!empty(queueServices)) {
+  name: '${uniqueString(deployment().name, location)}-Storage-QueueServices'
+  params: {
+    storageAccountName: storageAccount.name
+    diagnosticSettings: queueServices.?diagnosticSettings
+    queues: queueServices.?queues
+  }
+}
 
-@description('Optional: To save storage account name into vault set the secret name.')
-param storageAccountSecretName string = ''
+// Table
+module storageAccount_tableServices 'table-service/main.bicep' = if (!empty(tableServices)) {
+  name: '${uniqueString(deployment().name, location)}-Storage-TableServices'
+  params: {
+    storageAccountName: storageAccount.name
+    diagnosticSettings: tableServices.?diagnosticSettings
+    tables: tableServices.?tables
+  }
+}
 
-@description('Optional: To save storage account key into vault set the secret name.')
-param storageAccountKeySecretName string = ''
-
-@description('Optional: To save storage account table endpoint into vault set the secret name.')
-param storageAccountTableEndpointSecretName string = ''
-
-@description('Optional: To save storage account blob endpoint into vault set the secret name.')
-param storageAccountBlobEndpointSecretName string = ''
-
-@description('Optional: To save storage account connectionstring into vault set the secret name.')
-param storageAccountConnectionString string = ''
-
-@description('Optional: Current Date Time')
-param basetime string = utcNow('u')
-
-@description('Optional: Default SAS TOken Properties to download Blob.')
-param sasProperties object = {
-  signedServices: 'b'
-  signedPermission: 'rl'
-  signedExpiry: dateTimeAdd(basetime, 'P1Y')
-  signedResourceTypes: 'sco'
+var sasProperties = {
+  signedServices: 'bfqt'        // blob, file, queue, table
+  signedPermission: 'rwdlacup'  // read, write, delete, list, add, create, update, process
+  signedExpiry: dateTimeAdd(dateStamp, 'P1D')  // Token expires in 1 day
+  signedResourceTypes: 'sco'    // service, container, object
   signedProtocol: 'https'
 }
 
-@description('Optional: To save storage account sas token into vault set the properties.')
-param saveToken bool = false
+var secretsToSet = concat(
+  empty(secretsExportConfiguration.?accountName ?? []) ? [] : map((secretsExportConfiguration!.accountName ?? []), name => {
+    name: name
+    value: storageAccount.name
+  }),
+  empty(secretsExportConfiguration.?accessKey1 ?? []) ? [] : map((secretsExportConfiguration!.accessKey1 ?? []), name => {
+    name: name
+    value: storageAccount.listKeys().keys[0].value
+  }),
+  empty(secretsExportConfiguration.?connectionString1 ?? []) ? [] : map((secretsExportConfiguration!.connectionString1 ?? []), name => {
+    name: name
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
+  }),
+  empty(secretsExportConfiguration.?accessKey2 ?? []) ? [] : map((secretsExportConfiguration!.accessKey2 ?? []), name => {
+    name: name
+    value: storageAccount.listKeys().keys[1].value
+  }),
+  empty(secretsExportConfiguration.?connectionString2 ?? []) ? [] : map((secretsExportConfiguration!.connectionString2 ?? []), name => {
+    name: name
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[1].value};EndpointSuffix=core.windows.net'
+  }),
+  empty(secretsExportConfiguration.?blobEndpoint ?? []) ? [] : map((secretsExportConfiguration!.blobEndpoint ?? []), name => {
+    name: name
+    value: storageAccount.properties.primaryEndpoints.blob
+  }),
+  empty(secretsExportConfiguration.?tableEndpoint ?? []) ? [] : map((secretsExportConfiguration!.tableEndpoint ?? []), name => {
+    name: name
+    value: storageAccount.properties.primaryEndpoints.table
+  }),
+  empty(secretsExportConfiguration.?queueEndpoint ?? []) ? [] : map((secretsExportConfiguration!.queueEndpoint ?? []), name => {
+    name: name
+    value: storageAccount.properties.primaryEndpoints.queue
+  }),
+  empty(secretsExportConfiguration.?fileEndpoint ?? []) ? [] : map((secretsExportConfiguration!.fileEndpoint ?? []), name => {
+    name: name
+    value: storageAccount.properties.primaryEndpoints.file
+  }),
+  empty(secretsExportConfiguration.?sasToken ?? []) ? [] : map((secretsExportConfiguration!.sasToken ?? []), (name) => {
+    name: name
+    value: listAccountSAS(storageAccount.name, '2022-05-01', sasProperties).accountSasToken
+  })
+)
 
-@description('Optional: Enable as System Storage.')
-param isSystem bool = false
-
-module systemSecretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (isSystem) {
-  name: '${deployment().name}-system-secret-name'
+module secretsExport 'modules/keyVaultExport.bicep' = if (secretsExportConfiguration != null) {
+  name: '${uniqueString(deployment().name, location)}-secrets-kv'
+  scope: resourceGroup(
+    split((secretsExportConfiguration.?keyVaultResourceId ?? '//'), '/')[2],
+    split((secretsExportConfiguration.?keyVaultResourceId ?? '////'), '/')[4]
+  )
   params: {
-    keyVaultName: keyVaultName
-    name: 'system-storage'
-    value: storage.name
+    keyVaultName: last(split(secretsExportConfiguration.?keyVaultResourceId ?? '//', '/'))
+    secretsToSet: secretsToSet
   }
 }
 
-module systemSecretStorageAccountKey  '.bicep/keyvault_secrets.bicep' = if (isSystem) {
-  name: '${deployment().name}-system-secret-key'
-  params: {
-    keyVaultName: keyVaultName
-    name: 'system-storage-key'
-    value: storage.listKeys().keys[0].value
+@description('The resource ID of the deployed storage account.')
+output resourceId string = storageAccount.id
+
+@description('The name of the deployed storage account.')
+output name string = storageAccount.name
+
+@description('The resource group of the deployed storage account.')
+output resourceGroupName string = resourceGroup().name
+
+@description('The primary blob endpoint reference if blob services are deployed.')
+output primaryBlobEndpoint string = !empty(blobServices) && contains(blobServices, 'containers')
+  ? reference('Microsoft.Storage/storageAccounts/${storageAccount.name}', '2019-04-01').primaryEndpoints.blob
+  : ''
+
+@description('The principal ID of the system assigned identity.')
+output systemAssignedMIPrincipalId string = storageAccount.?identity.?principalId ?? ''
+
+@description('The location the resource was deployed into.')
+output location string = storageAccount.location
+
+@description('All service endpoints of the deployed storage account, Note Standard_LRS and Standard_ZRS accounts only have a blob service endpoint.')
+output serviceEndpoints object = storageAccount.properties.primaryEndpoints
+
+@description('The private endpoints of the Storage Account.')
+output privateEndpoints array = [
+  for (pe, i) in (!empty(privateEndpoints) ? array(privateEndpoints) : []): {
+    name: storageAccount_privateEndpoints[i].outputs.name
+    resourceId: storageAccount_privateEndpoints[i].outputs.resourceId
+    groupId: storageAccount_privateEndpoints[i].outputs.groupId
+    customDnsConfig: storageAccount_privateEndpoints[i].outputs.customDnsConfig
+    networkInterfaceIds: storageAccount_privateEndpoints[i].outputs.networkInterfaceIds
   }
+]
+
+import { secretsOutputType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+@description('A hashtable of references to the secrets exported to the provided Key Vault. The key of each reference is each secret\'s name.')
+output exportedSecrets secretsOutputType = (secretsExportConfiguration != null)
+  ? toObject(secretsExport.outputs.secretsSet, secret => last(split(secret.secretResourceId, '/')), secret => secret)
+  : {}
+
+// =============== //
+//   Definitions   //
+// =============== //
+
+@export()
+type networkAclsType = {
+  @description('Optional. Sets the resource access rules. Array entries must consist of "tenantId" and "resourceId" fields only.')
+  resourceAccessRules: {
+    @description('Required. The ID of the tenant in which the resource resides in.')
+    tenantId: string
+
+    @description('Required. The resource ID of the target service. Can also contain a wildcard, if multiple services e.g. in a resource group should be included.')
+    resourceId: string
+  }[]?
+
+  @description('Optional. Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Possible values are any combination of Logging,Metrics,AzureServices (For example, "Logging, Metrics"), or None to bypass none of those traffics.')
+  bypass: (
+    | 'None'
+    | 'AzureServices'
+    | 'Logging'
+    | 'Metrics'
+    | 'AzureServices, Logging'
+    | 'AzureServices, Metrics'
+    | 'AzureServices, Logging, Metrics'
+    | 'Logging, Metrics')?
+
+  @description('Optional. Sets the virtual network rules.')
+  virtualNetworkRules: array?
+
+  @description('Optional. Sets the IP ACL rules.')
+  ipRules: array?
+
+  @description('Optional. Specifies the default action of allow or deny when no other rules match.')
+  defaultAction: ('Allow' | 'Deny')?
 }
 
-module systemSecretStorageAccountEndpoint '.bicep/keyvault_secrets.bicep' =  if (isSystem) {
-  name: '${deployment().name}-system-secret-endpoint'
-  params: {
-    keyVaultName: keyVaultName
-    name: 'system-storage-blob-endpoint'
-    value: storage.properties.primaryEndpoints.blob
-  }
-}
+@export()
+type secretsExportConfigurationType = {
+  @description('Required. The key vault name where to store the keys and connection strings generated by the modules.')
+  keyVaultResourceId: string
 
-module systemSecretStorageAccountConnection '.bicep/keyvault_secrets.bicep' =  if (isSystem) {
-  name: '${deployment().name}-system-secret-connectionstring'
-  params: {
-    keyVaultName: keyVaultName
-    name: 'system-storage-connection'
-    value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-  }
-}
+  @description('Optional. Array of secret names to create for accountName.')
+  accountName: string[]?
 
-module secretStorageAccountName  '.bicep/keyvault_secrets.bicep' = if (!empty(keyVaultName) && !empty(storageAccountSecretName)) {
-  name: '${deployment().name}-secret-name'
-  params: {
-    keyVaultName: keyVaultName
-    name: storageAccountSecretName
-    value: storage.name
-  }
-}
+  @description('Optional. Array of secret names to create for accessKey1.')
+  accessKey1: string[]?
 
-module secretStorageAccountKey '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountKeySecretName)) {
-  name: '${deployment().name}-secret-key'
-  params: {
-    keyVaultName: keyVaultName
-    name: storageAccountKeySecretName
-    value: storage.listKeys().keys[0].value
-  }
-}
+  @description('Optional. Array of secret names to create for connectionString1.')
+  connectionString1: string[]?
 
+  @description('Optional. Array of secret names to create for accessKey2.')
+  accessKey2: string[]?
 
-module secretStorageAccountTableEndpoint '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountTableEndpointSecretName)) {
-  name: '${deployment().name}-secret-table-endpoint'
-  params: {
-    keyVaultName: keyVaultName
-    name: storageAccountTableEndpointSecretName
-    value: storage.properties.primaryEndpoints.table
-  }
-}
+  @description('Optional. Array of secret names to create for connectionString2.')
+  connectionString2: string[]?
 
-module secretStorageAccountBlobEndpoint '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountBlobEndpointSecretName)) {
-  name: '${deployment().name}-secret-blob-endpoint'
-  params: {
-    keyVaultName: keyVaultName
-    name: storageAccountBlobEndpointSecretName
-    value: storage.properties.primaryEndpoints.blob
-  }
-}
+  @description('Optional. Array of secret names to create for blobEndpoint.')
+  blobEndpoint: string[]?
 
-module secretStorageAccountConnection '.bicep/keyvault_secrets.bicep' =  if (!empty(keyVaultName) && !empty(storageAccountConnectionString)) {
-  name: '${deployment().name}-secret-connectionstring'
-  params: {
-    keyVaultName: keyVaultName
-    name: storageAccountConnectionString
-    value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-  }
-}
+  @description('Optional. Array of secret names to create for tableEndpoint.')
+  tableEndpoint: string[]?
 
-module secretSASToken  '.bicep/keyvault_secrets.bicep' = if (!empty(keyVaultName) && saveToken) {
-  name: '${deployment().name}-secret-sasToken'
-  params: {
-    keyVaultName: keyVaultName
-    name: '${storage.name}-SAS'
-    value: listAccountSAS(storage.name, '2022-05-01', sasProperties).accountSasToken
-  }
+  @description('Optional. Array of secret names to create for queueEndpoint.')
+  queueEndpoint: string[]?
+
+  @description('Optional. Array of secret names to create for fileEndpoint.')
+  fileEndpoint: string[]?
+
+  @description('Optional. Array of secret names to create for sasToken.')
+  sasToken: string[]?
 }

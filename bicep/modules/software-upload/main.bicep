@@ -19,6 +19,9 @@ param rbacRoleNeeded string = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage B
 
 // Custom Parameters
 
+@description('Whether to create a new storage account or use an existing one')
+param newStorageAccount bool = true
+
 @description('Name of the container')
 param containerName string = 'gitops'
 
@@ -68,7 +71,8 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = 
         identity.id
       ]
     }
-    storageAccountResourceId: storageAccount.id
+    
+    storageAccountResourceId: newStorageAccount ? '' : storageAccount.id
 
     kind: 'AzureCLI'
     azCliVersion: '2.63.0'

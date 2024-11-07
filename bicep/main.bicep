@@ -53,6 +53,7 @@ param experimentalSoftware object = {
 param clusterConfiguration object = {
   enableNodeAutoProvisioning: true
   enablePrivateCluster: false
+  enableLockDown: false
 }
 
 @description('Optional. Bring your own Virtual Network.')
@@ -368,6 +369,7 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
 
     enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
     enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'true' ? true : false
+    nodeResourceGroupLockDown: clusterConfiguration.enableLockDown == 'false' ? false : true
 
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId

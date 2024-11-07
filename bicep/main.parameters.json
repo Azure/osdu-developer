@@ -32,7 +32,8 @@
     "clusterConfiguration": {
       "value": {
         "enableNodeAutoProvisioning": "${ENABLE_NODE_AUTO_PROVISIONING}",
-        "enablePrivateCluster": "${ENABLE_PRIVATE_CLUSTER}"
+        "enablePrivateCluster": "${ENABLE_PRIVATE_CLUSTER}",
+        "enableLockDown": "${ENABLE_LOCK_DOWN}"
       }
     },
     "vnetConfiguration": {

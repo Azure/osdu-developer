@@ -38,6 +38,11 @@ spec:
         repository: apache/airflow
         tag: 2.10.1-python3.12
       executor: KubernetesExecutor
+      serviceAccount:
+        create: false
+        name: workload-identity-sa
+      annotations:
+        azure.workload.identity/use: "true"
       securityContext:
         fsGroup: 1000
         runAsUser: 1000

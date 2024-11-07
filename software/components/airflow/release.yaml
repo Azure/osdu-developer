@@ -10,7 +10,7 @@ spec:
   targetNamespace: airflow
   releaseName: airflow
   dependsOn:
-    - name: azure-keyvault-airflow
+    - name: base-airflow-dags
       namespace: default
   install:
     remediation:

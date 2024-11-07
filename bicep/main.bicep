@@ -383,6 +383,7 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
   ]
 }
 
+
 /*
  __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __. 
 |   ____\  \ /  / |           ||   ____||  \ |  |     /       ||  |  /  __  \  |  \ |  | 
@@ -417,6 +418,7 @@ module fluxExtension 'modules/flux-extension/main.bicep' = {
     clusterBlade
   ]
 }
+
 
 /*
      _______.  ______ .______       __  .______   .___________.
@@ -478,7 +480,6 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
 |  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |     
 | _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|                                                                                                                              
 */
-
 module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
   name: '${configuration.name}-container-registry'
   params: {
@@ -519,6 +520,7 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
     ]
   }
 }
+
 
 /*
  __  ___  ___________    ____ ____    ____  ___      __    __   __      .___________.
@@ -696,6 +698,7 @@ var commonLayerConfig = {
     ]
   }
 }
+
 
 /*   _______.___________.  ______   .______          ___       _______  _______ 
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
@@ -1109,20 +1112,20 @@ module configBlade 'modules/blade_configuration.bicep' = {
   ]
 }
 
-module storageAcl 'modules/network_acl_storage.bicep' = {
-  name: '${configuration.name}-storage-acl'
-  params: {
-    storageName: storage.outputs.name
-    location: location
-    skuName: configuration.storage.sku
-    natClusterIP: clusterBlade.outputs.natClusterIP
-  }
-  dependsOn: [
-    manifestDagShareUpload
-    csvDagShareUpload
-    gitOpsUpload
-  ]
-}
+// module storageAcl 'modules/network_acl_storage.bicep' = {
+//   name: '${configuration.name}-storage-acl'
+//   params: {
+//     storageName: storage.outputs.name
+//     location: location
+//     skuName: configuration.storage.sku
+//     natClusterIP: clusterBlade.outputs.natClusterIP
+//   }
+//   dependsOn: [
+//     manifestDagShareUpload
+//     csvDagShareUpload
+//     gitOpsUpload
+//   ]
+// }
 
 // =============== //
 //   Outputs       //

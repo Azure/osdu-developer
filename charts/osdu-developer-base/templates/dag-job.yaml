@@ -1,0 +1,110 @@
+{{- if .Values.airflow.enabled -}}
+{{- range $index, $item := .Values.airflow.items }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-file-upload-{{ $index }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      volumes:
+      - name: script
+        configMap:
+          name: file-upload-script-{{ $.Release.Name }}
+          defaultMode: 0500
+      - name: share-storage
+        persistentVolumeClaim:
+          claimName: {{ $item.pvc }}
+      initContainers:
+      - name: file-upload
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl tar zip && \
+          /script/init.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+          - name: share-storage
+            mountPath: "/share"
+        env:
+          - name: URL
+            value: {{ $item.url | quote }}
+          - name: SHARE
+            value: {{ $item.name | quote }}
+          - name: COMPRESS
+            value: {{ $item.compress | default false | quote }}
+          - name: FILE
+            value: {{ $item.folder | quote }}
+      containers:
+      - name: completion
+        image: istio/base
+        command: ["/bin/sleep", "30"]
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file-upload-script-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+
+    url_basename=$(basename ${URL})
+    echo "Derived filename from URL: ${url_basename}"
+
+    echo "Downloading file from ${URL} to ${url_basename}"
+    retry_count=0
+    max_retries=3
+    while [ $retry_count -lt $max_retries ]; do
+      if curl -kso ${url_basename} ${URL}; then
+        break
+      else
+        retry_count=$((retry_count + 1))
+        echo "Attempt $retry_count failed. Retrying in 5 seconds..." >&2
+        sleep 5
+      fi
+    done
+
+    if [ $retry_count -eq $max_retries ]; then
+      echo "Error: Failed to download file from ${URL} after $max_retries attempts." >&2
+      exit 1
+    fi
+
+    mkdir -p /share/${SHARE}
+
+    if [[ ${URL} == *.tar.gz ]]; then
+        echo "Processing tar.gz archive..."
+        mkdir -p extracted_files
+        tar -xzf ${url_basename} --strip-components=1 -C extracted_files
+        
+        if [[ ${COMPRESS} == "true" ]]; then
+            echo "Creating zip archive..."
+            rm ${url_basename}
+            zip_filename="${url_basename%.tar.gz}.zip"
+            original_dir=$(pwd)
+            cd extracted_files/${FILE}
+            zip -r ${original_dir}/${zip_filename} *
+            cd ${original_dir}
+            cp ${zip_filename} /share/${SHARE}/
+            echo "Zip file ${zip_filename} copied to share."
+        else
+            echo "Copying extracted files..."
+            cp -r extracted_files/${FILE} /share/${SHARE}/
+        fi
+    else
+        echo "Copying single file..."
+        cp ${FILE} /share/${SHARE}/
+    fi
+{{- end }}

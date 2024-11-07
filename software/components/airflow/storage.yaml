@@ -2,7 +2,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: azurefile-csi
+  name: airflow-storage
 provisioner: file.csi.azure.com
 parameters:
   skuName: Standard_LRS  
@@ -27,7 +27,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: azurefile-csi
+  storageClassName: airflow-storage
   resources:
     requests:
       storage: 5Gi
@@ -35,14 +35,14 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: airflow-logs-dags
+  name: airflow-dags-pvc
   namespace: airflow
   annotations:
     csi.storage.k8s.io/share-name: "airflow-dags"
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: azurefile-csi
+  storageClassName: airflow-storage
   resources:
     requests:
       storage: 5Gi

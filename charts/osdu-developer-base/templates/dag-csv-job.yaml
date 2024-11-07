@@ -81,13 +81,9 @@ data:
     set -e
 
     # This script performs the following tasks:
-    # 1. Waits for Identity RBAC replication.
-    # 2. Downloads a tar.gz file from a specified URL and extracts its contents.
-    # 3. Processes a specific Python file within the extracted contents, performing complex find/replace operations based on a provided JSON configuration.
-    # 4. Compresses the DAG and copies it to the shared volume.
-
-    echo "Waiting on Identity RBAC replication (${initialDelay})"
-    sleep "${initialDelay}"
+    # 1. Downloads a tar.gz file from a specified URL and extracts its contents.
+    # 2. Processes a specific Python file within the extracted contents, performing complex find/replace operations based on a provided JSON configuration.
+    # 3. Compresses the DAG and copies it to the shared volume.
 
     echo "###########################"
     echo "${SEARCH_AND_REPLACE}"

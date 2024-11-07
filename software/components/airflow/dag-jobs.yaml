@@ -41,7 +41,7 @@ spec:
           url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
           pvc: "airflow-dags-pvc"
       csvdag:
-        enabled: false
+        enabled: true
         folder: "airflowdags"
         compress: true
         url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz"

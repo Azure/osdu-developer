@@ -48,10 +48,7 @@ share:
       compress: true
 
 airflow:
-  enabled: false
-  items:
-    - name: manifest
-      folder: "src/osdu_dags"
-      compress: true
-      url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
-      pvc: "airflow-dags-pvc"
+  manifestdag:
+    enabled: false
+  csvdag:
+    enabled: false

@@ -1,5 +1,5 @@
-{{- if .Values.airflow.enabled -}}
-{{- range $index, $item := .Values.airflow.items }}
+{{- if .Values.airflow.manifestdag.enabled -}}
+{{- range $index, $item := .Values.airflow.manifestdag.items }}
 apiVersion: batch/v1
 kind: Job
 metadata:

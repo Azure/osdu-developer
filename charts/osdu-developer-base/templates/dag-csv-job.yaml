@@ -1,4 +1,4 @@
-{{- if .Values.airflow.enabled -}}
+{{- if .Values.airflow.csvdag.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

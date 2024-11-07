@@ -1,6 +1,6 @@
 # OSDU Developer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1) 
 
 
 <!-- ![Github Issues](https://img.shields.io/github/issues/azure/osdu-developer)

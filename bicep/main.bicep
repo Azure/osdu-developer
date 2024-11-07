@@ -367,7 +367,7 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
     enableTelemetry: enableTelemetry
 
     enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
-    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'false' ? false : true
+    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'true' ? true : false
 
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
@@ -758,15 +758,17 @@ module storage 'modules/storage-account/main.bicep' = {
         principalId: stampIdentity.outputs.principalId
         principalType: 'ServicePrincipal'
       }
-
+      {
+        roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
+        principalId: stampIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+      }
     ]
 
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
     publicNetworkAccess: 'Enabled'
-
-    // TODO: Deployment Scripts don't support this yet.
-    // allowSharedKeyAccess: true
+    allowSharedKeyAccess: true
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -831,6 +833,16 @@ module database 'modules/cosmos-db/main.bicep' = {
     // Hook up Diagnostics
     diagnosticWorkspaceId: logAnalytics.outputs.resourceId
     diagnosticLogsRetentionInDays: 0
+
+    networkRestrictions: {
+      publicNetworkAccess: 'Enabled'
+      networkAclBypass: 'AzureServices'
+      ipRules: [
+        '${clusterBlade.outputs.natClusterIP}'
+      ]
+      virtualNetworkRules: []
+    }
+
 
     // Configure Service
     capabilitiesToAdd: [
@@ -898,22 +910,39 @@ var directoryUploads = [
 ]
 
 @batchSize(1)
-module gitOpsUpload 'modules/software-upload/main.bicep' = [for item in directoryUploads: {
+module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: {
   name: '${configuration.name}-storage-${item.directory}-upload'
   params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
+    name: 'script-${storage.outputs.name}-${item.directory}'
 
-    directoryName: item.directory
+    location: location
+    cleanupPreference: 'Always'
+    retentionInterval: 'PT1H'
+    timeout: 'PT30M'
+    runOnce: true
+    
+    managedIdentities: {
+      userAssignedResourcesIds: [
+        stampIdentity.outputs.resourceId
+      ]
+    }    
+
+    kind: 'AzureCLI'
+    azCliVersion: '2.63.0'
+    
+    environmentVariables: [
+      { name: 'AZURE_STORAGE_ACCOUNT', value: storage.outputs.name }
+      { name: 'FILE', value: 'main.zip' }
+      { name: 'URL', value: 'https://github.com/azure/osdu-developer/archive/refs/heads/main.zip' }
+      { name: 'CONTAINER', value: 'gitops' }
+      { name: 'UPLOAD_DIR', value: string(item.directory) }
+    ]
+    scriptContent: loadTextContent('./modules/deploy-scripts/software-upload.sh')
   }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
 }]
 
+
+//TODO: This needs to be removed and moved into a kubernetes job.
 module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
   name: '${configuration.name}-storage-dag-upload-manifest'
   params: {
@@ -933,6 +962,7 @@ module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
   ]
 }
 
+//TODO: This needs to be removed and moved into a kubernetes job.
 module csvDagShareUpload 'modules/script-share-csvdag/main.bicep' = {
   name: '${configuration.name}-storage-dag-upload-csv'
   params: {
@@ -1079,6 +1109,20 @@ module configBlade 'modules/blade_configuration.bicep' = {
   ]
 }
 
+module storageAcl 'modules/network_acl_storage.bicep' = {
+  name: '${configuration.name}-storage-acl'
+  params: {
+    storageName: storage.outputs.name
+    location: location
+    skuName: configuration.storage.sku
+    natClusterIP: clusterBlade.outputs.natClusterIP
+  }
+  dependsOn: [
+    manifestDagShareUpload
+    csvDagShareUpload
+    gitOpsUpload
+  ]
+}
 
 // =============== //
 //   Outputs       //

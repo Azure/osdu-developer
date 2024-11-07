@@ -11,9 +11,15 @@ spec:
     storage: 5Gi
   accessModes:
     - ReadWriteMany
-  azureFile:
-    secretName: airflow-secrets
-    shareName: airflow-logs
+  csi:
+    driver: file.csi.azure.com
+    readOnly: false
+    volumeAttributes:
+      secretName: airflow-secrets # No secret needed for managed identity
+      shareName: airflow-logs
+  # azureFile:
+  #   secretName: airflow-secrets
+  #   shareName: airflow-logs
   volumeMode: Filesystem
   mountOptions:
   - dir_mode=0777
@@ -52,9 +58,15 @@ spec:
     storage: 5Gi
   accessModes:
     - ReadWriteMany
-  azureFile:
-    secretName: airflow-secrets
-    shareName: airflow-dags
+  csi:
+    driver: file.csi.azure.com
+    readOnly: false
+    volumeAttributes:
+      secretName: airflow-secrets # No secret needed for managed identity
+      shareName: airflow-logs
+  # azureFile:
+  #   secretName: airflow-secrets
+  #   shareName: airflow-dags
   volumeMode: Filesystem
   mountOptions:
   - dir_mode=0777

@@ -29,7 +29,7 @@ This project uses the following Azure Container Service preview features:
 - [Node Auto Provisioning](https://learn.microsoft.com/en-us/azure/aks/node-autoprovision?tabs=azure-cli)
 - [SSH Disable](https://learn.microsoft.com/en-us/azure/aks/manage-ssh-node-access?tabs=node-shell#disable-ssh-overview)
 
-Review the [Getting Started](https://azure.github.io/osdu-developer/getting_started/) documentation prior to proceeding.
+Review the [documentation](https://azure.github.io/osdu-developer/getting_started/) prior to proceeding.
 
 ### CLI Quickstart
 
@@ -58,7 +58,7 @@ azd hooks run settings
 azd down --force --purge
 ```
 
-### Portal Quickstart  _(reduced capabilities)_
+### Portal Quickstart
 
 > **Tutorial:** [Deploy OSDU Personal Instance via Portal](https://azure.github.io/osdu-developer/tutorial_arm/)
 

@@ -203,12 +203,10 @@ GET {{PARTITION_HOST}}/partitions
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
-@partition = {{getPartitions.response.body.$[0]}}
-
 
 ###
 # @name getPartition
-GET {{PARTITION_HOST}}/partitions/{{partition}}
+GET {{PARTITION_HOST}}/partitions/{{getPartitions.response.body.$[0]}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 

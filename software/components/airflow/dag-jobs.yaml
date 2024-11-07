@@ -15,7 +15,7 @@ spec:
       namespace: default
   chart:
     spec:
-      chart: ./charts/osdu-developer-base
+      chart: ./charts/airflow-dags
       sourceRef:
         kind: GitRepository
         name: flux-system
@@ -29,8 +29,6 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
-    azure:
-      enabled: true
     airflow:
       manifestdag:
         enabled: true

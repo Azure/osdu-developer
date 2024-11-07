@@ -1,0 +1,9 @@
+apiVersion: v2
+name: airflow-dags
+type: application
+description: Installs the OSDU Airflow DAGS
+version: 0.0.1
+appVersion: 0.0.1
+maintainers:
+  - name: danielscholl
+    url: https://github.com/azure/osdu-developer

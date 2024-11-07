@@ -66,10 +66,10 @@ spec:
               partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
               unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
               file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
-              KEYVAULT_URI: {{ .Values.azure.keyvaultUri }}
-              appinsights_key: {{ .Values.azure.appInsightsKey | default "your-insights-key" }}
+              KEYVAULT_URI: "{{ .Values.azure.keyvaultUri }}"
+              appinsights_key: "{{ .Values.azure.appInsightsKey }}"
               azure_paas_podidentity_isEnabled: "false"
-              AZURE_TENANT_ID: {{ .Values.azure.tenantId }}
-              AZURE_CLIENT_ID: {{ .Values.azure.clientId }}
-              AZURE_CLIENT_SECRET: {{ .Values.azure.clientSecret | default "your-client-secret" }}
-              aad_client_id: {{ .Values.azure.clientId }}
+              AZURE_TENANT_ID: "{{ .Values.azure.tenantId }}"
+              AZURE_CLIENT_ID: "{{ .Values.azure.clientId }}"
+              AZURE_CLIENT_SECRET: "{{ .Values.azure.clientSecret | default "your-client-secret" }}"
+              aad_client_id: "{{ .Values.azure.clientId }}"

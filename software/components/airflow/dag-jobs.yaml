@@ -6,6 +6,7 @@ metadata:
   namespace: default
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
+     kustomize.toolkit.fluxcd.io/substitute: disabled
 spec:
   targetNamespace: airflow
   releaseName: airflow-dags

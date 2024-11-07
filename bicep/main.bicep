@@ -948,24 +948,24 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
 
 
 //TODO: This needs to be removed and moved into a kubernetes job.
-module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
-  name: '${configuration.name}-storage-dag-upload-manifest'
-  params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
+// module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
+//   name: '${configuration.name}-storage-dag-upload-manifest'
+//   params: {
+//     newStorageAccount: true
+//     location: location
+//     storageAccountName: storage.outputs.name
+//     identityName: stampIdentity.outputs.name
 
-    shareName: 'airflow-dags'
-    filename: 'src/osdu_dags'
-    compress: true
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
-  }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
-}
+//     shareName: 'airflow-dags'
+//     filename: 'src/osdu_dags'
+//     compress: true
+//     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
+//   }
+//   dependsOn: [
+//     stampIdentity
+//     storage
+//   ]
+// }
 
 //TODO: This needs to be removed and moved into a kubernetes job.
 module csvDagShareUpload 'modules/script-share-csvdag/main.bicep' = {
@@ -1081,6 +1081,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     managedIdentityName: stampIdentity.outputs.name
     kvName: keyvault.outputs.name
     kvUri: keyvault.outputs.uri
+    appInsightsKey: insights.outputs.instrumentationKey
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     

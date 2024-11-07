@@ -381,8 +381,6 @@ module appConfigExtension './managed-cluster/aks_appconfig_extension.bicep' = {
 
 
 
-
-
 // =============== //
 //   Outputs       //
 // =============== //

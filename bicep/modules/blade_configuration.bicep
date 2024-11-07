@@ -32,6 +32,9 @@ param applicationClientId string
 @description('Specify the AD Application Principal Id.')
 param applicationClientPrincipalOid string = ''
 
+@description('Specify the Application Insights Key.')
+param appInsightsKey string
+
 @description('Software GIT Repository URL')
 param softwareRepository string
 
@@ -96,14 +99,6 @@ param appSettings appConfigItem[]
 
 @description('Date Stamp for sentinel value.')
 param dateStamp string = utcNow()
-
-
-
-/////////////////////////////////
-// Configuration 
-/////////////////////////////////
-
-
 
 
 /////////////////////////////////
@@ -367,13 +362,14 @@ values.yaml: |
     configEndpoint: {2}
     keyvaultUri: {3}
     keyvaultName: {4}
-    appId: {5}
-    appOid: {6}
+    appInsightsKey: {5}
+    appId: {6}
+    appOid: {7}
   ingress:
     internalGateway:
-      enabled: {7}
-    externalGateway:
       enabled: {8}
+    externalGateway:
+      enabled: {9}
   '''
 }
 
@@ -406,6 +402,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
              app_config.outputs.endpoint,
              kvUri,
              kvName,
+             appInsightsKey,
              applicationClientId,
              applicationClientPrincipalOid,
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',

@@ -1,0 +1,207 @@
+{{- if .Values.airflow.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-csvdag-upload
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      volumes:
+      - name: script
+        configMap:
+          name: csvdag-upload-script-{{ .Release.Name }}
+          defaultMode: 0500
+      - name: share-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.airflow.csvdag.pvc }}
+      initContainers:
+      - name: csvdag-upload
+        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          tdnf install -y curl tar zip jq && \
+          /script/csvdag.sh
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+          - name: share-storage
+            mountPath: "/share"
+        env:
+          - name: URL
+            value: {{ .Values.airflow.csvdag.url | quote }}
+          - name: FILE
+            value: {{ .Values.airflow.csvdag.folder | quote }}
+          - name: SEARCH_AND_REPLACE
+            value: {{ .Values.airflow.csvdag.replacements | toJson | quote }}
+          - name: SEARCH_AND_REPLACE
+            value: |
+              [
+                {"find":"{| DAG_NAME |}", "replace":"csv-parser"},
+                {"find":"{| DOCKER_IMAGE |}", "replace":"community.opengroup.org:5555/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/csv-parser-v0-27-0-azure-1:60747714ac490be0defe8f3e821497b3cce03390"},
+                {"find":"{| NAMESPACE |}", "replace":"airflow"},
+                {"find":"{| K8S_POD_OPERATOR_KWARGS or {} |}", "replace":{"labels":{"aadpodidbinding":"osdu-identity"},"annotations":{"sidecar.istio.io/inject":"false"}}},
+                {"find":"{| ENV_VARS or {} |}", "replace":{
+                  "storage_service_endpoint": "http://storage.osdu-core.svc.cluster.local/api/storage/v2",
+                  "schema_service_endpoint": "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1",
+                  "search_service_endpoint": "http://search.osdu-core.svc.cluster.local/api/search/v2",
+                  "partition_service_endpoint": "http://partition.osdu-core.svc.cluster.local/api/partition/v1",
+                  "unit_service_endpoint": "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol",
+                  "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
+                  "azure_paas_podidentity_isEnabled": "false",
+                  "KEYVAULT_URI": {{ .Values.azure.keyvaultUri | quote }},
+                  "AZURE_TENANT_ID": {{ .Values.azure.tenantId | quote }},
+                  "AZURE_CLIENT_ID": {{ .Values.azure.clientId | quote }},
+                  "AZURE_CLIENT_SECRET": "your-client-secret",
+                  "appinsights_key": {{ .Values.azure.keyvaultUri | quote }},
+                  "aad_client_id": {{ .Values.azure.clientId | quote }}
+                }}
+              ]
+      containers:
+      - name: completion
+        image: istio/base
+        command: ["/bin/sleep", "30"]
+        volumeMounts:
+          - name: script
+            mountPath: "/script"
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: csvdag-upload-script-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  csvdag.sh: |
+    #!/bin/bash
+    set -e
+
+    # This script performs the following tasks:
+    # 1. Waits for Identity RBAC replication.
+    # 2. Downloads a tar.gz file from a specified URL and extracts its contents.
+    # 3. Processes a specific Python file within the extracted contents, performing complex find/replace operations based on a provided JSON configuration.
+    # 4. Compresses the DAG and copies it to the shared volume.
+
+    echo "Waiting on Identity RBAC replication (${initialDelay})"
+    sleep "${initialDelay}"
+
+    echo "###########################"
+    echo "${SEARCH_AND_REPLACE}"
+    echo "###########################"
+
+    # Download the source code and extract it.
+    url_basename=$(basename "${URL}")
+    echo "Derived filename from URL: ${url_basename}"
+    echo "Downloading file from ${URL} to ${url_basename}"
+    curl -so "${url_basename}" "${URL}"
+    echo "Extracting tar.gz archive..."
+    mkdir -p extracted_files
+    tar -xzf "${url_basename}" --strip-components=1 -C extracted_files
+
+    # Process the replacements
+    csv_file="extracted_files/${FILE}/csv_ingestion_all_steps.py"
+    output_file="extracted_files/${FILE}/csv-parser.py"
+
+    if [ -f "${csv_file}" ]; then
+        echo "Processing ${csv_file} file"
+
+        # Number of replacements
+        num_replacements=$(echo "${SEARCH_AND_REPLACE}" | jq '. | length')
+
+        # Initialize arrays
+        declare -a finds
+        declare -a replaces
+        declare -a replace_types
+
+        # Build arrays
+        for (( idx=0; idx<${num_replacements}; idx++ )); do
+            finds[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].find")
+            replace_type=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].replace | type")
+            replace_types[$idx]=$replace_type
+            if [ "$replace_type" == "string" ]; then
+                replaces[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -r ".[$idx].replace")
+            else
+                replaces[$idx]=$(echo "${SEARCH_AND_REPLACE}" | jq -c ".[$idx].replace")
+            fi
+        done
+
+        # Empty the output file
+        > "$output_file"
+
+        # Read the input file line by line
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            replaced=0
+            # For each 'find'/'replace' pair
+            for idx in "${!finds[@]}"; do
+                find_placeholder="${finds[$idx]}"
+                replace_value="${replaces[$idx]}"
+                replace_type="${replace_types[$idx]}"
+
+                if [[ "$line" == *"$find_placeholder"* ]]; then
+                    # Line contains the placeholder
+
+                    if [ "$replace_type" == "object" ]; then
+                        # 'replace_value' is a JSON object
+
+                        # Split the line at the placeholder
+                        line_before_placeholder="${line%%$find_placeholder*}"
+                        line_after_placeholder="${line#*$find_placeholder}"
+
+                        # Get the indentation of the line up to the placeholder
+                        leading_spaces=$(echo "$line_before_placeholder" | sed -n 's/^\(\s*\).*$/\1/p')
+
+                        # Format the JSON with jq
+                        formatted_json=$(echo "$replace_value" | jq '.')
+
+                        # Indent the JSON
+                        indented_json=$(echo "$formatted_json" | sed "s/^/${leading_spaces}/")
+
+                        # Output the line before the placeholder (excluding placeholder)
+                        echo -n "$line_before_placeholder" >> "$output_file"
+
+                        # Output the indented JSON
+                        echo "$indented_json" >> "$output_file"
+
+                        # Output the rest of the line after the placeholder, if any
+                        if [ -n "$line_after_placeholder" ]; then
+                            echo "$line_after_placeholder" >> "$output_file"
+                        fi
+                    else
+                        # 'replace_value' is a string
+
+                        # Replace the placeholder in the line
+                        replaced_line="${line//$find_placeholder/$replace_value}"
+
+                        # Output the modified line
+                        echo "$replaced_line" >> "$output_file"
+                    fi
+                    replaced=1
+                    break  # Skip checking other placeholders for this line
+                fi
+            done
+            if [[ $replaced -eq 0 ]]; then
+                # Line did not contain any placeholder
+                echo "$line" >> "$output_file"
+            fi
+        done < "$csv_file"
+
+        # Remove the original file
+        rm "$csv_file"
+    fi
+
+    # Compress the DAG folder and copy it to the shared volume
+    rm "${url_basename}"
+    zip_filename="${url_basename%.tar.gz}.zip"
+    current_dir=$(pwd)
+    cd "extracted_files/${FILE}" || exit 1
+    zip -r "${current_dir}/${zip_filename}" .
+    cd - || exit 1
+
+    # Copy the zip file to the shared volume
+    cp "${zip_filename}" /share/
+    echo "Zip file ${zip_filename} copied to shared volume."
+{{- end }}

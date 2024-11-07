@@ -82,8 +82,6 @@ data:
       exit 1
     fi
 
-    mkdir -p /share/${SHARE}
-
     if [[ ${URL} == *.tar.gz ]]; then
         echo "Processing tar.gz archive..."
         mkdir -p extracted_files
@@ -97,14 +95,14 @@ data:
             cd extracted_files/${FILE}
             zip -r ${original_dir}/${zip_filename} *
             cd ${original_dir}
-            cp ${zip_filename} /share/${SHARE}/
+            cp ${zip_filename} /share/
             echo "Zip file ${zip_filename} copied to share."
         else
             echo "Copying extracted files..."
-            cp -r extracted_files/${FILE} /share/${SHARE}/
+            cp -r extracted_files/${FILE} /share/
         fi
     else
         echo "Copying single file..."
-        cp ${FILE} /share/${SHARE}/
+        cp ${FILE} /share/
     fi
 {{- end }}

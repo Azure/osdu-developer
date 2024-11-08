@@ -28,7 +28,7 @@ spec:
       retries: 3
   valuesFrom:
     - kind: ConfigMap
-      name: configmap-airflow
+      name: airflow-configmap
       valuesKey: values.yaml
     - kind: Secret
       name: airflow-secrets

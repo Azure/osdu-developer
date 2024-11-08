@@ -19,19 +19,10 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
                     # Handle Python dictionary/list assignments
                     if '=' in line:
                         var_name, _ = line.split('=', 1)
-                        # Format as Python literal with 2-space indentation
+                        # Format the dictionary assignment properly
                         replace_str = json.dumps(replace, indent=2)
-                        replace_str = replace_str.replace('true', 'False').replace('false', 'False')
-                        # Remove any extra indentation from the JSON string
-                        replace_lines = replace_str.splitlines()
-                        if len(replace_lines) > 1:
-                            # Keep first line as is
-                            result_lines = [replace_lines[0]]
-                            # Remove extra indentation from subsequent lines
-                            base_indent = len(var_name.rstrip()) + 2  # account for "= "
-                            for line in replace_lines[1:]:
-                                result_lines.append(' ' * base_indent + line.lstrip())
-                            replace_str = '\n'.join(result_lines)
+                        replace_str = replace_str.replace('true', 'True').replace('false', 'False')
+                        # Ensure proper Python dictionary formatting
                         modified_line = f"{var_name.rstrip()} = {replace_str}"
                     else:
                         # Handle non-assignment JSON
@@ -40,7 +31,9 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
                     # Simple string replacement
                     modified_line = line.replace(find, str(replace))
                 break
-        result.append(modified_line)
+        # Only append non-empty lines
+        if modified_line.strip():
+            result.append(modified_line)
     return '\n'.join(result)
 
 def main():

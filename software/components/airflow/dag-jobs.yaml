@@ -52,13 +52,13 @@ spec:
         pvc: "airflow-dags-pvc"
         replacements:
           - find: '{| K8S_POD_OPERATOR_KWARGS or {} |}'
-            replace: |
+            replace:
               labels:
                 aadpodidbinding: "osdu-identity"
               annotations:
                 "sidecar.istio.io/inject": "false"
           - find: '{| ENV_VARS or {} |}'
-            replace: |
+            replace:
               storage_service_endpoint: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
               schema_service_endpoint: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
               search_service_endpoint: "http://search.osdu-core.svc.cluster.local/api/search/v2"
@@ -72,3 +72,9 @@ spec:
               AZURE_CLIENT_ID: "{{ .Values.clientId }}"
               AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
               aad_client_id: "{{ .Values.clientId }}"
+          - find: '{| DAG_NAME |}'
+            replace: 'csv-parser'
+          - find: '{| DOCKER_IMAGE |}'
+            replace: 'community.opengroup.org:5555/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/csv-parser-v0-27-0-azure-1:60747714ac490be0defe8f3e821497b3cce03390'
+          - find: '{| NAMESPACE |}'
+            replace: 'airflow'

@@ -51,6 +51,18 @@ export SEARCH_AND_REPLACE='[
       "AZURE_CLIENT_SECRET": "dummy-client-secret",
       "aad_client_id": "dummy-client-id"
     }
+  },
+  {
+    "find": "{| DAG_NAME |}", 
+    "replace": "csv-parser"
+  },
+  {
+    "find": "{| DOCKER_IMAGE |}", 
+    "replace": "community.opengroup.org:5555/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/csv-parser-v0-27-0-azure-1:60747714ac490be0defe8f3e821497b3cce03390"
+  },
+  {
+    "find": "{| NAMESPACE |}", 
+    "replace": "airflow"
   }
 ]'
 ```

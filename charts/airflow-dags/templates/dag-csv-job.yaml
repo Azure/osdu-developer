@@ -99,7 +99,7 @@ data:
     echo "Derived filename from URL: ${url_basename}"
     echo "Downloading file from ${URL} to ${url_basename}"
 
-    if ! curl -kso "${url_basename}" "${URL}"; then
+    if ! curl --insecure -so "${url_basename}" "${URL}"; then
       echo "Failed to download file"
       sleep 300000
       exit 1

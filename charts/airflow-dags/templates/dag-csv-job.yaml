@@ -53,12 +53,12 @@ spec:
                   "unit_service_endpoint": "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol",
                   "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
                   "azure_paas_podidentity_isEnabled": "false",
-                  "KEYVAULT_URI": {{ .Values.azure.keyvaultUri | quote }},
-                  "AZURE_TENANT_ID": {{ .Values.azure.tenantId | quote }},
-                  "AZURE_CLIENT_ID": {{ .Values.azure.clientId | quote }},
-                  "AZURE_CLIENT_SECRET": "your-client-secret",
-                  "appinsights_key": {{ .Values.azure.keyvaultUri | quote }},
-                  "aad_client_id": {{ .Values.azure.clientId | quote }}
+                  "KEYVAULT_URI": {{ .Values.keyvaultUri | quote }},
+                  "AZURE_TENANT_ID": {{ .Values.tenantId | quote }},
+                  "AZURE_CLIENT_ID": {{ .Values.clientId | quote }},
+                  "AZURE_CLIENT_SECRET": {{ .Values.secrets.airflowSecrets.clientKey | quote }},
+                  "appinsights_key": {{ .Values.keyvaultUri | quote }},
+                  "aad_client_id": {{ .Values.clientId | quote }}
                 }}
               ]
       containers:

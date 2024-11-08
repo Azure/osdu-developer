@@ -71,4 +71,4 @@ spec:
               AZURE_TENANT_ID: "{{ .Values.tenantId }}"
               AZURE_CLIENT_ID: "{{ .Values.clientId }}"
               AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
-              aad_client_id: "{{ .Values.azure.clientId }}"
+              aad_client_id: "{{ .Values.clientId }}"

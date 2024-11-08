@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: base-airflow-dags
-  namespace: default
+  name: airflow-dags
+  namespace: airflow
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
     kustomize.toolkit.fluxcd.io/substitute: disabled
@@ -12,6 +12,8 @@ spec:
   releaseName: airflow-dags
   dependsOn:
     - name: azure-keyvault-airflow
+      namespace: default
+    - name: config-maps-airflow
       namespace: default
   chart:
     spec:
@@ -63,10 +65,10 @@ spec:
               partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
               unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
               file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
-              KEYVAULT_URI: "{{ .Values.azure.keyvaultUri }}"
-              appinsights_key: "{{ .Values.azure.appInsightsKey }}"
+              KEYVAULT_URI: "{{ .Values.keyvaultUri }}"
+              appinsights_key: "{{ .Values.appInsightsKey }}"
               azure_paas_podidentity_isEnabled: "false"
-              AZURE_TENANT_ID: "{{ .Values.azure.tenantId }}"
-              AZURE_CLIENT_ID: "{{ .Values.azure.clientId }}"
-              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
+              AZURE_TENANT_ID: "{{ .Values.tenantId }}"
+              AZURE_CLIENT_ID: "{{ .Values.clientId }}"
+              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey | default "your-client-secret" }}"
               aad_client_id: "{{ .Values.azure.clientId }}"

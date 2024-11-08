@@ -248,6 +248,28 @@ var osdu_applications = [
   }
 ]
 
+var airflow_values = [
+  // Insights Key and Client Secret come from secrets.
+  {
+    name: 'tenantId'
+    value: subscription().tenantId
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+  {
+    name: 'clientId'
+    value: applicationClientId
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+  {
+    name: 'keyvaultUri'
+    value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+]
+
 var settings = [
   {
     name: 'osdu_sentinel'
@@ -340,7 +362,7 @@ module app_config './app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, osdu_applications, common_helm_values))
+    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, osdu_applications, common_helm_values, airflow_values))
   }
 }
 

@@ -101,11 +101,9 @@ data:
 
     if ! curl --insecure -so "${url_basename}" "${URL}"; then
       echo "Failed to download file"
-      sleep 300000
       exit 1
     fi
     echo "Successfully downloaded file"
-    sleep 300000
 
     echo "Extracting tar.gz archive..."
     mkdir -p extracted_files

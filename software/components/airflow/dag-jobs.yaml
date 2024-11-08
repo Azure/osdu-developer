@@ -29,7 +29,7 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: airflow-configmap
-      valuesKey: values.yaml
+      valuesKey: value.yaml
     - kind: Secret
       name: airflow-secrets
       valuesKey: client-key

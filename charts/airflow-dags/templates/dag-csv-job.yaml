@@ -19,7 +19,7 @@ spec:
           claimName: {{ .Values.airflow.csvdag.pvc }}
       containers:
       - name: csvdag-upload
-        image: python:3.9-slim
+        image: mcr.microsoft.com/cbl-mariner/base/python:3.9-cm2.0
         command: ["/bin/bash"]
         args:
         - /scripts/csv-dag.sh
@@ -44,7 +44,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   replace.py: |
-    {{ .Files.Get "templates/replace.py" | nindent 4 }}
+    {{ .Files.Get "scripts/replace.py" | nindent 4 }}
   csv-dag.sh: |
-    {{ .Files.Get "templates/csv-dag.sh" | nindent 4 }}
+    {{ .Files.Get "scripts/csv-dag.sh" | nindent 4 }}
 {{- end }}

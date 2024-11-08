@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Install required packages
+tdnf install -y tar curl zip
+
 # Create and use working directory
 WORK_DIR="/tmp/csvdag"
 mkdir -p "${WORK_DIR}"

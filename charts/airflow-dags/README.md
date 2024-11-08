@@ -96,13 +96,13 @@ spec:
               partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
               unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
               file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
-              KEYVAULT_URI: "{{ .Values.keyvaultUri }}"
-              appinsights_key: "{{ .Values.appInsightsKey }}"
+              KEYVAULT_URI: {{ .Values.keyvaultUri }}
+              appinsights_key: {{ .Values.appInsightsKey }}
               azure_paas_podidentity_isEnabled: "false"
-              AZURE_TENANT_ID: "{{ .Values.tenantId }}"
-              AZURE_CLIENT_ID: "{{ .Values.clientId }}"
-              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
-              aad_client_id: "{{ .Values.clientId }}"
+              AZURE_TENANT_ID: {{ .Values.tenantId }}
+              AZURE_CLIENT_ID: {{ .Values.clientId }}
+              AZURE_CLIENT_SECRET: {{ .Values.secrets.airflowSecrets.clientKey }}
+              aad_client_id: {{ .Values.clientId }}
           - find: '{| DAG_NAME |}'
             replace: 'csv-parser'
           - find: '{| DOCKER_IMAGE |}'

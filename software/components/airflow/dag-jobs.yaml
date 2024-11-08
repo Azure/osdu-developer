@@ -39,11 +39,11 @@ spec:
       manifestdag:
         enabled: true
         items:
-        - name: manifest
-          folder: "src/osdu_dags"
-          compress: true
-          url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
-          pvc: "airflow-dags-pvc"
+          - name: manifest
+            folder: "src/osdu_dags"
+            compress: true
+            url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
+            pvc: "airflow-dags-pvc"
       csvdag:
         enabled: true
         folder: "airflowdags"
@@ -52,13 +52,13 @@ spec:
         pvc: "airflow-dags-pvc"
         replacements:
           - find: '{| K8S_POD_OPERATOR_KWARGS or {} |}'
-            replace:
+            replace: |
               labels:
                 aadpodidbinding: "osdu-identity"
               annotations:
                 "sidecar.istio.io/inject": "false"
           - find: '{| ENV_VARS or {} |}'
-            replace:
+            replace: |
               storage_service_endpoint: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
               schema_service_endpoint: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
               search_service_endpoint: "http://search.osdu-core.svc.cluster.local/api/search/v2"
@@ -70,5 +70,5 @@ spec:
               azure_paas_podidentity_isEnabled: "false"
               AZURE_TENANT_ID: "{{ .Values.tenantId }}"
               AZURE_CLIENT_ID: "{{ .Values.clientId }}"
-              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey | default "your-client-secret" }}"
+              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
               aad_client_id: "{{ .Values.azure.clientId }}"

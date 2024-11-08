@@ -50,3 +50,15 @@ Selector labels
 app.kubernetes.io/name: {{ include "airflow-dags.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{- define "airflow-dags.searchAndReplace" -}}
+[
+  {
+    "find": "{| K8S_POD_OPERATOR_KWARGS or {} |}",
+    "replace": {
+      "annotations": {
+        "sidecar.istio.io/inject": "false"
+      },
+      "labels": {
+        "a
+</rewritten_file>

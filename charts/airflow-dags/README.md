@@ -196,3 +196,44 @@ Key configuration options:
 | `airflow.*.pvc` | PVC for DAG storage | `airflow-dags-pvc` |
 
 For detailed configuration options, see the values.yaml file.
+
+## Implementation Details
+
+### DAG Variable Substitution
+The chart uses a template-based approach to handle variable substitution in the DAGs. This is implemented through a Helm helper template that generates the necessary JSON structure:
+
+```yaml
+# templates/_helpers.tpl
+{{- define "airflow-dags.searchAndReplace" -}}
+[
+  {
+    "find": "{| K8S_POD_OPERATOR_KWARGS or {} |}",
+    "replace": {
+      "annotations": {
+        "sidecar.istio.io/inject": "false"
+      },
+      "labels": {
+        "aadpodidbinding": "osdu-identity"
+      }
+    }
+  },
+  {
+    "find": "{| ENV_VARS or {} |}",
+    "replace": {
+      "AZURE_CLIENT_ID": {{ .Values.clientId | quote }},
+      # ... other environment variables ...
+    }
+  }
+]
+{{- end -}}
+```
+
+This template is processed and converted to JSON in the job template:
+```yaml
+value: {{ include "airflow-dags.searchAndReplace" . | toJson | quote }}
+```
+
+This approach ensures:
+- Proper JSON formatting for the Python replacement script
+- Correct variable substitution from ConfigMaps and Secrets
+- Reliable handling of multiline strings and special characters

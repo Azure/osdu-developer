@@ -22,14 +22,12 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
                         # Convert dictionary values
                         processed_dict = {}
                         for k, v in replace.items():
-                            # Handle boolean values - keep them as lowercase strings
-                            if isinstance(v, str):
-                                if v.lower() == "true":
-                                    processed_dict[k] = "true"
-                                elif v.lower() == "false":
-                                    processed_dict[k] = "false"
-                                else:
-                                    processed_dict[k] = v
+                            # Handle template variables
+                            if isinstance(v, str) and '{{' in v:
+                                processed_dict[k] = v  # Keep template syntax intact
+                            # Handle boolean values
+                            elif isinstance(v, str) and v.lower() in ['true', 'false']:
+                                processed_dict[k] = v.lower()
                             else:
                                 processed_dict[k] = str(v)
                         

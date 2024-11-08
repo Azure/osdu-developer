@@ -29,7 +29,38 @@ spec:
           - name: FILE
             value: {{ .Values.airflow.csvdag.folder | quote }}
           - name: SEARCH_AND_REPLACE
-            value: {{ .Values.airflow.csvdag.replacements | toJson | quote }}
+            value: |
+              [
+                {
+                  "find": "{| K8S_POD_OPERATOR_KWARGS or {} |}",
+                  "replace": {
+                    "annotations": {
+                      "sidecar.istio.io/inject": "false"
+                    },
+                    "labels": {
+                      "aadpodidbinding": "osdu-identity"
+                    }
+                  }
+                },
+                {
+                  "find": "{| ENV_VARS or {} |}",
+                  "replace": {
+                    "AZURE_CLIENT_ID": {{ .Values.azure.clientId | quote }},
+                    "AZURE_CLIENT_SECRET": {{ .Values.azure.clientSecret | default "your-client-secret" | quote }},
+                    "AZURE_TENANT_ID": {{ .Values.azure.tenantId | quote }},
+                    "KEYVAULT_URI": {{ .Values.azure.keyvaultUri | quote }},
+                    "aad_client_id": {{ .Values.azure.clientId | quote }},
+                    "appinsights_key": {{ .Values.azure.appInsightsKey | quote }},
+                    "azure_paas_podidentity_isEnabled": "false",
+                    "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
+                    "partition_service_endpoint": "http://partition.osdu-core.svc.cluster.local/api/partition/v1",
+                    "schema_service_endpoint": "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1",
+                    "search_service_endpoint": "http://search.osdu-core.svc.cluster.local/api/search/v2",
+                    "storage_service_endpoint": "http://storage.osdu-core.svc.cluster.local/api/storage/v2",
+                    "unit_service_endpoint": "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
+                  }
+                }
+              ]
         volumeMounts:
         - name: scripts
           mountPath: /scripts

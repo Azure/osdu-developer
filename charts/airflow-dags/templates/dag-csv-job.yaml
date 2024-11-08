@@ -80,6 +80,11 @@ data:
     #!/bin/bash
     set -e
 
+    # Create and use a temporary working directory
+    WORK_DIR="/tmp/csvdag"
+    mkdir -p "${WORK_DIR}"
+    cd "${WORK_DIR}"
+
     # This script performs the following tasks:
     # 1. Downloads a tar.gz file from a specified URL and extracts its contents.
     # 2. Processes a specific Python file within the extracted contents, performing complex find/replace operations based on a provided JSON configuration.
@@ -94,7 +99,7 @@ data:
     echo "Derived filename from URL: ${url_basename}"
     echo "Downloading file from ${URL} to ${url_basename}"
 
-    if ! curl -so "${url_basename}" "${URL}"; then
+    if ! curl -kso "${url_basename}" "${URL}"; then
       echo "Failed to download file"
       sleep 300000
       exit 1

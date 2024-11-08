@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 # Install required packages
@@ -22,7 +23,7 @@ export INPUT_FILE="extracted_files/${FILE}/csv_ingestion_all_steps.py"
 export OUTPUT_FILE="extracted_files/${FILE}/csv-parser.py"
 
 # Run the Python replacement script
-python /scripts/replace.py
+python3 /scripts/replace.py
 
 # Clean up and zip
 rm "${url_basename}"

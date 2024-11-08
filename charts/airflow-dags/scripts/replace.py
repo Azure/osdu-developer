@@ -18,14 +18,21 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
                 if isinstance(replace, (dict, list)):
                     # Handle Python dictionary/list assignments
                     if '=' in line:
-                        prefix = line[:line.find(find)].rstrip()
-                        # Format as Python literal
-                        replace_str = json.dumps(replace, indent=4)
-                        replace_str = replace_str.replace('true', 'True').replace('false', 'False')
-                        # Maintain indentation
-                        indent = ' ' * len(prefix)
-                        replace_str = '\n'.join(indent + line for line in replace_str.splitlines())
-                        modified_line = f"{prefix}{replace_str}"
+                        var_name, _ = line.split('=', 1)
+                        # Format as Python literal with 2-space indentation
+                        replace_str = json.dumps(replace, indent=2)
+                        replace_str = replace_str.replace('true', 'False').replace('false', 'False')
+                        # Remove any extra indentation from the JSON string
+                        replace_lines = replace_str.splitlines()
+                        if len(replace_lines) > 1:
+                            # Keep first line as is
+                            result_lines = [replace_lines[0]]
+                            # Remove extra indentation from subsequent lines
+                            base_indent = len(var_name.rstrip()) + 2  # account for "= "
+                            for line in replace_lines[1:]:
+                                result_lines.append(' ' * base_indent + line.lstrip())
+                            replace_str = '\n'.join(result_lines)
+                        modified_line = f"{var_name.rstrip()} = {replace_str}"
                     else:
                         # Handle non-assignment JSON
                         modified_line = line.replace(find, json.dumps(replace))

@@ -16,22 +16,31 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
             
             if find in line:
                 if isinstance(replace, (dict, list)):
-                    # Handle Python dictionary/list assignments
                     if '=' in line:
                         var_name, _ = line.split('=', 1)
-                        # Format the dictionary assignment properly
-                        replace_str = json.dumps(replace, indent=2)
-                        replace_str = replace_str.replace('true', 'True').replace('false', 'False')
-                        # Ensure proper Python dictionary formatting
+                        
+                        # Convert dictionary values
+                        processed_dict = {}
+                        for k, v in replace.items():
+                            # Handle boolean values - keep them as lowercase strings
+                            if isinstance(v, str):
+                                if v.lower() == "true":
+                                    processed_dict[k] = "true"
+                                elif v.lower() == "false":
+                                    processed_dict[k] = "false"
+                                else:
+                                    processed_dict[k] = v
+                            else:
+                                processed_dict[k] = str(v)
+                        
+                        # Format as Python code
+                        replace_str = json.dumps(processed_dict, indent=2)
                         modified_line = f"{var_name.rstrip()} = {replace_str}"
                     else:
-                        # Handle non-assignment JSON
                         modified_line = line.replace(find, json.dumps(replace))
                 else:
-                    # Simple string replacement
                     modified_line = line.replace(find, str(replace))
                 break
-        # Only append non-empty lines
         if modified_line.strip():
             result.append(modified_line)
     return '\n'.join(result)

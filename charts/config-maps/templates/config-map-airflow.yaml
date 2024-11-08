@@ -8,7 +8,7 @@ metadata:
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
   target:
-    configMapName: configmap-airflow
+    configMapName: airflow-configmap
     configMapData:
       type: yaml
       key: value.yaml

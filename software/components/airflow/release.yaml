@@ -10,8 +10,8 @@ spec:
   targetNamespace: airflow
   releaseName: airflow
   dependsOn:
-    - name: base-airflow-dags
-      namespace: default
+    - name: airflow-dags
+      namespace: airflow
   install:
     remediation:
       retries: 3

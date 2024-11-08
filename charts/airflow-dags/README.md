@@ -138,16 +138,50 @@ helm upgrade --install airflow-dags -f custom_values.yaml . -n $NAMESPACE
 
 ## Configuration
 
-### Manifest DAGs
-- Enables OSDU ingestion workflow DAGs
-- Configurable source URL and installation folder
-- Supports compression for efficient storage
+### Required Configuration Values
 
-### CSV Parser DAGs
-- Enables CSV parsing functionality
-- Configurable environment variables for service endpoints
-- Supports text replacements for customization
-- Configurable Kubernetes pod annotations and labels
+#### ConfigMap Values (`airflow-configmap`)
+The following values must be provided in a ConfigMap with a `value.yaml` key:
+
+```yaml
+value.yaml: |
+  # Azure Active Directory (AAD) Configuration
+  clientId: "<azure-client-id>"          # Azure AD application client ID
+  tenantId: "<azure-tenant-id>"          # Azure AD tenant ID
+  keyvaultUri: "<keyvault-uri>"          # Azure KeyVault URI (e.g., https://your-vault.vault.azure.net/)
+```
+
+#### Secret Values (`airflow-secrets`)
+The following secret key must be present in the `airflow-secrets` Secret:
+
+```yaml
+data:
+  client-key: "<azure-client-secret>"     # Azure AD application client secret
+```
+
+### Environment Variables Set in DAGs
+The following environment variables will be set in the DAGs using the provided configuration:
+
+| Environment Variable | Source | Description |
+|---------------------|--------|-------------|
+| `AZURE_CLIENT_ID` | ConfigMap: `clientId` | Azure AD application client ID |
+| `AZURE_CLIENT_SECRET` | Secret: `client-key` | Azure AD application client secret |
+| `AZURE_TENANT_ID` | ConfigMap: `tenantId` | Azure AD tenant ID |
+| `KEYVAULT_URI` | ConfigMap: `keyvaultUri` | Azure KeyVault URI |
+| `aad_client_id` | ConfigMap: `clientId` | Duplicate of client ID for legacy support |
+| `azure_paas_podidentity_isEnabled` | Fixed Value: `"false"` | Pod identity setting |
+
+### Service Endpoints
+The following service endpoints are configured by default:
+
+```yaml
+storage_service_endpoint: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
+schema_service_endpoint: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
+search_service_endpoint: "http://search.osdu-core.svc.cluster.local/api/search/v2"
+partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
+unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
+file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
+```
 
 ## Values Reference
 

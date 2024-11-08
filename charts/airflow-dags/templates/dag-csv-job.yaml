@@ -45,12 +45,12 @@ spec:
                 {
                   "find": "{| ENV_VARS or {} |}",
                   "replace": {
-                    "AZURE_CLIENT_ID": {{ .Values.azure.clientId | quote }},
-                    "AZURE_CLIENT_SECRET": {{ .Values.azure.clientSecret | default "your-client-secret" | quote }},
-                    "AZURE_TENANT_ID": {{ .Values.azure.tenantId | quote }},
-                    "KEYVAULT_URI": {{ .Values.azure.keyvaultUri | quote }},
-                    "aad_client_id": {{ .Values.azure.clientId | quote }},
-                    "appinsights_key": {{ .Values.azure.appInsightsKey | quote }},
+                    "AZURE_CLIENT_ID": {{ .Values.clientId | quote }},
+                    "AZURE_CLIENT_SECRET": {{ .Values.secrets.client_key | quote }},
+                    "AZURE_TENANT_ID": {{ .Values.tenantId | quote }},
+                    "KEYVAULT_URI": {{ .Values.keyvaultUri | quote }},
+                    "aad_client_id": {{ .Values.clientId | quote }},
+                    "appinsights_key": {{ .Values.appInsightsKey | quote }},
                     "azure_paas_podidentity_isEnabled": "false",
                     "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
                     "partition_service_endpoint": "http://partition.osdu-core.svc.cluster.local/api/partition/v1",

@@ -28,6 +28,10 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
+    - kind: Secret
+      name: airflow-secrets
+      valuesKey: client-key
+      targetPath: secrets.airflowSecrets.clientKey
   values:
     airflow:
       manifestdag:
@@ -64,5 +68,5 @@ spec:
               azure_paas_podidentity_isEnabled: "false"
               AZURE_TENANT_ID: "{{ .Values.azure.tenantId }}"
               AZURE_CLIENT_ID: "{{ .Values.azure.clientId }}"
-              AZURE_CLIENT_SECRET: "{{ .Values.azure.clientSecret | default 'your-client-secret' }}"
+              AZURE_CLIENT_SECRET: "{{ .Values.secrets.airflowSecrets.clientKey }}"
               aad_client_id: "{{ .Values.azure.clientId }}"

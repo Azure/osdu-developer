@@ -1,6 +1,6 @@
 # Airflow DAGs Helm Chart
 
-This Helm chart installs and configures OSDU (Open Subsurface Data Universe) DAGs into an existing Airflow installation.
+This Helm chart installs and configures OSDU (Open Subsurface Data Universe) DAGs into an existing Airflow installation by ensuring the DAGs are downloaded values parsed, compressed and uploaded to the Storage Share.
 
 ## Overview
 
@@ -10,53 +10,48 @@ This chart manages two primary types of DAGs:
 
 ## Prerequisites
 
+### Infrastructure Requirements
 - Kubernetes cluster with Helm installed
 - Existing Airflow installation
 - PVC named "airflow-dags-pvc" for DAG storage
-- Required secrets and configmaps for Airflow configuration
 
-## Install Process
+### Suggested Custom Values
 
-You can install this chart either by:
-1. Directly modifying the `values.yaml`
-2. Creating a custom values file (recommended)
+The best way to get values is by providing information in the ConfigMap and Secret values.
 
-### Option 1: Using FluxCD HelmRelease
+#### ConfigMap Values (`airflow-configmap`)
+***yaml
+value.yaml: |
+  clientId: "<azure-client-id>"
+  tenantId: "<azure-tenant-id>"
+  keyvaultUri: "<keyvault-uri>"
+***
 
-The chart can be deployed using FluxCD's HelmRelease custom resource, which supports:
-- Automatic dependency management
-- Values from ConfigMaps and Secrets
-- Automatic remediation on failure
+#### Secret Values (`airflow-secrets`)
+***yaml
+data:
+  client-key: "<azure-client-secret>"
+  insights-key: "<instrumentation-key>"
+***
 
-Example HelmRelease configuration:
+## Installation Methods
+
+### Using FluxCD HelmRelease (Recommended)
+
+The chart can be deployed using FluxCD's HelmRelease custom resource. Example configuration:
+
 ```yaml
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: airflow-dags
   namespace: airflow
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-    kustomize.toolkit.fluxcd.io/substitute: disabled
 spec:
   targetNamespace: airflow
   releaseName: airflow-dags
   dependsOn:
     - name: azure-keyvault-airflow
       namespace: default
-    - name: config-maps-airflow
-      namespace: default
-  chart:
-    spec:
-      chart: ./charts/airflow-dags
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
   valuesFrom:
     - kind: ConfigMap
       name: airflow-configmap
@@ -73,119 +68,24 @@ spec:
           - name: manifest
             folder: "src/osdu_dags"
             compress: true
-            url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
+            url: "https://example.com/manifest-dags.tar.gz"
             pvc: "airflow-dags-pvc"
       csvdag:
         enabled: true
         folder: "airflowdags"
         compress: true
-        url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz"
+        url: "https://example.com/csv-parser.tar.gz"
         pvc: "airflow-dags-pvc"
-        replacements:
-          - find: '{| K8S_POD_OPERATOR_KWARGS or {} |}'
-            replace:
-              labels:
-                aadpodidbinding: "osdu-identity"
-              annotations:
-                "sidecar.istio.io/inject": "false"
-          - find: '{| ENV_VARS or {} |}'
-            replace:
-              storage_service_endpoint: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
-              schema_service_endpoint: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
-              search_service_endpoint: "http://search.osdu-core.svc.cluster.local/api/search/v2"
-              partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
-              unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
-              file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
-              KEYVAULT_URI: {{ .Values.keyvaultUri }}
-              appinsights_key: {{ .Values.appInsightsKey }}
-              azure_paas_podidentity_isEnabled: "false"
-              AZURE_TENANT_ID: {{ .Values.tenantId }}
-              AZURE_CLIENT_ID: {{ .Values.clientId }}
-              AZURE_CLIENT_SECRET: {{ .Values.secrets.airflowSecrets.clientKey }}
-              aad_client_id: {{ .Values.clientId }}
-          - find: '{| DAG_NAME |}'
-            replace: 'csv-parser'
-          - find: '{| DOCKER_IMAGE |}'
-            replace: 'community.opengroup.org:5555/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/csv-parser-v0-27-0-azure-1:60747714ac490be0defe8f3e821497b3cce03390'
-          - find: '{| NAMESPACE |}'
-            replace: 'airflow'
 ```
 
-This example demonstrates:
-- Dependencies on other Helm releases
-- Integration with Azure KeyVault
-- Configuration via ConfigMaps and Secrets
-- Automatic remediation settings
-- Complete DAG configuration for both manifest and CSV parser DAGs
-
-### Option 2: Manual Installation
-
-Generate a custom values file using the following template:
+### 2. Manual Installation
 
 ```bash
-# Setup Variables
-GROUP=<your_group>
-
-# Generate custom_values.yaml
-cat > custom_values.yaml << EOF
-# ... (values configuration)
-EOF
-
 # Install/Upgrade the chart
-NAMESPACE=airflow
-helm upgrade --install airflow-dags -f custom_values.yaml . -n $NAMESPACE
-```
-
-## Configuration
-
-### Required Configuration Values
-
-#### ConfigMap Values (`airflow-configmap`)
-The following values must be provided in a ConfigMap with a `value.yaml` key:
-
-```yaml
-value.yaml: |
-  # Azure Active Directory (AAD) Configuration
-  clientId: "<azure-client-id>"          # Azure AD application client ID
-  tenantId: "<azure-tenant-id>"          # Azure AD tenant ID
-  keyvaultUri: "<keyvault-uri>"          # Azure KeyVault URI (e.g., https://your-vault.vault.azure.net/)
-```
-
-#### Secret Values (`airflow-secrets`)
-The following secret key must be present in the `airflow-secrets` Secret:
-
-```yaml
-data:
-  client-key: "<azure-client-secret>"     # Azure AD application client secret
-```
-
-### Environment Variables Set in DAGs
-The following environment variables will be set in the DAGs using the provided configuration:
-
-| Environment Variable | Source | Description |
-|---------------------|--------|-------------|
-| `AZURE_CLIENT_ID` | ConfigMap: `clientId` | Azure AD application client ID |
-| `AZURE_CLIENT_SECRET` | Secret: `client-key` | Azure AD application client secret |
-| `AZURE_TENANT_ID` | ConfigMap: `tenantId` | Azure AD tenant ID |
-| `KEYVAULT_URI` | ConfigMap: `keyvaultUri` | Azure KeyVault URI |
-| `aad_client_id` | ConfigMap: `clientId` | Duplicate of client ID for legacy support |
-| `azure_paas_podidentity_isEnabled` | Fixed Value: `"false"` | Pod identity setting |
-
-### Service Endpoints
-The following service endpoints are configured by default:
-
-```yaml
-storage_service_endpoint: "http://storage.osdu-core.svc.cluster.local/api/storage/v2"
-schema_service_endpoint: "http://schema.osdu-core.svc.cluster.local/api/schema-service/v1"
-search_service_endpoint: "http://search.osdu-core.svc.cluster.local/api/search/v2"
-partition_service_endpoint: "http://partition.osdu-core.svc.cluster.local/api/partition/v1"
-unit_service_endpoint: "http://unit.osdu-core.svc.cluster.local/api/unit/v2/unit/symbol"
-file_service_endpoint: "http://file.osdu-core.svc.cluster.local/api/file/v2"
+helm upgrade --install airflow-dags -f custom_values.yaml . -n airflow
 ```
 
 ## Values Reference
-
-Key configuration options:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -195,118 +95,21 @@ Key configuration options:
 | `airflow.*.url` | Source URL for DAGs | varies |
 | `airflow.*.pvc` | PVC for DAG storage | `airflow-dags-pvc` |
 
-For detailed configuration options, see the values.yaml file.
-
-## Implementation Details
-
-### DAG Variable Substitution
-The chart uses a template-based approach to handle variable substitution in the DAGs. This is implemented through a Helm helper template that generates the necessary JSON structure:
-
-```yaml
-# templates/_helpers.tpl
-{{- define "airflow-dags.searchAndReplace" -}}
-[
-  {
-    "find": "{| K8S_POD_OPERATOR_KWARGS or {} |}",
-    "replace": {
-      "annotations": {
-        "sidecar.istio.io/inject": "false"
-      },
-      "labels": {
-        "aadpodidbinding": "osdu-identity"
-      }
-    }
-  },
-  {
-    "find": "{| ENV_VARS or {} |}",
-    "replace": {
-      "AZURE_CLIENT_ID": {{ .Values.clientId | quote }},
-      # ... other environment variables ...
-    }
-  }
-]
-{{- end -}}
-```
-
-This template is processed and converted to JSON in the job template:
-```yaml
-value: {{ include "airflow-dags.searchAndReplace" . | toJson | quote }}
-```
-
-This approach ensures:
-- Proper JSON formatting for the Python replacement script
-- Correct variable substitution from ConfigMaps and Secrets
-- Reliable handling of multiline strings and special characters
-
 ## Troubleshooting
 
-### CSV DAG Processing Issues
+For troubleshooting issues:
 
-If you encounter issues with the CSV DAG processing, the script now includes detailed logging. Common issues and their solutions:
+1. Check pod logs:
 
-#### Missing or Empty Values
-The script will output warnings for missing configuration values:
 ```bash
-INFO: Successfully parsed JSON configuration with 5 replacement rules
-WARNING: The following values are missing or empty:
-  - appinsights_key
-  - KEYVAULT_URI
-Please check your configuration and ensure all required values are provided.
+kubectl logs -n airflow $(kubectl get pods -n airflow | grep csvdag-upload | awk '{print $1}')
 ```
 
-To resolve:
-1. Check your ConfigMap contains all required values:
+2. Verify ConfigMap and Secret values:
+
 ```bash
 kubectl describe configmap airflow-configmap -n airflow
-```
-
-2. Verify the Secret contains the necessary keys:
-```bash
 kubectl describe secret airflow-secrets -n airflow
 ```
 
-3. Confirm your HelmRelease correctly maps the values:
-```yaml
-valuesFrom:
-  - kind: ConfigMap
-    name: airflow-configmap
-    valuesKey: value.yaml
-  - kind: Secret
-    name: airflow-secrets
-    valuesKey: client-key
-    targetPath: secrets.airflowSecrets.clientKey
-```
-
-#### JSON Parsing Errors
-If you see JSON parsing errors:
-```bash
-ERROR: Failed to parse JSON configuration: Expecting value: line 17 column 30
-```
-This usually indicates an issue with the template generation. Check:
-1. The `_helpers.tpl` template for proper JSON formatting
-2. That all required values are available to the template
-3. No trailing commas in the JSON structure
-
-#### File Processing Errors
-If you see:
-```bash
-INFO: Successfully parsed JSON configuration with 5 replacement rules
-ERROR: An unexpected error occurred: [specific error message]
-```
-Check:
-1. The input file exists: `extracted_files/airflowdags/csv_ingestion_all_steps.py`
-2. The script has write permissions for the output file
-3. The mounted volumes are accessible
-
-### Debugging the Job
-
-To get detailed logs from the job:
-```bash
-# Get the job pod name
-kubectl get pods -n airflow | grep csvdag-upload
-
-# View the logs
-kubectl logs -n airflow <pod-name>
-```
-
-Note: The script intentionally excludes logging of sensitive values (client secrets, IDs) for security reasons.
+For detailed troubleshooting steps and implementation details, see the [IMPLEMENTATION.md](./IMPLEMENTATION.md) file.

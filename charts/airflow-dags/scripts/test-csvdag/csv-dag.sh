@@ -25,9 +25,6 @@ export OUTPUT_FILE="extracted_files/${FILE}/csv-parser.py"
 # Run the Python replacement script
 python3 /scripts/replace.py
 
-# Remove the template file
-rm "${INPUT_FILE}"
-
 # Clean up and zip
 rm "${url_basename}"
 zip_filename="${url_basename%.tar.gz}.zip"

@@ -70,12 +70,12 @@ Search and Replace Configuration
   {
     "find": "{| ENV_VARS or {} |}",
     "replace": {
-      "AZURE_CLIENT_ID": {{ .Values.clientId | quote }},
-      "AZURE_CLIENT_SECRET": {{ .Values.secrets.client_key | quote }},
-      "AZURE_TENANT_ID": {{ .Values.tenantId | quote }},
-      "KEYVAULT_URI": {{ .Values.keyvaultUri | quote }},
-      "aad_client_id": {{ .Values.clientId | quote }},
-      "appinsights_key": {{ .Values.appInsightsKey | quote }},
+      "AZURE_CLIENT_ID": {{ .Values.clientId | default "" | quote }},
+      "AZURE_CLIENT_SECRET": {{ .Values.secrets.airflowSecrets.clientKey | default "" | quote }},
+      "AZURE_TENANT_ID": {{ .Values.tenantId | default "" | quote }},
+      "KEYVAULT_URI": {{ .Values.keyvaultUri | default "" | quote }},
+      "aad_client_id": {{ .Values.clientId | default "" | quote }},
+      "appinsights_key": {{ .Values.secrets.airflowSecrets.insightsKey | default "" | quote }},
       "azure_paas_podidentity_isEnabled": "false",
       "file_service_endpoint": "http://file.osdu-core.svc.cluster.local/api/file/v2",
       "partition_service_endpoint": "http://partition.osdu-core.svc.cluster.local/api/partition/v1",

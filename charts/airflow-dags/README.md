@@ -237,3 +237,76 @@ This approach ensures:
 - Proper JSON formatting for the Python replacement script
 - Correct variable substitution from ConfigMaps and Secrets
 - Reliable handling of multiline strings and special characters
+
+## Troubleshooting
+
+### CSV DAG Processing Issues
+
+If you encounter issues with the CSV DAG processing, the script now includes detailed logging. Common issues and their solutions:
+
+#### Missing or Empty Values
+The script will output warnings for missing configuration values:
+```bash
+INFO: Successfully parsed JSON configuration with 5 replacement rules
+WARNING: The following values are missing or empty:
+  - appinsights_key
+  - KEYVAULT_URI
+Please check your configuration and ensure all required values are provided.
+```
+
+To resolve:
+1. Check your ConfigMap contains all required values:
+```bash
+kubectl describe configmap airflow-configmap -n airflow
+```
+
+2. Verify the Secret contains the necessary keys:
+```bash
+kubectl describe secret airflow-secrets -n airflow
+```
+
+3. Confirm your HelmRelease correctly maps the values:
+```yaml
+valuesFrom:
+  - kind: ConfigMap
+    name: airflow-configmap
+    valuesKey: value.yaml
+  - kind: Secret
+    name: airflow-secrets
+    valuesKey: client-key
+    targetPath: secrets.airflowSecrets.clientKey
+```
+
+#### JSON Parsing Errors
+If you see JSON parsing errors:
+```bash
+ERROR: Failed to parse JSON configuration: Expecting value: line 17 column 30
+```
+This usually indicates an issue with the template generation. Check:
+1. The `_helpers.tpl` template for proper JSON formatting
+2. That all required values are available to the template
+3. No trailing commas in the JSON structure
+
+#### File Processing Errors
+If you see:
+```bash
+INFO: Successfully parsed JSON configuration with 5 replacement rules
+ERROR: An unexpected error occurred: [specific error message]
+```
+Check:
+1. The input file exists: `extracted_files/airflowdags/csv_ingestion_all_steps.py`
+2. The script has write permissions for the output file
+3. The mounted volumes are accessible
+
+### Debugging the Job
+
+To get detailed logs from the job:
+```bash
+# Get the job pod name
+kubectl get pods -n airflow | grep csvdag-upload
+
+# View the logs
+kubectl logs -n airflow <pod-name>
+```
+
+Note: The script intentionally excludes logging of sensitive values (client secrets, IDs) for security reasons.

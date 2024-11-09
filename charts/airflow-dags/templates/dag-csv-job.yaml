@@ -29,7 +29,7 @@ spec:
           - name: FILE
             value: {{ .Values.airflow.csvdag.folder | quote }}
           - name: SEARCH_AND_REPLACE
-            value: {{ include "airflow-dags.searchAndReplace" . | toJson | quote }}
+            value: {{ include "airflow-dags.searchAndReplace" . | quote }}
         volumeMounts:
         - name: scripts
           mountPath: /scripts

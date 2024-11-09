@@ -914,7 +914,7 @@ var directoryUploads = [
 ]
 
 @batchSize(1)
-module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: if (clusterSoftware.private) {
+module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: if (clusterSoftware.private == 'true') {
   name: '${configuration.name}-storage-${item.directory}-upload'
   params: {
     name: 'script-${storage.outputs.name}-${item.directory}'

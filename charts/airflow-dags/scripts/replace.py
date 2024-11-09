@@ -8,6 +8,8 @@ from typing import Dict, Any
 def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
     """Process the file content with the given replacements."""
     result = []
+    replacements_made = 0  # Counter for debugging
+    
     for line in content.splitlines():
         modified_line = line
         for item in replacements:
@@ -18,6 +20,9 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
             replace = item['replace']
             
             if find in line:
+                replacements_made += 1  # Count replacements
+                print(f"DEBUG: Replacing '{find}' in line")  # Debug output
+                
                 if isinstance(replace, (dict, list)):
                     if '=' in line:
                         var_name, _ = line.split('=', 1)
@@ -44,6 +49,8 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
                 break
         if modified_line.strip():
             result.append(modified_line)
+            
+    print(f"DEBUG: Made {replacements_made} replacements")  # Summary debug output
     return '\n'.join(result)
 
 def main():
@@ -52,6 +59,7 @@ def main():
     raw_json = os.environ['SEARCH_AND_REPLACE']
     
     try:
+        print(f"DEBUG: Processing {input_file} -> {output_file}")
         replacements = json.loads(raw_json)
         with open(input_file, 'r') as f:
             content = f.read()

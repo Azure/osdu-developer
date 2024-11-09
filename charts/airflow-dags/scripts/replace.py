@@ -46,7 +46,10 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
 def main():
     input_file = os.environ['INPUT_FILE']
     output_file = os.environ['OUTPUT_FILE']
-    replacements = json.loads(os.environ['SEARCH_AND_REPLACE'])
+    raw_json = os.environ['SEARCH_AND_REPLACE']
+    print("Raw JSON:", raw_json)
+    replacements = json.loads(raw_json)
+    print("Parsed replacements:", replacements)
 
     with open(input_file, 'r') as f:
         content = f.read()

@@ -11,6 +11,9 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
     for line in content.splitlines():
         modified_line = line
         for item in replacements:
+            if not isinstance(item, dict) or 'find' not in item or 'replace' not in item:
+                continue  # Skip invalid items
+                
             find = item['find']
             replace = item['replace']
             
@@ -45,16 +48,21 @@ def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
 
 def validate_replacements(replacements):
     """Validate replacement values and log any missing ones."""
+    if not isinstance(replacements, list):
+        print(f"ERROR: Replacements must be a list, got {type(replacements)}")
+        return False
+        
     missing_values = []
     for item in replacements:
         if not isinstance(item, dict):
             print(f"ERROR: Invalid replacement item type: {type(item)}")
-            continue
+            print(f"Item content: {item[:100]}...")  # Print first 100 chars for debugging
+            return False
             
         # Validate the item has required keys
         if 'find' not in item or 'replace' not in item:
-            print(f"ERROR: Replacement item missing required 'find' or 'replace' key")
-            continue
+            print("ERROR: Replacement item missing required 'find' or 'replace' key")
+            return False
         
         replace = item.get('replace', {})
         
@@ -73,6 +81,8 @@ def validate_replacements(replacements):
         for value in sorted(missing_values):
             print(f"  - {value}")
         print("Please check your configuration and ensure all required values are provided.")
+    
+    return True
 
 def main():
     input_file = os.environ['INPUT_FILE']
@@ -80,11 +90,14 @@ def main():
     raw_json = os.environ['SEARCH_AND_REPLACE']
     
     try:
+        print("DEBUG: Raw JSON string starts with:", raw_json[:100])  # Print start of JSON
         replacements = json.loads(raw_json)
         print(f"INFO: Successfully parsed JSON configuration with {len(replacements)} replacement rules")
         
         # Validate replacements before processing
-        validate_replacements(replacements)
+        if not validate_replacements(replacements):
+            print("ERROR: Failed validation checks")
+            sys.exit(1)
         
         with open(input_file, 'r') as f:
             content = f.read()

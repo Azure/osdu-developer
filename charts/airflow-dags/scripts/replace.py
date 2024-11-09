@@ -3,26 +3,18 @@
 import json
 import sys
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any
 
-def process_replacements(content: str, replacements: List[Dict[str, Any]]) -> str:
+def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
     """Process the file content with the given replacements."""
     result = []
-    replacements_made = 0  # Counter for debugging
-    
     for line in content.splitlines():
         modified_line = line
         for item in replacements:
-            if not isinstance(item, dict) or 'find' not in item or 'replace' not in item:
-                continue  # Skip invalid items
-                
             find = item['find']
             replace = item['replace']
             
             if find in line:
-                replacements_made += 1  # Count replacements
-                print(f"DEBUG: Replacing '{find}' in line")  # Debug output
-                
                 if isinstance(replace, (dict, list)):
                     if '=' in line:
                         var_name, _ = line.split('=', 1)
@@ -49,29 +41,23 @@ def process_replacements(content: str, replacements: List[Dict[str, Any]]) -> st
                 break
         if modified_line.strip():
             result.append(modified_line)
-            
-    print(f"DEBUG: Made {replacements_made} replacements")  # Summary debug output
     return '\n'.join(result)
 
 def main():
     input_file = os.environ['INPUT_FILE']
     output_file = os.environ['OUTPUT_FILE']
     raw_json = os.environ['SEARCH_AND_REPLACE']
-    
-    try:
-        print(f"DEBUG: Processing {input_file} -> {output_file}")
-        replacements = json.loads(raw_json)
-        with open(input_file, 'r') as f:
-            content = f.read()
+    print("Raw JSON:", raw_json)
+    replacements = json.loads(raw_json)
+    print("Parsed replacements:", replacements)
 
-        processed_content = process_replacements(content, replacements)
+    with open(input_file, 'r') as f:
+        content = f.read()
 
-        with open(output_file, 'w') as f:
-            f.write(processed_content)
-            
-    except Exception as e:
-        print(f"ERROR: An unexpected error occurred: {str(e)}")
-        sys.exit(1)
+    processed_content = process_replacements(content, replacements)
+
+    with open(output_file, 'w') as f:
+        f.write(processed_content)
 
 if __name__ == '__main__':
     main()

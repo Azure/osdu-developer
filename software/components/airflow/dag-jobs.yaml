@@ -35,7 +35,7 @@ spec:
       valuesKey: client-key
       targetPath: secrets.airflowSecrets.clientKey
     - kind: Secret
-      name: insights-key
+      name: airflow-secrets
       valuesKey: insights-key
       targetPath: secrets.airflowSecrets.insightsKey
   values:

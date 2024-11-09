@@ -26,9 +26,6 @@
     "enablePodSubnet": {
       "value": "${ENABLE_POD_SUBNET}"
     },
-    "enableBlobPublicAccess": {
-      "value": "${ENABLE_BLOB_PUBLIC_ACCESS}"
-    },
     "clusterConfiguration": {
       "value": {
         "enableNodeAutoProvisioning": "${ENABLE_NODE_AUTO_PROVISIONING}",
@@ -63,6 +60,7 @@
     "clusterSoftware": {
       "value": {
         "enable": "${ENABLE_SOFTWARE}",
+        "private": "${ENABLE_PRIVATE_SOFTWARE}",
         "osduVersion": "${SOFTWARE_VERSION}",
         "osduCore": "${ENABLE_OSDU_CORE}",
         "osduReference": "${ENABLE_OSDU_REFERENCE}",

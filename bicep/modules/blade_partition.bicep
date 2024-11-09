@@ -668,6 +668,7 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for 
 }]
 
 
+// TODO: This should be moved to the Kubernetes Job.
 module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
   params: {
@@ -695,6 +696,21 @@ module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (
     ]
     scriptContent: loadTextContent('./deploy-scripts/blob_upload.sh')
   }
+}]
+
+
+// TODO: ACL can only be applied after the blob upload.
+module storageAcl './network_acl_storage.bicep' = [for (partition, index) in partitions: {
+  name: '${bladeConfig.sectionName}-storage-acl-${index}'
+  params: {
+    storageName: storage[index].outputs.name
+    location: location
+    skuName: partitionLayerConfig.storage.sku
+    natClusterIP: natClusterIP
+  }
+  dependsOn: [
+    blobUpload[index]
+  ]
 }]
 
 module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, index) in partitions: {

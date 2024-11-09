@@ -50,7 +50,6 @@ Infrastructure customizations can be modified using the following feature flags.
 |---------------------------|-----------------------------------------------------------------------------|
 | CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
 | CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
-| ENABLE_BLOB_PUBLIC_ACCESS | Enables public access for storage account blob (False by default)           |
 | ENABLE_NODE_AUTO_PROVISIONING | Enables node auto provisioning (True by default)                        |
 | ENABLE_PRIVATE_CLUSTER    | Enables private cluster (False by default)                                  |
 
@@ -62,6 +61,7 @@ Software customizations can be modified using the following feature flags.
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | ENABLE_SOFTWARE           | Disables loading of all software when set to false (True by default)        |
+| ENABLE_PRIVATE_SOFTWARE   | Software from Azure Blob instead of Git Repositories (False by default)     |
 | ENABLE_OSDU_CORE          | Disables loading of the osdu core services (True by default)                |
 | ENABLE_OSDU_REFERENCE     | Disables loading of the osdu reference services (True by default)           |
 | SOFTWARE_VERSION          | Sets the version (branch) of OSDU to be installed (release-0-27)            |

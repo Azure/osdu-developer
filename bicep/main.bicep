@@ -29,12 +29,11 @@ param customVMSize string = ''
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
 
-@description('Feature Flag: Enable Storage accounts public access.')
-param enableBlobPublicAccess bool = false
 
 @description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
+  private: false
   osduCore: true
   osduReference: true
   osduVersion: ''
@@ -771,9 +770,9 @@ module storage 'modules/storage-account/main.bicep' = {
     ]
 
     // Apply Security
-    allowBlobPublicAccess: enableBlobPublicAccess
+    allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -915,7 +914,7 @@ var directoryUploads = [
 ]
 
 @batchSize(1)
-module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: {
+module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: if (clusterSoftware.private) {
   name: '${configuration.name}-storage-${item.directory}-upload'
   params: {
     name: 'script-${storage.outputs.name}-${item.directory}'
@@ -946,49 +945,6 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
   }
 }]
 
-
-//TODO: This needs to be removed and moved into a kubernetes job.
-// module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
-//   name: '${configuration.name}-storage-dag-upload-manifest'
-//   params: {
-//     newStorageAccount: true
-//     location: location
-//     storageAccountName: storage.outputs.name
-//     identityName: stampIdentity.outputs.name
-
-//     shareName: 'airflow-dags'
-//     filename: 'src/osdu_dags'
-//     compress: true
-//     fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
-//   }
-//   dependsOn: [
-//     stampIdentity
-//     storage
-//   ]
-// }
-
-//TODO: This needs to be removed and moved into a kubernetes job.
-module csvDagShareUpload 'modules/script-share-csvdag/main.bicep' = {
-  name: '${configuration.name}-storage-dag-upload-csv'
-  params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
-    
-    shareName: 'airflow-dags'
-    filename: 'airflowdags'
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
-    keyVaultUrl: keyvault.outputs.uri
-    insightsKey: insights.outputs.instrumentationKey
-    clientId: applicationClientId
-    clientSecret: applicationClientSecret
-  }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
-}
 
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __. 
@@ -1021,7 +977,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     kvName: keyvault.outputs.name
     natClusterIP: clusterBlade.outputs.natClusterIP
     
-    enableBlobPublicAccess: enableBlobPublicAccess
+    enableBlobPublicAccess: false
 
     partitions: configuration.partitions
     managedIdentityName: stampIdentity.outputs.name
@@ -1074,6 +1030,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
     enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false
 
+    sourceHost: clusterSoftware.private ? 'azureBlob' : 'gitRepository'
+
     emailAddress: emailAddress
     applicationClientId: applicationClientId
     applicationClientPrincipalOid: applicationClientPrincipalOid
@@ -1115,6 +1073,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
   ]
 }
 
+
+// TODO: ACL breaks Partition Service  Issue: https://github.com/Azure/osdu-developer/issues/230
 // module storageAcl 'modules/network_acl_storage.bicep' = {
 //   name: '${configuration.name}-storage-acl'
 //   params: {
@@ -1124,8 +1084,6 @@ module configBlade 'modules/blade_configuration.bicep' = {
 //     natClusterIP: clusterBlade.outputs.natClusterIP
 //   }
 //   dependsOn: [
-//     manifestDagShareUpload
-//     csvDagShareUpload
 //     gitOpsUpload
 //   ]
 // }

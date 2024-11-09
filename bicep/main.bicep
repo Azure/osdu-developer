@@ -1030,7 +1030,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
     enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false
 
-    sourceHost: clusterSoftware.private ? 'azureBlob' : 'gitRepository'
+    sourceHost: clusterSoftware.private == 'true' ? 'azureBlob' : 'gitRepository'
 
     emailAddress: emailAddress
     applicationClientId: applicationClientId

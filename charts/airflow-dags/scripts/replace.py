@@ -3,9 +3,9 @@
 import json
 import sys
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 
-def process_replacements(content: str, replacements: Dict[str, Any]) -> str:
+def process_replacements(content: str, replacements: List[Dict[str, Any]]) -> str:
     """Process the file content with the given replacements."""
     result = []
     replacements_made = 0  # Counter for debugging

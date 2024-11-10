@@ -36,6 +36,10 @@ resourceLimits:
   defaultCpuLimits: "1"
   defaultMemoryLimits: "4Gi"
 
+blobUpload:
+  enabled: false
+  container: "legal-service-azure-configuration"
+
 share:
   enabled: false
   items:
@@ -47,8 +51,3 @@ share:
       file: "folder_in_archive"
       compress: true
 
-airflow:
-  manifestdag:
-    enabled: false
-  csvdag:
-    enabled: false

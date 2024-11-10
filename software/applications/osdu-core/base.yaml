@@ -34,7 +34,8 @@ spec:
       defaultMemoryLimits: "4Gi"
     blobUpload:
       enabled: true
-      container: "legal-service-azure-configuration"
+      storageAccounts:
+        - "partition_storage_name_0"
       items:
         - name: legal
           file: "Legal_COO.json"

@@ -1,5 +1,5 @@
 {{- if .Values.blobUpload.enabled -}}
-{{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
+{{- $configMap := (lookup "v1" "ConfigMap" "osdu-core" "configmap-services").data }}
 {{- $storageAccounts := list }}
 {{- range $key, $value := $configMap }}
 {{- if hasPrefix "partition_storage_name_" $key }}
@@ -17,7 +17,7 @@ provisioner: blob.csi.azure.com
 parameters:
   storageAccount: {{ $storageAccount }}
   containerName: {{ $.Values.blobUpload.container }}
-  clientID: {{ $.Values.blobUpload.clientId | default $configMap.azure_msi_client_id }}
+  clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
 mountOptions:
   - -o allow_other
   - --file-cache-timeout-in-seconds=120

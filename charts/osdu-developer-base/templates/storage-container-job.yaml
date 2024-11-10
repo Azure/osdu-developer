@@ -22,6 +22,7 @@ metadata:
     pv.kubernetes.io/provisioned-by: blob.csi.azure.com
   name: {{ $.Release.Name }}-blob-pv-{{ $i }}
 spec:
+  storageClassName: azureblob-fuse-premium
   capacity:
     storage: 5Gi
   accessModes:

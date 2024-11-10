@@ -38,6 +38,7 @@ spec:
       storageaccount: {{ $storageAccount }}
       containerName: {{ $.Values.blobUpload.container }}
       clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
+      resourceGroup: {{ (lookup "v1" "ConfigMap" $.Release.Namespace "configmap-services").data.resource_group }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

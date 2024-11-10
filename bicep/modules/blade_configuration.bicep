@@ -289,6 +289,12 @@ var settings = [
     label: 'configmap-services'
   }
   {
+    name: 'resource_group'
+    value: resourceGroup().name
+    contentType: 'text/plain'
+    label: 'configmap-services'
+  }
+  {
     name: 'azure_msi_client_id'
     value: appIdentity.properties.clientId
     contentType: 'text/plain'

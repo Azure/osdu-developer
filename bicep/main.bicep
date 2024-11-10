@@ -772,7 +772,10 @@ module storage 'modules/storage-account/main.bicep' = {
     // Apply Security
     allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
-    allowSharedKeyAccess: false
+
+    // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
+    allowSharedKeyAccess: true  
+
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -945,6 +948,19 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
   }
 }]
 
+module storageAcl 'modules/network_acl_storage.bicep' = {
+  name: '${configuration.name}-storage-acl'
+  params: {
+    storageName: storage.outputs.name
+    location: location
+    skuName: configuration.storage.sku
+    natClusterIP: clusterBlade.outputs.natClusterIP
+  }
+  dependsOn: [
+    gitOpsUpload
+  ]
+}
+
 
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __. 
@@ -1074,19 +1090,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
 }
 
 
-// TODO: ACL breaks Partition Service  Issue: https://github.com/Azure/osdu-developer/issues/230
-// module storageAcl 'modules/network_acl_storage.bicep' = {
-//   name: '${configuration.name}-storage-acl'
-//   params: {
-//     storageName: storage.outputs.name
-//     location: location
-//     skuName: configuration.storage.sku
-//     natClusterIP: clusterBlade.outputs.natClusterIP
-//   }
-//   dependsOn: [
-//     gitOpsUpload
-//   ]
-// }
+
 
 // =============== //
 //   Outputs       //

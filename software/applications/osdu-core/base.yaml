@@ -32,3 +32,9 @@ spec:
       defaultMemoryRequests: "1Gi"
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"
+    share:
+      enabled: true
+      items:
+        - name: legal
+          file: "Legal_COO.json"
+          url: "https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/main/bicep/modules/script-blob-upload/Legal_COO.json"

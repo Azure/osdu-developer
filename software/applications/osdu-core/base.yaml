@@ -32,8 +32,9 @@ spec:
       defaultMemoryRequests: "1Gi"
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"
-    share:
+    blobUpload:
       enabled: true
+      container: "legal-service-azure-configuration"
       items:
         - name: legal
           file: "Legal_COO.json"

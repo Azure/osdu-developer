@@ -23,7 +23,7 @@ provisioner: blob.csi.azure.com
 parameters:
   storageAccount: {{ $storageAccount }}
   containerName: {{ $.Values.blobUpload.container }}
-  clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
+  clientId: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
 mountOptions:
   - -o allow_other
   - --file-cache-timeout-in-seconds=120
@@ -78,7 +78,6 @@ spec:
         - name: blob-storage
           mountPath: /mnt/blob
       restartPolicy: Never
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

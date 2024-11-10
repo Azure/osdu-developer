@@ -15,18 +15,28 @@
 
 {{- if $storageAccounts }}
 {{- range $i, $storageAccount := $storageAccounts }}
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: v1
+kind: PersistentVolume
 metadata:
-  name: {{ $.Release.Name }}-blob-storage-{{ $i }}
-provisioner: blob.csi.azure.com
-parameters:
-  storageAccount: {{ $storageAccount }}
-  containerName: {{ $.Values.blobUpload.container }}
-  clientId: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
-mountOptions:
-  - -o allow_other
-  - --file-cache-timeout-in-seconds=120
+  annotations:
+    pv.kubernetes.io/provisioned-by: blob.csi.azure.com
+  name: {{ $.Release.Name }}-blob-pv-{{ $i }}
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - -o allow_other
+    - --file-cache-timeout-in-seconds=120
+  csi:
+    driver: blob.csi.azure.com
+    volumeHandle: {{ $storageAccount }}_{{ $.Values.blobUpload.container }}
+    volumeAttributes:
+      storageaccount: {{ $storageAccount }}
+      containerName: {{ $.Values.blobUpload.container }}
+      clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -39,7 +49,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: {{ $.Release.Name }}-blob-storage-{{ $i }}
+  volumeName: {{ $.Release.Name }}-blob-pv-{{ $i }}
 ---
 {{- range $.Values.blobUpload.items }}
 apiVersion: batch/v1

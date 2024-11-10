@@ -9,17 +9,16 @@
       {{- $storageAccounts = append $storageAccounts $value }}
     {{- end }}
   {{- end }}
-{{/* Otherwise use storage accounts from values if provided */}}
 {{- else if .Values.blobUpload.storageAccounts }}
   {{- $storageAccounts = .Values.blobUpload.storageAccounts }}
 {{- end }}
 
 {{- if $storageAccounts }}
-{{- range $storageAccount := $storageAccounts }}
+{{- range $i, $storageAccount := $storageAccounts }}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ $.Release.Name }}-blob-storage-{{ $storageAccount }}
+  name: {{ $.Release.Name }}-blob-storage-{{ $i }}
 provisioner: blob.csi.azure.com
 parameters:
   storageAccount: {{ $storageAccount }}
@@ -32,7 +31,7 @@ mountOptions:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $.Release.Name }}-blob-pvc-{{ $storageAccount }}
+  name: {{ $.Release.Name }}-blob-pvc-{{ $i }}
   namespace: {{ $.Release.Namespace }}
 spec:
   accessModes:
@@ -40,13 +39,13 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: {{ $.Release.Name }}-blob-storage-{{ $storageAccount }}
+  storageClassName: {{ $.Release.Name }}-blob-storage-{{ $i }}
 ---
 {{- range $.Values.blobUpload.items }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $.Release.Name }}-blob-upload-{{ .name }}-{{ $storageAccount }}
+  name: {{ $.Release.Name }}-blob-upload-{{ .name }}-{{ $i }}
   namespace: {{ $.Release.Namespace }}
 spec:
   ttlSecondsAfterFinished: 300
@@ -56,7 +55,7 @@ spec:
       volumes:
       - name: blob-storage
         persistentVolumeClaim:
-          claimName: {{ $.Release.Name }}-blob-pvc-{{ $storageAccount }}
+          claimName: {{ $.Release.Name }}-blob-pvc-{{ $i }}
       containers:
       - name: blob-upload
         image: mcr.microsoft.com/cbl-mariner/base/core:2.0

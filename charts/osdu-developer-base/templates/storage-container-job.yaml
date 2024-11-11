@@ -1,17 +1,17 @@
 {{- if (default false .Values.blobUpload.enabled) -}}
+{{/* Get storage accounts from ConfigMap */}}
+{{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
 {{- $storageAccounts := list }}
-
-{{/* Try to get storage accounts from ConfigMap if it exists */}}
-{{- if (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services") }}
-  {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
-  {{- range $key, $value := $configMap }}
-    {{- if hasPrefix "partition_storage_name_" $key }}
-      {{- $storageAccounts = append $storageAccounts $value }}
-    {{- end }}
+{{- range $key, $value := $configMap }}
+  {{- if hasPrefix "partition_storage_name_" $key }}
+    {{- $storageAccounts = append $storageAccounts $value }}
   {{- end }}
-{{- else if .Values.blobUpload.storageAccounts }}
-  {{- $storageAccounts = .Values.blobUpload.storageAccounts }}
 {{- end }}
+
+{{/* Get resource group from config-map-values */}}
+{{- $configMapData := (lookup "v1" "ConfigMap" .Release.Namespace "config-map-values").data }}
+{{- $valuesYaml := fromYaml $configMapData.values\.yaml }}
+{{- $resourceGroup := $valuesYaml.azure.resourceGroup }}
 
 {{- if $storageAccounts }}
 {{- range $i, $storageAccount := $storageAccounts }}
@@ -38,7 +38,7 @@ spec:
       storageaccount: {{ $storageAccount }}
       containerName: {{ $.Values.blobUpload.container }}
       clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
-      resourceGroup: {{ $.Values.azure.resourceGroup }}
+      resourceGroup: {{ $resourceGroup }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

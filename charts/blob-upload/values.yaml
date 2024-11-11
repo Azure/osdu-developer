@@ -1,0 +1,15 @@
+
+fullnameOverride: blob-upload
+
+################################################################################
+# Specify the azure environment specific values
+#
+azure:
+  enabled: true
+  tenantId: <tenant_id>
+  clientId: <managed_identity_clientid>
+  keyvaultName: <keyvault_name>
+
+blobUpload:
+  enabled: false
+  container: "legal-service-azure-configuration"

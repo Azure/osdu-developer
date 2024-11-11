@@ -24,8 +24,6 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
-    global:
-      targetNamespace: osdu-core
     enableRequestAuthentication: true
     azure:
       enabled: true
@@ -34,10 +32,41 @@ spec:
       defaultMemoryRequests: "1Gi"
       defaultCpuLimits: "2"
       defaultMemoryLimits: "4Gi"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: blob-upload
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: osdu-developer-base-core
+      namespace: default
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/blob-upload
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    global:
+      configmapNamespace: osdu-core
+    azure:
+      enabled: true
     blobUpload:
       enabled: true
-      storageAccounts:
-        - "partition_storage_name_0"
       items:
         - name: legal
           file: "Legal_COO.json"

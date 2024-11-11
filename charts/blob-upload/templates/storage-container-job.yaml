@@ -1,8 +1,7 @@
 {{- if (default false .Values.blobUpload.enabled) -}}
 
-{{/* Create resources directly for each storage account */}}
 {{- $i := 0 }}
-{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.targetNamespace "configmap-services").data }}
+{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.configNamespace "configmap-services").data }}
   {{- if hasPrefix "partition_storage_name_" $key }}
     ---
     apiVersion: v1
@@ -86,4 +85,4 @@
 {{- end }}
 {{- end }}
 
-{{- end }}{{/* end if .Values.blobUpload.enabled */}}
+{{- end }}

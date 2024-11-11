@@ -513,6 +513,8 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
       }
     ]
 
+    enableHierarchicalNamespace: true
+
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
     publicNetworkAccess: 'Enabled'

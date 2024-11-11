@@ -1,14 +1,13 @@
 
 fullnameOverride: blob-upload
 
-################################################################################
-# Specify the azure environment specific values
-#
+global:
+  configmapNamespace: osdu-core
+
 azure:
-  enabled: true
   tenantId: <tenant_id>
   clientId: <managed_identity_clientid>
-  keyvaultName: <keyvault_name>
+  resourceGroup: <rg_name>
 
 blobUpload:
   enabled: false

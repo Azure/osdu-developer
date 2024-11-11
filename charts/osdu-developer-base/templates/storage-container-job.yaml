@@ -1,97 +1,89 @@
 {{- if (default false .Values.blobUpload.enabled) -}}
-{{- $storageAccounts := list }}
 
-{{/* Try to get storage accounts from ConfigMap if it exists */}}
-{{- if (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services") }}
-  {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
-  {{- range $key, $value := $configMap }}
-    {{- if hasPrefix "partition_storage_name_" $key }}
-      {{- $_ := set $ "storageAccounts" (append $storageAccounts $value) }}
-    {{- end }}
+{{/* Create resources directly for each storage account */}}
+{{- $i := 0 }}
+{{- range $key, $value := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
+  {{- if hasPrefix "partition_storage_name_" $key }}
+    ---
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      annotations:
+        pv.kubernetes.io/provisioned-by: blob.csi.azure.com
+      name: {{ $.Release.Name }}-blob-pv-{{ $i }}
+    spec:
+      storageClassName: azureblob-fuse-premium
+      capacity:
+        storage: 5Gi
+      accessModes:
+        - ReadWriteMany
+      persistentVolumeReclaimPolicy: Retain
+      mountOptions:
+        - -o allow_other
+        - --file-cache-timeout-in-seconds=120
+      csi:
+        driver: blob.csi.azure.com
+        volumeHandle: {{ $value }}_{{ $.Values.blobUpload.container }}
+        volumeAttributes:
+          storageaccount: {{ $value }}
+          containerName: {{ $.Values.blobUpload.container }}
+          clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
+          resourceGroup: {{ $.Values.azure.resourceGroup }}
+    ---
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: {{ $.Release.Name }}-blob-pvc-{{ $i }}
+      namespace: {{ $.Release.Namespace }}
+    spec:
+      storageClassName: azureblob-fuse-premium
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 5Gi
+      volumeName: {{ $.Release.Name }}-blob-pv-{{ $i }}
+    ---
+    {{- range $.Values.blobUpload.items }}
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: {{ $.Release.Name }}-blob-upload-{{ .name }}-{{ $i }}
+      namespace: {{ $.Release.Namespace }}
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          serviceAccountName: workload-identity-sa
+          volumes:
+          - name: blob-storage
+            persistentVolumeClaim:
+              claimName: {{ $.Release.Name }}-blob-pvc-{{ $i }}
+          containers:
+          - name: blob-upload
+            image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+            command: ["/bin/sh"]
+            args:
+            - -c
+            - |
+              # Install curl
+              tdnf install -y curl
+              
+              # Download the file
+              echo "Downloading file from {{ .url }}"
+              curl -kso {{ .file }} "{{ .url }}"
+              
+              # Copy to mounted blob container
+              cp {{ .file }} /mnt/blob/{{ $.Values.blobUpload.container }}/{{ .file }}
+              
+              echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
+            volumeMounts:
+            - name: blob-storage
+              mountPath: /mnt/blob
+          restartPolicy: Never
   {{- end }}
-{{- else if .Values.blobUpload.storageAccounts }}
-  {{- $storageAccounts = .Values.blobUpload.storageAccounts }}
+{{- $i = add $i 1 }}
+{{- end }}
 {{- end }}
 
-{{- if $storageAccounts }}
-{{- range $i, $storageAccount := $storageAccounts }}
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  annotations:
-    pv.kubernetes.io/provisioned-by: blob.csi.azure.com
-  name: {{ $.Release.Name }}-blob-pv-{{ $i }}
-spec:
-  storageClassName: azureblob-fuse-premium
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  mountOptions:
-    - -o allow_other
-    - --file-cache-timeout-in-seconds=120
-  csi:
-    driver: blob.csi.azure.com
-    volumeHandle: {{ $storageAccount }}_{{ $.Values.blobUpload.container }}
-    volumeAttributes:
-      storageaccount: {{ $storageAccount }}
-      containerName: {{ $.Values.blobUpload.container }}
-      clientID: {{ $.Values.blobUpload.clientId | default $.Values.azure.clientId }}
-      resourceGroup: {{ $.Values.azure.resourceGroup }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ $.Release.Name }}-blob-pvc-{{ $i }}
-  namespace: {{ $.Release.Namespace }}
-spec:
-  storageClassName: azureblob-fuse-premium
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 5Gi
-  volumeName: {{ $.Release.Name }}-blob-pv-{{ $i }}
----
-{{- range $.Values.blobUpload.items }}
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: {{ $.Release.Name }}-blob-upload-{{ .name }}-{{ $i }}
-  namespace: {{ $.Release.Namespace }}
-spec:
-  ttlSecondsAfterFinished: 300
-  template:
-    spec:
-      serviceAccountName: workload-identity-sa
-      volumes:
-      - name: blob-storage
-        persistentVolumeClaim:
-          claimName: {{ $.Release.Name }}-blob-pvc-{{ $i }}
-      containers:
-      - name: blob-upload
-        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-        command: ["/bin/sh"]
-        args:
-        - -c
-        - |
-          # Install curl
-          tdnf install -y curl
-          
-          # Download the file
-          echo "Downloading file from {{ .url }}"
-          curl -kso {{ .file }} "{{ .url }}"
-          
-          # Copy to mounted blob container
-          cp {{ .file }} /mnt/blob/{{ $.Values.blobUpload.container }}/{{ .file }}
-          
-          echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $storageAccount }}"
-        volumeMounts:
-        - name: blob-storage
-          mountPath: /mnt/blob
-      restartPolicy: Never
-{{- end }}{{/* end range $.Values.blobUpload.items */}}
-{{- end }}{{/* end range $storageAccounts */}}
-{{- end }}{{/* end if $storageAccounts */}}
 {{- end }}{{/* end if .Values.blobUpload.enabled */}}

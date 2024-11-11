@@ -1,7 +1,7 @@
 {{- if (default false .Values.blobUpload.enabled) -}}
 
 {{- $i := 0 }}
-{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.configNamespace "configmap-services").data }}
+{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.configmapNamespace "configmap-services").data }}
   {{- if hasPrefix "partition_storage_name_" $key }}
     ---
     apiVersion: v1

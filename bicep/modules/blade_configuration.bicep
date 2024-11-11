@@ -289,12 +289,6 @@ var settings = [
     label: 'configmap-services'
   }
   {
-    name: 'resource_group'
-    value: resourceGroup().name
-    contentType: 'text/plain'
-    label: 'configmap-services'
-  }
-  {
     name: 'azure_msi_client_id'
     value: appIdentity.properties.clientId
     contentType: 'text/plain'
@@ -393,11 +387,12 @@ values.yaml: |
     appInsightsKey: {5}
     appId: {6}
     appOid: {7}
+    resourceGroup: {8}
   ingress:
     internalGateway:
-      enabled: {8}
-    externalGateway:
       enabled: {9}
+    externalGateway:
+      enabled: {10}
   '''
 }
 
@@ -433,6 +428,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
              appInsightsKey,
              applicationClientId,
              applicationClientPrincipalOid,
+             resourceGroup().name,
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
              clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false')
     ]

@@ -1,6 +1,7 @@
 {{- if (default false .Values.blobUpload.enabled) -}}
 {{/* Get storage accounts from ConfigMap */}}
-{{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
+{{- $targetNamespace := toString .Values.targetNamespace }}
+{{- $configMap := (lookup "v1" "ConfigMap" $targetNamespace "configmap-services").data }}
 {{- $storageAccounts := list }}
 {{- range $key, $value := $configMap }}
   {{- if hasPrefix "partition_storage_name_" $key }}

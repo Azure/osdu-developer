@@ -2,7 +2,7 @@
 
 {{/* Create resources directly for each storage account */}}
 {{- $i := 0 }}
-{{- range $key, $value := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
+{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.targetNamespace "configmap-services").data }}
   {{- if hasPrefix "partition_storage_name_" $key }}
     ---
     apiVersion: v1

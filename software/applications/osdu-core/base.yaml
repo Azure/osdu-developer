@@ -24,6 +24,8 @@ spec:
       name: config-map-values
       valuesKey: values.yaml
   values:
+    global:
+      targetNamespace: osdu-core
     enableRequestAuthentication: true
     azure:
       enabled: true

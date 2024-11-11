@@ -669,49 +669,49 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for 
 
 
 // TODO: This should be moved to the Kubernetes Job.
-module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (partition, index) in partitions: {
-  name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
-  params: {
-    name: 'script-${storage[index].outputs.name}-Legal_COO'
-    location: location
-    cleanupPreference: 'Always'
-    retentionInterval: 'PT1H'
-    timeout: 'PT30M'
-    runOnce: true
+// module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (partition, index) in partitions: {
+//   name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
+//   params: {
+//     name: 'script-${storage[index].outputs.name}-Legal_COO'
+//     location: location
+//     cleanupPreference: 'Always'
+//     retentionInterval: 'PT1H'
+//     timeout: 'PT30M'
+//     runOnce: true
     
-    managedIdentities: {
-      userAssignedResourcesIds: [
-        stampIdentity.id
-      ]
-    }    
+//     managedIdentities: {
+//       userAssignedResourcesIds: [
+//         stampIdentity.id
+//       ]
+//     }    
 
-    kind: 'AzureCLI'
-    azCliVersion: '2.63.0'
+//     kind: 'AzureCLI'
+//     azCliVersion: '2.63.0'
     
-    environmentVariables: [
-      { name: 'CONTENT', value: loadTextContent('./deploy-scripts/Legal_COO.json') }
-      { name: 'FILE_NAME', value: 'Legal_COO.json' }
-      { name: 'CONTAINER', value: 'legal-service-azure-configuration' }
-      { name: 'AZURE_STORAGE_ACCOUNT', value: storage[index].outputs.name }
-    ]
-    scriptContent: loadTextContent('./deploy-scripts/blob_upload.sh')
-  }
-}]
+//     environmentVariables: [
+//       { name: 'CONTENT', value: loadTextContent('./deploy-scripts/Legal_COO.json') }
+//       { name: 'FILE_NAME', value: 'Legal_COO.json' }
+//       { name: 'CONTAINER', value: 'legal-service-azure-configuration' }
+//       { name: 'AZURE_STORAGE_ACCOUNT', value: storage[index].outputs.name }
+//     ]
+//     scriptContent: loadTextContent('./deploy-scripts/blob_upload.sh')
+//   }
+// }]
 
 
 // TODO: ACL can only be applied after the blob upload.
-module storageAcl './network_acl_storage.bicep' = [for (partition, index) in partitions: {
-  name: '${bladeConfig.sectionName}-storage-acl-${index}'
-  params: {
-    storageName: storage[index].outputs.name
-    location: location
-    skuName: partitionLayerConfig.storage.sku
-    natClusterIP: natClusterIP
-  }
-  dependsOn: [
-    blobUpload[index]
-  ]
-}]
+// module storageAcl './network_acl_storage.bicep' = [for (partition, index) in partitions: {
+//   name: '${bladeConfig.sectionName}-storage-acl-${index}'
+//   params: {
+//     storageName: storage[index].outputs.name
+//     location: location
+//     skuName: partitionLayerConfig.storage.sku
+//     natClusterIP: natClusterIP
+//   }
+//   dependsOn: [
+//     blobUpload[index]
+//   ]
+// }]
 
 module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-secrets-${index}'

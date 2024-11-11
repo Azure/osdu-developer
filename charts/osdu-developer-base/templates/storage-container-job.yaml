@@ -9,9 +9,12 @@
 {{- end }}
 
 {{/* Get resource group from config-map-values */}}
-{{- $configMapData := (lookup "v1" "ConfigMap" .Release.Namespace "config-map-values").data }}
-{{- $valuesYaml := fromYaml ($configMapData.values) }}
-{{- $resourceGroup := $valuesYaml.azure.resourceGroup }}
+{{- $configMapValues := (lookup "v1" "ConfigMap" .Release.Namespace "config-map-values") }}
+{{- $resourceGroup := .Values.azure.resourceGroup }}
+{{- if $configMapValues }}
+  {{- $valuesYaml := fromYaml $configMapValues.data.values.yaml }}
+  {{- $resourceGroup = $valuesYaml.azure.resourceGroup }}
+{{- end }}
 
 {{- if $storageAccounts }}
 {{- range $i, $storageAccount := $storageAccounts }}

@@ -91,6 +91,7 @@ spec:
         - name: blob-storage
           mountPath: /mnt/blob
       restartPolicy: Never
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end }}{{/* end range $.Values.blobUpload.items */}}
+{{- end }}{{/* end range $storageAccounts */}}
+{{- end }}{{/* end if $storageAccounts */}}
+{{- end }}{{/* end if .Values.blobUpload.enabled */}}

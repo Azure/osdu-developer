@@ -1,25 +1,52 @@
-{{- if (default false .Values.blobUpload.enabled) -}}
-{{/* Get storage accounts from ConfigMap */}}
-{{- $targetNamespace := toString .Values.targetNamespace }}
-{{- $configMap := (lookup "v1" "ConfigMap" $targetNamespace "configmap-services").data }}
+{{- if .Values.blobUpload.enabled }}
+{{- $isLocal := .Values.isLocal | default false }}
+
+{{/* Get storage accounts from ConfigMap or use provided values when running locally */}}
+{{- $targetNamespace := .Values.targetNamespace | default .Release.Namespace }}
 {{- $storageAccounts := list }}
-{{- range $key, $value := $configMap }}
-  {{- if hasPrefix "partition_storage_name_" $key }}
-    {{- $storageAccounts = append $storageAccounts $value }}
+
+{{- if not $isLocal }}
+  {{- $configMapObj := lookup "v1" "ConfigMap" $targetNamespace "configmap-services" }}
+  {{- if $configMapObj }}
+    {{- $configMap := index $configMapObj.Object "data" }}
+    {{- if $configMap }}
+      {{- range $key, $value := $configMap }}
+        {{- if hasPrefix "partition_storage_name_" $key }}
+          {{- $storageAccounts = append $storageAccounts $value }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- fail (printf "ConfigMap 'configmap-services' in namespace '%s' has no data." $targetNamespace) }}
+    {{- end }}
+  {{- else }}
+    {{- fail (printf "ConfigMap 'configmap-services' not found in namespace '%s'." $targetNamespace) }}
+  {{- end }}
+{{- else }}
+{{/* Use storage accounts from values for local testing */}}
+  {{- $storageAccounts = .Values.blobUpload.storageAccounts | default list }}
+  {{- if eq (len $storageAccounts) 0 }}
+    {{- fail "No storage accounts provided for local rendering. Please set 'blobUpload.storageAccounts' in your values file." }}
   {{- end }}
 {{- end }}
 
-{{/* Get resource group from config-map-values */}}
-{{- $configMapValues := (lookup "v1" "ConfigMap" "default" "config-map-values") }}
-{{- $resourceGroup := .Values.azure.resourceGroup }}
-{{- if $configMapValues }}
-  {{- $valuesContent := index $configMapValues.data "values.yaml" }}
-  {{- $valuesYaml := fromYaml $valuesContent }}
-  {{- $resourceGroup = $valuesYaml.azure.resourceGroup }}
+{{/* Get resource group from config-map-values or use provided value when running locally */}}
+{{- $resourceGroup := .Values.azure.resourceGroup | default "default-resource-group" }}
+
+{{- if not $isLocal }}
+  {{- $configMapValuesObj := lookup "v1" "ConfigMap" "default" "config-map-values" }}
+  {{- if $configMapValuesObj }}
+    {{- $configMapValues := index $configMapValuesObj.Object "data" }}
+    {{- if $configMapValues }}
+      {{- $valuesContent := index $configMapValues "values.yaml" }}
+      {{- $valuesYaml := fromYaml $valuesContent }}
+      {{- $resourceGroup = $valuesYaml.azure.resourceGroup | default $resourceGroup }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
 {{- if $storageAccounts }}
-{{- range $i, $storageAccount := $storageAccounts }}
+  {{- range $i, $storageAccount := $storageAccounts }}
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -59,7 +86,7 @@ spec:
       storage: 5Gi
   volumeName: {{ $.Release.Name }}-blob-pv-{{ $i }}
 ---
-{{- range $.Values.blobUpload.items }}
+    {{- range $.Values.blobUpload.items }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -96,7 +123,7 @@ spec:
         - name: blob-storage
           mountPath: /mnt/blob
       restartPolicy: Never
-{{- end }}{{/* end range $.Values.blobUpload.items */}}
-{{- end }}{{/* end range $storageAccounts */}}
-{{- end }}{{/* end if $storageAccounts */}}
-{{- end }}{{/* end if .Values.blobUpload.enabled */}}
+    {{- end }} {{/* end range $.Values.blobUpload.items */}}
+  {{- end }} {{/* end range $storageAccounts */}}
+{{- end }} {{/* end if $storageAccounts */}}
+{{- end }} {{/* end if .Values.blobUpload.enabled */}}

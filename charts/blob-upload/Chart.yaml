@@ -2,7 +2,7 @@ apiVersion: v2
 name: blob-upload
 type: application
 description: Uploads files to Azure Blob Storage
-version: 0.0.4
+version: 0.0.1
 appVersion: 0.0.1
 maintainers:
   - name: danielscholl

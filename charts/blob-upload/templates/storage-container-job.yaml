@@ -2,53 +2,8 @@
 {{- $i := 0 }}
 {{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.configmapNamespace "configmap-services").data }}
 {{- if hasPrefix "partition_storage_name_" $key }}
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  annotations:
-    pv.kubernetes.io/provisioned-by: blob.csi.azure.com
-  name: {{ $.Release.Name }}-blob-pv-{{ $i }}
-spec:
-  storageClassName: azureblob-nfs-premium
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  mountOptions:
-    - vers=3
-    - nolock
-    - sec=sys
-    - allow_other
-    - timeo=120
-  csi:
-    driver: blob.csi.azure.com
-    readOnly: false
-    volumeHandle: {{ $value }}##{{ $.Values.blobUpload.container }}
-    volumeAttributes:
-      resourceGroup: {{ $.Values.azure.resourceGroup }}
-      storageAccount: {{ $value }}
-      containerName: {{ $.Values.blobUpload.container }}
-      protocol: nfs
-      AzureStorageAuthType: msi
-      AzureStorageIdentityClientID: {{ $.Values.azure.clientId }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ $.Release.Name }}-blob-pvc-{{ $i }}
-  namespace: {{ $.Release.Namespace }}
-spec:
-  storageClassName: azureblob-nfs-premium
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-  volumeName: {{ $.Release.Name }}-blob-pv-{{ $i }}
----
 {{- range $.Values.blobUpload.items }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -57,34 +12,41 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
+      annotations:
+        azure.workload.identity/client-id: {{ $.Values.azure.clientId | quote }}
+        azure.workload.identity/tenant-id: {{ $.Values.azure.tenantId | quote }}
     spec:
-      # Uncomment if using workload identity
       serviceAccountName: workload-identity-sa
-      volumes:
-        - name: blob-storage
-          persistentVolumeClaim:
-            claimName: {{ $.Release.Name }}-blob-pvc-{{ $i }}
       containers:
         - name: blob-upload
-          image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-          command: ["/bin/sh"]
+          image: mcr.microsoft.com/azure-cli:cbl-mariner2.0-amd64
+          command: ["/bin/bash"]
           args:
             - -c
             - |
               # Install curl
               tdnf install -y curl
+              
               # Download the file
               echo "Downloading file from {{ .url }}"
               curl -kso {{ .file }} "{{ .url }}"
-              # Copy to mounted blob container
-              cp {{ .file }} /mnt/blob/{{ .file }}
+              
+              # Upload directly to blob storage using Azure CLI
+              az login --identity
+              az storage blob upload \
+                -f {{ .file }} \
+                -c {{ $.Values.blobUpload.container }} \
+                -n {{ .file }} \
+                --overwrite \
+                --auth-mode login
+              
               echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
-          volumeMounts:
-            - name: blob-storage
-              mountPath: /mnt/blob
       restartPolicy: Never
 {{- end }}
 {{- $i = add $i 1 }}
 {{- end }}
 {{- end }}
-{{- end }}
+{{- end }} 

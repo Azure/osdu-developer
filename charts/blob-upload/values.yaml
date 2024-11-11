@@ -1,14 +1,8 @@
-
 fullnameOverride: blob-upload
 
 global:
   configmapNamespace: osdu-core
 
-azure:
-  tenantId: <tenant_id>
-  clientId: <managed_identity_clientid>
-  resourceGroup: <rg_name>
-
 blobUpload:
-  enabled: false
+  enabled: true
   container: "legal-service-azure-configuration"

@@ -12,7 +12,8 @@
 {{- $configMapValues := (lookup "v1" "ConfigMap" "default" "config-map-values") }}
 {{- $resourceGroup := .Values.azure.resourceGroup }}
 {{- if $configMapValues }}
-  {{- $valuesYaml := fromYaml $configMapValues.data.values.yaml }}
+  {{- $valuesContent := index $configMapValues.data "values.yaml" }}
+  {{- $valuesYaml := fromYaml $valuesContent }}
   {{- $resourceGroup = $valuesYaml.azure.resourceGroup }}
 {{- end }}
 

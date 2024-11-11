@@ -6,7 +6,7 @@
   {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace "configmap-services").data }}
   {{- range $key, $value := $configMap }}
     {{- if hasPrefix "partition_storage_name_" $key }}
-      {{- $storageAccounts = append $storageAccounts $value }}
+      {{- $storageAccounts = $storageAccounts | append $value }}
     {{- end }}
   {{- end }}
 {{- else if .Values.blobUpload.storageAccounts }}

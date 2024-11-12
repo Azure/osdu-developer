@@ -1,14 +1,17 @@
 # OSDU Developer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/azure/osdu-developer.svg)](http://isitmaintained.com/project/azure/osdu-developer "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/azure/osdu-developer.svg)](http://isitmaintained.com/project/azure/osdu-developer "Percentage of issues still open")
+![Github Pull Requests](https://img.shields.io/github/issues-pr/azure/osdu-developer)
 
+[![Test](https://github.com/Azure/osdu-developer/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Azure/osdu-developer/actions/workflows/test.yml)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/azure/osdu-developer)
 
-<!-- ![Github Issues](https://img.shields.io/github/issues/azure/osdu-developer)
-![Github Pull Requests](https://img.shields.io/github/issues-pr/azure/osdu-developer) -->
+<!-- ![GitHub milestone details](https://img.shields.io/github/milestones/progress/azure/osdu-developer/1) -->
+<!-- ![Github Issues](https://img.shields.io/github/issues/azure/osdu-developer) -->
+<!-- [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/azure/osdu-developer/badge)](https://scorecard.dev/viewer/?uri=github.com/azure/osdu-developer) -->
 
-
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=742135816&ref=main&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=UsEast)
-[![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure/osdu-developer)
 
 This project provides simplified personal deployments of the [OSDU™](https://community.opengroup.org/osdu/platform) data platform on Microsoft Azure.
 
@@ -36,6 +39,9 @@ Review the [documentation](https://azure.github.io/osdu-developer/getting_starte
 > **Tutorial:** [Deploy OSDU Personal Instance via CLI](https://azure.github.io/osdu-developer/tutorial_cli/)
 
 Clone the repository and run the following commands to deploy.
+
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=742135816&ref=main&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=UsEast)
+[![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure/osdu-developer)
 
 ```bash
 # Authenticate

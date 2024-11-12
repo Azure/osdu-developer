@@ -34,8 +34,13 @@ spec:
               echo "Downloading file from {{ .url }}"
               curl -kso {{ .file }} "{{ .url }}"
               
+              # Login using workload identity
+              az login --service-principal \
+                --username {{ $.Values.azure.clientId }} \
+                --tenant {{ $.Values.azure.tenantId }} \
+                --identity
+              
               # Upload directly to blob storage using Azure CLI
-              az login --identity --username {{ $.Values.azure.clientId }}
               az storage blob upload \
                 -f {{ .file }} \
                 -c {{ $.Values.blobUpload.container }} \

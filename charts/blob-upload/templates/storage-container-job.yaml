@@ -12,12 +12,6 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   template:
-    metadata:
-      labels:
-        azure.workload.identity/use: "true"
-      annotations:
-        azure.workload.identity/client-id: {{ $.Values.azure.clientId | quote }}
-        azure.workload.identity/tenant-id: {{ $.Values.azure.tenantId | quote }}
     spec:
       serviceAccountName: workload-identity-sa
       containers:
@@ -35,10 +29,7 @@ spec:
               curl -kso {{ .file }} "{{ .url }}"
               
               # Login using workload identity
-              az login --service-principal \
-                --username {{ $.Values.azure.clientId }} \
-                --tenant {{ $.Values.azure.tenantId }} \
-                --identity
+              az login --identity
               
               # Upload directly to blob storage using Azure CLI
               az storage blob upload \
@@ -49,6 +40,7 @@ spec:
                 --auth-mode login
               
               echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
+              sleep 300000
       restartPolicy: Never
 {{- end }}
 {{- $i = add $i 1 }}

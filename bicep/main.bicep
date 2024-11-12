@@ -948,18 +948,19 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
   }
 }]
 
-module storageAcl 'modules/network_acl_storage.bicep' = {
-  name: '${configuration.name}-storage-acl'
-  params: {
-    storageName: storage.outputs.name
-    location: location
-    skuName: configuration.storage.sku
-    natClusterIP: clusterBlade.outputs.natClusterIP
-  }
-  dependsOn: [
-    gitOpsUpload
-  ]
-}
+//TODO: This can't be done yet.
+// module storageAcl 'modules/network_acl_storage.bicep' = {
+//   name: '${configuration.name}-storage-acl'
+//   params: {
+//     storageName: storage.outputs.name
+//     location: location
+//     skuName: configuration.storage.sku
+//     natClusterIP: clusterBlade.outputs.natClusterIP
+//   }
+//   dependsOn: [
+//     gitOpsUpload
+//   ]
+// }
 
 
 /*

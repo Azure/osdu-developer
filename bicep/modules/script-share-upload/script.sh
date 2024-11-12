@@ -43,17 +43,17 @@ if [[ ${URL} == *.tar.gz ]]; then
         # Navigate back to the original directory
         cd ${original_dir}
         # Upload the zip file to the file share
-        az storage file upload -s ${SHARE} --source ./${zip_filename} -onone
+        az storage file upload -s ${SHARE} --source ./${zip_filename} --enable-file-backup-request-intent --auth-mode login -onone
         echo "Zip file ${zip_filename} uploaded to file share ${SHARE}."
     else
         # Batch upload the extracted files to the file share using the specified pattern
         echo "Uploading extracted files to file share ${SHARE} with pattern ${FILE}/**"
-        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern "${FILE}/**" --no-progress -onone
+        az storage file upload-batch -d ${SHARE} --source extracted_files --pattern "${FILE}/**" --no-progress --enable-file-backup-request-intent --auth-mode login -onone
     fi
     echo "Files from ${url_basename} uploaded to file share ${SHARE}."
 else
     # Upload the file to the file share, overwriting if it exists
     echo "Uploading file ${FILE} to file share ${SHARE}"
-    az storage file upload -s ${SHARE} --source ./${FILE} -onone
+    az storage file upload -s ${SHARE} --source ./${FILE} --enable-file-backup-request-intent --auth-mode login -onone
     echo "File ${FILE} uploaded to file share ${SHARE}, overwriting if it existed."
 fi

@@ -32,6 +32,9 @@ param applicationClientId string
 @description('Specify the AD Application Principal Id.')
 param applicationClientPrincipalOid string = ''
 
+@description('Specify the Application Insights Key.')
+param appInsightsKey string
+
 @description('Software GIT Repository URL')
 param softwareRepository string
 
@@ -96,14 +99,6 @@ param appSettings appConfigItem[]
 
 @description('Date Stamp for sentinel value.')
 param dateStamp string = utcNow()
-
-
-
-/////////////////////////////////
-// Configuration 
-/////////////////////////////////
-
-
 
 
 /////////////////////////////////
@@ -253,6 +248,28 @@ var osdu_applications = [
   }
 ]
 
+var airflow_values = [
+  // Insights Key and Client Secret come from secrets.
+  {
+    name: 'tenantId'
+    value: subscription().tenantId
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+  {
+    name: 'clientId'
+    value: applicationClientId
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+  {
+    name: 'keyvaultUri'
+    value: keyVault.properties.vaultUri
+    contentType: 'text/plain'
+    label: 'configmap-airflow-values'
+  }
+]
+
 var settings = [
   {
     name: 'osdu_sentinel'
@@ -345,7 +362,7 @@ module app_config './app-configuration/main.bicep' = {
     ]
 
     // Add Configuration
-    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, osdu_applications, common_helm_values))
+    keyValues: concat(union(appSettings, settings, partitionStorageSettings, partitionBusSettings, osdu_applications, common_helm_values, airflow_values))
   }
 }
 
@@ -367,13 +384,15 @@ values.yaml: |
     configEndpoint: {2}
     keyvaultUri: {3}
     keyvaultName: {4}
-    appId: {5}
-    appOid: {6}
+    appInsightsKey: {5}
+    appId: {6}
+    appOid: {7}
+    resourceGroup: {8}
   ingress:
     internalGateway:
-      enabled: {7}
+      enabled: {9}
     externalGateway:
-      enabled: {8}
+      enabled: {10}
   '''
 }
 
@@ -406,8 +425,10 @@ module appConfigMap './aks-config-map/main.bicep' = {
              app_config.outputs.endpoint,
              kvUri,
              kvName,
+             appInsightsKey,
              applicationClientId,
              applicationClientPrincipalOid,
+             resourceGroup().name,
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
              clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false')
     ]

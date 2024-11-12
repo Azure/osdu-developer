@@ -29,12 +29,11 @@ param customVMSize string = ''
 @description('Specify the Ingress type for the cluster.')
 param ingressType string = 'External'
 
-@description('Feature Flag: Enable Storage accounts public access.')
-param enableBlobPublicAccess bool = false
 
 @description('(Optional) Software Load Override - {enable/osduCore/osduReference} --> true/false, {repository} --> https://github.com/azure/osdu-devloper  {branch} --> branch:main')
 param clusterSoftware object = {
   enable: true
+  private: false
   osduCore: true
   osduReference: true
   osduVersion: ''
@@ -53,6 +52,7 @@ param experimentalSoftware object = {
 param clusterConfiguration object = {
   enableNodeAutoProvisioning: true
   enablePrivateCluster: false
+  enableLockDown: false
 }
 
 @description('Optional. Bring your own Virtual Network.')
@@ -367,7 +367,8 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
     enableTelemetry: enableTelemetry
 
     enableNodeAutoProvisioning: clusterConfiguration.enableNodeAutoProvisioning == 'false' ? false : true
-    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'false' ? false : true
+    enablePrivateCluster: clusterConfiguration.enablePrivateCluster == 'true' ? true : false
+    nodeResourceGroupLockDown: clusterConfiguration.enableLockDown == 'false' ? false : true
 
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
@@ -382,6 +383,7 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
     logAnalytics
   ]
 }
+
 
 /*
  __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __. 
@@ -417,6 +419,7 @@ module fluxExtension 'modules/flux-extension/main.bicep' = {
     clusterBlade
   ]
 }
+
 
 /*
      _______.  ______ .______       __  .______   .___________.
@@ -478,7 +481,6 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
 |  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |     
 | _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|                                                                                                                              
 */
-
 module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
   name: '${configuration.name}-container-registry'
   params: {
@@ -519,6 +521,7 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
     ]
   }
 }
+
 
 /*
  __  ___  ___________    ____ ____    ____  ___      __    __   __      .___________.
@@ -697,6 +700,7 @@ var commonLayerConfig = {
   }
 }
 
+
 /*   _______.___________.  ______   .______          ___       _______  _______ 
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
    |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
@@ -758,15 +762,20 @@ module storage 'modules/storage-account/main.bicep' = {
         principalId: stampIdentity.outputs.principalId
         principalType: 'ServicePrincipal'
       }
-
+      {
+        roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
+        principalId: stampIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+      }
     ]
 
     // Apply Security
-    allowBlobPublicAccess: enableBlobPublicAccess
+    allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
 
-    // TODO: Deployment Scripts don't support this yet.
-    // allowSharedKeyAccess: true
+    // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
+    allowSharedKeyAccess: true  
+
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -831,6 +840,16 @@ module database 'modules/cosmos-db/main.bicep' = {
     // Hook up Diagnostics
     diagnosticWorkspaceId: logAnalytics.outputs.resourceId
     diagnosticLogsRetentionInDays: 0
+
+    networkRestrictions: {
+      publicNetworkAccess: 'Enabled'
+      networkAclBypass: 'AzureServices'
+      ipRules: [
+        '${clusterBlade.outputs.natClusterIP}'
+      ]
+      virtualNetworkRules: []
+    }
+
 
     // Configure Service
     capabilitiesToAdd: [
@@ -898,62 +917,51 @@ var directoryUploads = [
 ]
 
 @batchSize(1)
-module gitOpsUpload 'modules/software-upload/main.bicep' = [for item in directoryUploads: {
+module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: if (clusterSoftware.private == 'true') {
   name: '${configuration.name}-storage-${item.directory}-upload'
   params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
+    name: 'script-${storage.outputs.name}-${item.directory}'
 
-    directoryName: item.directory
+    location: location
+    cleanupPreference: 'Always'
+    retentionInterval: 'PT1H'
+    timeout: 'PT30M'
+    runOnce: true
+    
+    managedIdentities: {
+      userAssignedResourcesIds: [
+        stampIdentity.outputs.resourceId
+      ]
+    }    
+
+    kind: 'AzureCLI'
+    azCliVersion: '2.63.0'
+    
+    environmentVariables: [
+      { name: 'AZURE_STORAGE_ACCOUNT', value: storage.outputs.name }
+      { name: 'FILE', value: 'main.zip' }
+      { name: 'URL', value: 'https://github.com/azure/osdu-developer/archive/refs/heads/main.zip' }
+      { name: 'CONTAINER', value: 'gitops' }
+      { name: 'UPLOAD_DIR', value: string(item.directory) }
+    ]
+    scriptContent: loadTextContent('./modules/deploy-scripts/software-upload.sh')
   }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
 }]
 
-module manifestDagShareUpload 'modules/script-share-upload/main.bicep' = {
-  name: '${configuration.name}-storage-dag-upload-manifest'
-  params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
+//TODO: This can't be done yet.
+// module storageAcl 'modules/network_acl_storage.bicep' = {
+//   name: '${configuration.name}-storage-acl'
+//   params: {
+//     storageName: storage.outputs.name
+//     location: location
+//     skuName: configuration.storage.sku
+//     natClusterIP: clusterBlade.outputs.natClusterIP
+//   }
+//   dependsOn: [
+//     gitOpsUpload
+//   ]
+// }
 
-    shareName: 'airflow-dags'
-    filename: 'src/osdu_dags'
-    compress: true
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz'
-  }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
-}
-
-module csvDagShareUpload 'modules/script-share-csvdag/main.bicep' = {
-  name: '${configuration.name}-storage-dag-upload-csv'
-  params: {
-    newStorageAccount: true
-    location: location
-    storageAccountName: storage.outputs.name
-    identityName: stampIdentity.outputs.name
-    
-    shareName: 'airflow-dags'
-    filename: 'airflowdags'
-    fileurl: 'https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz'
-    keyVaultUrl: keyvault.outputs.uri
-    insightsKey: insights.outputs.instrumentationKey
-    clientId: applicationClientId
-    clientSecret: applicationClientSecret
-  }
-  dependsOn: [
-    stampIdentity
-    storage
-  ]
-}
 
 /*
 .______      ___      .______     .___________. __  .___________. __    ______   .__   __. 
@@ -986,7 +994,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     kvName: keyvault.outputs.name
     natClusterIP: clusterBlade.outputs.natClusterIP
     
-    enableBlobPublicAccess: enableBlobPublicAccess
+    enableBlobPublicAccess: false
 
     partitions: configuration.partitions
     managedIdentityName: stampIdentity.outputs.name
@@ -1039,6 +1047,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
     enableExperimental: experimentalSoftware.enable == 'true' ? true : false
     enableAdminUI: experimentalSoftware.adminUI == 'true' ? true : false
 
+    sourceHost: clusterSoftware.private == 'true' ? 'azureBlob' : 'gitRepository'
+
     emailAddress: emailAddress
     applicationClientId: applicationClientId
     applicationClientPrincipalOid: applicationClientPrincipalOid
@@ -1046,6 +1056,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     managedIdentityName: stampIdentity.outputs.name
     kvName: keyvault.outputs.name
     kvUri: keyvault.outputs.uri
+    appInsightsKey: insights.outputs.instrumentationKey
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
     
@@ -1078,6 +1089,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
     fluxExtension
   ]
 }
+
+
 
 
 // =============== //

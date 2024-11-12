@@ -48,6 +48,9 @@ param enableNodeAutoProvisioning bool = true
 @description('Feature Flag to Enable Private Cluster')
 param enablePrivateCluster bool = true
 
+@description('Feature Flag to Enable Node Resource Group Lock Down')
+param nodeResourceGroupLockDown bool = true
+
 /////////////////////////////////
 // Configuration 
 /////////////////////////////////
@@ -148,7 +151,7 @@ module cluster './managed-cluster/main.bicep' = {
     disableLocalAccounts: true
     enableRBAC: true
     aadProfileManaged: true
-    nodeResourceGroupLockDown: true
+    nodeResourceGroupLockDown: nodeResourceGroupLockDown
 
     // Observability Settings
     enableAzureDefender: true
@@ -375,8 +378,6 @@ module appConfigExtension './managed-cluster/aks_appconfig_extension.bicep' = {
     cluster
   ]
 }
-
-
 
 
 

@@ -1,0 +1,56 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: airflow-dags
+  namespace: airflow
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+spec:
+  targetNamespace: airflow
+  releaseName: airflow-dags
+  dependsOn:
+    - name: azure-keyvault-airflow
+      namespace: default
+    - name: config-maps-airflow
+      namespace: default
+  chart:
+    spec:
+      chart: ./charts/airflow-dags
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: airflow-configmap
+      valuesKey: value.yaml
+    - kind: Secret
+      name: airflow-secrets
+      valuesKey: client-key
+      targetPath: secrets.airflowSecrets.clientKey
+    - kind: Secret
+      name: airflow-secrets
+      valuesKey: insights-key
+      targetPath: secrets.airflowSecrets.insightsKey
+  values:
+    airflow:
+      manifestdag:
+        enabled: true
+        items:
+          - name: manifest
+            folder: "src/osdu_dags"
+            compress: true
+            url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/ingestion-dags/-/archive/master/ingestion-dags-master.tar.gz"
+            pvc: "airflow-dags-pvc"
+      csvdag:
+        enabled: true
+        folder: "airflowdags"
+        compress: true
+        url: "https://community.opengroup.org/osdu/platform/data-flow/ingestion/csv-parser/csv-parser/-/archive/master/csv-parser-master.tar.gz"
+        pvc: "airflow-dags-pvc"

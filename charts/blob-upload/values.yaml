@@ -1,0 +1,8 @@
+fullnameOverride: blob-upload
+
+global:
+  configmapNamespace: osdu-core
+
+blobUpload:
+  enabled: true
+  container: "legal-service-azure-configuration"

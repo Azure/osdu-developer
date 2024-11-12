@@ -130,7 +130,7 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = 
 
     environmentVariables: [
       { name: 'AZURE_STORAGE_ACCOUNT', value: storageAccount.name }
-      { name: 'AZURE_STORAGE_KEY', value: storageAccount.listKeys().keys[0].value }
+      // { name: 'AZURE_STORAGE_KEY', value: storageAccount.listKeys().keys[0].value }
       { name: 'FILE', value: filename }
       { name: 'URL', value: fileurl }
       { name: 'SHARE', value: shareName }

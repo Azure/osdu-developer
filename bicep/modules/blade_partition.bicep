@@ -504,7 +504,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
       })
     }
 
-
+    // Apply Roles
     roleAssignments: [
       {
         roleDefinitionIdOrName: 'Storage Blob Data Contributor'
@@ -513,12 +513,12 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
       }
     ]
 
+    enableHierarchicalNamespace: true
+
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
     publicNetworkAccess: 'Enabled'
-
-    // TODO: Deployment Scripts don't support this yet.
-    // allowSharedKeyAccess: true
+    allowSharedKeyAccess: true
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -547,47 +547,6 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
 }]
 
 
-
-// module partitionStorage './storage-account-orig/main.bicep' = [for (partition, index) in partitions:  {
-//   name: '${bladeConfig.sectionName}-azure-storage-${index}'
-//   params: {
-//     #disable-next-line BCP335 BCP332
-//     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
-//     location: location
-
-//     // Assign Tags
-
-//     tags: union(
-//       tags,
-//       {
-//         layer: bladeConfig.displayName
-//         partition: partition.name
-//         purpose: 'data'
-//       }
-//     )
-
-//     // Hook up Diagnostics
-//     diagnosticWorkspaceId: workspaceResourceId
-//     diagnosticLogsRetentionInDays: 0
-
-//     // Apply Security
-//     allowBlobPublicAccess: enableBlobPublicAccess
-
-//     // Configure Service
-//     sku: partitionLayerConfig.storage.sku
-//     containers: concat(partitionLayerConfig.storage.containers, [partition.name])
-
-//     // Hookup Customer Managed Encryption Key
-//     cmekConfiguration: cmekConfiguration
-
-//     // Persist Secrets to Vault
-//     keyVaultName: kvName
-//     storageAccountSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountName}'
-//     storageAccountKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
-//     storageAccountBlobEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
-//   }
-// }]
-
 module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partitions: { 
   name: '${bladeConfig.sectionName}-cosmos-db-${index}'
   params: {
@@ -608,6 +567,15 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     // Hook up Diagnostics
     diagnosticWorkspaceId: workspaceResourceId
     diagnosticLogsRetentionInDays: 0
+
+    networkRestrictions: {
+      publicNetworkAccess: 'Enabled'
+      networkAclBypass: 'AzureServices'
+      ipRules: [
+        '${natClusterIP}'
+      ]
+      virtualNetworkRules: []
+    }
 
     // Set isSystemPartition based on index
     isSystemPartition: index == 0 ? true : false
@@ -702,20 +670,50 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for 
 }]
 
 
-// Deployment Scripts are not enabled yet for Private Link
-// https://github.com/Azure/bicep/issues/6540
-module blobUpload './script-blob-upload/main.bicep' = [for (partition, index) in partitions: {
+// TODO: This should be moved to the Kubernetes Job.
+module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
   params: {
-    storageAccountName: storage[index].outputs.name
+    name: 'script-${storage[index].outputs.name}-Legal_COO'
     location: location
+    cleanupPreference: 'Always'
+    retentionInterval: 'PT1H'
+    timeout: 'PT30M'
+    runOnce: true
+    
+    managedIdentities: {
+      userAssignedResourcesIds: [
+        stampIdentity.id
+      ]
+    }    
 
-    useExistingManagedIdentity: true
-    managedIdentityName: managedIdentityName
-    existingManagedIdentitySubId: subscription().subscriptionId
-    existingManagedIdentityResourceGroupName:resourceGroup().name
+    kind: 'AzureCLI'
+    azCliVersion: '2.63.0'
+    
+    environmentVariables: [
+      { name: 'CONTENT', value: loadTextContent('./deploy-scripts/Legal_COO.json') }
+      { name: 'FILE_NAME', value: 'Legal_COO.json' }
+      { name: 'CONTAINER', value: 'legal-service-azure-configuration' }
+      { name: 'AZURE_STORAGE_ACCOUNT', value: storage[index].outputs.name }
+    ]
+    scriptContent: loadTextContent('./deploy-scripts/blob_upload.sh')
   }
 }]
+
+
+// TODO: ACL can only be applied after the blob upload.
+// module storageAcl './network_acl_storage.bicep' = [for (partition, index) in partitions: {
+//   name: '${bladeConfig.sectionName}-storage-acl-${index}'
+//   params: {
+//     storageName: storage[index].outputs.name
+//     location: location
+//     skuName: partitionLayerConfig.storage.sku
+//     natClusterIP: natClusterIP
+//   }
+//   dependsOn: [
+//     blobUpload[index]
+//   ]
+// }]
 
 module partitionSecrets './keyvault_secrets_partition.bicep' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-secrets-${index}'

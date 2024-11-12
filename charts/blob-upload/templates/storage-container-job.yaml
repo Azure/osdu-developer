@@ -1,0 +1,49 @@
+{{- if (default false .Values.blobUpload.enabled) }}
+{{- $i := 0 }}
+{{- range $key, $value := (lookup "v1" "ConfigMap" .Values.global.configmapNamespace "configmap-services").data }}
+{{- if hasPrefix "partition_storage_name_" $key }}
+{{- range $.Values.blobUpload.items }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-blob-upload-{{ .name }}-{{ $i }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      containers:
+        - name: blob-upload
+          image: mcr.microsoft.com/azure-cli:cbl-mariner2.0-amd64
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              # Install curl
+              tdnf install -y curl
+              
+              # Download the file
+              echo "Downloading file from {{ .url }}"
+              curl -kso {{ .file }} "{{ .url }}"
+              
+              # Login using workload identity
+              az login --identity
+              
+              # Upload directly to blob storage using Azure CLI
+              az storage blob upload \
+                -f {{ .file }} \
+                -c {{ $.Values.blobUpload.container }} \
+                -n {{ .file }} \
+                --overwrite \
+                --auth-mode login
+              
+              echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
+              sleep 300000
+      restartPolicy: Never
+{{- end }}
+{{- $i = add $i 1 }}
+{{- end }}
+{{- end }}
+{{- end }} 

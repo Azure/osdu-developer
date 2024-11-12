@@ -140,5 +140,5 @@ cd "extracted_files/${FILE}" || exit 1
 zip -r "${current_dir}/${zip_filename}" .
 cd - || exit 1
 
-az storage file upload -s "${SHARE}" --source "${zip_filename}" -onone
+az storage file upload -s "${SHARE}" --source "${zip_filename}" --enable-file-backup-request-intent --auth-mode login -onone
 echo "Zip file ${zip_filename} uploaded to file share ${SHARE}."

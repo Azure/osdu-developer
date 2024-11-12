@@ -1,4 +1,5 @@
 {{- $namespace := .Release.Namespace }}
+{{- if .Values.configMaps.airflow }}
 apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
@@ -7,7 +8,7 @@ metadata:
 spec:
   endpoint: {{ .Values.azure.configEndpoint }}
   target:
-    configMapName: configmap-software
+    configMapName: airflow-configmap
     configMapData:
       type: yaml
       key: value.yaml
@@ -18,7 +19,7 @@ spec:
   configuration:
     selectors:
       - keyFilter: "*"
-        labelFilter: "configmap-osdu-applications"
+        labelFilter: "configmap-airflow-values"
     refresh:
       enabled: true
       interval: 1m
@@ -26,3 +27,4 @@ spec:
         keyValues:
           - key: "osdu_sentinel"
             label: "common"
+{{- end }}

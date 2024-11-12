@@ -1,0 +1,12 @@
+
+# Default values for osdu-azure.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fullnameOverride: airflow-dags
+
+airflow:
+  manifestdag:
+    enabled: false
+  csvdag:
+    enabled: false

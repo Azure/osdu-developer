@@ -202,6 +202,26 @@ param kvKeyUri string = ''
 @description('Optional. Indicates if the module is used in a cross tenant scenario. If true, a resourceId must be provided in the role assignment\'s principal object.')
 param crossTenant bool = false
 
+@description('Optional. The network configuration of this module. Defaults to `{ ipRules: [], virtualNetworkRules: [], publicNetworkAccess: \'Disabled\' }`.')
+param networkRestrictions networkRestrictionsType = {
+  ipRules: []
+  virtualNetworkRules: []
+  publicNetworkAccess: 'Disabled'
+}
+
+var ipRules = [
+  for i in (networkRestrictions.?ipRules ?? []): {
+    ipAddressOrRange: i
+  }
+]
+
+var virtualNetworkRules = [
+  for vnet in (networkRestrictions.?virtualNetworkRules ?? []): {
+    id: vnet.subnetResourceId
+    ignoreMissingVnetServiceEndpoint: false
+  }
+]
+
 var name = '${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 
@@ -285,6 +305,13 @@ var databaseAccount_properties = union({
         locationName: resourceLocation
       }
     ] : databaseAccount_locations
+
+
+    ipRules: ipRules
+    virtualNetworkRules: virtualNetworkRules
+    networkAclBypass: networkRestrictions.?networkAclBypass ?? 'AzureServices'
+    publicNetworkAccess: networkRestrictions.?publicNetworkAccess ?? 'Enabled'
+    isVirtualNetworkFilterEnabled: !empty(ipRules) || !empty(virtualNetworkRules)
 
     capabilities: capabilities
     backupPolicy: backupPolicy
@@ -556,4 +583,22 @@ module secretDatabaseConnectionString '.bicep/keyvault_secrets.bicep' =  if (!em
     name: databaseConnectionStringSecretName
     value: databaseAccount.listConnectionStrings().connectionStrings[0].connectionString
   }
+}
+
+
+type networkRestrictionsType = {
+  @description('Required. A single IPv4 address or a single IPv4 address range in CIDR format. Provided IPs must be well-formatted and cannot be contained in one of the following ranges: 10.0.0.0/8, 100.64.0.0/10, 172.16.0.0/12, 192.168.0.0/16, since these are not enforceable by the IP address filter. Example of valid inputs: "23.40.210.245" or "23.40.210.0/8".')
+  ipRules: string[]
+
+  @description('Optional. Default to AzureServices. Specifies the network ACL bypass for Azure services.')
+  networkAclBypass: ('AzureServices' | 'None')?
+
+  @description('Optional. Default to Enabled. Whether requests from Public Network are allowed.')
+  publicNetworkAccess: ('Enabled' | 'Disabled')?
+
+  @description('Required. List of Virtual Network ACL rules configured for the Cosmos DB account..')
+  virtualNetworkRules: {
+    @description('Required. Resource ID of a subnet.')
+    subnetResourceId: string
+  }[]
 }

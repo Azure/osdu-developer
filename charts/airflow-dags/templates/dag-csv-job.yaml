@@ -1,0 +1,50 @@
+{{- if .Values.airflow.csvdag.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-csvdag-upload
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: workload-identity-sa
+      volumes:
+      - name: scripts
+        configMap:
+          name: csvdag-scripts-{{ .Release.Name }}
+          defaultMode: 0500
+      - name: share-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.airflow.csvdag.pvc }}
+      containers:
+      - name: csvdag-upload
+        image: mcr.microsoft.com/cbl-mariner/base/python:3.9-cm2.0
+        command: ["/bin/bash"]
+        args:
+        - /scripts/csv-dag.sh
+        env:
+          - name: URL
+            value: {{ .Values.airflow.csvdag.url | quote }}
+          - name: FILE
+            value: {{ .Values.airflow.csvdag.folder | quote }}
+          - name: SEARCH_AND_REPLACE
+            value: {{ include "airflow-dags.searchAndReplace" . | quote }}
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: share-storage
+          mountPath: /share
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: csvdag-scripts-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  replace.py: |
+    {{ .Files.Get "scripts/replace.py" | nindent 4 }}
+  csv-dag.sh: |
+    {{ .Files.Get "scripts/csv-dag.sh" | nindent 4 }}
+{{- end }}

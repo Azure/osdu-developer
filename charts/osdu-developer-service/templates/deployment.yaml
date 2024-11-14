@@ -23,7 +23,6 @@ metadata:
   labels: {{ $labels }}
     app: {{ or .service .scaledObject }}
     appVersion: {{ $osduVersion }}
-    azure.workload.identity/use: "true"
 spec:
 {{- if not .autoscale }}
   replicas: {{ .replicaCount | default $replicaCount }}
@@ -38,6 +37,7 @@ spec:
     {{- end }}
       labels: {{ $selectorLabels }}
         app: {{ or .service .scaledObject }}
+        azure.workload.identity/use: "true"
         {{- if $subset }}
         version: {{ $subset }}
         {{- end }}

@@ -42,8 +42,8 @@ spec:
         version: {{ $subset }}
         {{- end }}
     spec:
-      {{- if $nodePool }}
       serviceAccountName: {{ .serviceAccountName | default "workload-identity-sa" }}
+      {{- if $nodePool }}
       nodeSelector:
         nodepool: {{ $nodePool }}
       {{- end }}

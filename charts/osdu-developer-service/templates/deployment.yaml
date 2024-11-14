@@ -23,6 +23,7 @@ metadata:
   labels: {{ $labels }}
     app: {{ or .service .scaledObject }}
     appVersion: {{ $osduVersion }}
+    azure.workload.identity/use: "true"
 spec:
 {{- if not .autoscale }}
   replicas: {{ .replicaCount | default $replicaCount }}
@@ -90,7 +91,6 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .name }}-pvc
       {{- end }}
-      serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
           image: {{ if hasSuffix "-" .repository }}{{ .repository }}{{ $osduVersion }}:{{ .tag }}{{ else }}{{ .repository }}:{{ .tag }}{{ end }}

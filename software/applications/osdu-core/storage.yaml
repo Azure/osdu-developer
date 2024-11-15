@@ -107,7 +107,7 @@ spec:
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "true"
+        value: "false"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP

@@ -1,52 +1,52 @@
----
-# kubectl create job --namespace osdu-core --from=cronjob/user-init user-init-run-$(date +%s)
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: osdu-init-users
-  namespace: osdu-core
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-spec:
-  dependsOn:
-    - name: osdu-init-entitlements
-      namespace: osdu-core
-  targetNamespace: osdu-core
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-init
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  values:
-    installationType: osduCore
-    jobs:
-      partitionInit: false
-      entitlementInit: false
-      userInit: true 
-      elasticInit: false
-      schemaInit: false
-    clientSecret:
-      name: active-directory
-      key: principal-clientpassword
-  valuesFrom:
-    - kind: ConfigMap
-      name: configmap-software
-      valuesKey: value.yaml
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: clientId
-      valuesKey: client_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: emailAddress
-      valuesKey: first_user_id
+# ---
+# # kubectl create job --namespace osdu-core --from=cronjob/user-init user-init-run-$(date +%s)
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: osdu-init-users
+#   namespace: osdu-core
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+# spec:
+#   dependsOn:
+#     - name: osdu-init-entitlements
+#       namespace: osdu-core
+#   targetNamespace: osdu-core
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-init
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     installationType: osduCore
+#     jobs:
+#       partitionInit: false
+#       entitlementInit: false
+#       userInit: true 
+#       elasticInit: false
+#       schemaInit: false
+#     clientSecret:
+#       name: active-directory
+#       key: principal-clientpassword
+#   valuesFrom:
+#     - kind: ConfigMap
+#       name: configmap-software
+#       valuesKey: value.yaml
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: clientId
+#       valuesKey: client_id
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: tenantId
+#       valuesKey: tenant_id
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: emailAddress
+#       valuesKey: first_user_id

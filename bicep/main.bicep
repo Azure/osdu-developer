@@ -553,10 +553,10 @@ var vaultSecrets = [
     secretName: 'app-dev-sp-password'
     secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
   }
-  {
-    secretName: 'app-dev-sp-id'
-    secretValue: applicationClientId
-  }
+  // {
+  //   secretName: 'app-dev-sp-id'
+  //   secretValue: applicationClientSecret == '' ? stampIdentity.outputs.clientId : applicationClientId
+  // }
   {
     secretName: 'cpng-user-name'
     secretValue: 'dbuser'
@@ -675,6 +675,7 @@ module keyvaultSecrets 'modules/keyvault_secrets.bicep' = {
     workspaceName: logAnalytics.outputs.name
     insightsName: insights.outputs.name
     cacheName: redis.outputs.name
+    identityName: stampIdentity.outputs.name
   }
   dependsOn: [
     insights

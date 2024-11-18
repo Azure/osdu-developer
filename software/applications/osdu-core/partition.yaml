@@ -65,22 +65,6 @@ spec:
             - "/api/partition/v1/webjars/*"
             - "/api/partition/v1/liveness_check*"
         env:
-          # - name: AZURE_TENANT_ID
-          #   secret:
-          #     name: active-directory
-          #     key: tenant-id
-          # - name: AZURE_SUBSCRIPTION_ID
-          #   secret:
-          #     name: active-directory
-          #     key: subscription-id
-          # - name: AZURE_CLIENT_ID
-          #   secret:
-          #     name: active-directory
-          #     key: principal-clientid
-          # - name: AZURE_CLIENT_SECRET
-          #   secret:
-          #     name: active-directory
-          #     key: principal-clientpassword
           - name: KEYVAULT_URI
             secret:
               name: azure-resources

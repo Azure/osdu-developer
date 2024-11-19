@@ -31,14 +31,14 @@ spec:
         env:
           - name: NAMESPACE
             value: {{ $namespace }}
-          - name: PARTITION
-            value: {{ .Values.partition | quote }}
-          - name: SERVICE_BUS_NAME
-            value: {{ .Values.serviceBus | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
           - name: AZURE_AD_APPLICATION_ID
             value: {{ .Values.clientId | quote }}
+          - name: PARTITION
+            value: {{ .Values.partition | quote }}
+          - name: SERVICE_BUS_NAME
+            value: {{ .Values.serviceBus | quote }}  
       containers:
       - name: sleep
         image: istio/base

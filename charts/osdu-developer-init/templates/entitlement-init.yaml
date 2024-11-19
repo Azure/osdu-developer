@@ -10,7 +10,11 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 120
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: workload-identity-sa
       volumes:
       - name: script
         configMap:
@@ -18,7 +22,7 @@ spec:
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: alpine
+        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
         command:
         - script/init.sh
         volumeMounts:
@@ -27,17 +31,12 @@ spec:
         env:
           - name: NAMESPACE
             value: {{ $namespace }}
-          - name: PARTITION
-            value: {{ .Values.partition | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
-          - name: AZURE_CLIENT_ID
+          - name: AZURE_AD_APPLICATION_ID
             value: {{ .Values.clientId | quote }}
-          - name: AZURE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.clientSecret.name | quote }}
-                key: {{ .Values.clientSecret.key | quote }}
+          - name: PARTITION
+            value: {{ .Values.partition | quote }}
       containers:
       - name: sleep
         image: istio/base
@@ -58,31 +57,22 @@ data:
     set -euo pipefail
     set -o nounset
 
-    exit 0
-    apk add --no-cache curl jq
+    tdnf install -y curl jq
 
     echo "=================================================================="
-    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "  Logging in using Workload Identity"
     echo "=================================================================="
-    echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
 
-    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-        --header "content-type: application/x-www-form-urlencoded" \
-        --data "grant_type=client_credentials" \
-        --data "client_id=${AZURE_CLIENT_ID}" \
-        --data "client_secret=${AZURE_CLIENT_SECRET}" \
-        --data "resource=${AZURE_CLIENT_ID}")
+    # Login using the federated token from the environment variable
+    az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+        --service-principal \
+        -u ${AZURE_CLIENT_ID} \
+        -t ${AZURE_TENANT_ID}
 
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
+    # Get token (no resource needed)
+    TOKEN=$(az account get-access-token --resource ${AZURE_AD_APPLICATION_ID} --query accessToken -o tsv)
 
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      exit 1
-    fi
-
-    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+    sleep 300000
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://entitlements.{{ $namespace }}/api/entitlements/v2/tenant-provisioning \

@@ -58,6 +58,7 @@ data:
     set -euo pipefail
     set -o nounset
 
+    exit 0
     apk add --no-cache curl jq
 
     echo "=================================================================="

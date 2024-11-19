@@ -18,7 +18,7 @@ spec:
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: alpine
+        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
         command:
         - script/init.sh
         volumeMounts:
@@ -204,7 +204,7 @@ data:
     set -euo pipefail
     set -o nounset
 
-    apk add --no-cache curl jq
+    tdnf install -y curl jq
 
     echo "=================================================================="
     echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "

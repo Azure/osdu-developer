@@ -132,9 +132,9 @@ spec:
       elasticInit: false
       schemaInit: false
     partition: opendes
-    # clientSecret:
-    #   name: active-directory
-    #   key: principal-clientpassword
+    clientSecret:
+      name: active-directory
+      key: principal-clientpassword
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software

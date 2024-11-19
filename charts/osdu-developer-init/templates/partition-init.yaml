@@ -10,6 +10,9 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 120
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: workload-identity-sa
       volumes:
@@ -34,7 +37,7 @@ spec:
             value: {{ .Values.serviceBus | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
-          - name: AZURE_CLIENT_ID
+          - name: AZURE_AD_APPLICATION_ID
             value: {{ .Values.clientId | quote }}
       containers:
       - name: sleep
@@ -202,33 +205,18 @@ data:
 
     tdnf install -y curl jq
 
+    echo "=================================================================="
+    echo "  Logging in using Workload Identity"
+    echo "=================================================================="
 
-    sleep 300000
+    # Login using the federated token from the environment variable
+    az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+        --service-principal \
+        -u ${AZURE_CLIENT_ID} \
+        -t ${AZURE_TENANT_ID}
 
-    # echo "=================================================================="
-    # echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
-    # echo "=================================================================="
-    # echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
-
-    sleep 300000
-
-    OUTPUT=$(curl -s -w "%{http_code}" --request POST \
-        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-        --header "content-type: application/x-www-form-urlencoded" \
-        --data "grant_type=client_credentials" \
-        --data "client_id=${AZURE_CLIENT_ID}" \
-        --data "client_secret=${AZURE_CLIENT_SECRET}" \
-        --data "resource=${AZURE_CLIENT_ID}")
-
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
-
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      exit 1
-    fi
-
-    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+    # Get token (no resource needed)
+    TOKEN=$(az account get-access-token --resource ${AZURE_AD_APPLICATION_ID} --query accessToken -o tsv)
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://partition.{{ $namespace }}/api/partition/v1/partitions/${PARTITION} \

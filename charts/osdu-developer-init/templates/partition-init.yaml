@@ -209,12 +209,12 @@ data:
 
     sleep 300000
 
-    echo "=================================================================="
-    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
-    echo "=================================================================="
-    echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
+    # echo "=================================================================="
+    # echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    # echo "=================================================================="
+    # echo "  Identity Client Id: ${AZURE_CLIENT_ID}"
 
-    
+    sleep 300000
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
         --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \

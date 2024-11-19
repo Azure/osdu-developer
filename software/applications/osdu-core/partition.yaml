@@ -132,10 +132,10 @@ spec:
       elasticInit: false
       schemaInit: false
     partition: opendes
-    - name: AZURE_CLIENT_ID
-      secret:
-        name: active-directory
-        key: msi-clientid
+    # - name: AZURE_CLIENT_ID
+    #   secret:
+    #     name: active-directory
+    #     key: msi-clientid
     # clientSecret:
     #   name: active-directory
     #   key: principal-clientpassword
@@ -144,10 +144,10 @@ spec:
       name: configmap-software
       valuesKey: value.yaml
     
-    # - kind: ConfigMap
-    #   name: configmap-services
-    #   targetPath: clientId
-    #   valuesKey: client_id
+    - kind: Secret
+      name: active-directory
+      targetPath: clientId
+      valuesKey: msi-clientid
     - kind: ConfigMap
       name: configmap-services
       targetPath: tenantId

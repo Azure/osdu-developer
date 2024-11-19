@@ -34,8 +34,8 @@ spec:
             value: {{ .Values.serviceBus | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
-          # - name: AZURE_CLIENT_ID
-          #   value: {{ .Values.clientId | quote }}
+          - name: AZURE_CLIENT_ID
+            value: {{ .Values.clientId | quote }}
           # - name: AZURE_CLIENT_SECRET
           #   valueFrom:
           #     secretKeyRef:

@@ -34,13 +34,13 @@ spec:
             value: {{ .Values.serviceBus | quote }}
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
-          - name: AZURE_CLIENT_ID
-            value: {{ .Values.clientId | quote }}
-          - name: AZURE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.clientSecret.name | quote }}
-                key: {{ .Values.clientSecret.key | quote }}
+          # - name: AZURE_CLIENT_ID
+          #   value: {{ .Values.clientId | quote }}
+          # - name: AZURE_CLIENT_SECRET
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: {{ .Values.clientSecret.name | quote }}
+          #       key: {{ .Values.clientSecret.key | quote }}
       containers:
       - name: sleep
         image: istio/base

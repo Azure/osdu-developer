@@ -132,9 +132,6 @@ spec:
       elasticInit: false
       schemaInit: false
     partition: opendes
-    # clientSecret:
-    #   name: active-directory
-    #   key: principal-clientpassword
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software
@@ -143,10 +140,6 @@ spec:
       name: active-directory
       targetPath: clientId
       valuesKey: msi-clientid
-    # - kind: ConfigMap
-    #   name: configmap-services
-    #   targetPath: tenantId
-    #   valuesKey: tenant_id
     - kind: ConfigMap
       name: configmap-services
       targetPath: serviceBus

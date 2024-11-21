@@ -24,6 +24,39 @@ spec:
         typed_config:
           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
           inlineCode: |
+            --[[ Token Scenarios Handled:
+              1. AAD v1 User Token (sts.windows.net):
+                 - With OID: x-user-id = oid
+                 - Without OID: x-user-id = upn/unique_name
+              
+              2. AAD v1 Service-to-Service Delegation:
+                 - Service identity (appid) matches managedIdentityClientId
+                 - Delegation flow: x-user-id = x-on-behalf-of (delegated user)
+                 - Fallback: x-user-id = appid (direct service call)
+              
+              3. AAD v1 Application (non-delegated):
+                 - x-user-id = appid
+              
+              4. AAD v2 User Token (login.microsoftonline.com):
+                 - Has 'scp' claim: x-user-id = oid
+              
+              5. AAD v2 Service-to-Service Delegation:
+                 - Service identity (azp) matches managedIdentityClientId
+                 - Delegation flow: x-user-id = x-on-behalf-of (delegated user)
+                 - Fallback: x-user-id = azp (direct service call)
+              
+              6. AAD v2 Application (non-delegated):
+                 - x-user-id = azp or oid
+
+              Note: All scenarios set x-app-id from 'aud' claim when present
+              
+              OAuth Delegation (On-Behalf-Of) Flow:
+              - When a service calls another service on behalf of a user
+              - The original user's identity is passed via x-on-behalf-of header
+              - Maintains user context through the service chain
+              - Enables proper authorization based on user identity
+            ]]
+
             function envoy_on_request(request_handle)
                 -- Remove headers first
                 request_handle:headers():remove("x-user-id")
@@ -37,48 +70,81 @@ spec:
                     local payload = meta["payload"]
                     request_handle:logDebug("JWT Payload: " .. tableToString(payload))
 
-                    -- Set the x-app-id Well Known Header if 'aud' claim is present
+                    -- Always set x-app-id from aud claim if present
                     if payload["aud"] then
                         request_handle:headers():add("x-app-id", payload["aud"])
                         request_handle:logWarn("x-app-id set from 'aud' claim: " .. payload["aud"])
-                    else
-                        request_handle:logError("JWT Payload does not contain 'aud' claim; cannot set x-app-id")
                     end
 
                     -- Check issuer 
                     if string.find(payload["iss"], "sts.windows.net") then
-                        -- Handle workload identity scenario first
-                        if payload["appid"] == "{{ $managedIdentityClientId }}" then  -- Your managed identity client ID
-                            local on_behalf_of = request_handle:headers():get("x-on-behalf-of")
-                            if on_behalf_of then
-                                request_handle:headers():add("x-user-id", on_behalf_of)
-                                request_handle:logWarn("x-user-id set from on-behalf-of header")
+                        -- AAD v1 token handling
+                        if payload["upn"] then
+                            -- Scenario 1: AAD v1 User Token
+                            if payload["oid"] then
+                                request_handle:headers():add("x-user-id", payload["oid"])
+                                request_handle:logWarn("x-user-id set from 'oid' claim with upn present")
                             else
-                                request_handle:headers():add("x-user-id", payload["appid"])
-                                request_handle:logWarn("x-user-id set from appid (workload identity)")
+                                request_handle:headers():add("x-user-id", payload["upn"])
+                                request_handle:logWarn("x-user-id set from 'upn' claim")
                             end
-                        -- Regular AAD v1 token handling
-                        elseif payload["upn"] then
-                            request_handle:headers():add("x-user-id", payload["upn"])
-                            request_handle:logWarn("x-user-id set from 'upn' claim")
                         elseif payload["unique_name"] then
-                            request_handle:headers():add("x-user-id", payload["unique_name"])
-                            request_handle:logWarn("x-user-id set from 'unique_name' claim")
+                            -- Scenario 1: AAD v1 User Token (alternate claim)
+                            if payload["oid"] then
+                                request_handle:headers():add("x-user-id", payload["oid"])
+                                request_handle:logWarn("x-user-id set from 'oid' claim with unique_name present")
+                            else
+                                request_handle:headers():add("x-user-id", payload["unique_name"])
+                                request_handle:logWarn("x-user-id set from 'unique_name' claim")
+                            end
                         elseif payload["appid"] then
-                            request_handle:headers():add("x-user-id", payload["appid"])
-                            request_handle:logWarn("x-user-id set from 'appid' claim")
+                            -- Check for service identity
+                            if payload["appid"] == "{{ $managedIdentityClientId }}" then
+                                -- Scenario 2: AAD v1 Service-to-Service Delegation
+                                local on_behalf_of = request_handle:headers():get("x-on-behalf-of")
+                                if on_behalf_of and on_behalf_of ~= "" then
+                                    request_handle:headers():add("x-user-id", on_behalf_of)
+                                    request_handle:logWarn("x-user-id set from on-behalf-of header (delegation flow)")
+                                else
+                                    request_handle:headers():add("x-user-id", payload["appid"])
+                                    request_handle:logWarn("x-user-id set from appid (direct service call)")
+                                end
+                            else
+                                -- Scenario 3: AAD v1 Application Token
+                                request_handle:headers():add("x-user-id", payload["appid"])
+                                request_handle:logWarn("x-user-id set from 'appid' claim (non-delegated)")
+                            end
                         end
 
                     elseif string.find(payload["iss"], "login.microsoftonline.com") then
-                        -- Set Well Known Header with an order of preference: azp, oid
-                        if payload["azp"] then
-                            request_handle:headers():add("x-user-id", payload["azp"])
-                            request_handle:logWarn("x-user-id set from 'azp' claim: " .. payload["azp"])
-                        elseif payload["oid"] then
-                            request_handle:headers():add("x-user-id", payload["oid"])
-                            request_handle:logWarn("x-user-id set from 'oid' claim: " .. payload["oid"])
+                        -- AAD v2 token handling
+                        if payload["scp"] then
+                            -- Scenario 4: AAD v2 User Token
+                            if payload["oid"] then
+                                request_handle:headers():add("x-user-id", payload["oid"])
+                                request_handle:logWarn("x-user-id set from 'oid' claim with scp present")
+                            end
                         else
-                            request_handle:logError("No valid user ID claim (azp, oid) found for login.microsoftonline.com")
+                            if payload["azp"] then
+                                if payload["azp"] == "{{ $managedIdentityClientId }}" then
+                                    -- Scenario 5: AAD v2 Service-to-Service Delegation
+                                    local on_behalf_of = request_handle:headers():get("x-on-behalf-of")
+                                    if on_behalf_of and on_behalf_of ~= "" then
+                                        request_handle:headers():add("x-user-id", on_behalf_of)
+                                        request_handle:logWarn("x-user-id set from on-behalf-of header (v2 delegation flow)")
+                                    else
+                                        request_handle:headers():add("x-user-id", payload["azp"])
+                                        request_handle:logWarn("x-user-id set from azp (direct service call)")
+                                    end
+                                else
+                                    -- Scenario 6: AAD v2 Application Token
+                                    request_handle:headers():add("x-user-id", payload["azp"])
+                                    request_handle:logWarn("x-user-id set from 'azp' claim (non-delegated)")
+                                end
+                            elseif payload["oid"] then
+                                request_handle:headers():add("x-user-id", payload["oid"])
+                                request_handle:logWarn("x-user-id set from 'oid' claim")
+                            end
                         end
                     else
                         request_handle:logError("Issuer does not match known issuers")

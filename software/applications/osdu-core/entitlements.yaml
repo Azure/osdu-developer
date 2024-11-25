@@ -45,7 +45,8 @@ spec:
       gateways:
         - istio-system/internal-gateway
         - istio-system/external-gateway
-      repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-
+      repository: mainrctu55xpre6lo.azurecr.io/entitlements
+      # repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/entitlements/entitlements-
       tag: latest
       probe:
         path: /actuator/health

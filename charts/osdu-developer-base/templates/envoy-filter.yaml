@@ -1,3 +1,5 @@
+# istioctl proxy-config log <pod_name> --level lua:debug
+
 {{- $namespace := .Release.Namespace }}
 {{- $managedIdentityClientId := .Values.azure.clientId }}
 

@@ -1,0 +1,76 @@
+# Define default values for ARGs
+ARG IFX_AUDIT_PACKAGE=libifxaudit-1.0-1525.x86_64
+ARG AZUL_JDK_PACKAGE="zulu17.48.15-ca-jdk17.0.10-linux_x64"
+ARG BASE_IMAGE="mcr.microsoft.com/openjdk/jdk:17-mariner"
+ARG EXTRA_JAVA_OPTS=""
+
+FROM ${BASE_IMAGE} as builder
+ARG EXTRA_FILES
+ARG EXTRA_FILES_DEST_DIR="extra-files"
+ARG INCLUDE_MODULES_OPT=""
+ARG SKIP_TESTS=false
+ARG SERVICE_PATH
+
+WORKDIR /app
+
+# Install required packages
+RUN tdnf update -y && \
+  tdnf install -y maven && \
+  rm -rf /var/cache/tdnf/*
+
+# Copy local source code instead of git clone
+COPY ${SERVICE_PATH} src/
+
+# Maven Build Service
+RUN mvn -f src/pom.xml validate ${INCLUDE_MODULES_OPT} --settings src/.mvn/community-maven.settings.xml && \
+  if [ "$SKIP_TESTS" = "true" ]; then \
+    mvn -f src/pom.xml clean install ${INCLUDE_MODULES_OPT} --settings src/.mvn/community-maven.settings.xml -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -DskipTests; \
+  else \
+    mvn -f src/pom.xml clean install ${INCLUDE_MODULES_OPT} --settings src/.mvn/community-maven.settings.xml -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn; \
+  fi
+
+RUN find src -type f \( -name '*aks*' -o -name '*Enqueue*' -o -name '*azure*' \) -a -name '*-spring-boot.jar' -exec cp {} app.jar \;
+# RUN find src -type f -name 'git.sha' -exec cp {} git.sha \;
+
+# Copy extra files only if EXTRA_FILES is set, otherwise it would copy src folder with other java artifacts
+RUN mkdir -p $EXTRA_FILES_DEST_DIR
+
+RUN if [ -n "$EXTRA_FILES" ]; then \
+      FILE_NAME=$(basename "$EXTRA_FILES") && \
+      RELATIVE_PATH=$(dirname "$EXTRA_FILES") && \
+      mkdir -p "$EXTRA_FILES_DEST_DIR/$RELATIVE_PATH" && \
+      cp -r "src/$EXTRA_FILES" "$EXTRA_FILES_DEST_DIR/$RELATIVE_PATH"; \
+    fi
+
+FROM --platform=linux/amd64 mcr.microsoft.com/cbl-mariner/base/core:2.0
+ARG AZUL_JDK_PACKAGE
+ARG EXTRA_JAVA_OPTS
+ARG JAR_FILE
+ARG IFX_AUDIT_PACKAGE
+ARG EXTRA_FILES
+ARG EXTRA_FILES_DEST_DIR="extra-files"
+
+# Install required packages
+RUN tdnf update -y && \
+  tdnf install -y curl tar ca-certificates && \
+  rm -rf /var/cache/tdnf/*
+
+RUN curl -LO https://cdn.azul.com/zulu/bin/${AZUL_JDK_PACKAGE}.tar.gz \
+    && mkdir -p /usr/lib/jvm \
+    && tar -xf ./${AZUL_JDK_PACKAGE}.tar.gz -C /usr/lib/jvm \
+    && rm -f ${AZUL_JDK_PACKAGE}.tar.gz
+
+RUN curl -LO https://packages.microsoft.com/centos/7/prod/Packages/l/${IFX_AUDIT_PACKAGE}.rpm \
+    && tdnf install -y ${IFX_AUDIT_PACKAGE}.rpm \
+    && rm -rf ${IFX_AUDIT_PACKAGE}.rpm
+
+COPY --from=builder /app/app.jar app.jar
+COPY --from=builder /app/${EXTRA_FILES_DEST_DIR}/${EXTRA_FILES} ${EXTRA_FILES}
+# COPY --from=builder /app/git.sha git.sha
+
+ENV PATH="/usr/lib/jvm/${AZUL_JDK_PACKAGE}/bin:$PATH"
+ENV JAVA_HOME="/usr/lib/jvm/${AZUL_JDK_PACKAGE}"
+ENV DEFAULT_JVM_OPTS="-XX:+UseG1GC -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=50.0 -XX:+HeapDumpOnOutOfMemoryError"
+ENV LOGGING_JVM_OPTS="-DAPPINSIGHTS_LOGGING_ENABLED=false -Dlog4j2.formatMsgNoLookups=true -Djna.library.path=/usr/lib -DAZURE_AUDIT_ENABLED=true"
+ENV JAVA_OPTS="${DEFAULT_JVM_OPTS} ${LOGGING_JVM_OPTS} ${EXTRA_JAVA_OPTS} ${JAVA_OPTS}"
+ENTRYPOINT java ${JAVA_OPTS} -jar /app.jar

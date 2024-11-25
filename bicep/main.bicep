@@ -518,6 +518,11 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'AcrPull'
       }
+      {
+        principalId: clusterBlade.outputs.kubeletIdentityId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'AcrPull'
+      }
     ]
   }
 }

@@ -394,6 +394,9 @@ output natClusterIP string = natClusterIP.outputs.ipAddress
 @description('The OIDC Issuer URL for the cluster.')
 output oidcIssuerUrl string = cluster.outputs.oidcIssuerUrl
 
+@description('The Object ID of the Kubelet Identity.') 
+output kubeletIdentityId string = cluster.outputs.kubeletIdentityObjectId
+
 // =============== //
 //   Definitions   //
 // =============== //

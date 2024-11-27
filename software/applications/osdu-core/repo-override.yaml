@@ -1,3 +1,4 @@
+## This file can be used to override the repository for service images.
 ---
 apiVersion: v1
 kind: ConfigMap

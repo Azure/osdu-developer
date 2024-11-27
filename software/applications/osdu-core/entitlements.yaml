@@ -27,6 +27,10 @@ spec:
     - kind: ConfigMap
       name: configmap-software
       valuesKey: value.yaml
+    - kind: ConfigMap
+      name: repository-override
+      optional: true
+      valuesKey: repository.yaml
   values:
     nameOverride: entitlements
     installationType: osduCore

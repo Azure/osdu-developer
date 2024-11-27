@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: repository-override
+  namespace: default
+data:
+  repository.yaml: |
+    configuration:
+      - service: service_name
+        repository: acr_name.azurecr.io/service_name:latest

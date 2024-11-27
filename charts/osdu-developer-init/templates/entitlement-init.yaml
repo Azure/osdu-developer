@@ -72,8 +72,6 @@ data:
     # Get token (no resource needed)
     TOKEN=$(az account get-access-token --resource ${AZURE_AD_APPLICATION_ID} --query accessToken -o tsv)
 
-    sleep 300000
-
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://entitlements.{{ $namespace }}/api/entitlements/v2/tenant-provisioning \
       --header "Host: entitlements.{{ $namespace }}" \

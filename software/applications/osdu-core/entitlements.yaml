@@ -29,6 +29,7 @@ spec:
       valuesKey: value.yaml
     - kind: ConfigMap
       name: repository-override
+      namespace: default
       optional: true
       valuesKey: repository.yaml
   values:

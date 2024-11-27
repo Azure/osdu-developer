@@ -49,11 +49,16 @@ ARG JAR_FILE
 ARG IFX_AUDIT_PACKAGE
 ARG EXTRA_FILES
 ARG EXTRA_FILES_DEST_DIR="extra-files"
+ARG APPLICATIONINSIGHTS_VERSION="3.5.4"
 
 # Install required packages
 RUN tdnf update -y && \
   tdnf install -y curl tar ca-certificates && \
   rm -rf /var/cache/tdnf/*
+
+# Download Application Insights agent
+RUN curl -LO https://github.com/microsoft/ApplicationInsights-Java/releases/download/${APPLICATIONINSIGHTS_VERSION}/applicationinsights-agent-${APPLICATIONINSIGHTS_VERSION}.jar \
+    && mv applicationinsights-agent-${APPLICATIONINSIGHTS_VERSION}.jar applicationinsights-agent.jar
 
 RUN curl -LO https://cdn.azul.com/zulu/bin/${AZUL_JDK_PACKAGE}.tar.gz \
     && mkdir -p /usr/lib/jvm \
@@ -71,6 +76,6 @@ COPY --from=builder /app/${EXTRA_FILES_DEST_DIR}/${EXTRA_FILES} ${EXTRA_FILES}
 ENV PATH="/usr/lib/jvm/${AZUL_JDK_PACKAGE}/bin:$PATH"
 ENV JAVA_HOME="/usr/lib/jvm/${AZUL_JDK_PACKAGE}"
 ENV DEFAULT_JVM_OPTS="-XX:+UseG1GC -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=50.0 -XX:+HeapDumpOnOutOfMemoryError"
-ENV LOGGING_JVM_OPTS="-DAPPINSIGHTS_LOGGING_ENABLED=false -Dlog4j2.formatMsgNoLookups=true -Djna.library.path=/usr/lib -DAZURE_AUDIT_ENABLED=true"
+ENV LOGGING_JVM_OPTS="-DAPPINSIGHTS_LOGGING_ENABLED=true -Dlog4j2.formatMsgNoLookups=true -Djna.library.path=/usr/lib -DAZURE_AUDIT_ENABLED=true"
 ENV JAVA_OPTS="${DEFAULT_JVM_OPTS} ${LOGGING_JVM_OPTS} ${EXTRA_JAVA_OPTS}"
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-javaagent:/applicationinsights-agent.jar", "-jar", "/app.jar"]

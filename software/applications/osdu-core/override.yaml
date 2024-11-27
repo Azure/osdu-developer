@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: repository-override
+  namespace: osdu-core
+data:
+  repository.yaml: |
+    configuration:
+      - service: sample
+        repository: acr_name.azurecr.io/sample

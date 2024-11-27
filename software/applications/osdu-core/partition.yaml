@@ -27,6 +27,10 @@ spec:
     - kind: ConfigMap
       name: configmap-software
       valuesKey: value.yaml
+    - kind: ConfigMap
+      name: repository-override
+      optional: true  # Makes this ConfigMap optional
+      valuesKey: repository.yaml
   values:
     nameOverride: partition
     installationType: osduCore
@@ -43,8 +47,8 @@ spec:
         gateways:
           - istio-system/internal-gateway
           - istio-system/external-gateway
-        repository: maindwqgbkzaiijzc.azurecr.io/partition
-        # repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-
+        # repository: maindwqgbkzaiijzc.azurecr.io/partition
+        repository: community.opengroup.org:5555/osdu/platform/system/partition/partition-
         tag: latest
         probe:
           path: /actuator/health

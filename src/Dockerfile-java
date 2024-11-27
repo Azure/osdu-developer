@@ -4,7 +4,7 @@ ARG AZUL_JDK_PACKAGE="zulu17.48.15-ca-jdk17.0.10-linux_x64"
 ARG BASE_IMAGE="mcr.microsoft.com/openjdk/jdk:17-mariner"
 ARG EXTRA_JAVA_OPTS=""
 
-FROM ${BASE_IMAGE} as builder
+FROM ${BASE_IMAGE} AS builder
 ARG EXTRA_FILES
 ARG EXTRA_FILES_DEST_DIR="extra-files"
 ARG INCLUDE_MODULES_OPT=""
@@ -42,7 +42,7 @@ RUN if [ -n "$EXTRA_FILES" ]; then \
       cp -r "src/$EXTRA_FILES" "$EXTRA_FILES_DEST_DIR/$RELATIVE_PATH"; \
     fi
 
-FROM --platform=linux/amd64 mcr.microsoft.com/cbl-mariner/base/core:2.0
+FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
 ARG AZUL_JDK_PACKAGE
 ARG EXTRA_JAVA_OPTS
 ARG JAR_FILE
@@ -72,5 +72,5 @@ ENV PATH="/usr/lib/jvm/${AZUL_JDK_PACKAGE}/bin:$PATH"
 ENV JAVA_HOME="/usr/lib/jvm/${AZUL_JDK_PACKAGE}"
 ENV DEFAULT_JVM_OPTS="-XX:+UseG1GC -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=50.0 -XX:+HeapDumpOnOutOfMemoryError"
 ENV LOGGING_JVM_OPTS="-DAPPINSIGHTS_LOGGING_ENABLED=false -Dlog4j2.formatMsgNoLookups=true -Djna.library.path=/usr/lib -DAZURE_AUDIT_ENABLED=true"
-ENV JAVA_OPTS="${DEFAULT_JVM_OPTS} ${LOGGING_JVM_OPTS} ${EXTRA_JAVA_OPTS} ${JAVA_OPTS}"
-ENTRYPOINT java ${JAVA_OPTS} -jar /app.jar
+ENV JAVA_OPTS="${DEFAULT_JVM_OPTS} ${LOGGING_JVM_OPTS} ${EXTRA_JAVA_OPTS}"
+ENTRYPOINT ["java", "-jar", "/app.jar"]

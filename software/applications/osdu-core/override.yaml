@@ -7,5 +7,5 @@ metadata:
 data:
   repository.yaml: |
     configuration:
-      - service: sample
-        repository: acr_name.azurecr.io/sample
+      - service: entitlements
+        repository: maindwqgbkzaiijzc.azurecr.io/entitlements:latest

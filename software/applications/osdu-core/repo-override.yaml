@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: repository-override
-  namespace: default
+  namespace: osdu-core
 data:
   repository.yaml: |
     configuration:

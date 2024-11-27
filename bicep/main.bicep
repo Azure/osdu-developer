@@ -1087,11 +1087,18 @@ module configBlade 'modules/blade_configuration.bicep' = {
         contentType: 'text/plain'
         label: 'configmap-services'
       }
+      {
+        name: 'registry'
+        value: registry.outputs.loginServer
+        contentType: 'text/plain'
+        label: 'configmap-services'
+      }
     ]
   }
   dependsOn: [
     clusterBlade
     partitionBlade
+    registry
     fluxExtension
   ]
 }

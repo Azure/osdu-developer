@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: repository-override
+  name: configmap-repo-override
   namespace: osdu-core
 data:
   repository.yaml: |

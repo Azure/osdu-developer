@@ -28,7 +28,7 @@ spec:
       name: configmap-software
       valuesKey: value.yaml
     - kind: ConfigMap
-      name: repository-override
+      name: configmap-repo-override
       optional: true
       valuesKey: repository.yaml
   values:

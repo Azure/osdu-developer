@@ -28,6 +28,9 @@ spec:
       name: configmap-software
       valuesKey: value.yaml
     - kind: ConfigMap
+      name: configmap-common-values
+      valuesKey: value.yaml
+    - kind: ConfigMap
       name: configmap-repo-override
       optional: true
       valuesKey: repository.yaml
@@ -102,16 +105,18 @@ spec:
         secret:
           name: azure-resources
           key: insights-connection
-      - name: AZURE_ISTIOAUTH_ENABLED
-        value: "true"
-      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "true"
-      - name: SERVER_SERVLET_CONTEXTPATH
-        value: "/api/entitlements/v2/"
-      - name: SERVER_PORT
-        value: "80"
-      - name: ACCEPT_HTTP
-        value: "true"
+      # - name: AZURE_ISTIOAUTH_ENABLED
+      #   value: "true"
+      # - name: AZURE_PAAS_PODIDENTITY_ISENABLED
+      #   value: "true"
+      # - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+      #   value: "true"
+      # - name: SERVER_SERVLET_CONTEXTPATH
+      #   value: "/api/entitlements/v2/"
+      # - name: SERVER_PORT
+      #   value: "80"
+      # - name: ACCEPT_HTTP
+      #   value: "true"
       - name: SPRING_APPLICATION_NAME
         value: "entitlements"
       - name: SPRING_CONFIG_NAME

@@ -1,5 +1,5 @@
 /////////////////
-// Configuration Blade 
+// Configuration Blade
 /////////////////
 
 @description('The configuration for the blade section.')
@@ -12,10 +12,10 @@ param location string
 param tags object = {}
 
 @description('The name of the Key Vault where the secret exists')
-param kvName string 
+param kvName string
 
 @description('The Uri of the Key Vault where the secret exists')
-param kvUri string 
+param kvUri string
 
 @description('The name of the cluster.')
 param clusterName string
@@ -169,12 +169,12 @@ var federatedIdentityCredentials = [
 ]
 
 /*
- _______  _______  _______   _______ .______          ___   .___________. __    ______   .__   __. 
-|   ____||   ____||       \ |   ____||   _  \        /   \  |           ||  |  /  __  \  |  \ |  | 
-|  |__   |  |__   |  .--.  ||  |__   |  |_)  |      /  ^  \ `---|  |----`|  | |  |  |  | |   \|  | 
-|   __|  |   __|  |  |  |  ||   __|  |      /      /  /_\  \    |  |     |  | |  |  |  | |  . `  | 
-|  |     |  |____ |  '--'  ||  |____ |  |\  \----./  _____  \   |  |     |  | |  `--'  | |  |\   | 
-|__|     |_______||_______/ |_______|| _| `._____/__/     \__\  |__|     |__|  \______/  |__| \__| 
+ _______  _______  _______   _______ .______          ___   .___________. __    ______   .__   __.
+|   ____||   ____||       \ |   ____||   _  \        /   \  |           ||  |  /  __  \  |  \ |  |
+|  |__   |  |__   |  .--.  ||  |__   |  |_)  |      /  ^  \ `---|  |----`|  | |  |  |  | |   \|  |
+|   __|  |   __|  |  |  |  ||   __|  |      /      /  /_\  \    |  |     |  | |  |  |  | |  . `  |
+|  |     |  |____ |  '--'  ||  |____ |  |\  \----./  _____  \   |  |     |  | |  `--'  | |  |\   |
+|__|     |_______||_______/ |_______|| _| `._____/__/     \__\  |__|     |__|  \______/  |__| \__|
 */
 @batchSize(1)
 module federatedCredentials './federated_identity.bicep' = [for (cred, index) in federatedIdentityCredentials: {
@@ -204,6 +204,12 @@ var common_helm_values = [
   {
     name: 'AZURE_PAAS_PODIDENTITY_ISENABLED'
     value: 'false'
+    contentType: 'text/plain'
+    label: 'configmap-common-values'
+  }
+  {
+    name: 'AZURE_PAAS_WORKLOADIDENTITY_ISENABLED'
+    value: 'true'
     contentType: 'text/plain'
     label: 'configmap-common-values'
   }
@@ -323,12 +329,12 @@ var partitionStorageSettings = [for (name, i) in partitionStorageNames: {
 }]
 
 /*
-     ___      .______   .______     ______   ______   .__   __.  _______  __    _______ 
+     ___      .______   .______     ______   ______   .__   __.  _______  __    _______
     /   \     |   _  \  |   _  \   /      | /  __  \  |  \ |  | |   ____||  |  /  _____|
-   /  ^  \    |  |_)  | |  |_)  | |  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __  
-  /  /_\  \   |   ___/  |   ___/  |  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ | 
- /  _____  \  |  |      |  |      |  `----.|  `--'  | |  |\   | |  |     |  | |  |__| | 
-/__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______| 
+   /  ^  \    |  |_)  | |  |_)  | |  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __
+  /  /_\  \   |   ___/  |   ___/  |  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ |
+ /  _____  \  |  |      |  |      |  `----.|  `--'  | |  |\   | |  |     |  | |  |__| |
+/__/     \__\ | _|      | _|       \______| \______/  |__| \__| |__|     |__|  \______|
 */
 // AVM Module Customized due for east of settings.
 module app_config './app-configuration/main.bicep' = {
@@ -397,12 +403,12 @@ values.yaml: |
 }
 
 /*
-  ______   ______   .__   __.  _______  __    _______ .___  ___.      ___      .______   
- /      | /  __  \  |  \ |  | |   ____||  |  /  _____||   \/   |     /   \     |   _  \  
-|  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __  |  \  /  |    /  ^  \    |  |_)  | 
-|  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ | |  |\/|  |   /  /_\  \   |   ___/  
-|  `----.|  `--'  | |  |\   | |  |     |  | |  |__| | |  |  |  |  /  _____  \  |  |      
- \______| \______/  |__| \__| |__|     |__|  \______| |__|  |__| /__/     \__\ | _|      
+  ______   ______   .__   __.  _______  __    _______ .___  ___.      ___      .______
+ /      | /  __  \  |  \ |  | |   ____||  |  /  _____||   \/   |     /   \     |   _  \
+|  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __  |  \  /  |    /  ^  \    |  |_)  |
+|  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ | |  |\/|  |   /  /_\  \   |   ___/
+|  `----.|  `--'  | |  |\   | |  |     |  | |  |__| | |  |  |  |  /  _____  \  |  |
+ \______| \______/  |__| \__| |__|     |__|  \______| |__|  |__| /__/     \__\ | _|
 */
 module appConfigMap './aks-config-map/main.bicep' = {
   name: '${bladeConfig.sectionName}-cluster-appconfig-configmap'
@@ -411,7 +417,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
     location: location
     name: 'config-map-values'
     namespace: 'default'
-    
+
     newOrExistingManagedIdentity: 'existing'
     managedIdentityName: managedIdentityName
     existingManagedIdentitySubId: subscription().subscriptionId
@@ -419,8 +425,8 @@ module appConfigMap './aks-config-map/main.bicep' = {
 
     // Order of items matters here.
     fileData: [
-      format(configMaps.appConfigTemplate, 
-             subscription().tenantId, 
+      format(configMaps.appConfigTemplate,
+             subscription().tenantId,
              appIdentity.properties.clientId,
              app_config.outputs.endpoint,
              kvUri,
@@ -457,9 +463,9 @@ var serviceLayerConfig = {
 /* _______  __  .___________.  ______   .______     _______.
  /  _____||  | |           | /  __  \  |   _  \   /       |
 |  |  __  |  | `---|  |----`|  |  |  | |  |_)  | |   (----`
-|  | |_ | |  |     |  |     |  |  |  | |   ___/   \   \    
-|  |__| | |  |     |  |     |  `--'  | |  |   .----)   |   
- \______| |__|     |__|      \______/  | _|   |_______/                                                          
+|  | |_ | |  |     |  |     |  |  |  | |   ___/   \   \
+|  |__| | |  |     |  |     |  `--'  | |  |   .----)   |
+ \______| |__|     |__|      \______/  | _|   |_______/
 */
 //--------------Flux Config---------------
 module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {

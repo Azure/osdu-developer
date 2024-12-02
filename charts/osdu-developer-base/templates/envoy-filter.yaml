@@ -1,4 +1,6 @@
 # istioctl proxy-config log <pod_name> --level lua:debug
+# istioctl proxy-config log <pod_name> --level jwt:debug
+# istioctl proxy-config log <pod_name> --level rbac:debug
 
 {{- $namespace := .Release.Namespace }}
 {{- $managedIdentityClientId := .Values.azure.clientId }}

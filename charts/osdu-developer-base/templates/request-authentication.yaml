@@ -14,6 +14,7 @@ spec:
     audiences:
       - "{{ $appId }}"
       - "{{ $clientId }}"
+      - "https://management.azure.com"
     outputPayloadToHeader: "x-payload"
     forwardOriginalToken: true
     fromHeaders:

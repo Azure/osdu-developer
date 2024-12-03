@@ -88,7 +88,9 @@ spec:
           - name: AZURE_ISTIOAUTH_ENABLED
             value: "true"
           - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-            value: "true"
+            value: "false"
+          - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+            value: "false"
           - name: SERVER_SERVLET_CONTEXTPATH
             value: "/api/partition/v1/"
           - name: SERVER_PORT
@@ -139,7 +141,7 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software
-      valuesKey: value.yaml 
+      valuesKey: value.yaml
     - kind: Secret
       name: active-directory
       targetPath: clientId

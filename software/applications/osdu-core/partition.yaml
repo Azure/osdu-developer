@@ -90,7 +90,7 @@ spec:
           - name: AZURE_PAAS_PODIDENTITY_ISENABLED
             value: "false"
           - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
-            value: "false"
+            value: "true"
           - name: SERVER_SERVLET_CONTEXTPATH
             value: "/api/partition/v1/"
           - name: SERVER_PORT

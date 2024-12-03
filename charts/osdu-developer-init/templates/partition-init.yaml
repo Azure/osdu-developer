@@ -38,7 +38,7 @@ spec:
           - name: PARTITION
             value: {{ .Values.partition | quote }}
           - name: SERVICE_BUS_NAME
-            value: {{ .Values.serviceBus | quote }}  
+            value: {{ .Values.serviceBus | quote }}
       containers:
       - name: sleep
         image: istio/base
@@ -215,8 +215,8 @@ data:
         -u ${AZURE_CLIENT_ID} \
         -t ${AZURE_TENANT_ID}
 
-    # Get token (no resource needed)
-    TOKEN=$(az account get-access-token --resource ${AZURE_AD_APPLICATION_ID} --query accessToken -o tsv)
+    # Get token with the correct application ID as resource
+    TOKEN=$(az account get-access-token --resource "api://${AZURE_AD_APPLICATION_ID}" --query accessToken -o tsv)
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://partition.{{ $namespace }}/api/partition/v1/partitions/${PARTITION} \
@@ -229,7 +229,7 @@ data:
 
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
     BODY=${OUTPUT%???}
-  
+
     if [ "$HTTP_STATUS_CODE" == "201" ]; then
       echo "Success: $(echo "$BODY" | jq .)"
     elif [ "$HTTP_STATUS_CODE" == "409" ]; then

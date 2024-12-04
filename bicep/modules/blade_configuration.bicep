@@ -113,12 +113,21 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: kvName
 }
 
-resource keySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource keySecretSpUsername 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: 'app-dev-sp-username'
   parent: keyVault
 
   properties: {
-    value: applicationClientId
+    value: appIdentity.properties.clientId
+  }
+}
+
+resource keySecretSpPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'app-dev-sp-password'
+  parent: keyVault
+
+  properties: {
+    value: 'dummy'
   }
 }
 

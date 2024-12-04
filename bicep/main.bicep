@@ -10,9 +10,9 @@ param emailAddress string
 @description('Specify the Application Client Id. (This is the unique application ID of this application.)')
 param applicationClientId string
 
-@description('Specify the Application Client Secret. (A valid secret for the application client ID.)')
-@secure()
-param applicationClientSecret string
+// @description('Specify the Application Client Secret. (A valid secret for the application client ID.)')
+// @secure()
+// param applicationClientSecret string
 
 @description('Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)')
 param applicationClientPrincipalOid string
@@ -80,7 +80,7 @@ param vnetConfiguration object = {
 }
 
 /////////////////////////////////
-//  Configuration 
+//  Configuration
 /////////////////////////////////
 
 // Internal Feature Flags Start ->
@@ -108,10 +108,10 @@ var configuration = {
     tenantId: 'tenant-id'
     subscriptionId: 'subscription-id'
     registryName: 'container-registry'
-    applicationId: 'aad-client-id'
-    clientId: 'app-dev-sp-username'
-    clientSecret: 'app-dev-sp-password'
-    applicationPrincipalId: 'app-dev-sp-id'
+    // applicationId: 'aad-client-id'
+    // clientId: 'app-dev-sp-username'
+    // clientSecret: 'app-dev-sp-password'
+    // applicationPrincipalId: 'app-dev-sp-id'
     stampIdentity: 'osdu-identity-id'
     storageAccountName: 'common-storage'
     storageAccountKey: 'common-storage-key'
@@ -157,12 +157,12 @@ var rg_unique_id = '${replace(configuration.name, '-', '')}${uniqueString(resour
 
 
 /*
- __   _______   _______ .__   __. .___________. __  .___________.____    ____ 
-|  | |       \ |   ____||  \ |  | |           ||  | |           |\   \  /   / 
-|  | |  .--.  ||  |__   |   \|  | `---|  |----`|  | `---|  |----` \   \/   /  
-|  | |  |  |  ||   __|  |  . `  |     |  |     |  |     |  |       \_    _/   
-|  | |  '--'  ||  |____ |  |\   |     |  |     |  |     |  |         |  |     
-|__| |_______/ |_______||__| \__|     |__|     |__|     |__|         |__|     
+ __   _______   _______ .__   __. .___________. __  .___________.____    ____
+|  | |       \ |   ____||  \ |  | |           ||  | |           |\   \  /   /
+|  | |  .--.  ||  |__   |   \|  | `---|  |----`|  | `---|  |----` \   \/   /
+|  | |  |  |  ||   __|  |  . `  |     |  |     |  |     |  |       \_    _/
+|  | |  '--'  ||  |____ |  |\   |     |  |     |  |     |  |         |  |
+|__| |_______/ |_______||__| \__|     |__|     |__|     |__|         |__|
 */
 module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
   name: '${configuration.name}-user-managed-identity'
@@ -185,9 +185,9 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
      ___      .__   __.      ___       __      ____    ____ .___________. __    ______     _______.
     /   \     |  \ |  |     /   \     |  |     \   \  /   / |           ||  |  /      |   /       |
    /  ^  \    |   \|  |    /  ^  \    |  |      \   \/   /  `---|  |----`|  | |  ,----'  |   (----`
-  /  /_\  \   |  . `  |   /  /_\  \   |  |       \_    _/       |  |     |  | |  |        \   \    
- /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |         |  |     |  | |  `----.----)   |   
-/__/     \__\ |__| \__| /__/     \__\ |_______|    |__|         |__|     |__|  \______|_______/    
+  /  /_\  \   |  . `  |   /  /_\  \   |  |       \_    _/       |  |     |  | |  |        \   \
+ /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |         |  |     |  | |  `----.----)   |
+/__/     \__\ |__| \__| /__/     \__\ |_______|    |__|         |__|     |__|  \______|_______/
 */
 module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.1' = {
   name: '${configuration.name}-log-analytics'
@@ -211,9 +211,9 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.1' = {
  __  .__   __.      _______. __    _______  __    __  .___________.    _______.
 |  | |  \ |  |     /       ||  |  /  _____||  |  |  | |           |   /       |
 |  | |   \|  |    |   (----`|  | |  |  __  |  |__|  | `---|  |----`  |   (----`
-|  | |  . `  |     \   \    |  | |  | |_ | |   __   |     |  |        \   \    
-|  | |  |\   | .----)   |   |  | |  |__| | |  |  |  |     |  |    .----)   |   
-|__| |__| \__| |_______/    |__|  \______| |__|  |__|     |__|    |_______/    
+|  | |  . `  |     \   \    |  | |  | |_ | |   __   |     |  |        \   \
+|  | |  |\   | .----)   |   |  | |  |__| | |  |  |  |     |  |    .----)   |
+|__| |__| \__| |_______/    |__|  \______| |__|  |__|     |__|    |_______/
 */
 
 module insights 'br/public:avm/res/insights/component:0.3.0' = {
@@ -232,7 +232,7 @@ module insights 'br/public:avm/res/insights/component:0.3.0' = {
 
     kind: configuration.insights.sku
     workspaceResourceId: logAnalytics.outputs.resourceId
-    
+
     diagnosticSettings: [
       {
         metricCategories: [
@@ -249,12 +249,12 @@ module insights 'br/public:avm/res/insights/component:0.3.0' = {
 
 
 /*
-  ______     ___       ______  __    __   _______ 
+  ______     ___       ______  __    __   _______
  /      |   /   \     /      ||  |  |  | |   ____|
-|  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__   
-|  |      /  /_\  \  |  |     |   __   | |   __|  
-|  `----./  _____  \ |  `----.|  |  |  | |  |____ 
- \______/__/     \__\ \______||__|  |__| |_______|                             
+|  ,----'  /  ^  \   |  ,----'|  |__|  | |  |__
+|  |      /  /_\  \  |  |     |   __   | |   __|
+|  `----./  _____  \ |  `----.|  |  |  | |  |____
+ \______/__/     \__\ \______||__|  |__| |_______|
 */
 // This takes a long time to deploy so we are starting as soon as possible.
 module redis 'br/public:avm/res/cache/redis:0.3.2' = {
@@ -270,7 +270,7 @@ module redis 'br/public:avm/res/cache/redis:0.3.2' = {
       id: rg_unique_id
     }
 
-    skuName: 'Basic' 
+    skuName: 'Basic'
     capacity: 1
     replicasPerMaster: 1
     replicasPerPrimary: 1
@@ -281,17 +281,17 @@ module redis 'br/public:avm/res/cache/redis:0.3.2' = {
 
 
 /*
-.__   __.  _______ .___________.____    __    ____  ______   .______       __  ___ 
-|  \ |  | |   ____||           |\   \  /  \  /   / /  __  \  |   _  \     |  |/  / 
-|   \|  | |  |__   `---|  |----` \   \/    \/   / |  |  |  | |  |_)  |    |  '  /  
-|  . `  | |   __|      |  |       \            /  |  |  |  | |      /     |    <   
-|  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  
-|__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
-.______    __          ___       _______   _______ 
+.__   __.  _______ .___________.____    __    ____  ______   .______       __  ___
+|  \ |  | |   ____||           |\   \  /  \  /   / /  __  \  |   _  \     |  |/  /
+|   \|  | |  |__   `---|  |----` \   \/    \/   / |  |  |  | |  |_)  |    |  '  /
+|  . `  | |   __|      |  |       \            /  |  |  |  | |      /     |    <
+|  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \
+|__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\
+.______    __          ___       _______   _______
 |   _  \  |  |        /   \     |       \ |   ____|
-|  |_)  | |  |       /  ^  \    |  .--.  ||  |__   
-|   _  <  |  |      /  /_\  \   |  |  |  ||   __|  
-|  |_)  | |  `----./  _____  \  |  '--'  ||  |____ 
+|  |_)  | |  |       /  ^  \    |  .--.  ||  |__
+|   _  <  |  |      /  /_\  \   |  |  |  ||   __|
+|  |_)  | |  `----./  _____  \  |  '--'  ||  |____
 |______/  |_______/__/     \__\ |_______/ |_______|
 */
 module networkBlade 'modules/blade_network.bicep' = if (enableVnetInjection) {
@@ -314,7 +314,7 @@ module networkBlade 'modules/blade_network.bicep' = if (enableVnetInjection) {
 
     enablePodSubnet: vnetConfiguration.podSubnet.name != '' && vnetConfiguration.podSubnet.prefix != '' ? true: false
     enableVnetInjection: enableVnetInjection
-    
+
     vnetConfiguration: {
       group: vnetConfiguration.group
       name: vnetConfiguration.name
@@ -338,17 +338,17 @@ module networkBlade 'modules/blade_network.bicep' = if (enableVnetInjection) {
 
 
 /*
-  ______  __       __    __       _______.___________. _______ .______      
- /      ||  |     |  |  |  |     /       |           ||   ____||   _  \     
-|  ,----'|  |     |  |  |  |    |   (----`---|  |----`|  |__   |  |_)  |    
-|  |     |  |     |  |  |  |     \   \       |  |     |   __|  |      /     
+  ______  __       __    __       _______.___________. _______ .______
+ /      ||  |     |  |  |  |     /       |           ||   ____||   _  \
+|  ,----'|  |     |  |  |  |    |   (----`---|  |----`|  |__   |  |_)  |
+|  |     |  |     |  |  |  |     \   \       |  |     |   __|  |      /
 |  `----.|  `----.|  `--'  | .----)   |      |  |     |  |____ |  |\  \----.
  \______||_______| \______/  |_______/       |__|     |_______|| _| `._____|
-.______    __          ___       _______   _______ 
+.______    __          ___       _______   _______
 |   _  \  |  |        /   \     |       \ |   ____|
-|  |_)  | |  |       /  ^  \    |  .--.  ||  |__   
-|   _  <  |  |      /  /_\  \   |  |  |  ||   __|  
-|  |_)  | |  `----./  _____  \  |  '--'  ||  |____ 
+|  |_)  | |  |       /  ^  \    |  .--.  ||  |__
+|   _  <  |  |      /  /_\  \   |  |  |  ||   __|
+|  |_)  | |  `----./  _____  \  |  '--'  ||  |____
 |______/  |_______/__/     \__\ |_______/ |_______|
 */
 module clusterBlade 'modules/blade_cluster.bicep' = {
@@ -373,7 +373,7 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
     workspaceResourceId: logAnalytics.outputs.resourceId
     identityId: enableVnetInjection ? networkBlade.outputs.networkConfiguration.identityId : stampIdentity.outputs.resourceId
     managedIdentityName: stampIdentity.outputs.name
-    
+
     aksSubnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
     podSubnetId: enableVnetInjection ? networkBlade.outputs.podSubnetId : ''
     vmSize: customVMSize
@@ -386,12 +386,12 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
 
 
 /*
- __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __. 
-|   ____\  \ /  / |           ||   ____||  \ |  |     /       ||  |  /  __  \  |  \ |  | 
-|  |__   \  V  /  `---|  |----`|  |__   |   \|  |    |   (----`|  | |  |  |  | |   \|  | 
-|   __|   >   <       |  |     |   __|  |  . `  |     \   \    |  | |  |  |  | |  . `  | 
-|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
-|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
+ __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __.
+|   ____\  \ /  / |           ||   ____||  \ |  |     /       ||  |  /  __  \  |  \ |  |
+|  |__   \  V  /  `---|  |----`|  |__   |   \|  |    |   (----`|  | |  |  |  | |   \|  |
+|   __|   >   <       |  |     |   __|  |  . `  |     \   \    |  | |  |  |  | |  . `  |
+|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   |
+|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__|
 */
 // AVM doesn't support output of the principalId from the extension module so we have to use a deployment script to get it.
 // This takes a long time to deploy so we are starting as soon as possible.
@@ -401,7 +401,7 @@ module fluxExtension 'modules/flux-extension/main.bicep' = {
     clusterName: clusterBlade.outputs.clusterName
     location: location
     extensionType: 'microsoft.flux'
-    name: 'flux'    
+    name: 'flux'
     releaseNamespace: 'flux-system'
     releaseTrain: 'Stable'
 
@@ -425,13 +425,13 @@ module fluxExtension 'modules/flux-extension/main.bicep' = {
      _______.  ______ .______       __  .______   .___________.
     /       | /      ||   _  \     |  | |   _  \  |           |
    |   (----`|  ,----'|  |_)  |    |  | |  |_)  | `---|  |----`
-    \   \    |  |     |      /     |  | |   ___/      |  |     
-.----)   |   |  `----.|  |\  \----.|  | |  |          |  |     
-|_______/     \______|| _| `._____||__| | _|          |__|     
+    \   \    |  |     |      /     |  | |   ___/      |  |
+.----)   |   |  `----.|  |\  \----.|  | |  |          |  |
+|_______/     \______|| _| `._____||__| | _|          |__|
 */
 module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' = {
   name: '${configuration.name}-script-clientId'
-  
+
   params: {
     kind: 'AzureCLI'
     name: 'script-${configuration.name}-aks-extension'
@@ -453,7 +453,7 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
         value: fluxExtension.outputs.principalId
       }
     ]
-    
+
     timeout: 'PT30M'
     retentionInterval: 'PT1H'
 
@@ -462,7 +462,7 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
 
       echo "Looking up client ID for $principalId in ResourceGroup $rgName"
       clientId=$(az identity list --resource-group $rgName --query "[?principalId=='$principalId'] | [0].clientId" -otsv)
-      
+
       echo "Found ClientId: $clientId"
       echo "{\"clientId\":\"$clientId\"}" | jq -c '.' > $AZ_SCRIPTS_OUTPUT_PATH
     '''
@@ -474,12 +474,12 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
 
 
 /*
-.______       _______   _______  __       _______.___________..______     ____    ____ 
-|   _  \     |   ____| /  _____||  |     /       |           ||   _  \    \   \  /   / 
-|  |_)  |    |  |__   |  |  __  |  |    |   (----`---|  |----`|  |_)  |    \   \/   /  
-|      /     |   __|  |  | |_ | |  |     \   \       |  |     |      /      \_    _/   
-|  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |     
-| _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|                                                                                                                              
+.______       _______   _______  __       _______.___________..______     ____    ____
+|   _  \     |   ____| /  _____||  |     /       |           ||   _  \    \   \  /   /
+|  |_)  |    |  |__   |  |  __  |  |    |   (----`---|  |----`|  |_)  |    \   \/   /
+|      /     |   __|  |  | |_ | |  |     \   \       |  |     |      /      \_    _/
+|  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |
+| _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|
 */
 module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
   name: '${configuration.name}-container-registry'
@@ -532,15 +532,15 @@ module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
  __  ___  ___________    ____ ____    ____  ___      __    __   __      .___________.
 |  |/  / |   ____\   \  /   / \   \  /   / /   \    |  |  |  | |  |     |           |
 |  '  /  |  |__   \   \/   /   \   \/   / /  ^  \   |  |  |  | |  |     `---|  |----`
-|    <   |   __|   \_    _/     \      / /  /_\  \  |  |  |  | |  |         |  |     
-|  .  \  |  |____    |  |        \    / /  _____  \ |  `--'  | |  `----.    |  |     
-|__|\__\ |_______|   |__|         \__/ /__/     \__\ \______/  |_______|    |__|                                                                     
+|    <   |   __|   \_    _/     \      / /  /_\  \  |  |  |  | |  |         |  |
+|  .  \  |  |____    |  |        \    / /  _____  \ |  `--'  | |  `----.    |  |
+|__|\__\ |_______|   |__|         \__/ /__/     \__\ \______/  |_______|    |__|
 */
 
 var name = '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
 
 @description('The list of secrets to persist to the Key Vault')
-var vaultSecrets = [ 
+var vaultSecrets = [
   {
     secretName: 'tenant-id'
     secretValue: subscription().tenantId
@@ -554,14 +554,15 @@ var vaultSecrets = [
     secretValue: subscription().subscriptionId
   }
   // Azure AD Secrets
-  {
-    secretName: 'app-dev-sp-password'
-    secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
-  }
   // {
-  //   secretName: 'app-dev-sp-id'
-  //   secretValue: applicationClientSecret == '' ? stampIdentity.outputs.clientId : applicationClientId
+  //   secretName: 'app-dev-sp-password'
+  //   secretValue: 'dummy'
+  //   // secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
   // }
+  {
+    secretName: 'app-dev-sp-id'
+    secretValue: applicationClientId
+  }
   {
     secretName: 'cpng-user-name'
     secretValue: 'dbuser'
@@ -606,7 +607,7 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
     name: length(name) > 24 ? substring(name, 0, 24) : name
     location: location
     enableTelemetry: enableTelemetry
-    
+
     // Assign Tags
     tags: {
       layer: configuration.displayName
@@ -620,7 +621,7 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
     ]
 
     enablePurgeProtection: false
-    
+
     // Configure RBAC
     enableRbacAuthorization: true
     roleAssignments: union(
@@ -667,9 +668,9 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
      _______. _______   ______ .______       _______ .___________.    _______.
     /       ||   ____| /      ||   _  \     |   ____||           |   /       |
    |   (----`|  |__   |  ,----'|  |_)  |    |  |__   `---|  |----`  |   (----`
-    \   \    |   __|  |  |     |      /     |   __|      |  |        \   \    
-.----)   |   |  |____ |  `----.|  |\  \----.|  |____     |  |    .----)   |   
-|_______/    |_______| \______|| _| `._____||_______|    |__|    |_______/    
+    \   \    |   __|  |  |     |      /     |   __|      |  |        \   \
+.----)   |   |  |____ |  `----.|  |\  \----.|  |____     |  |    .----)   |
+|_______/    |_______| \______|| _| `._____||_______|    |__|    |_______/
 */
 // This custom module is used to persist insights, cache and workspace secrets to the Key Vault.
 module keyvaultSecrets 'modules/keyvault_secrets.bicep' = {
@@ -707,12 +708,12 @@ var commonLayerConfig = {
 }
 
 
-/*   _______.___________.  ______   .______          ___       _______  _______ 
+/*   _______.___________.  ______   .______          ___       _______  _______
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
-   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
-    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|  
-.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____ 
-|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
+   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__
+    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|
+.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____
+|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|
 */
 // AVM Module Customized due to required Secrets.
 module storage 'modules/storage-account/main.bicep' = {
@@ -727,7 +728,7 @@ module storage 'modules/storage-account/main.bicep' = {
       layer: configuration.displayName
       id: rg_unique_id
     }
-    
+
     // Hook up Diagnostics
     diagnosticSettings: [
       {
@@ -780,7 +781,7 @@ module storage 'modules/storage-account/main.bicep' = {
     publicNetworkAccess: 'Enabled'
 
     // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
-    allowSharedKeyAccess: true  
+    allowSharedKeyAccess: true
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
@@ -806,7 +807,7 @@ module storage 'modules/storage-account/main.bicep' = {
       ]
       connectionString1: [
         'system-storage-connection'
-      ]     
+      ]
       blobEndpoint: [
         'system-storage-blob-endpoint'
       ]
@@ -823,12 +824,12 @@ module storage 'modules/storage-account/main.bicep' = {
 
 
 /*
-  _______ .______          ___      .______    __    __  
- /  _____||   _  \        /   \     |   _  \  |  |  |  | 
-|  |  __  |  |_)  |      /  ^  \    |  |_)  | |  |__|  | 
-|  | |_ | |      /      /  /_\  \   |   ___/  |   __   | 
-|  |__| | |  |\  \----./  _____  \  |  |      |  |  |  | 
- \______| | _| `._____/__/     \__\ | _|      |__|  |__| 
+  _______ .______          ___      .______    __    __
+ /  _____||   _  \        /   \     |   _  \  |  |  |  |
+|  |  __  |  |_)  |      /  ^  \    |  |_)  | |  |__|  |
+|  | |_ | |      /      /  /_\  \   |   ___/  |   __   |
+|  |__| | |  |\  \----./  _____  \  |  |      |  |  |  |
+ \______| | _| `._____/__/     \__\ | _|      |__|  |__|
 */
 // AVM Module Customized due to required Secrets.
 module database 'modules/cosmos-db/main.bicep' = {
@@ -883,7 +884,7 @@ module database 'modules/cosmos-db/main.bicep' = {
     databaseEndpointSecretName: 'graph-db-endpoint'
     databasePrimaryKeySecretName: 'graph-db-primary-key'
     databaseConnectionStringSecretName: 'graph-db-connection'
-    
+
 
     roleAssignments: [
       {
@@ -904,9 +905,9 @@ module database 'modules/cosmos-db/main.bicep' = {
      _______.  ______ .______       __  .______   .___________.    _______.
     /       | /      ||   _  \     |  | |   _  \  |           |   /       |
    |   (----`|  ,----'|  |_)  |    |  | |  |_)  | `---|  |----`  |   (----`
-    \   \    |  |     |      /     |  | |   ___/      |  |        \   \    
-.----)   |   |  `----.|  |\  \----.|  | |  |          |  |    .----)   |   
-|_______/     \______|| _| `._____||__| | _|          |__|    |_______/    
+    \   \    |  |     |      /     |  | |   ___/      |  |        \   \
+.----)   |   |  `----.|  |\  \----.|  | |  |          |  |    .----)   |
+|_______/     \______|| _| `._____||__| | _|          |__|    |_______/
 */
 
 
@@ -933,16 +934,16 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
     retentionInterval: 'PT1H'
     timeout: 'PT30M'
     runOnce: true
-    
+
     managedIdentities: {
       userAssignedResourcesIds: [
         stampIdentity.outputs.resourceId
       ]
-    }    
+    }
 
     kind: 'AzureCLI'
     azCliVersion: '2.63.0'
-    
+
     environmentVariables: [
       { name: 'AZURE_STORAGE_ACCOUNT', value: storage.outputs.name }
       { name: 'FILE', value: 'main.zip' }
@@ -970,17 +971,17 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for
 
 
 /*
-.______      ___      .______     .___________. __  .___________. __    ______   .__   __. 
-|   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  | 
-|  |_)  |  /  ^  \    |  |_)  |   `---|  |----`|  | `---|  |----`|  | |  |  |  | |   \|  | 
-|   ___/  /  /_\  \   |      /        |  |     |  |     |  |     |  | |  |  |  | |  . `  | 
-|  |     /  _____  \  |  |\  \----.   |  |     |  |     |  |     |  | |  `--'  | |  |\   | 
-| _|    /__/     \__\ | _| `._____|   |__|     |__|     |__|     |__|  \______/  |__| \__| 
-.______    __          ___       _______   _______ 
+.______      ___      .______     .___________. __  .___________. __    ______   .__   __.
+|   _  \    /   \     |   _  \    |           ||  | |           ||  |  /  __  \  |  \ |  |
+|  |_)  |  /  ^  \    |  |_)  |   `---|  |----`|  | `---|  |----`|  | |  |  |  | |   \|  |
+|   ___/  /  /_\  \   |      /        |  |     |  |     |  |     |  | |  |  |  | |  . `  |
+|  |     /  _____  \  |  |\  \----.   |  |     |  |     |  |     |  | |  `--'  | |  |\   |
+| _|    /__/     \__\ | _| `._____|   |__|     |__|     |__|     |__|  \______/  |__| \__|
+.______    __          ___       _______   _______
 |   _  \  |  |        /   \     |       \ |   ____|
-|  |_)  | |  |       /  ^  \    |  .--.  ||  |__   
-|   _  <  |  |      /  /_\  \   |  |  |  ||   __|  
-|  |_)  | |  `----./  _____  \  |  '--'  ||  |____ 
+|  |_)  | |  |       /  ^  \    |  .--.  ||  |__
+|   _  <  |  |      /  /_\  \   |  |  |  ||   __|
+|  |_)  | |  `----./  _____  \  |  '--'  ||  |____
 |______/  |_______/__/     \__\ |_______/ |_______|
 */
 module partitionBlade 'modules/blade_partition.bicep' = {
@@ -999,7 +1000,7 @@ module partitionBlade 'modules/blade_partition.bicep' = {
     workspaceResourceId: logAnalytics.outputs.resourceId
     kvName: keyvault.outputs.name
     natClusterIP: clusterBlade.outputs.natClusterIP
-    
+
     enableBlobPublicAccess: false
 
     partitions: configuration.partitions
@@ -1019,17 +1020,17 @@ module partitionBlade 'modules/blade_partition.bicep' = {
 
 
 /*
-  ______   ______   .__   __.  _______  __    _______ 
+  ______   ______   .__   __.  _______  __    _______
  /      | /  __  \  |  \ |  | |   ____||  |  /  _____|
-|  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __  
-|  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ | 
-|  `----.|  `--'  | |  |\   | |  |     |  | |  |__| | 
- \______| \______/  |__| \__| |__|     |__|  \______| 
-.______    __          ___       _______   _______ 
+|  ,----'|  |  |  | |   \|  | |  |__   |  | |  |  __
+|  |     |  |  |  | |  . `  | |   __|  |  | |  | |_ |
+|  `----.|  `--'  | |  |\   | |  |     |  | |  |__| |
+ \______| \______/  |__| \__| |__|     |__|  \______|
+.______    __          ___       _______   _______
 |   _  \  |  |        /   \     |       \ |   ____|
-|  |_)  | |  |       /  ^  \    |  .--.  ||  |__   
-|   _  <  |  |      /  /_\  \   |  |  |  ||   __|  
-|  |_)  | |  `----./  _____  \  |  '--'  ||  |____ 
+|  |_)  | |  |       /  ^  \    |  .--.  ||  |__
+|   _  <  |  |      /  /_\  \   |  |  |  ||   __|
+|  |_)  | |  `----./  _____  \  |  '--'  ||  |____
 |______/  |_______/__/     \__\ |_______/ |_______|
 */
 module configBlade 'modules/blade_configuration.bicep' = {
@@ -1065,7 +1066,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     appInsightsKey: insights.outputs.instrumentationKey
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames
-    
+
     clusterName: clusterBlade.outputs.clusterName
     oidcIssuerUrl: clusterBlade.outputs.oidcIssuerUrl
     clusterIngress: ingressType == '' ? 'External' : ingressType

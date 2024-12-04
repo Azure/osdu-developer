@@ -16,7 +16,7 @@ param cacheName string
 
 @description('The name of the identity.')
 @minLength(0)
-param identityName string 
+param identityName string
 
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -102,13 +102,13 @@ resource insightsConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource identityClientIdSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: 'app-dev-sp-id'
-  parent: keyVault
+// resource identityClientIdSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+//   name: 'app-dev-sp-id'
+//   parent: keyVault
 
-  properties: {
-    value: identity.properties.clientId
-  }
-}
+//   properties: {
+//     value: identity.properties.clientId
+//   }
+// }
 
 output keyVaultName string = keyVault.name

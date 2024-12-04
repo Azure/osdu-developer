@@ -1,5 +1,5 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: cnpg
@@ -18,7 +18,7 @@ spec:
   releaseName: database-operator
   chart:
     spec:
-      chart: cloudnative-pg 
+      chart: cloudnative-pg
       sourceRef:
         kind: HelmRepository
         name: cnpg

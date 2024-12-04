@@ -45,14 +45,15 @@ spec:
           - key: redis-password
             vaultSecret: redis-password
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: redis
   namespace: flux-system
 spec:
+  type: oci
   interval: 10m
-  url: https://charts.bitnami.com/bitnami
+  url: oci://registry-1.docker.io/bitnamicharts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

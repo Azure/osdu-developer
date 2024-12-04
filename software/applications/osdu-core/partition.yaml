@@ -87,8 +87,6 @@ spec:
               key: insights-connection
           - name: AZURE_ISTIOAUTH_ENABLED
             value: "true"
-          - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-            value: "false"
           - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
             value: "true"
           - name: SERVER_SERVLET_CONTEXTPATH

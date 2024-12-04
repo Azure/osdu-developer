@@ -218,7 +218,7 @@ data:
         -t ${AZURE_TENANT_ID}
 
     # Get token with the correct application ID as resource
-    TOKEN=$(az account get-access-token --resource "api://${AZURE_AD_APPLICATION_ID}" --query accessToken -o tsv)
+    TOKEN=$(az account get-access-token --resource "https://management.azure.com/" --query accessToken -o tsv)
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://partition.{{ $namespace }}/api/partition/v1/partitions/${PARTITION} \

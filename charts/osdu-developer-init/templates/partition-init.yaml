@@ -209,8 +209,6 @@ data:
     echo "  Logging in using Workload Identity"
     echo "=================================================================="
 
-    sleep 100000
-
     # Login using the federated token from the environment variable
     az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
         --service-principal \

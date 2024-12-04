@@ -104,11 +104,11 @@ spec:
           - name: PARTITION_SPRING_LOGGING_LEVEL
             value: "DEBUG"
 ---
-# Retrigger:  kubectl annotate helmrelease osdu-init-partition fluxcd.io/retrigger=$(date +%s) -n osdu-core
+# Retrigger:  kubectl annotate helmrelease osdu-partition-init fluxcd.io/retrigger=$(date +%s) -n osdu-core
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: osdu-init-partition
+  name: osdu-partition-init
   namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"

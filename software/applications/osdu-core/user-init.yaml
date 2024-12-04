@@ -9,7 +9,7 @@
 #     clusterconfig.azure.com/use-managed-source: "true"
 # spec:
 #   dependsOn:
-#     - name: osdu-init-entitlements
+#     - name: osdu-entitlements-init
 #       namespace: osdu-core
 #   targetNamespace: osdu-core
 #   chart:
@@ -28,7 +28,7 @@
 #     jobs:
 #       partitionInit: false
 #       entitlementInit: false
-#       userInit: true 
+#       userInit: true
 #       elasticInit: false
 #       schemaInit: false
 #     clientSecret:

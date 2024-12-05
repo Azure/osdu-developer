@@ -91,5 +91,13 @@ spec:
       valuesKey: value.yaml
     - kind: ConfigMap
       name: configmap-services
+      targetPath: clientId
+      valuesKey: client_id
+    - kind: ConfigMap
+      name: configmap-services
+      targetPath: tenantId
+      valuesKey: tenant_id
+    - kind: ConfigMap
+      name: configmap-services
       targetPath: emailAddress
       valuesKey: client_id

@@ -29,8 +29,6 @@ spec:
           - name: script
             mountPath: "/script"
         env:
-          - name: AUTH_CODE
-            value: ""  # Placeholder value
           - name: AZURE_TENANT_ID
             value: {{ .Values.tenantId | quote }}
           - name: AZURE_AD_APPLICATION_ID
@@ -67,8 +65,6 @@ data:
     echo "  Logging in using Workload Identity"
     echo "=================================================================="
 
-    sleep 100000
-
     # Login using the federated token from the environment variable
     az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
         --service-principal \
@@ -82,8 +78,7 @@ data:
     echo "  Adding the first user...                                        "
     echo "=================================================================="
 
-    AUTH_USER="${EMAIL_ADDRESS}"
-    json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
+    json_payload=$(jq -n --arg email "$EMAIL_ADDRESS" '{"email": $email, "role": "MEMBER"}')
 
     OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://entitlements.{{ $namespace }}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
         --insecure \

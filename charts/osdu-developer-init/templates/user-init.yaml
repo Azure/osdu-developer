@@ -9,8 +9,12 @@ metadata:
   namespace: osdu-core  # Ensure the correct namespace
 spec:
   ttlSecondsAfterFinished: 120
+  metadata:
+      labels:
+        azure.workload.identity/use: "true"
   template:
     spec:
+      serviceAccountName: workload-identity-sa
       volumes:
       - name: script
         configMap:
@@ -18,13 +22,9 @@ spec:
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-        command: ["/bin/sh"]
-        args:
-        - -c
-        - |
-          tdnf install -y curl jq && \
-          /script/init.sh
+        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
+        command:
+        - script/init.sh
         volumeMounts:
           - name: script
             mountPath: "/script"
@@ -65,6 +65,8 @@ data:
     #!/usr/bin/env sh
     set -euo pipefail
     set -o nounset
+
+    tdnf install -y curl jq
 
     echo "=================================================================="
     echo "  Logging in using Workload Identity"

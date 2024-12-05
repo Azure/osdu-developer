@@ -67,27 +67,17 @@ data:
     set -o nounset
 
     echo "=================================================================="
-    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "  Logging in using Workload Identity"
     echo "=================================================================="
 
-    OUTPUT=$(curl -s -k -w "%{http_code}" --request POST \
-        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-        --header "content-type: application/x-www-form-urlencoded" \
-        --data "grant_type=client_credentials" \
-        --data "client_id=${AZURE_CLIENT_ID}" \
-        --data "client_secret=${AZURE_CLIENT_SECRET}" \
-        --data "resource=${AZURE_CLIENT_ID}")
+    # Login using the federated token from the environment variable
+    az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+        --service-principal \
+        -u ${AZURE_CLIENT_ID} \
+        -t ${AZURE_TENANT_ID}
 
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
-
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      echo "Response body: $BODY"
-      exit 1
-    fi
-
-    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+    # Get token (no resource needed)
+    TOKEN=$(az account get-access-token --resource https://management.azure.com/ --query accessToken -o tsv)
 
     echo "=================================================================="
     echo "  Adding the first user...                                        "

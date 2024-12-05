@@ -77,7 +77,7 @@ data:
         -t ${AZURE_TENANT_ID}
 
     # Get token (no resource needed)
-    TOKEN=$(az account get-access-token --resource "https://management.azure.com/.default" --query accessToken -o tsv)
+    TOKEN=$(az account get-access-token --resource "https://management.azure.com/" --query accessToken -o tsv)
 
     echo "=================================================================="
     echo "  Adding the first user...                                        "

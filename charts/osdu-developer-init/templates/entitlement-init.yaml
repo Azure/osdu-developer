@@ -70,7 +70,7 @@ data:
         -t ${AZURE_TENANT_ID}
 
     # Get token (no resource needed)
-    TOKEN=$(az account get-access-token --resource https://management.azure.com/ --query accessToken -o tsv)
+    TOKEN=$(az account get-access-token --resource "https://management.azure.com/.default" --query accessToken -o tsv)
 
     OUTPUT=$(curl -s -w "%{http_code}" --request POST \
       --url http://entitlements.{{ $namespace }}/api/entitlements/v2/tenant-provisioning \

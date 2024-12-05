@@ -1,11 +1,12 @@
 {{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
-{{- if and $enabled .Values.jobs.userInit }}
+{{- if $enabled }}
+{{- range $job := .Values.jobs.list }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-{{ $job.name }}
   namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
@@ -14,31 +15,25 @@ spec:
       labels:
         azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: workload-identity-sa
+      serviceAccountName: {{ $job.serviceAccountName }}
       volumes:
       - name: script
         configMap:
-          name: user-init-script
+          name: user-init-script-{{ $job.name }}
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
+        image: {{ $job.initContainerImage }}
         command:
-        - script/init.sh
+        - /script/init.sh
         volumeMounts:
           - name: script
             mountPath: "/script"
         env:
-          - name: AZURE_TENANT_ID
-            value: {{ .Values.tenantId | quote }}
-          - name: AZURE_AD_APPLICATION_ID
-            value: {{ .Values.clientId | quote }}
-          - name: PARTITION
-            value: {{ .Values.partition | quote }}
-          - name: EMAIL_ADDRESS
-            value: {{ .Values.emailAddress | quote }}
-          - name: AUTH_INGRESS
-            value: {{ .Values.authIngress | quote }}
+        {{- range $env := $job.env }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
       containers:
       - name: sleep
         image: istio/base
@@ -51,8 +46,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: user-init-script
-  namespace: osdu-core
+  name: user-init-script-{{ $job.name }}
+  namespace: {{ $namespace }}
 data:
   init.sh: |
     #!/usr/bin/env sh
@@ -131,4 +126,5 @@ data:
     fi
 
     exit 0
+{{- end }}
 {{- end }}

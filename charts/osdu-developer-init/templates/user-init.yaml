@@ -6,13 +6,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: user-init
-  namespace: osdu-core  # Ensure the correct namespace
+  namespace: osdu-core
 spec:
   ttlSecondsAfterFinished: 120
-  metadata:
+  template:
+    metadata:
       labels:
         azure.workload.identity/use: "true"
-  template:
     spec:
       serviceAccountName: workload-identity-sa
       volumes:
@@ -45,7 +45,7 @@ spec:
       - name: sleep
         image: istio/base
         command: ["/bin/sleep", "30"]
-        volumeMounts:  # Ensure this container also mounts the volume if needed
+        volumeMounts:
           - name: script
             mountPath: "/script"
       restartPolicy: Never
@@ -54,7 +54,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: user-init-script
-  namespace: osdu-core  # Ensure the correct namespace
+  namespace: osdu-core
 data:
   init.sh: |
     #!/usr/bin/env sh
@@ -67,6 +67,8 @@ data:
     echo "  Logging in using Workload Identity"
     echo "=================================================================="
 
+    sleep 100000
+
     # Login using the federated token from the environment variable
     az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
         --service-principal \
@@ -76,7 +78,6 @@ data:
     # Get token (no resource needed)
     TOKEN=$(az account get-access-token --resource "https://management.azure.com/" --query accessToken -o tsv)
 
-    sleep 100000
     echo "=================================================================="
     echo "  Adding the first user...                                        "
     echo "=================================================================="

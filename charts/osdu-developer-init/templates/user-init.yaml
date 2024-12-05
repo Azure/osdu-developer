@@ -5,8 +5,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: user-init
-  namespace: osdu-core
+  name: {{ .Release.Name }}
+  namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
   template:

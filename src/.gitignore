@@ -2,3 +2,4 @@
 *.yaml
 *.env
 applicationinsights-agent.jar
+base

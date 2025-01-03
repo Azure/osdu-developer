@@ -12,6 +12,9 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: workload-identity-sa
       containers:

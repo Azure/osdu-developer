@@ -205,7 +205,7 @@ spec:
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
       - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
-        value: "false"
+        value: "true"
       - name: SERVER_PORT
         value: "80"
       - name: SPRING_APPLICATION_NAME

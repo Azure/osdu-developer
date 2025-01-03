@@ -35,8 +35,8 @@ spec:
               # Login using the federated token from the environment variable
               az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
                   --service-principal \
-                  -u ${AZURE_CLIENT_ID} \
-                  -t ${AZURE_TENANT_ID}
+                  -u {{ $.Values.azure.clientId }} \
+                  -t {{ $.Values.azure.tenantId }}
 
               # Upload directly to blob storage using Azure CLI
               az storage blob upload \

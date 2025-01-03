@@ -60,14 +60,6 @@ spec:
     - kind: ConfigMap
       name: config-map-values
       valuesKey: values.yaml
-    - kind: Secret
-      name: active-directory
-      targetPath: clientId
-      valuesKey: msi-clientid
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id
   values:
     global:
       configmapNamespace: osdu-core

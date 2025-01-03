@@ -27,6 +27,9 @@ spec:
           - name: script
             mountPath: "/home/osdu/deployments/scripts/azure/bootstrap.sh"
             subPath: init.sh
+          - name: token
+            mountPath: "/home/osdu/deployments/scripts/azure/Token.py"
+            subPath: token.py
         env:
           - name: DATA_PARTITION
             value: {{ .Values.partition | quote }}
@@ -83,9 +86,9 @@ data:
 
         # Login using the federated token from the environment variable
         az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
-            --service-principal \
-            -u ${AZURE_CLIENT_ID} \
-            -t ${AZURE_TENANT_ID}
+          --service-principal \
+          -u ${AZURE_CLIENT_ID} \
+          -t ${AZURE_TENANT_ID}
 
         ENV_AKS=$(az aks list --resource-group $RESOURCE_GROUP_NAME --query [].name -otsv)
         az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $ENV_AKS
@@ -108,4 +111,56 @@ data:
     else
         exit 1
     fi
+  token.py: |
+    import os
+    import msal
+
+    class AzureToken(object):
+        def get_azure_id_token(self):
+            tenant_id = os.getenv('AZURE_TENANT_ID')
+            client_id = os.getenv('AZURE_CLIENT_ID')
+
+            # Read the federated token provided by workload identity
+            token_path = os.getenv('AZURE_FEDERATED_TOKEN_FILE', '/var/run/secrets/azure/tokens/azure-identity-token')
+
+            if not all([tenant_id, client_id]):
+                print('Missing required environment variables: AZURE_TENANT_ID and AZURE_CLIENT_ID are required')
+                exit(1)
+
+            try:
+                # Read the federated token
+                with open(token_path, 'r') as f:
+                    federated_token = f.read().strip()
+
+                authority_host_uri = 'https://login.microsoftonline.com'
+                authority_uri = authority_host_uri + '/' + tenant_id
+
+                # Configure MSAL for federated token exchange
+                app = msal.ConfidentialClientApplication(
+                    client_id=client_id,
+                    authority=authority_uri,
+                    client_credential={
+                        "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                        "client_assertion": federated_token
+                    }
+                )
+
+                # Use the same scope as az cli would use
+                scopes = ["https://management.azure.com/.default"]
+                result = app.acquire_token_for_client(scopes=scopes)
+
+                if 'access_token' in result:
+                    token = 'Bearer ' + result['access_token']
+                    print(token)
+                    return token
+                else:
+                    print(f"Error getting token: {result.get('error_description', 'Unknown error')}")
+                    exit(1)
+
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                exit(1)
+
+    if __name__ == '__main__':
+        AzureToken().get_azure_id_token()
 {{- end }}

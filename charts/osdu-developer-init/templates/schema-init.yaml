@@ -20,6 +20,10 @@ spec:
         configMap:
           name: schema-init-script
           defaultMode: 0777
+      - name: token
+        configMap:
+          name: schema-init-script
+          defaultMode: 0777
       initContainers:
       - name: data-seed
         image: community.opengroup.org:5555/osdu/platform/system/schema-service/schema-service-schema-load-release-0-27:beb6f65c1d9c303e86a6047adc93b2192d0c62ba

@@ -27,9 +27,6 @@ spec:
     - kind: ConfigMap
       name: configmap-software
       valuesKey: value.yaml
-    # - kind: ConfigMap
-    #   name: configmap-common-values
-    #   valuesKey: value.yaml
     - kind: ConfigMap
       name: configmap-repo-override
       optional: true

@@ -1,155 +1,138 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: osdu-storage
-#   namespace: osdu-core
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#     - name: osdu-indexer-queue
-#       namespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   targetNamespace: osdu-core
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: configmap-software
-#       valuesKey: value.yaml
-#   values:
-#     nameOverride: storage
-#     installationType: osduCore
-#     subset: m24
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: storage
-#       path: /api/storage/v2/
-#       hosts:
-#         - "*"
-#       cors:
-#         - "http://localhost:8080"
-#       gateways:
-#         - istio-system/internal-gateway
-#         - istio-system/external-gateway
-#       repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-
-#       tag: latest
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#         liveness:
-#           delay: 250
-#           seconds: 10
-#       keyvault: true
-#       request:
-#         cpu: 800m
-#         memory: 1Gi
-#       # limit:
-#       #   cpu: 1000m
-#       #   memory: 4Gi
-#       auth:
-#         disable:
-#           - "*/actuator/health"
-#           - "*/health"
-#           - "*/_ah/**"
-#           - "*/configuration/ui"
-#           - "*/configuration/security"
-#           - "/api/storage/v2/info"
-#           - "/api/storage/v2/swagger*"
-#           - "/api/storage/v2/api-docs*"
-#           - "/api/storage/v2/webjars/*"  
-#       env:
-#       - name: AZURE_TENANT_ID
-#         secret:
-#           name: active-directory
-#           key: tenant-id
-#       - name: AZURE_SUBSCRIPTION_ID
-#         secret:
-#           name: active-directory
-#           key: subscription-id
-#       - name: AZURE_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AZURE_CLIENT_SECRET
-#         secret:
-#           name: active-directory
-#           key: principal-clientpassword
-#       - name: KEYVAULT_URI
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
-#       - name: AAD_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: APPINSIGHTS_KEY
-#         secret:
-#           name: azure-resources
-#           key: insights-key
-#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-#         secret:
-#           name: azure-resources
-#           key: insights-connection
-#       - name: AZURE_ISTIOAUTH_ENABLED
-#         value: "true"
-#       - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-#         value: "false"
-#       - name: SERVER_PORT
-#         value: "80"
-#       - name: ACCEPT_HTTP
-#         value: "true"
-#       - name: SPRING_APPLICATION_NAME
-#         value: storage
-#       - name: SERVER_SERVLET_CONTEXTPATH
-#         value: /api/storage/v2/
-#       - name: COSMOSDB_DATABASE
-#         value: osdu-db
-#       - name: AZURE_EVENTGRID_ENABLED
-#         value: "false"
-#       - name: AZURE_SERVICEBUS_ENABLED
-#         value: "true" 
-#       - name: SERVICEBUS_TOPIC_NAME
-#         value: recordstopic
-#       - name: SERVICEBUS_V2_TOPIC_NAME
-#         value: recordstopic-v2
-#       - name: REDIS_DATABASE
-#         value: "4"
-#       - name: PARTITION_SERVICE_ENDPOINT
-#         value: http://partition/api/partition/v1
-#       - name: ENTITLEMENTS_SERVICE_ENDPOINT
-#         value: http://entitlements/api/entitlements/v2
-#       - name: ENTITLEMENTS_SERVICE_API_KEY
-#         value: "OBSOLETE"
-#       - name: LEGAL_SERVICE_ENDPOINT
-#         value: http://legal/api/legal/v1
-#       - name: LEGAL_SERVICE_REGION
-#         value: southcentralus
-#       - name: LEGAL_SERVICEBUS_TOPIC_NAME
-#         value: legaltagschangedtopiceg
-#       - name: LEGAL_SERVICEBUS_TOPIC_SUBSCRIPTION
-#         value: eg_sb_legaltagchangedsubscription
-#       - name: CRS_CONVERSION_SERVICE_ENDPOINT
-#         value: http://crs-conversion/api/crs/converter/v2
-#       - name: POLICY_SERVICE_ENDPOINT
-#         value: http://policy/api/policy/v1
-#       - name: OPA_ENABLED
-#         value: "false"
-#       - name: REDIS_HOST_KEY
-#         value: redis-hostname
-#       - name: REDIS_PASSWORD_KEY
-#         value: redis-password
-      
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-storage
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: osdu-indexer-queue
+      namespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  targetNamespace: osdu-core
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+  values:
+    nameOverride: storage
+    installationType: osduCore
+    subset: m24
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: storage
+      path: /api/storage/v2/
+      hosts:
+        - "*"
+      cors:
+        - "http://localhost:8080"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/system/storage/storage-
+      tag: latest
+      probe:
+        path: /actuator/health
+        port: 8081
+        liveness:
+          delay: 250
+          seconds: 10
+      keyvault: true
+      request:
+        cpu: 800m
+        memory: 1Gi
+      # limit:
+      #   cpu: 1000m
+      #   memory: 4Gi
+      auth:
+        disable:
+          - "*/actuator/health"
+          - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/storage/v2/info"
+          - "/api/storage/v2/swagger*"
+          - "/api/storage/v2/api-docs*"
+          - "/api/storage/v2/webjars/*"
+      env:
+      - name: KEYVAULT_URI
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: AAD_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+        value: "true"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: storage
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: /api/storage/v2/
+      - name: COSMOSDB_DATABASE
+        value: osdu-db
+      - name: AZURE_EVENTGRID_ENABLED
+        value: "false"
+      - name: AZURE_SERVICEBUS_ENABLED
+        value: "true"
+      - name: SERVICEBUS_TOPIC_NAME
+        value: recordstopic
+      - name: SERVICEBUS_V2_TOPIC_NAME
+        value: recordstopic-v2
+      - name: REDIS_DATABASE
+        value: "4"
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: http://partition/api/partition/v1
+      - name: ENTITLEMENTS_SERVICE_ENDPOINT
+        value: http://entitlements/api/entitlements/v2
+      - name: ENTITLEMENTS_SERVICE_API_KEY
+        value: "OBSOLETE"
+      - name: LEGAL_SERVICE_ENDPOINT
+        value: http://legal/api/legal/v1
+      - name: LEGAL_SERVICE_REGION
+        value: southcentralus
+      - name: LEGAL_SERVICEBUS_TOPIC_NAME
+        value: legaltagschangedtopiceg
+      - name: LEGAL_SERVICEBUS_TOPIC_SUBSCRIPTION
+        value: eg_sb_legaltagchangedsubscription
+      - name: CRS_CONVERSION_SERVICE_ENDPOINT
+        value: http://crs-conversion/api/crs/converter/v2
+      - name: POLICY_SERVICE_ENDPOINT
+        value: http://policy/api/policy/v1
+      - name: OPA_ENABLED
+        value: "false"
+      - name: REDIS_HOST_KEY
+        value: redis-hostname
+      - name: REDIS_PASSWORD_KEY
+        value: redis-password

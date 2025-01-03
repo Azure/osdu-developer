@@ -39,7 +39,7 @@ spec:
               az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
                 --service-principal \
                 -u ${AZURE_CLIENT_ID} \
-                -t ${AZURE_TENANT_ID}
+                -t ${AZURE_TENANT_ID} || exit 1
 
               # Upload directly to blob storage using Azure CLI
               az storage blob upload \
@@ -48,10 +48,10 @@ spec:
                 -n {{ .file }} \
                 --account-name {{ $value }} \
                 --overwrite \
-                --auth-mode login
+                --auth-mode login || exit 1
 
               echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
-              sleep 300000
+              exit 0
       restartPolicy: Never
 {{- end }}
 {{- $i = add $i 1 }}

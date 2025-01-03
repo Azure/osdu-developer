@@ -23,14 +23,21 @@ spec:
             - |
               # Install curl
               tdnf install -y curl
-              
+
               # Download the file
               echo "Downloading file from {{ .url }}"
               curl -kso {{ .file }} "{{ .url }}"
-              
-              # Login using workload identity
-              az login --identity
-              
+
+              echo "=================================================================="
+              echo "  Logging in using Workload Identity"
+              echo "=================================================================="
+
+              # Login using the federated token from the environment variable
+              az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+                  --service-principal \
+                  -u ${AZURE_CLIENT_ID} \
+                  -t ${AZURE_TENANT_ID}
+
               # Upload directly to blob storage using Azure CLI
               az storage blob upload \
                 -f {{ .file }} \
@@ -38,7 +45,7 @@ spec:
                 -n {{ .file }} \
                 --overwrite \
                 --auth-mode login
-              
+
               echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
               sleep 300000
       restartPolicy: Never
@@ -46,4 +53,4 @@ spec:
 {{- $i = add $i 1 }}
 {{- end }}
 {{- end }}
-{{- end }} 
+{{- end }}

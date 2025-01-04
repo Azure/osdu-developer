@@ -1,7 +1,7 @@
 {{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
-{{- $releaseName := .Release.Name -}} # Capture the release name
-{{- if $enabled }}
+{{- $releaseName := .Release.Name -}}
+{{- if and $enabled .Values.jobs.userInit }}
 ---
 apiVersion: batch/v1
 kind: Job

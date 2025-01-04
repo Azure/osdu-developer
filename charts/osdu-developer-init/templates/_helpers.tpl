@@ -55,20 +55,28 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Determine if the installation type is enabled
 */}}
 {{- define "osdu-developer-init.isEnabled" -}}
-  {{- $installationType := .Values.installationType | default "osduCore" -}}
-  {{- if eq $installationType "osduReference" -}}
-    {{- if hasKey .Values "osduReferenceEnabled" -}}
-      {{- if eq .Values.osduReferenceEnabled "true" }}1{{else}}0{{end -}}
-    {{- else -}}
-      {{- 0 -}}
-    {{- end -}}
-  {{- else if eq $installationType "osduCore" -}}
-    {{- if hasKey .Values "osduCoreEnabled" -}}
-      {{- if eq .Values.osduCoreEnabled "true" }}1{{else}}0{{end -}}
+  {{- if hasKey .Values "installationType" -}}
+    {{- $installationType := .Values.installationType | default "osduCore" -}}
+    {{- if eq $installationType "osduReference" -}}
+      {{- if hasKey .Values "osduReferenceEnabled" -}}
+        {{- if eq .Values.osduReferenceEnabled "true" }}1{{else}}0{{end -}}
+      {{- else -}}
+        {{- 0 -}}
+      {{- end -}}
+    {{- else if eq $installationType "osduCore" -}}
+      {{- if hasKey .Values "osduCoreEnabled" -}}
+        {{- if eq .Values.osduCoreEnabled "true" }}1{{else}}0{{end -}}
+      {{- else -}}
+        {{- 0 -}}
+      {{- end -}}
     {{- else -}}
       {{- 0 -}}
     {{- end -}}
   {{- else -}}
-    {{- 0 -}}
+    {{- if and (hasKey .Values "jobs") (hasKey .Values.jobs "userInit") -}}
+      {{- if eq .Values.jobs.userInit true }}1{{else}}0{{end -}}
+    {{- else -}}
+      {{- 0 -}}
+    {{- end -}}
   {{- end -}}
 {{- end }}

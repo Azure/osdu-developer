@@ -9,11 +9,11 @@ cat > custom_values.yaml << EOF
 nameOverride: ""
 fullnameOverride: "osdu-init"
 
-tenantId: 
-clientId: 
-clientSecret: 
-serviceBus: 
-partition: 
+tenantId:
+clientId:
+clientSecret:
+serviceBus:
+partition:
 EOF
 
 
@@ -24,7 +24,7 @@ Install the helm chart.
 ```bash
 # Create Namespace
 NAMESPACE=osdu-core
-helm template osdu-core-osdu-init-partition -f custom_values.yaml .
+helm template osdu-core-osdu-init-user -f custom_values.yaml .
 
 helm upgrade --install osdu-core-osdu-init-partition . -n $NAMESPACE -f custom_values.yaml
 ```

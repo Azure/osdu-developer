@@ -1,12 +1,12 @@
 {{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
+{{- $releaseName := .Release.Name -}} # Capture the release name
 {{- if $enabled }}
-{{- range $job := .Values.jobs.list }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-{{ $job.name }}
+  name: {{ $releaseName }}
   namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
@@ -15,25 +15,23 @@ spec:
       labels:
         azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: {{ $job.serviceAccountName }}
+      serviceAccountName: workload-identity-sa
       volumes:
       - name: script
         configMap:
-          name: user-init-script-{{ $job.name }}
+          name: configmap-{{ $releaseName }}-script
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: {{ $job.initContainerImage }}
+        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
         command:
         - /script/init.sh
         volumeMounts:
           - name: script
             mountPath: "/script"
         env:
-        {{- range $env := $job.env }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+          - name: EMAIL_ADDRESS
+            value: {{ .Values.emailAddress | quote }}
       containers:
       - name: sleep
         image: istio/base
@@ -46,7 +44,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: user-init-script-{{ $job.name }}
+  name: configmap-{{ $releaseName }}-script
   namespace: {{ $namespace }}
 data:
   init.sh: |
@@ -126,5 +124,4 @@ data:
     fi
 
     exit 0
-{{- end }}
 {{- end }}

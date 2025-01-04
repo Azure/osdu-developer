@@ -24,28 +24,12 @@ spec:
     remediation:
       retries: 3
   values:
-    installationType: osduCore
     jobs:
-      partitionInit: false
-      entitlementInit: false
       userInit: true
-      elasticInit: false
-      schemaInit: false
-    clientSecret:
-      name: active-directory
-      key: principal-clientpassword
   valuesFrom:
     - kind: ConfigMap
       name: configmap-software
       valuesKey: value.yaml
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: clientId
-      valuesKey: client_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id
     - kind: ConfigMap
       name: configmap-services
       targetPath: emailAddress

@@ -2,7 +2,7 @@ apiVersion: v2
 name: osdu-developer-init
 type: application
 description: Installs the OSDU developer Initialization resources
-version: 0.0.4
+version: 0.0.1
 appVersion: 0.0.1
 maintainers:
   - name: danielscholl

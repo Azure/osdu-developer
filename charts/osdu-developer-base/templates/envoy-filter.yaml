@@ -46,6 +46,14 @@ spec:
               return table.concat(lines, "\n")
             end
 
+            -- Function to log all headers
+            function logAllHeaders(request_handle)
+              local headers = request_handle:headers()
+              for key, value in pairs(headers) do
+                request_handle:logInfo("Header: " .. key .. " = " .. value)
+              end
+            end
+
             -- Process AAD v1 tokens
             function processAADV1Token(payload, request_handle)
               if payload["oid"] then
@@ -132,4 +140,8 @@ spec:
               else
                 request_handle:logError("Unknown issuer: " .. payload["iss"])
               end
+
+              -- Step 6: Log all headers before leaving the filter
+              request_handle:logDebug("Logging all headers before leaving the filter:")
+              logAllHeaders(request_handle)
             end

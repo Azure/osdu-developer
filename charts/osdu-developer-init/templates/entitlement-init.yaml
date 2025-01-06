@@ -83,8 +83,6 @@ data:
     HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
     BODY=${OUTPUT%???}
 
-    sleep 1000000
-
     if [ "$HTTP_STATUS_CODE" == "200" ]; then
       echo "Success: $(echo "$BODY" | jq .)"
     else

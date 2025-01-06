@@ -104,21 +104,40 @@ spec:
               -- Step 3: Log raw payload for debugging
               request_handle:logDebug("JWT payload: " .. tableToString(payload))
 
-              -- Step 4: Always set x-app-id from aud claim if present
-              if payload["aud"] then
-                request_handle:headers():add("x-app-id", payload["aud"])
-                request_handle:logWarn("x-app-id set from 'aud' claim: " .. payload["aud"])
+              -- Step 4: Process audience (aud) claim
+              local aud = payload["aud"]
+              if aud then
+                request_handle:headers():add("x-app-id", aud)
+                request_handle:logWarn("x-app-id set from 'aud' claim: " .. aud)
+                -- Special handling for audience "https://management.azure.com/"
+                if aud == "https://management.azure.com/" then
+                  -- Check for oid to set x-user-id
+                  local oid = payload["oid"]
+                  if oid then
+                    request_handle:headers():add("x-user-id", oid)
+                    request_handle:logWarn("x-user-id set from 'oid' claim for management.azure.com audience")
+                    -- Override x-app-id to match x-user-id
+                    request_handle:headers():replace("x-app-id", oid)
+                    request_handle:logWarn("x-app-id overridden to match x-user-id for management.azure.com audience")
+                  else
+                    request_handle:logError("No 'oid' claim found in payload for management.azure.com audience")
+                  end
+                  return -- Exit early as we don't need further processing for this case
+                end
+              else
+                request_handle:logError("No 'aud' claim found in payload")
               end
 
-              -- Step 5: Process based on issuer
-              if string.find(payload["iss"], AAD_V1_ISSUER) then
+              -- Step 5: Process issuer (iss) for additional logic
+              local iss = payload["iss"]
+              if iss and string.find(iss, AAD_V1_ISSUER) then
                 request_handle:logDebug("Processing AAD v1 token")
                 processAADV1Token(payload, request_handle)
-              elseif string.find(payload["iss"], AAD_V2_ISSUER) then
+              elseif iss and string.find(iss, AAD_V2_ISSUER) then
                 request_handle:logDebug("Processing AAD v2 token")
                 processAADV2Token(payload, request_handle)
               else
-                request_handle:logError("Unknown issuer: " .. payload["iss"])
+                request_handle:logError("Unknown issuer: " .. (iss or "nil"))
               end
 
               -- Step 6: Log all headers before leaving the filter

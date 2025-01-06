@@ -1,5 +1,5 @@
 {{- $namespace := .Release.Namespace }}
-{{- $managedIdentityClientId := .Values.azure.clientId }}
+{{- $entraClientId := .Values.azure.clientId }}
 
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -27,7 +27,7 @@ spec:
             -- Constants
             local AAD_V1_ISSUER = "sts.windows.net"
             local AAD_V2_ISSUER = "login.microsoftonline.com"
-            local managedIdentityClientId = "{{ $managedIdentityClientId }}"
+            local entraClientId = "{{ $entraClientId }}"
 
             -- Helper function to log a table
             function tableToString(tbl, indent)
@@ -111,16 +111,14 @@ spec:
                 request_handle:logWarn("x-app-id set from 'aud' claim: " .. aud)
                 -- Special handling for audience "https://management.azure.com/"
                 if aud == "https://management.azure.com/" then
-                  -- Check for oid to set x-user-id
-                  local oid = payload["oid"]
-                  if oid then
-                    request_handle:headers():add("x-user-id", oid)
-                    request_handle:logWarn("x-user-id set from 'oid' claim for management.azure.com audience")
-                    -- Override x-app-id to match x-user-id
-                    request_handle:headers():replace("x-app-id", oid)
-                    request_handle:logWarn("x-app-id overridden to match x-user-id for management.azure.com audience")
+                  local managedClientId = payload["appid"]
+                  if managedClientId then
+                    -- Set x-user-id and x-app-id to match appid for this case
+                    request_handle:headers():add("x-user-id", entraClientId)
+                    request_handle:headers():replace("x-app-id", entraClientId)
+                    request_handle:logWarn("x-user-id and x-app-id set to 'appid' claim for management.azure.com audience")
                   else
-                    request_handle:logError("No 'oid' claim found in payload for management.azure.com audience")
+                    request_handle:logError("No 'appid' claim found for management.azure.com audience")
                   end
                   return -- Exit early as we don't need further processing for this case
                 end

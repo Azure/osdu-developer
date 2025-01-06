@@ -13,14 +13,14 @@ This contains the configuration and logic for an EnvoyFilter that processes Micr
 
 ## Token Scenarios Handled
 
-| Scenario                                   | x-user-id                           | x-app-id                          |
-|--------------------------------------------|-------------------------------------|-----------------------------------|
-| **AAD v1 User Token (sts.windows.net)**    | `oid` (fallback: `upn`/`unique_name`) | `aud`                            |
-| **AAD v1 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `appid`) | `aud`                            |
-| **AAD v1 Application (non-delegated)**     | `appid`                             | `aud`                            |
-| **AAD v2 User Token (login.microsoftonline.com)** | `oid`                              | `aud`                            |
-| **AAD v2 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `azp`)  | `aud`                            |
-| **AAD v2 Application (non-delegated)**     | `azp` (fallback: `oid`)             | `aud`                            |
+| Scenario                                   | x-user-id                             | x-app-id                          |
+|--------------------------------------------|---------------------------------------|-----------------------------------|
+| **AAD v1 User Token (sts.windows.net)**    | `oid` (fallback: `upn`/`unique_name`) | `aud`                             |
+| **AAD v1 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `appid`)  | `aud`                             |
+| **AAD v1 Application (non-delegated)**     | `appid`                               | `aud`                             |
+| **AAD v2 User Token (login.microsoftonline.com)** | `oid`                          | `aud`                             |
+| **AAD v2 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `azp`)    | `aud`                             |
+| **AAD v2 Application (non-delegated)**     | `azp` (fallback: `oid`)               | `aud`                             |
 
 ## OAuth Delegation (On-Behalf-Of) Flow
 
@@ -60,7 +60,5 @@ Use the following Istio commands to increase the logging level for debugging:
 
 ```bash
 # Enable detailed logging for Lua, JWT, and RBAC
-istioctl proxy-config log <pod_name> --level lua:debug
-istioctl proxy-config log <pod_name> --level jwt:debug
-istioctl proxy-config log <pod_name> --level rbac:debug
+istioctl proxy-config log <pod_name> --level lua:debug,jwt:debug,rbac:debug
 ```

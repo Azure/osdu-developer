@@ -1,8 +1,5 @@
-# istioctl proxy-config log <pod_name> --level lua:debug
-# istioctl proxy-config log <pod_name> --level jwt:debug
-# istioctl proxy-config log <pod_name> --level rbac:debug
-
 {{- $namespace := .Release.Namespace }}
+{{- $managedIdentityClientId := .Values.azure.clientId }}
 
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -30,6 +27,7 @@ spec:
             -- Constants
             local AAD_V1_ISSUER = "sts.windows.net"
             local AAD_V2_ISSUER = "login.microsoftonline.com"
+            local managedIdentityClientId = "{{ $managedIdentityClientId }}"
 
             -- Helper function to log a table
             function tableToString(tbl, indent)
@@ -49,7 +47,7 @@ spec:
             end
 
             -- Process AAD v1 tokens
-            function processAADV1Token(payload, request_handle, managedIdentityClientId)
+            function processAADV1Token(payload, request_handle)
               if payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
                 request_handle:logWarn("x-user-id set from 'oid' claim")
@@ -77,7 +75,7 @@ spec:
             end
 
             -- Process AAD v2 tokens
-            function processAADV2Token(payload, request_handle, managedIdentityClientId)
+            function processAADV2Token(payload, request_handle)
               if payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
                 request_handle:logWarn("x-user-id set from 'oid' claim")
@@ -127,10 +125,10 @@ spec:
               -- Step 5: Process based on issuer
               if string.find(payload["iss"], AAD_V1_ISSUER) then
                 request_handle:logDebug("Processing AAD v1 token")
-                processAADV1Token(payload, request_handle, "{{ .Values.azure.clientId }}")
+                processAADV1Token(payload, request_handle)
               elseif string.find(payload["iss"], AAD_V2_ISSUER) then
                 request_handle:logDebug("Processing AAD v2 token")
-                processAADV2Token(payload, request_handle, "{{ .Values.azure.clientId }}")
+                processAADV2Token(payload, request_handle)
               else
                 request_handle:logError("Unknown issuer: " .. payload["iss"])
               end

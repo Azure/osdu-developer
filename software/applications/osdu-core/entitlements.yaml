@@ -113,52 +113,52 @@ spec:
       - name: PARTITION_SERVICE_ENDPOINT
         value: "http://partition/api/partition/v1"
 ---
-# Retrigger:  kubectl annotate helmrelease osdu-init-entitlements fluxcd.io/retrigger=$(date +%s) -n osdu-core
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: osdu-entitlements-init
-  namespace: osdu-core
-  annotations:
-    clusterconfig.azure.com/use-managed-source: "true"
-    fluxcd.io/retrigger: "initial"
-spec:
-  dependsOn:
-    - name: osdu-entitlements
-      namespace: osdu-core
-  targetNamespace: osdu-core
-  chart:
-    spec:
-      chart: ./charts/osdu-developer-init
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  interval: 5m0s
-  install:
-    remediation:
-      retries: 3
-  values:
-    installationType: osduCore
-    jobs:
-      partitionInit: false
-      entitlementInit: true
-      userInit: false
-      elasticInit: false
-      schemaInit: false
-    partition: opendes
-    clientSecret:
-      name: active-directory
-      key: principal-clientpassword
-  valuesFrom:
-    - kind: ConfigMap
-      name: configmap-software
-      valuesKey: value.yaml
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: clientId
-      valuesKey: client_id
-    - kind: ConfigMap
-      name: configmap-services
-      targetPath: tenantId
-      valuesKey: tenant_id
+# Retrigger:  kubectl annotate helmrelease osdu-entitlements-init fluxcd.io/retrigger=$(date +%s) -n osdu-core
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: osdu-entitlements-init
+#   namespace: osdu-core
+#   annotations:
+#     clusterconfig.azure.com/use-managed-source: "true"
+#     fluxcd.io/retrigger: "initial"
+# spec:
+#   dependsOn:
+#     - name: osdu-entitlements
+#       namespace: osdu-core
+#   targetNamespace: osdu-core
+#   chart:
+#     spec:
+#       chart: ./charts/osdu-developer-init
+#       sourceRef:
+#         kind: GitRepository
+#         name: flux-system
+#         namespace: flux-system
+#   interval: 5m0s
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     installationType: osduCore
+#     jobs:
+#       partitionInit: false
+#       entitlementInit: true
+#       userInit: false
+#       elasticInit: false
+#       schemaInit: false
+#     partition: opendes
+#     clientSecret:
+#       name: active-directory
+#       key: principal-clientpassword
+#   valuesFrom:
+#     - kind: ConfigMap
+#       name: configmap-software
+#       valuesKey: value.yaml
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: clientId
+#       valuesKey: client_id
+#     - kind: ConfigMap
+#       name: configmap-services
+#       targetPath: tenantId
+#       valuesKey: tenant_id

@@ -68,4 +68,4 @@ spec:
       items:
         - name: legal
           file: "Legal_COO.json"
-          url: "https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/main/bicep/modules/script-blob-upload/Legal_COO.json"
+          url: "https://raw.githubusercontent.com/Azure/osdu-developer/refs/heads/main/bicep/modules/deploy-scripts/Legal_COO.json"

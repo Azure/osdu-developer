@@ -1,138 +1,138 @@
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: osdu-file
-#   namespace: osdu-core
-#   annotations:
-#     clusterconfig.azure.com/use-managed-source: "true"
-# spec:
-#   dependsOn:
-#     - name: osdu-indexer-queue
-#       namespace: osdu-core
-#   targetNamespace: osdu-core
-#   chart:
-#     spec:
-#       chart: ./charts/osdu-developer-service
-#       sourceRef:
-#         kind: GitRepository
-#         name: flux-system
-#         namespace: flux-system
-#   interval: 5m0s
-#   timeout: 6m
-#   install:
-#     remediation:
-#       retries: 3
-#   valuesFrom:
-#     - kind: ConfigMap
-#       name: configmap-software
-#       valuesKey: value.yaml
-#   values:
-#     nameOverride: file
-#     installationType: osduCore
-#     subset: m24
-#     replicaCount: 1
-#     service:
-#       type: ClusterIP
-#       port: 80
-#     configuration:
-#     - service: file
-#       path: /api/file/
-#       hosts:
-#         - "*"
-#       cors:
-#         - "http://localhost:8080"
-#       gateways:
-#         - istio-system/internal-gateway
-#         - istio-system/external-gateway
-#       repository: community.opengroup.org:5555/osdu/platform/system/file/file-
-#       branch: release-0-26
-#       tag: latest
-#       probe:
-#         path: /actuator/health
-#         port: 8081
-#         liveness:
-#           delay: 250
-#           seconds: 10
-#       keyvault: true
-#       request:
-#         cpu: 1000m
-#         memory: 1Gi
-#       auth:
-#         disable:
-#           - "*/actuator/health"
-#           - "*/health"
-#           - "*/_ah/**"
-#           - "*/configuration/ui"
-#           - "*/configuration/security"
-#           - "/api/file/v2/info"
-#           - "/api/file/v2/swagger*"
-#           - "/api/file/v2/api-docs*"
-#           - "/api/file/v2/webjars/*"
-#       env:
-#       - name: KEYVAULT_URL
-#         secret:
-#           name: azure-resources
-#           key: keyvault-uri
-#       - name: AZURE_AD_APP_RESOURCE_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: AAD_CLIENT_ID
-#         secret:
-#           name: active-directory
-#           key: principal-clientid
-#       - name: APPINSIGHTS_KEY
-#         secret:
-#           name: azure-resources
-#           key: insights-key
-#       - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-#         secret:
-#           name: azure-resources
-#           key: insights-connection
-#       - name: AZURE_ISTIOAUTH_ENABLED
-#         value: "true"
-#       - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
-#         value: "true"
-#       - name: SERVER_SERVLET_CONTEXTPATH
-#         value: "/api/file/"
-#       - name: SERVER_PORT
-#         value: "80"
-#       - name: ACCEPT_HTTP
-#         value: "true"
-#       - name: SPRING_APPLICATION_NAME
-#         value: "file"
-#       - name: SPRING_CONFIG_NAME
-#         value: "common,application"
-#       - name: LOG_PREFIX
-#         value: file
-#       - name: LOGGING_LEVEL
-#         value: INFO
-#       - name: APPLICATION_PORT
-#         value: 80
-#       - name: COSMOSDB_DATABASE
-#         value: osdu-db
-#       - name: OSDU_ENTITLEMENTS_APP_KEY
-#         value: OBSOLETE
-#       - name: PARTITION_SERVICE_ENDPOINT
-#         value: "http://partition/api/partition/v1"
-#       - name: OSDU_ENTITLEMENTS_URL
-#         value: http://entitlements/api/entitlements/v2
-#       - name: authorizeAPI
-#         value: http://entitlements/api/entitlements/v2
-#       - name: OSDU_STORAGE_URL
-#         value: http://storage/api/storage/v2
-#       - name: SEARCH_HOST
-#         value: http://search/api/search/v2
-#       - name: AZURE_PUBSUB_PUBLISH
-#         value: "true"
-#       - name: SERVICE_BUS_ENABLED_STATUS
-#         value: "true"
-#       - name: SERVICE_BUS_TOPIC_STATUS
-#         value: "statuschangedtopic"
-#       - name: BATCH_SIZE
-#         value: "100"
-#       - name: SEARCH_QUERY_LIMIT
-#         value: "1000"
-#       - name: FILE_CHECKSUM_CALCULATION_LIMIT
-#         value: "5368709120L"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: osdu-file
+  namespace: osdu-core
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  dependsOn:
+    - name: osdu-indexer-queue
+      namespace: osdu-core
+  targetNamespace: osdu-core
+  chart:
+    spec:
+      chart: ./charts/osdu-developer-service
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  timeout: 6m
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: configmap-software
+      valuesKey: value.yaml
+  values:
+    nameOverride: file
+    installationType: osduCore
+    subset: m24
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    configuration:
+    - service: file
+      path: /api/file/
+      hosts:
+        - "*"
+      cors:
+        - "http://localhost:8080"
+      gateways:
+        - istio-system/internal-gateway
+        - istio-system/external-gateway
+      repository: community.opengroup.org:5555/osdu/platform/system/file/file-
+      branch: release-0-26
+      tag: latest
+      probe:
+        path: /actuator/health
+        port: 8081
+        liveness:
+          delay: 250
+          seconds: 10
+      keyvault: true
+      request:
+        cpu: 1000m
+        memory: 1Gi
+      auth:
+        disable:
+          - "*/actuator/health"
+          - "*/health"
+          - "*/_ah/**"
+          - "*/configuration/ui"
+          - "*/configuration/security"
+          - "/api/file/v2/info"
+          - "/api/file/v2/swagger*"
+          - "/api/file/v2/api-docs*"
+          - "/api/file/v2/webjars/*"
+      env:
+      - name: KEYVAULT_URL
+        secret:
+          name: azure-resources
+          key: keyvault-uri
+      - name: AZURE_AD_APP_RESOURCE_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: AAD_CLIENT_ID
+        secret:
+          name: active-directory
+          key: principal-clientid
+      - name: APPINSIGHTS_KEY
+        secret:
+          name: azure-resources
+          key: insights-key
+      - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+        secret:
+          name: azure-resources
+          key: insights-connection
+      - name: AZURE_ISTIOAUTH_ENABLED
+        value: "true"
+      - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+        value: "true"
+      - name: SERVER_SERVLET_CONTEXTPATH
+        value: "/api/file/"
+      - name: SERVER_PORT
+        value: "80"
+      - name: ACCEPT_HTTP
+        value: "true"
+      - name: SPRING_APPLICATION_NAME
+        value: "file"
+      - name: SPRING_CONFIG_NAME
+        value: "common,application"
+      - name: LOG_PREFIX
+        value: file
+      - name: LOGGING_LEVEL
+        value: INFO
+      - name: APPLICATION_PORT
+        value: 80
+      - name: COSMOSDB_DATABASE
+        value: osdu-db
+      - name: OSDU_ENTITLEMENTS_APP_KEY
+        value: OBSOLETE
+      - name: PARTITION_SERVICE_ENDPOINT
+        value: "http://partition/api/partition/v1"
+      - name: OSDU_ENTITLEMENTS_URL
+        value: http://entitlements/api/entitlements/v2
+      - name: authorizeAPI
+        value: http://entitlements/api/entitlements/v2
+      - name: OSDU_STORAGE_URL
+        value: http://storage/api/storage/v2
+      - name: SEARCH_HOST
+        value: http://search/api/search/v2
+      - name: AZURE_PUBSUB_PUBLISH
+        value: "true"
+      - name: SERVICE_BUS_ENABLED_STATUS
+        value: "true"
+      - name: SERVICE_BUS_TOPIC_STATUS
+        value: "statuschangedtopic"
+      - name: BATCH_SIZE
+        value: "100"
+      - name: SEARCH_QUERY_LIMIT
+        value: "1000"
+      - name: FILE_CHECKSUM_CALCULATION_LIMIT
+        value: "5368709120L"

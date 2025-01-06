@@ -40,18 +40,19 @@ graph TD
     C -->|Metadata Found| D[Step 3: Log Payload]
     C -->|No Metadata Found| E[End: Request Processing Halted]
     D --> F[Step 4: Set x-app-id from 'aud']
-    F --> G{Step 5: Check Issuer}
+    F --> F1{Check Management Audience}
+    F1 -->|aud = management.azure.com| F2[Set x-user-id and x-app-id to entraClientId]
+    F2 --> E
+    F1 -->|Other aud| G{Step 5: Check Issuer}
     G -->|Issuer: AAD v1 sts.windows.net| H[Process AAD v1 Token]
     G -->|Issuer: AAD v2 login.microsoftonline.com| I[Process AAD v2 Token]
     G -->|Unknown Issuer| J[Log Error: Unknown Issuer]
-    H --> H1[Set x-user-id using 'oid', fallback to 'upn' or 'unique_name']
-    H1 --> K[Log Headers After AAD v1 Processing]
-    I --> I1[Set x-user-id using 'oid' or 'azp']
-    I1 --> I2[Handle Delegation: Use x-on-behalf-of if Applicable]
-    I2 --> K[Log Headers After AAD v2 Processing]
-    J --> E
-    K --> L[Request Headers Modified]
-    L --> M[Request Forwarded]
+    H --> H1[Set x-user-id using unique_name, appid, or upn]
+    H1 --> K[Step 6: Log All Headers]
+    I --> I1[Set x-user-id using unique_name, oid, or azp]
+    I1 --> K
+    J --> K
+    K --> M[End: Request Forwarded]
 ```
 
 ## Debugging and Logging

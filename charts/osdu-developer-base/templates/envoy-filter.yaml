@@ -58,15 +58,15 @@ spec:
             function processAADV1Token(payload, request_handle)
               if payload["unique_name"] then
                 request_handle:headers():add("x-user-id", payload["unique_name"])
-                request_handle:logWarn("x-user-id set from 'unique_name' claim")
+                request_handle:logInfo("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'unique_name' claim")
               elseif payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
-                request_handle:logWarn("x-user-id set from 'oid' claim as fallback")
+                request_handle:logInfo("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'oid' claim as fallback")
               elseif payload["upn"] then
                 request_handle:headers():add("x-user-id", payload["upn"])
-                request_handle:logWarn("x-user-id set from 'upn' claim as fallback")
+                request_handle:logInfo("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'upn' claim as fallback")
               else
-                request_handle:logError("No valid claim for x-user-id found in AAD v1 token")
+                request_handle:logError("UC1-(AAD v1 User Token (sts.windows.net)): No valid claim for x-user-id found in AAD v1 token")
               end
             end
 
@@ -74,15 +74,15 @@ spec:
             function processAADV2Token(payload, request_handle)
               if payload["unique_name"] then
                 request_handle:headers():add("x-user-id", payload["unique_name"])
-                request_handle:logWarn("x-user-id set from 'unique_name' claim")
+                request_handle:logInfo("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'unique_name' claim")
               elseif payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
-                request_handle:logWarn("x-user-id set from 'oid' claim as fallback")
+                request_handle:logInfo("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'oid' claim as fallback")
               elseif payload["azp"] then
                 request_handle:headers():add("x-user-id", payload["azp"])
-                request_handle:logWarn("x-user-id set from 'azp' claim as fallback")
+                request_handle:logInfo("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'azp' claim as fallback")
               else
-                request_handle:logError("No valid claim for x-user-id found in AAD v2 token")
+                request_handle:logError("UC4-(AAD v2 User Token (login.microsoftonline.com)): No valid claim for x-user-id found in AAD v2 token")
               end
             end
 
@@ -108,15 +108,14 @@ spec:
               local aud = payload["aud"]
               if aud then
                 request_handle:headers():add("x-app-id", aud)
-                request_handle:logWarn("x-app-id set from 'aud' claim: " .. aud)
+                request_handle:logInfo("x-app-id set from 'aud' claim: " .. aud)
                 -- Special handling for audience "https://management.azure.com/"
                 if aud == "https://management.azure.com/" then
                   local managedClientId = payload["appid"]
                   if managedClientId then
-                    -- Set x-user-id and x-app-id to match appid for this case
                     request_handle:headers():add("x-user-id", entraClientId)
                     request_handle:headers():replace("x-app-id", entraClientId)
-                    request_handle:logWarn("x-user-id and x-app-id set to 'appid' claim for management.azure.com audience")
+                    request_handle:logInfo("UC7-(Management Audience): x-user-id and x-app-id set to 'appid' claim for management.azure.com audience")
                   else
                     request_handle:logError("No 'appid' claim found for management.azure.com audience")
                   end

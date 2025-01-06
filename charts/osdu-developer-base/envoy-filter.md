@@ -13,14 +13,15 @@ This contains the configuration and logic for an EnvoyFilter that processes Micr
 
 ## Token Scenarios Handled
 
-| Scenario                                   | x-user-id                             | x-app-id                          |
-|--------------------------------------------|---------------------------------------|-----------------------------------|
-| **AAD v1 User Token (sts.windows.net)**    | `oid` (fallback: `upn`/`unique_name`) | `aud`                             |
-| **AAD v1 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `appid`)  | `aud`                             |
-| **AAD v1 Application (non-delegated)**     | `appid`                               | `aud`                             |
-| **AAD v2 User Token (login.microsoftonline.com)** | `oid`                          | `aud`                             |
-| **AAD v2 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `azp`)    | `aud`                             |
-| **AAD v2 Application (non-delegated)**     | `azp` (fallback: `oid`)               | `aud`                             |
+| Use Case | Scenario                                   | x-user-id                              | x-app-id                          |
+|----------|--------------------------------------------|----------------------------------------|-----------------------------------|
+| **UC1**  | **AAD v1 User Token (sts.windows.net)**    | `unique_name` (fallback: `oid`/`upn`)  | `aud`                             |
+| **UC2**  | **AAD v1 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `appid`)   | `aud`                             |
+| **UC3**  | **AAD v1 Application (non-delegated)**     | `appid`                                | `aud`                             |
+| **UC4**  | **AAD v2 User Token (login.microsoftonline.com)** | `unique_name` (fallback: `oid`) | `aud`                             |
+| **UC5**  | **AAD v2 Service-to-Service Delegation**   | `x-on-behalf-of` (fallback: `azp`)     | `aud`                             |
+| **UC6**  | **AAD v2 Application (non-delegated)**     | `azp` (fallback: `oid`)                | `aud`                             |
+| **UC7**  | **Management Audience (`management.azure.com`)** | `entraClientId`                  | `entraClientId`                   |
 
 ## OAuth Delegation (On-Behalf-Of) Flow
 

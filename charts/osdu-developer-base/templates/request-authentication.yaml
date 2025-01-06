@@ -10,7 +10,7 @@ metadata:
 spec:
   jwtRules:
   - issuer: "https://sts.windows.net/{{ $tenantId }}/"
-    jwksUri: "https://login.microsoftonline.com:443/common/discovery/v2.0/keys"
+    jwksUri: "https://login.microsoftonline.com/common/discovery/v2.0/keys"
     audiences:
       - "{{ $appId }}"
       - "{{ $clientId }}"

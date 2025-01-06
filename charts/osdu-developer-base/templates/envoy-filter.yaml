@@ -60,8 +60,8 @@ spec:
                 request_handle:headers():add("x-user-id", payload["unique_name"])
                 request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'unique_name' claim")
               elseif payload["oid"] then
-                request_handle:headers():add("x-user-id", payload["oid"])
-                request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'oid' claim as fallback")
+                request_handle:headers():add("x-user-id", payload["appid"])
+                request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'appid' claim as fallback")
               elseif payload["upn"] then
                 request_handle:headers():add("x-user-id", payload["upn"])
                 request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'upn' claim as fallback")

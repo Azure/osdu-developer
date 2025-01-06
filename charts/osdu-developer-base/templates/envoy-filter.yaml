@@ -56,27 +56,15 @@ spec:
 
             -- Process AAD v1 tokens
             function processAADV1Token(payload, request_handle)
-              if payload["oid"] then
+              if payload["unique_name"] then
+                request_handle:headers():add("x-user-id", payload["unique_name"])
+                request_handle:logWarn("x-user-id set from 'unique_name' claim")
+              elseif payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
-                request_handle:logWarn("x-user-id set from 'oid' claim")
-              elseif payload["upn"] or payload["unique_name"] then
-                local fallback = payload["upn"] or payload["unique_name"]
-                request_handle:headers():add("x-user-id", fallback)
-                request_handle:logWarn("x-user-id set from fallback claim: " .. fallback)
-              elseif payload["appid"] then
-                if payload["appid"] == managedIdentityClientId then
-                  local on_behalf_of = request_handle:headers():get("x-on-behalf-of")
-                  if on_behalf_of and on_behalf_of ~= "" then
-                    request_handle:headers():add("x-user-id", on_behalf_of)
-                    request_handle:logWarn("x-user-id set from on-behalf-of header")
-                  else
-                    request_handle:headers():add("x-user-id", payload["appid"])
-                    request_handle:logWarn("x-user-id set from appid claim")
-                  end
-                else
-                  request_handle:headers():add("x-user-id", payload["appid"])
-                  request_handle:logWarn("x-user-id set from non-delegated appid claim")
-                end
+                request_handle:logWarn("x-user-id set from 'oid' claim as fallback")
+              elseif payload["upn"] then
+                request_handle:headers():add("x-user-id", payload["upn"])
+                request_handle:logWarn("x-user-id set from 'upn' claim as fallback")
               else
                 request_handle:logError("No valid claim for x-user-id found in AAD v1 token")
               end
@@ -84,23 +72,15 @@ spec:
 
             -- Process AAD v2 tokens
             function processAADV2Token(payload, request_handle)
-              if payload["oid"] then
+              if payload["unique_name"] then
+                request_handle:headers():add("x-user-id", payload["unique_name"])
+                request_handle:logWarn("x-user-id set from 'unique_name' claim")
+              elseif payload["oid"] then
                 request_handle:headers():add("x-user-id", payload["oid"])
-                request_handle:logWarn("x-user-id set from 'oid' claim")
+                request_handle:logWarn("x-user-id set from 'oid' claim as fallback")
               elseif payload["azp"] then
-                if payload["azp"] == managedIdentityClientId then
-                  local on_behalf_of = request_handle:headers():get("x-on-behalf-of")
-                  if on_behalf_of and on_behalf_of ~= "" then
-                    request_handle:headers():add("x-user-id", on_behalf_of)
-                    request_handle:logWarn("x-user-id set from on-behalf-of header")
-                  else
-                    request_handle:headers():add("x-user-id", payload["azp"])
-                    request_handle:logWarn("x-user-id set from azp claim")
-                  end
-                else
-                  request_handle:headers():add("x-user-id", payload["azp"])
-                  request_handle:logWarn("x-user-id set from azp claim (non-delegated)")
-                end
+                request_handle:headers():add("x-user-id", payload["azp"])
+                request_handle:logWarn("x-user-id set from 'azp' claim as fallback")
               else
                 request_handle:logError("No valid claim for x-user-id found in AAD v2 token")
               end

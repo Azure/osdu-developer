@@ -83,6 +83,9 @@ spec:
         - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
         - "osdu-ingestion>=0.27,<1.0.0"
       kubernetesPodTemplate:
+        serviceAccountName: workload-identity-sa
+        annotations:
+          azure.workload.identity/use: "true"
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
           - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
@@ -118,7 +121,7 @@ spec:
         AIRFLOW__WEBSERVER__WORKER_CLASS: "sync"
         # AIRFLOW__WEBSERVER__WORKERS: "8"
         AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
-        AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True" 
+        AIRFLOW_VAR_CORE__CONFIG__SHOW_SKIPPED_IDS: "True"
         # AIRFLOW_VAR_CORE__CONFIG__DATALOAD_CONFIG_PATH: "/opt/airflow/dags/configs/dataload.ini"
 
       extraEnv:

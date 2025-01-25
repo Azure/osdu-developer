@@ -267,8 +267,8 @@ module cluster './managed-cluster/main.bicep' = {
         availabilityZones: [
           '1'
         ]
-        vnetSubnetID: aksSubnetId
-        podSubnetId: podSubnetId
+        vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+        podSubnetId: !empty(podSubnetId) ? podSubnetId : null
         nodeTaints: ['app=cluster:NoSchedule']
         nodeLabels: {
           app: 'cluster'
@@ -288,8 +288,8 @@ module cluster './managed-cluster/main.bicep' = {
         availabilityZones: [
           '2'
         ]
-        vnetSubnetID: aksSubnetId
-        podSubnetId: podSubnetId
+        vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+        podSubnetId: !empty(podSubnetId) ? podSubnetId : null
         nodeTaints: ['app=cluster:NoSchedule']
         nodeLabels: {
           app: 'cluster'
@@ -309,8 +309,8 @@ module cluster './managed-cluster/main.bicep' = {
         availabilityZones: [
           '3'
         ]
-        vnetSubnetID: aksSubnetId
-        podSubnetId: podSubnetId
+        vnetSubnetID: !empty(aksSubnetId) ? aksSubnetId : null
+        podSubnetId: !empty(podSubnetId) ? podSubnetId : null
         nodeTaints: ['app=cluster:NoSchedule']
         nodeLabels: {
           app: 'cluster'

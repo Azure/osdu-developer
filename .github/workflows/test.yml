@@ -46,7 +46,7 @@ on:
         required: false
       region:
         description: "Region (needs to be same as byo vnet location)"
-        default: "eastus2"
+        default: "centralus"
         type: string
         required: false
       doStandards:
@@ -150,7 +150,7 @@ jobs:
           if [ -z "${{ github.event.inputs.region }}" ]
           then
             echo "Region parameter not available through GitHub event data, setting default"
-            REGION="eastus2"
+            REGION="centralus"
           else
             echo "Region parameter found in GitHub event (${{ github.event.inputs.region }})"
             REGION="${{ github.event.inputs.region }}"

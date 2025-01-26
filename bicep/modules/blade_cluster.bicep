@@ -17,18 +17,30 @@ param enableTelemetry bool
 @description('The workspace resource Id for diagnostics')
 param workspaceResourceId string
 
-@description('A Custom VM Size for Internal Pool')
-param vmSize string
+// D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.
+// D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
+@description('A Custom VM Size for System Pool (4x8 ARM:true)')
+param vmSizeSystemPool string = 'Standard_D4pds_v6'
+
+// D2pds v5 with 2 vCPUs and 8 GiB of memory. Available in 22 regions starting from $44.09 per month.
+// D2s_v5 with 2 vCPUs and 8 GiB of memory. Available in 50 regions starting from $70.08 per month.
+@description('A Custom VM Size for Zone Pool (2x8 ARM:true)')
+param vmSizeZonePool string = 'Standard_D2pds_v6'
+
+// B4s_v2 with 4 vCPUs and 16 GiB of memory. Available in 49 regions starting from $16.64 per month.
+// D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
+@description('A Custom VM Size for User Pool (2x8 ARM:false BURST:true)')
+param vmSizeUserPool string = 'Standard_B4s_v2'
 
 @minLength(9)
 @maxLength(18)
 @description('The address range to use for services')
-param serviceCidr string = '172.16.0.0/16'
+param serviceCidr string = '10.0.0.0/16'
 
 @minLength(7)
 @maxLength(15)
 @description('The IP address to reserve for DNS')
-param dnsServiceIP string = '172.16.0.10'
+param dnsServiceIP string = '10.0.0.10'
 
 @description('The id of the subnet to deploy the AKS nodes')
 param aksSubnetId string
@@ -51,6 +63,8 @@ param enablePrivateCluster bool = true
 @description('Feature Flag to Enable Node Resource Group Lock Down')
 param nodeResourceGroupLockDown bool = true
 
+
+
 /////////////////////////////////
 // Configuration 
 /////////////////////////////////
@@ -61,15 +75,18 @@ var serviceLayerConfig = {
   }
   cluster: {
     tier: 'Standard'
+    sku: 'Base'
     aksVersion: '1.30'
 
-    // D2pds v5 with 2 vCPUs and 8 GiB of memory. Available in 22 regions starting from $44.09 per month.
-    // D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.
-    // D2s_v5 with 2 vCPUs and 8 GiB of memory. Available in 50 regions starting from $70.08 per month.
-    // D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
-    vmSize: 'Standard_D4pds_v5' 
-    poolSize: 'Standard_D2pds_v5'  
-    defaultSize: 'Standard_D4s_v5' // OSDU Java Services don't run on ARM?
+    // // D2pds v5 with 2 vCPUs and 8 GiB of memory. Available in 22 regions starting from $44.09 per month.
+    // // D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.
+    // // D2s_v5 with 2 vCPUs and 8 GiB of memory. Available in 50 regions starting from $70.08 per month.
+    // // D4s_v5 with 4 vCPUs and 16 GiB of memory. Available in 50 regions starting from $140.16 per month.
+    // // D4ps_v5 with 4 vCPUs and 16 GiB of memory. Available in 23 regions, starting from $73.73 per month.
+    // // B4s_v2 with 4 vCPUs and 16 GiB of memory. Available in 49 regions starting from $16.64 per month.
+    // vmSize: 'Standard_D4pds_v6' 
+    // poolSize: 'Standard_D2pds_v6'  
+    // defaultSize: 'Standard_B4s_v2' // OSDU Java Services don't run on ARM?
   }
 }
 
@@ -96,6 +113,7 @@ module cluster './managed-cluster/main.bicep' = {
     name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'
     location: location
     skuTier: serviceLayerConfig.cluster.tier
+    skuName: serviceLayerConfig.cluster.sku
     kubernetesVersion: serviceLayerConfig.cluster.aksVersion
 
     // Assign Tags
@@ -209,7 +227,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'system'
         mode: 'System'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.vmSize : vmSize
+        vmSize: vmSizeSystemPool
         enableAutoScaling: !enableNodeAutoProvisioning
         count: enableNodeAutoProvisioning ? 2 : null
         minCount: enableNodeAutoProvisioning ? null : 2
@@ -237,7 +255,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'default'
         mode: 'User'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.defaultSize : vmSize
+        vmSize: vmSizeUserPool
         enableAutoScaling: !enableNodeAutoProvisioning
         count: enableNodeAutoProvisioning ? 4 : null
         minCount: enableNodeAutoProvisioning ? null : 4
@@ -256,7 +274,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'poolz1'
         mode: 'User'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        vmSize: vmSizeZonePool
         enableAutoScaling: !enableNodeAutoProvisioning
         minCount: enableNodeAutoProvisioning ? null : 1
         maxCount: enableNodeAutoProvisioning ? null : 3
@@ -277,7 +295,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'poolz2'
         mode: 'User'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        vmSize: vmSizeZonePool
         enableAutoScaling: !enableNodeAutoProvisioning
         minCount: enableNodeAutoProvisioning ? null : 1
         maxCount: enableNodeAutoProvisioning ? null : 3
@@ -298,7 +316,7 @@ module cluster './managed-cluster/main.bicep' = {
       {
         name: 'poolz3'
         mode: 'User'
-        vmSize: empty(vmSize) ? serviceLayerConfig.cluster.poolSize : vmSize
+        vmSize: vmSizeZonePool
         enableAutoScaling: !enableNodeAutoProvisioning
         minCount: enableNodeAutoProvisioning ? null : 1
         maxCount: enableNodeAutoProvisioning ? null : 3

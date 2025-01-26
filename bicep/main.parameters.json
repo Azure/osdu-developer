@@ -33,6 +33,13 @@
         "enableLockDown": "${ENABLE_LOCK_DOWN}"
       }
     },
+    "serverConfiguration": {
+      "value": {
+        "systemPool": "${VMSIZE_SYSTEM_POOL}",
+        "zonePool": "${VMSIZE_ZONE_POOL}",
+        "userPool": "${VMSIZE_USER_POOL}"
+      }
+    },
     "vnetConfiguration": {
       "value": {
         "group": "${VIRTUAL_NETWORK_GROUP}",

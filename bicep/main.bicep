@@ -10,15 +10,8 @@ param emailAddress string
 @description('Specify the Application Client Id. (This is the unique application ID of this application.)')
 param applicationClientId string
 
-// @description('Specify the Application Client Secret. (A valid secret for the application client ID.)')
-// @secure()
-// param applicationClientSecret string
-
 @description('Specify the Enterprise Application Object Id. (This is the unique ID of the service principal object associated with the application.)')
 param applicationClientPrincipalOid string
-
-@description('The size of the VM to use for the cluster.')
-param customVMSize string = ''
 
 @allowed([
   'External'
@@ -53,6 +46,13 @@ param clusterConfiguration object = {
   enableNodeAutoProvisioning: true
   enablePrivateCluster: false
   enableLockDown: false
+}
+
+@description('Optional: Server Configuration Overrides - {system}-->(4x8 ARM:true) {zone}-->(2x8 ARM:true) {user}-->(4x16 ARM:false BURST:true)')
+param serverConfiguration object = {
+  systemPool: 'Standard_D4pds_v6' 
+  zonePool: 'Standard_D2pds_v6'  
+  userPool: 'Standard_B4s_v2'
 }
 
 @description('Optional. Bring your own Virtual Network.')
@@ -189,7 +189,7 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
  /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |         |  |     |  | |  `----.----)   |
 /__/     \__\ |__| \__| /__/     \__\ |_______|    |__|         |__|     |__|  \______|_______/
 */
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.1' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.9.1' = {
   name: '${configuration.name}-log-analytics'
   params: {
     name: rg_unique_id
@@ -216,7 +216,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.1' = {
 |__| |__| \__| |_______/    |__|  \______| |__|  |__|     |__|    |_______/
 */
 
-module insights 'br/public:avm/res/insights/component:0.3.0' = {
+module insights 'br/public:avm/res/insights/component:0.5.0' = {
   name: '${configuration.name}-insights'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -257,7 +257,7 @@ module insights 'br/public:avm/res/insights/component:0.3.0' = {
  \______/__/     \__\ \______||__|  |__| |_______|
 */
 // This takes a long time to deploy so we are starting as soon as possible.
-module redis 'br/public:avm/res/cache/redis:0.3.2' = {
+module redis 'br/public:avm/res/cache/redis:0.9.0' = {
   name: '${configuration.name}-cache'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -376,7 +376,9 @@ module clusterBlade 'modules/blade_cluster.bicep' = {
 
     aksSubnetId: enableVnetInjection ? networkBlade.outputs.aksSubnetId : ''
     podSubnetId: enableVnetInjection ? networkBlade.outputs.podSubnetId : ''
-    vmSize: customVMSize
+    vmSizeSystemPool: serverConfiguration.systemPool == '' ? 'Standard_D4pds_v6' : serverConfiguration.systemPool
+    vmSizeZonePool: serverConfiguration.zonePool == '' ? 'Standard_D2pds_v6' : serverConfiguration.zonePool
+    vmSizeUserPool: serverConfiguration.userPool == '' ? 'Standard_B4s_v2' : serverConfiguration.userPool
   }
   dependsOn: [
     stampIdentity
@@ -429,16 +431,16 @@ module fluxExtension 'modules/flux-extension/main.bicep' = {
 .----)   |   |  `----.|  |\  \----.|  | |  |          |  |
 |_______/     \______|| _| `._____||__| | _|          |__|
 */
-module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' = {
+module extensionClientId 'br/public:avm/res/resources/deployment-script:0.5.1' = {
   name: '${configuration.name}-script-clientId'
 
   params: {
     kind: 'AzureCLI'
     name: 'script-${configuration.name}-aks-extension'
-    azCliVersion: '2.63.0'
     location: location
+    azCliVersion: '2.64.0'
     managedIdentities: {
-      userAssignedResourcesIds: [
+      userAssignedResourceIds: [
         stampIdentity.outputs.resourceId
       ]
     }
@@ -458,6 +460,7 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
     retentionInterval: 'PT1H'
 
     scriptContent: '''
+      tdnf install -y jq
       az login --identity
 
       echo "Looking up client ID for $principalId in ResourceGroup $rgName"
@@ -481,7 +484,7 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.4.0' =
 |  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |
 | _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|
 */
-module registry 'br/public:avm/res/container-registry/registry:0.1.1' = {
+module registry 'br/public:avm/res/container-registry/registry:0.7.0' = {
   name: '${configuration.name}-container-registry'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -553,12 +556,6 @@ var vaultSecrets = [
     secretName: 'subscription-id'
     secretValue: subscription().subscriptionId
   }
-  // Azure AD Secrets
-  // {
-  //   secretName: 'app-dev-sp-password'
-  //   secretValue: 'dummy'
-  //   // secretValue: applicationClientSecret == '' ? 'dummy' : applicationClientSecret
-  // }
   {
     secretName: 'app-dev-sp-id'
     secretValue: applicationClientId
@@ -601,7 +598,7 @@ var vaultSecrets = [
   }
 ]
 
-module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
+module keyvault 'br/public:avm/res/key-vault/vault:0.11.2' = {
   name: '${configuration.name}-keyvault'
   params: {
     name: length(name) > 24 ? substring(name, 0, 24) : name
@@ -654,12 +651,14 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.5.1' = {
     }
 
     // Configure Secrets
-    secrets: {
-      secureList: [for secret in vaultSecrets: {
-        name: secret.secretName
-        value: secret.secretValue
-      }]
-    }
+    secrets: [for secret in vaultSecrets: {
+      name: secret.secretName
+      value: secret.secretValue
+      contentType: 'text/plain'
+      attributes: {
+        enabled: true
+      }
+    }]
   }
 }
 
@@ -924,7 +923,7 @@ var directoryUploads = [
 ]
 
 @batchSize(1)
-module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for item in directoryUploads: if (clusterSoftware.private == 'true') {
+module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.5.1' = [for item in directoryUploads: if (clusterSoftware.private == 'true') {
   name: '${configuration.name}-storage-${item.directory}-upload'
   params: {
     name: 'script-${storage.outputs.name}-${item.directory}'

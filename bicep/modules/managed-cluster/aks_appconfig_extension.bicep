@@ -1,7 +1,7 @@
 @description('The name of the Managed Cluster resource.')
 param clusterName string
 
-resource existingManagedCluster 'Microsoft.ContainerService/managedClusters@2024-04-02-preview' existing = {
+resource existingManagedCluster 'Microsoft.ContainerService/managedClusters@2024-09-02-preview' existing = {
   name: clusterName
 }
 

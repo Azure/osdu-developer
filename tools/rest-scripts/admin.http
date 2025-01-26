@@ -48,13 +48,14 @@ grant_type=client_credentials
 # @name info
 GET {{ENTITLEMENTS_HOST}}/info
 Authorization: Bearer {{access_token}}
-# x-payload: Bearer {{access_token}}
 Accept: application/json
+# x-payload: Bearer {{access_token}}
 
 
 # ---------------------------------
 # Group Name
 # ---------------------------------
+###
 # This is the identifier for the group you are adding.
 @group_name = app.trusted
 
@@ -70,7 +71,6 @@ Accept: application/json
 # Group Type Email
 # ---------------------------------
 @group_type_email = {{admins_group_type}}@{{DATA_PARTITION}}.{{domain}}
-
 
 
 # -----------------------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ Content-Type: application/json
 # This is the identifier for the user you are adding.
 # When using AAD, this is the email for the user if adding an AAD user.
 # When using ADD and a Service principal this is the OID of the Service Principal.
-@member_email = daniel.scholl@microsoft.com
+@member_email = 
 
 
 # -----------------------

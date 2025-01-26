@@ -1,56 +1,42 @@
 {{- $enabled := eq (include "osdu-developer-init.isEnabled" .) "1" -}}
 {{- $namespace := .Release.Namespace -}}
+{{- $releaseName := .Release.Name -}}
 {{- if and $enabled .Values.jobs.userInit }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: user-init
-  namespace: osdu-core  # Ensure the correct namespace
+  name: {{ $releaseName }}
+  namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: workload-identity-sa
       volumes:
       - name: script
         configMap:
-          name: user-init-script
+          name: configmap-{{ $releaseName }}-script
           defaultMode: 0500
       initContainers:
       - name: data-seed
-        image: mcr.microsoft.com/cbl-mariner/base/core:2.0
-        command: ["/bin/sh"]
-        args:
-        - -c
-        - |
-          tdnf install -y curl jq && \
-          /script/init.sh
+        image: mcr.microsoft.com/azure-cli:cbl-mariner2.0
+        command:
+        - /script/init.sh
         volumeMounts:
           - name: script
             mountPath: "/script"
         env:
-          - name: AUTH_CODE
-            value: ""  # Placeholder value
-          - name: AZURE_TENANT_ID
-            value: {{ .Values.tenantId | quote }}
-          - name: AZURE_CLIENT_ID
-            value: {{ .Values.clientId | quote }}
           - name: EMAIL_ADDRESS
             value: {{ .Values.emailAddress | quote }}
-          - name: AZURE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.clientSecret.name | quote }}
-                key: {{ .Values.clientSecret.key | quote }}
-          - name: PARTITION
-            value: {{ .Values.partition | quote }}
-          - name: AUTH_INGRESS
-            value: {{ .Values.authIngress | quote }}
       containers:
       - name: sleep
         image: istio/base
         command: ["/bin/sleep", "30"]
-        volumeMounts:  # Ensure this container also mounts the volume if needed
+        volumeMounts:
           - name: script
             mountPath: "/script"
       restartPolicy: Never
@@ -58,43 +44,34 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: user-init-script
-  namespace: osdu-core  # Ensure the correct namespace
+  name: configmap-{{ $releaseName }}-script
+  namespace: {{ $namespace }}
 data:
   init.sh: |
     #!/usr/bin/env sh
     set -euo pipefail
     set -o nounset
 
+    tdnf install -y curl jq
+
     echo "=================================================================="
-    echo "  Creating Bearer Token for Application: ${AZURE_CLIENT_ID}       "
+    echo "  Logging in using Workload Identity"
     echo "=================================================================="
 
-    OUTPUT=$(curl -s -k -w "%{http_code}" --request POST \
-        --url https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/token \
-        --header "content-type: application/x-www-form-urlencoded" \
-        --data "grant_type=client_credentials" \
-        --data "client_id=${AZURE_CLIENT_ID}" \
-        --data "client_secret=${AZURE_CLIENT_SECRET}" \
-        --data "resource=${AZURE_CLIENT_ID}")
+    # Login using the federated token from the environment variable
+    az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+        --service-principal \
+        -u ${AZURE_CLIENT_ID} \
+        -t ${AZURE_TENANT_ID}
 
-    HTTP_STATUS_CODE=$(echo $OUTPUT | grep -oE '[0-9]{3}$')
-    BODY=${OUTPUT%???}
-
-    if [[ "$HTTP_STATUS_CODE" != "200" ]]; then
-      echo "Error: Unexpected HTTP status code $HTTP_STATUS_CODE"
-      echo "Response body: $BODY"
-      exit 1
-    fi
-
-    TOKEN=$(echo "$BODY" | jq .access_token | tr -d '"')
+    # Get token (no resource needed)
+    TOKEN=$(az account get-access-token --resource "https://management.azure.com/" --query accessToken -o tsv)
 
     echo "=================================================================="
     echo "  Adding the first user...                                        "
     echo "=================================================================="
 
-    AUTH_USER="${EMAIL_ADDRESS}"
-    json_payload=$(jq -n --arg email "$AUTH_USER" '{"email": $email, "role": "MEMBER"}')
+    json_payload=$(jq -n --arg email "$EMAIL_ADDRESS" '{"email": $email, "role": "MEMBER"}')
 
     OUTPUT=$(curl -s -k -w "%{http_code}" -X POST "http://entitlements.{{ $namespace }}/api/entitlements/v2/groups/users@opendes.dataservices.energy/members" \
         --insecure \

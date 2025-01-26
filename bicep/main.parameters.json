@@ -14,9 +14,6 @@
     "emailAddress": {
       "value": "${EMAIL_ADDRESS}"
     },
-    "customVMSize": {
-      "value": "${CLUSTER_VM_SIZE}"
-    },
     "ingressType": {
       "value": "${CLUSTER_INGRESS}"
     },
@@ -31,6 +28,13 @@
         "enableNodeAutoProvisioning": "${ENABLE_NODE_AUTO_PROVISIONING}",
         "enablePrivateCluster": "${ENABLE_PRIVATE_CLUSTER}",
         "enableLockDown": "${ENABLE_LOCK_DOWN}"
+      }
+    },
+    "serverConfiguration": {
+      "value": {
+        "systemPool": "${VMSIZE_SYSTEM_POOL}",
+        "zonePool": "${VMSIZE_ZONE_POOL}",
+        "userPool": "${VMSIZE_USER_POOL}"
       }
     },
     "vnetConfiguration": {

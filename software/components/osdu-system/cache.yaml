@@ -13,7 +13,6 @@ spec:
     name: root-ca-cluster-issuer
     kind: ClusterIssuer
 ---
----
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -40,7 +39,7 @@ spec:
       valuesKey: values.yaml
   values:
     secrets:
-      - secretName: keyvault-secrets 
+      - secretName: keyvault-secrets
         data:
           - key: redis-password
             vaultSecret: redis-password

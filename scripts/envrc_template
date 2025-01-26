@@ -1,5 +1,6 @@
 # Common Name Pattern
 export COMMON_NAME="%COMMON_NAME%"
+export REGISTRY="${COMMON_NAME}.azurecr.io/"
 
 # Run
 export AZURE_TENANT_ID="%AZURE_TENANT_ID%"

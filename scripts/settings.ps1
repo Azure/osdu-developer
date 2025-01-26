@@ -275,7 +275,7 @@ function New-YamlFile {
             $currentLevel = 0
             $nodePath = @($nodeName)
             $osduGroupNode = $nodeName
-            
+
             # Create output directory for the new OSDU group node
             $outputDirectory = "./src/$osduGroupNode".ToLower()
             New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
@@ -399,7 +399,7 @@ function New-ServiceEnvFile {
             $currentLevel = 0
             $nodePath = @($nodeName)
             $osduGroupNode = $nodeName
-            
+
             $outputDirectory = "./src/$osduGroupNode".ToLower()
             New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 
@@ -465,7 +465,7 @@ function Get-AppInsights {
     Write-Host "Downloading Application Insights Agent"
     Write-Host "=================================================================="
 
-    $url = "https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.5.4/applicationinsights-agent-3.5.4.jar"
+    $url = "https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.6.2/applicationinsights-agent-3.6.2.jar"
     $outputPath = "./src/applicationinsights-agent.jar"
 
     try {

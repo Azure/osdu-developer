@@ -141,12 +141,11 @@ data-partition-id: {{DATA_PARTITION}}
 
 ###
 # @name getRecord
-GET {{STORAGE_HOST}}/records/{{id}}
+GET {{STORAGE_HOST}}/records/{{createRecord.response.body.recordIds[0]}}
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-@recordversion = {{getRecord.response.body.version}}
 
 ###
 # @name getRecordIdByKind
@@ -155,11 +154,10 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
-@id = {{getRecordIdByKind.response.body.results[0]}}
 
 ###
 # @name getRecordByVersion
-GET {{STORAGE_HOST}}/records/{{id}}/{{recordversion}}
+GET {{STORAGE_HOST}}/records/{{id}}/{{getRecord.response.body.version}}
 Authorization: Bearer {{access_token}}
 Accept: application/json
 data-partition-id: {{DATA_PARTITION}}

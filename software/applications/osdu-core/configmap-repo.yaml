@@ -1,0 +1,12 @@
+## This file can be used to override the repository for service images.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-repo-override
+  namespace: osdu-core
+data:
+  repository.yaml: |
+    configuration:
+      - service: service_name
+        repository: acr_name.azurecr.io/service_name:latest

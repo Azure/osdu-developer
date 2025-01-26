@@ -1,6 +1,5 @@
-tenantId: 
-clientId: 
-clientSecret: 
-serviceBus: 
-partition: 
-  
+tenantId:
+clientId:
+clientSecret:
+serviceBus:
+partition:

@@ -37,10 +37,12 @@ spec:
     {{- end }}
       labels: {{ $selectorLabels }}
         app: {{ or .service .scaledObject }}
+        azure.workload.identity/use: "true"
         {{- if $subset }}
         version: {{ $subset }}
         {{- end }}
     spec:
+      serviceAccountName: {{ .serviceAccountName | default "workload-identity-sa" }}
       {{- if $nodePool }}
       nodeSelector:
         nodepool: {{ $nodePool }}
@@ -89,7 +91,6 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .name }}-pvc
       {{- end }}
-      serviceAccountName: workload-identity-sa
       containers:
         - name: {{ or .service .scaledObject }}
           image: {{ if hasSuffix "-" .repository }}{{ .repository }}{{ $osduVersion }}:{{ .tag }}{{ else }}{{ .repository }}:{{ .tag }}{{ end }}

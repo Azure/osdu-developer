@@ -1,6 +1,7 @@
 {{- if .Values.enableRequestAuthentication }}
 {{- $tenantId := .Values.azure.tenantId -}}
 {{- $appId := .Values.azure.appId -}}
+{{- $clientId := .Values.azure.clientId -}}
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
@@ -9,9 +10,11 @@ metadata:
 spec:
   jwtRules:
   - issuer: "https://sts.windows.net/{{ $tenantId }}/"
-    jwksUri: "https://login.microsoftonline.com:443/common/discovery/v2.0/keys"
+    jwksUri: "https://login.microsoftonline.com/common/discovery/v2.0/keys"
     audiences:
       - "{{ $appId }}"
+      - "{{ $clientId }}"
+      - "https://management.azure.com"
     outputPayloadToHeader: "x-payload"
     forwardOriginalToken: true
     fromHeaders:
@@ -21,6 +24,7 @@ spec:
     jwksUri: "https://login.microsoftonline.com/common/discovery/v2.0/keys"
     audiences:
       - "{{ $appId }}"
+      - "{{ $clientId }}"
     outputPayloadToHeader: "x-payload"
     forwardOriginalToken: true
     fromHeaders:

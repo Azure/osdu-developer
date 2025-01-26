@@ -27,6 +27,10 @@ spec:
     - kind: ConfigMap
       name: configmap-software
       valuesKey: value.yaml
+    - kind: ConfigMap
+      name: configmap-repo-override
+      optional: true
+      valuesKey: repository.yaml
   values:
     nameOverride: legal
     installationType: osduCore
@@ -46,7 +50,7 @@ spec:
         - istio-system/internal-gateway
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-
-      tag: latest 
+      tag: latest
       probe:
         path: /actuator/health
         port: 8081
@@ -64,24 +68,8 @@ spec:
           - "/api/legal/v1/info"
           - "/api/legal/v1/swagger*"
           - "/api/legal/v1/api-docs*"
-          - "/api/legal/v1/webjars/*"          
+          - "/api/legal/v1/webjars/*"
       env:
-      - name: AZURE_TENANT_ID
-        secret:
-          name: active-directory
-          key: tenant-id
-      - name: AZURE_SUBSCRIPTION_ID
-        secret:
-          name: active-directory
-          key: subscription-id
-      - name: AZURE_CLIENT_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
       - name: KEYVAULT_URI
         secret:
           name: azure-resources
@@ -100,8 +88,8 @@ spec:
           key: insights-connection
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "false"
+      - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+        value: "true"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/legal/v1/"
       - name: SERVER_PORT

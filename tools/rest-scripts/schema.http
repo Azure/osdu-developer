@@ -138,6 +138,7 @@ Accept: application/json
 data-partition-id: {{DATA_PARTITION}}
 
 
+### This call can't be done by a default user.
 ###
 # @name createSystemSchema
 PUT {{SCHEMA_HOST}}/schemas/system

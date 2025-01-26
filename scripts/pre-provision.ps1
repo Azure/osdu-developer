@@ -224,6 +224,11 @@ function Set-LocalAuth {
     try {
         $appConfig = az appconfig list -g $env:AZURE_RESOURCE_GROUP --query '[0].name' -o tsv
 
+        if (-not $appConfig) {
+            Write-Host "No App Configuration found in resource group: $env:AZURE_RESOURCE_GROUP"
+            return
+        }
+
         Write-Host "`n=================================================================="
         Write-Host "Disabling Local Authentication for App Configuration: $appConfig"
         Write-Host "=================================================================="

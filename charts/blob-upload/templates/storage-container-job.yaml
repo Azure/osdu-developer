@@ -12,6 +12,9 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: workload-identity-sa
       containers:
@@ -23,27 +26,35 @@ spec:
             - |
               # Install curl
               tdnf install -y curl
-              
+
               # Download the file
               echo "Downloading file from {{ .url }}"
               curl -kso {{ .file }} "{{ .url }}"
-              
-              # Login using workload identity
-              az login --identity
-              
+
+              echo "=================================================================="
+              echo "  Logging in using Workload Identity"
+              echo "=================================================================="
+
+              # Login using the federated token from the environment variable
+              az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
+                --service-principal \
+                -u ${AZURE_CLIENT_ID} \
+                -t ${AZURE_TENANT_ID} || exit 1
+
               # Upload directly to blob storage using Azure CLI
               az storage blob upload \
                 -f {{ .file }} \
                 -c {{ $.Values.blobUpload.container }} \
                 -n {{ .file }} \
+                --account-name {{ $value }} \
                 --overwrite \
-                --auth-mode login
-              
+                --auth-mode login || exit 1
+
               echo "File uploaded to container {{ $.Values.blobUpload.container }} in storage account {{ $value }}"
-              sleep 300000
+              exit 0
       restartPolicy: Never
 {{- end }}
 {{- $i = add $i 1 }}
 {{- end }}
 {{- end }}
-{{- end }} 
+{{- end }}

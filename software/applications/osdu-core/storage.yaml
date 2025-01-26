@@ -70,24 +70,8 @@ spec:
           - "/api/storage/v2/info"
           - "/api/storage/v2/swagger*"
           - "/api/storage/v2/api-docs*"
-          - "/api/storage/v2/webjars/*"  
+          - "/api/storage/v2/webjars/*"
       env:
-      - name: AZURE_TENANT_ID
-        secret:
-          name: active-directory
-          key: tenant-id
-      - name: AZURE_SUBSCRIPTION_ID
-        secret:
-          name: active-directory
-          key: subscription-id
-      - name: AZURE_CLIENT_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
       - name: KEYVAULT_URI
         secret:
           name: azure-resources
@@ -106,8 +90,8 @@ spec:
           key: insights-connection
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "false"
+      - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+        value: "true"
       - name: SERVER_PORT
         value: "80"
       - name: ACCEPT_HTTP
@@ -121,7 +105,7 @@ spec:
       - name: AZURE_EVENTGRID_ENABLED
         value: "false"
       - name: AZURE_SERVICEBUS_ENABLED
-        value: "true" 
+        value: "true"
       - name: SERVICEBUS_TOPIC_NAME
         value: recordstopic
       - name: SERVICEBUS_V2_TOPIC_NAME
@@ -152,4 +136,3 @@ spec:
         value: redis-hostname
       - name: REDIS_PASSWORD_KEY
         value: redis-password
-      

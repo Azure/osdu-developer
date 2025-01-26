@@ -1,5 +1,5 @@
 /////////////////
-// Partition Blade 
+// Partition Blade
 /////////////////
 
 @description('The configuration for the blade section.')
@@ -25,7 +25,7 @@ param cmekConfiguration object = {
 }
 
 @description('The name of the Key Vault where the secret exists')
-param kvName string 
+param kvName string
 
 @description('List of Data Partitions')
 param partitions array = [
@@ -41,7 +41,7 @@ param managedIdentityName string
 param natClusterIP string
 
 /////////////////////////////////
-// Configuration 
+// Configuration
 /////////////////////////////////
 var partitionLayerConfig = {
   secrets: {
@@ -434,7 +434,7 @@ var partitionLayerConfig = {
           }
         ]
       }
-      
+
     ]
   }
 }
@@ -463,12 +463,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 
 
-/*   _______.___________.  ______   .______          ___       _______  _______ 
+/*   _______.___________.  ______   .______          ___       _______  _______
     /       |           | /  __  \  |   _  \        /   \     /  _____||   ____|
-   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__   
-    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|  
-.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____ 
-|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|                                                                 
+   |   (----`---|  |----`|  |  |  | |  |_)  |      /  ^  \   |  |  __  |  |__
+    \   \       |  |     |  |  |  | |      /      /  /_\  \  |  | |_ | |   __|
+.----)   |      |  |     |  `--'  | |  |\  \----./  _____  \ |  |__| | |  |____
+|_______/       |__|      \______/  | _| `._____/__/     \__\ \______| |_______|
 */
 // AVM Module Customized due to required Secrets.
 
@@ -489,7 +489,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
         purpose: 'data'
       }
     )
-    
+
     // Hook up Diagnostics
     diagnosticSettings: [
       {
@@ -538,7 +538,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
       ]
       accessKey1: [
         '${partition.name}-${partitionLayerConfig.secrets.storageAccountKey}'
-      ]  
+      ]
       blobEndpoint: [
         '${partition.name}-${partitionLayerConfig.secrets.storageAccountBlob}'
       ]
@@ -547,7 +547,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
 }]
 
 
-module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partitions: { 
+module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-cosmos-db-${index}'
   params: {
     #disable-next-line BCP335
@@ -585,7 +585,7 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
       array(systemDatabase),
       array(partitionDatabase)
     ) : array(partitionDatabase)
-  
+
     maxThroughput: partitionLayerConfig.database.throughput
     backupPolicyType: partitionLayerConfig.database.backup
 
@@ -606,6 +606,24 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
 }]
 
 
+// First, create a variable to handle the subscription mapping
+var topicsWithSubscriptions = [for topic in partitionLayerConfig.servicebus.topics: {
+  name: topic.name
+  maxSizeInMegabytes: topic.maxSizeInMegabytes
+  authorizationRules: [
+    {
+      name: 'RootManageSharedAccessKey'
+      rights: [
+        'Listen'
+        'Manage'
+        'Send'
+      ]
+    }
+  ]
+  subscriptions: topic.subscriptions ?? []
+}]
+
+// Then use this variable in the module
 module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-service-bus-${index}'
   params: {
@@ -649,23 +667,7 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for 
       }
     ]
 
-    topics: [
-      for topic in partitionLayerConfig.servicebus.topics: {
-        name: topic.name
-        maxSizeInMegabytes: topic.maxSizeInMegabytes
-        authorizationRules: [
-          {
-            name: 'RootManageSharedAccessKey'
-            rights: [
-              'Listen'
-              'Manage'
-              'Send'
-            ]
-          }
-        ]
-        subscriptions: topic.subscriptions
-      }
-    ]
+    topics: topicsWithSubscriptions
   }
 }]
 
@@ -680,16 +682,16 @@ module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (
     retentionInterval: 'PT1H'
     timeout: 'PT30M'
     runOnce: true
-    
+
     managedIdentities: {
       userAssignedResourcesIds: [
         stampIdentity.id
       ]
-    }    
+    }
 
     kind: 'AzureCLI'
     azCliVersion: '2.63.0'
-    
+
     environmentVariables: [
       { name: 'CONTENT', value: loadTextContent('./deploy-scripts/Legal_COO.json') }
       { name: 'FILE_NAME', value: 'Legal_COO.json' }

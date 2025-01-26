@@ -6,7 +6,7 @@ metadata:
   labels:
     toolkit.fluxcd.io/tenant: component
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: istio
@@ -15,7 +15,7 @@ spec:
   interval: 10m
   url: https://istio-release.storage.googleapis.com/charts
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: jetstack
@@ -181,7 +181,7 @@ spec:
           port: 443
           protocol: TCP
           targetPort: 443
-        annotations: 
+        annotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -212,7 +212,7 @@ spec:
   values:
     service:
         type: LoadBalancer
-        annotations: 
+        annotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: 'false'
           # service.beta.kubernetes.io/azure-dns-label-name: 'osdu-developer'
         ports:

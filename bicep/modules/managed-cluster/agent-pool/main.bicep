@@ -153,11 +153,11 @@ param workloadRuntime string?
 ])
 param sshAccess string = 'Disabled'
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-03-02-preview' existing = {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-09-02-preview' existing = {
   name: managedClusterName
 }
 
-resource agentPool 'Microsoft.ContainerService/managedClusters/agentPools@2024-04-02-preview' = {
+resource agentPool 'Microsoft.ContainerService/managedClusters/agentPools@2024-09-02-preview' = {
   name: name
   parent: managedCluster
   properties: {

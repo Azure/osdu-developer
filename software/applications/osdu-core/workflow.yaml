@@ -46,7 +46,7 @@ spec:
         - istio-system/internal-gateway
         - istio-system/external-gateway
       repository: community.opengroup.org:5555/osdu/platform/data-flow/ingestion/ingestion-workflow/ingestion-workflow-
-      tag: latest 
+      tag: latest
       probe:
         path: /actuator/health
         port: 8081
@@ -64,24 +64,8 @@ spec:
           - "/api/workflow/v3/info"
           - "/api/workflow/v3/swagger*"
           - "/api/workflow/v3/api-docs*"
-          - "/api/workflow/v3/webjars/*"          
+          - "/api/workflow/v3/webjars/*"
       env:
-      - name: AZURE_TENANT_ID
-        secret:
-          name: active-directory
-          key: tenant-id
-      - name: AZURE_SUBSCRIPTION_ID
-        secret:
-          name: active-directory
-          key: subscription-id
-      - name: AZURE_CLIENT_ID
-        secret:
-          name: active-directory
-          key: principal-clientid
-      - name: AZURE_CLIENT_SECRET
-        secret:
-          name: active-directory
-          key: principal-clientpassword
       - name: KEYVAULT_URI
         secret:
           name: azure-resources
@@ -100,8 +84,8 @@ spec:
           key: insights-connection
       - name: AZURE_ISTIOAUTH_ENABLED
         value: "true"
-      - name: AZURE_PAAS_PODIDENTITY_ISENABLED
-        value: "false"
+      - name: AZURE_PAAS_WORKLOADIDENTITY_ISENABLED
+        value: "true"
       - name: SERVER_SERVLET_CONTEXTPATH
         value: "/api/workflow/"
       - name: SERVER_PORT
@@ -150,11 +134,11 @@ spec:
         value: "OBSOLETE"
       - name: OSDU_AIRFLOW_VERSION2_ENABLED
         value: true
-      - name: DP_AIRFLOW_FOR_SYSTEM_DAG    
+      - name: DP_AIRFLOW_FOR_SYSTEM_DAG
         value: "false"
-      - name: IGNORE_DAGCONTENT    
+      - name: IGNORE_DAGCONTENT
         value: "true"
-      - name: IGNORE_CUSTOMOPERATORCONTENT    
+      - name: IGNORE_CUSTOMOPERATORCONTENT
         value: "true"
 ---
 # Retrigger:  kubectl annotate helmrelease osdu-init-workflow fluxcd.io/retrigger=$(date +%s) -n osdu-core
@@ -165,7 +149,7 @@ metadata:
   namespace: osdu-core
   annotations:
     clusterconfig.azure.com/use-managed-source: "true"
-    fluxcd.io/retrigger: "initial" 
+    fluxcd.io/retrigger: "initial"
 spec:
   dependsOn:
     - name: osdu-workflow

@@ -1,7 +1,10 @@
-# This command increases logging -->  istioctl proxy-config log <pod_name> --level lua:debug
+{{- $namespace := .Release.Namespace }}
+{{- $entraClientId := .Values.azure.clientId }}
+
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
+  namespace: {{ $namespace }}
   name: microsoft-identity-filter
 spec:
   configPatches:
@@ -12,84 +15,129 @@ spec:
         filterChain:
           filter:
             name: envoy.filters.network.http_connection_manager
-            subFilter: 
+            subFilter:
               name: envoy.filters.http.router
     patch:
       operation: INSERT_BEFORE
       value:
-        name: envoy.lua.remove-user-appid-header
+        name: envoy.lua.microsoft-identity-filter
         typed_config:
           "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
           inlineCode: |
-            function envoy_on_request(request_handle)
-                -- Remove the Well Known Headers
-                request_handle:headers():remove("x-user-id")
-                request_handle:headers():remove("x-app-id")
-                request_handle:logInfo("x-user-id and x-app-id headers removed")
+            -- Constants
+            local AAD_V1_ISSUER = "sts.windows.net"
+            local AAD_V2_ISSUER = "login.microsoftonline.com"
+            local entraClientId = "{{ $entraClientId }}"
 
-                -- Retrieve the JWT Payload
-                local meta = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
-
-                if meta and meta["payload"] then
-                    local payload = meta["payload"]
-                    request_handle:logDebug("JWT Payload: " .. tableToString(payload))
-
-                    -- Set the x-app-id Well Known Header if 'aud' claim is present
-                    if payload["aud"] then
-                        request_handle:headers():add("x-app-id", payload["aud"])
-                        request_handle:logWarn("x-app-id set from 'aud' claim: " .. payload["aud"])
-                    else
-                        request_handle:logError("JWT Payload does not contain 'aud' claim; cannot set x-app-id")
-                    end
-
-                    -- Check issuer 
-                    if string.find(payload["iss"], "sts.windows.net") then
-                        -- Set Well Known Header with an order of preference: upn, unique_name, appid
-                        if payload["upn"] then
-                            request_handle:headers():add("x-user-id", payload["upn"])
-                            request_handle:logWarn("x-user-id set from 'upn' claim: " .. payload["upn"])
-                        elseif payload["unique_name"] then
-                            request_handle:headers():add("x-user-id", payload["unique_name"])
-                            request_handle:logWarn("x-user-id set from 'unique_name' claim: " .. payload["unique_name"])
-                        elseif payload["appid"] then
-                            request_handle:headers():add("x-user-id", payload["appid"])
-                            request_handle:logWarn("x-user-id set from 'appid' claim: " .. payload["appid"])
-                        else
-                            request_handle:logError("No valid user ID claim (upn, unique_name, appid) found for sts.windows.net")
-                        end
-
-                    elseif string.find(payload["iss"], "login.microsoftonline.com") then
-                        -- Set Well Known Header with an order of preference: azp, oid
-                        if payload["azp"] then
-                            request_handle:headers():add("x-user-id", payload["azp"])
-                            request_handle:logWarn("x-user-id set from 'azp' claim: " .. payload["azp"])
-                        elseif payload["oid"] then
-                            request_handle:headers():add("x-user-id", payload["oid"])
-                            request_handle:logWarn("x-user-id set from 'oid' claim: " .. payload["oid"])
-                        else
-                            request_handle:logError("No valid user ID claim (azp, oid) found for login.microsoftonline.com")
-                        end
-                    else
-                        request_handle:logError("Issuer does not match known issuers")
-                    end
+            -- Helper function to log a table
+            function tableToString(tbl, indent)
+              if not indent then indent = 0 end
+              if type(tbl) ~= 'table' then return tostring(tbl) end
+              local lines = {}
+              for k, v in pairs(tbl) do
+                local formatting = string.rep("  ", indent) .. k .. ": "
+                if type(v) == "table" then
+                  table.insert(lines, formatting)
+                  table.insert(lines, tableToString(v, indent + 1))
                 else
-                    request_handle:logError("No JWT metadata found or payload is malformed")
+                  table.insert(lines, formatting .. tostring(v))
                 end
+              end
+              return table.concat(lines, "\n")
             end
 
-            -- Helper function to convert a table to a string for logging
-            function tableToString(tbl, indent)
-                if not indent then indent = 0 end
-                if type(tbl) ~= 'table' then return tostring(tbl) end
-                local lines = {}
-                for k, v in pairs(tbl) do
-                    local formatting = string.rep("  ", indent) .. k .. ": "
-                    if type(v) == "table" then
-                        table.insert(lines, formatting)
-                        table.insert(lines, tableToString(v, indent+1))
-                    else
-                        table.insert(lines, formatting .. tostring(v))
-                    end
+            -- Function to log all headers
+            function logAllHeaders(request_handle)
+              local headers = request_handle:headers()
+              for key, value in pairs(headers) do
+                request_handle:logInfo("Header: " .. key .. " = " .. value)
+              end
+            end
+
+            -- Process AAD v1 tokens
+            function processAADV1Token(payload, request_handle)
+              if payload["unique_name"] then
+                request_handle:headers():add("x-user-id", payload["unique_name"])
+                request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'unique_name' claim")
+              elseif payload["oid"] then
+                request_handle:headers():add("x-user-id", payload["appid"])
+                request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'appid' claim as fallback")
+              elseif payload["upn"] then
+                request_handle:headers():add("x-user-id", payload["upn"])
+                request_handle:logWarn("UC1-(AAD v1 User Token (sts.windows.net)): x-user-id set from 'upn' claim as fallback")
+              else
+                request_handle:logError("UC1-(AAD v1 User Token (sts.windows.net)): No valid claim for x-user-id found in AAD v1 token")
+              end
+            end
+
+            -- Process AAD v2 tokens
+            function processAADV2Token(payload, request_handle)
+              if payload["unique_name"] then
+                request_handle:headers():add("x-user-id", payload["unique_name"])
+                request_handle:logWarn("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'unique_name' claim")
+              elseif payload["oid"] then
+                request_handle:headers():add("x-user-id", payload["oid"])
+                request_handle:logWarn("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'oid' claim as fallback")
+              elseif payload["azp"] then
+                request_handle:headers():add("x-user-id", payload["azp"])
+                request_handle:logWarn("UC4-(AAD v2 User Token (login.microsoftonline.com)): x-user-id set from 'azp' claim as fallback")
+              else
+                request_handle:logError("UC4-(AAD v2 User Token (login.microsoftonline.com)): No valid claim for x-user-id found in AAD v2 token")
+              end
+            end
+
+            -- Main processing function
+            function envoy_on_request(request_handle)
+              -- Step 1: Remove existing headers
+              request_handle:headers():remove("x-user-id")
+              request_handle:headers():remove("x-app-id")
+              request_handle:logWarn("x-user-id and x-app-id headers removed")
+
+              -- Step 2: Retrieve JWT metadata
+              local meta = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+              if not meta or not meta["payload"] then
+                request_handle:logError("No JWT metadata or payload found")
+                return
+              end
+              local payload = meta["payload"]
+
+              -- Step 3: Log raw payload for debugging
+              request_handle:logDebug("JWT payload: " .. tableToString(payload))
+
+              -- Step 4: Process audience (aud) claim
+              local aud = payload["aud"]
+              if aud then
+                request_handle:headers():add("x-app-id", aud)
+                request_handle:logDebug("x-app-id set from 'aud' claim: " .. aud)
+                -- Special handling for audience "https://management.azure.com/"
+                if aud == "https://management.azure.com/" then
+                  local managedClientId = payload["appid"]
+                  if managedClientId then
+                    request_handle:headers():add("x-user-id", entraClientId)
+                    request_handle:headers():replace("x-app-id", entraClientId)
+                    request_handle:logWarn("UC7-(Management Audience): x-user-id and x-app-id set to 'appid' claim for management.azure.com audience")
+                  else
+                    request_handle:logError("No 'appid' claim found for management.azure.com audience")
+                  end
+                  return -- Exit early as we don't need further processing for this case
                 end
-                return table.concat(lines, "\n")
+              else
+                request_handle:logError("No 'aud' claim found in payload")
+              end
+
+              -- Step 5: Process issuer (iss) for additional logic
+              local iss = payload["iss"]
+              if iss and string.find(iss, AAD_V1_ISSUER) then
+                request_handle:logDebug("Processing AAD v1 token")
+                processAADV1Token(payload, request_handle)
+              elseif iss and string.find(iss, AAD_V2_ISSUER) then
+                request_handle:logDebug("Processing AAD v2 token")
+                processAADV2Token(payload, request_handle)
+              else
+                request_handle:logError("Unknown issuer: " .. (iss or "nil"))
+              end
+
+              -- Step 6: Log all headers before leaving the filter
+              request_handle:logDebug("Logging all headers before leaving the filter:")
+              logAllHeaders(request_handle)
             end

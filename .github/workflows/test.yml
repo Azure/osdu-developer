@@ -46,7 +46,7 @@ on:
         required: false
       region:
         description: "Region (needs to be same as byo vnet location)"
-        default: "eastus2"
+        default: "centralus"
         type: string
         required: false
       doStandards:
@@ -74,7 +74,7 @@ env:
   AZCLIVERSION: 2.63.0    # https://github.com/Azure/azure-cli/issues/29828
   ParamFilePath: ".github/parameters.json"
   DEPNAME: "dep${{ github.run_number }}"
-  
+
 jobs:
   Standards:
     runs-on: ubuntu-latest
@@ -150,7 +150,7 @@ jobs:
           if [ -z "${{ github.event.inputs.region }}" ]
           then
             echo "Region parameter not available through GitHub event data, setting default"
-            REGION="eastus2"
+            REGION="centralus"
           else
             echo "Region parameter found in GitHub event (${{ github.event.inputs.region }})"
             REGION="${{ github.event.inputs.region }}"
@@ -270,8 +270,8 @@ jobs:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
             DEPNAME='Dep${{ github.run_number }}'
-            
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             echo $PARAMS
             az deployment group validate -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS --verbose
 
@@ -330,7 +330,7 @@ jobs:
 
       - name: Install azd
         uses: Azure/setup-azd@v2.1.0
-      
+
       - name: Log in with Azure (Federated Credentials)
         if: ${{ env.AZURE_CLIENT_ID != '' }}
         run: |

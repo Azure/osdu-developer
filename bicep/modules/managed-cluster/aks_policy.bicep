@@ -6,7 +6,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-09-02-p
 }
 
 var policyDefinitionId = '/providers/Microsoft.Authorization/policySetDefinitions/c047ea8e-9c78-49b2-958b-37e56d291a44'
-resource policyAssignment 'Microsoft.Authorization/policyAssignments@2024-05-01' = {
+resource policyAssignment 'Microsoft.Authorization/policyAssignments@2024-04-01' = {
   name: 'aksDeploymentSafeguardsAssignment'
   scope: managedCluster
   properties: {

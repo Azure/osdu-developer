@@ -6,19 +6,48 @@ Prerequisites and configuration steps for deploying personal OSDU™ instances i
 
 It is recommended to have at least 50 vCPUs in a region for vCPU families along with the ability to deploy Cosmos DB instances which can be resource constrained in some regions.  Defaults can be increased by requesting a [quota increase](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests).
 
-!!! note "Ensure Sufficient Quota"
-    The deployment requires quota for the following VM families:
+!!! note "Ensure Sufficient Compute Quota per Region"
 
-    - Standard_D4pds_v5 nodes for system workloads
-    - Standard_D2pds_v5 nodes for zonal workloads  
-    - Standard_D4s_v5 nodes for default workloads
+    | VM Types         | Compute Family Series           |
+    |------------------|---------------------------------|
+    | Standard ARM Generation       | Standard Dpdsv6 Family vCPUs    |
+    | Burstable Intel Generation    | Standard Bsv2 Family vCPUS      |
+
+    Use the following command to validate the availability of servers in a region:
+    === "Bash"
+        ```bash
+        LOCATION="eastus2"        # ie: eastus2, centralus
+        VM_PATTERN="Standard_D"   # ie: Standard_D, Standard_B
+
+        az vm list-skus \
+          --location "$LOCATION" \
+          --query "[?resourceType=='virtualMachines'] \
+          | [?contains(locationInfo[0].zones, '1') && contains(locationInfo[0].zones, '2') && contains(locationInfo[0].zones, '3')] \
+          | [?restrictions[0]==null] \
+          | [?starts_with(name, '$VM_PATTERN')].{ResourceType:resourceType, Locations:locations[0], Name:name, Zones:join(',', locationInfo[0].zones), Restrictions:join('; ', restrictions[*].reasonCode || ['None'])}" \
+          -o table
+        ```
+
+    === "PowerShell"
+        ```powershell
+        $LOCATION="eastus2"       # ie: eastus2, centralus
+        $VM_PATTERN="Standard_D"  # ie: Standard_D, Standard_B
+
+        az vm list-skus `
+          --location "$LOCATION" `
+          --query "[?resourceType=='virtualMachines'] `
+          | [?contains(locationInfo[0].zones, '1') && contains(locationInfo[0].zones, '2') && contains(locationInfo[0].zones, '3')] `
+          | [?restrictions[0]==null] `
+          | [?starts_with(name, '$VM_PATTERN')].{ResourceType:resourceType, Locations:locations[0], Name:name, Zones:join(',', locationInfo[0].zones), Restrictions:join('; ', restrictions[*].reasonCode || ['None'])}" `
+          -o table
+        ```
 
 
 | Quota Name | Minimum Quantity |
 |------------|------------------|
-| Total Regional vCPUs | 100 |
-| Standard DPDSv5 Family vCPUs | 50 |
-| Standard DSv5 Family vCPUs | 50 |
+| Total Regional vCPUs          | 100 |
+| Standard Dpdsv6 Family vCPUs  | 50  |
+| Standard Bsv2 Family vCPUs    | 50  |
 
 
 !!! tip "Available Cosmos DB Regions"
@@ -126,7 +155,7 @@ These credentials will be used in your ARM template deployment to authenticate a
 
 
 | Name | Description/Value |
-|------|-------------|  
+|------|-------------|
 | Directory (tenant) ID | Unique identifier for the Microsoft Entra tenant |
 | Application (client) ID | Unique identifier for the registered application |
 | Object ID | Unique identifier for the application object in Microsoft Entra |

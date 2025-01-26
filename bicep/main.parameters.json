@@ -14,9 +14,6 @@
     "emailAddress": {
       "value": "${EMAIL_ADDRESS}"
     },
-    "customVMSize": {
-      "value": "${CLUSTER_VM_SIZE}"
-    },
     "ingressType": {
       "value": "${CLUSTER_INGRESS}"
     },

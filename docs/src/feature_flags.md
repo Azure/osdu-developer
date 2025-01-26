@@ -37,7 +37,6 @@ Application registrations are created automatically with a naming convention of 
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | AZURE_CLIENT_ID           | Use an existing Azure AD App Client ID                                      |
-| AZURE_CLIENT_SECRET       | Use an existing Azure AD Client Secret and don't reset it.                  |
 | AZURE_CLIENT_PRINCIPAL_OID| Skip Principal ID lookup and use provided.                                  |
 | AZURE_TENANT_ID           | Skip Tenant ID lookup and use provided.                                     |
 
@@ -49,7 +48,9 @@ Infrastructure customizations can be modified using the following feature flags.
 | Feature Flag              | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
 | CLUSTER_INGRESS           | Specifies the Ingress type for the cluster (External, Internal, or Both)    |
-| CLUSTER_VM_SIZE           | Overrides the default server type with a custom VM size                     |
+| VMSIZE_SYSTEM_POOL        | Overrides the default server for the system pool. (4x8 ARM)                 |
+| VMSIZE_ZONE_POOL          | Overrides the default server for the zone pool. (2x8 ARM)                   |
+| VMSIZE_USER_POOL          | Overrides the default server for the default pool. (4x8 INTEL)              |
 | ENABLE_NODE_AUTO_PROVISIONING | Enables node auto provisioning (True by default)                        |
 | ENABLE_PRIVATE_CLUSTER    | Enables private cluster (False by default)                                  |
 

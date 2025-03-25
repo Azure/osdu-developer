@@ -128,17 +128,19 @@ spec:
       accessLogFile: /dev/stdout
       enableEnvoyAccessLogService: true
       meshMTLS:
-        minProtocolVersion: TLSV1_3
+        minProtocolVersion: TLSV1_2
       TLSConfig:
-        minProtocolVersion: TLSV1_3
+        minProtocolVersion: TLSV1_2
       defaultConfig:
         proxyAdminPort: 15000
       ingressSelector: istio-ingress
       ingressService: istio-ingressgateway
+      enableGatewayAPI: true
     pilot:
       env:
         K8S_INGRESS_NS: istio-ingress
         ENABLE_NATIVE_SIDECARS: true
+        PILOT_ENABLE_GATEWAY_API: true
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

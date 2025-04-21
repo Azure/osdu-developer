@@ -392,7 +392,7 @@ var configMaps = {
 values.yaml: |
   serviceAccount:
     create: false
-    name: "workload-identity-sa"
+    name: workload-identity-sa
   azure:
     tenantId: {0}
     clientId: {1}
@@ -408,7 +408,9 @@ values.yaml: |
       enabled: {9}
     externalGateway:
       enabled: {10}
-  '''
+  workloadIdentity:
+    clientID: {1}
+'''
 }
 
 /*

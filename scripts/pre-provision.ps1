@@ -11,8 +11,10 @@
   Optionally specify an Azure environment name. Defaults to the value of the AZURE_ENV_NAME environment variable if set, or "dev" if not.
 .PARAMETER RequiredCliVersion
   Optionally specify the required Azure CLI version. Defaults to "2.60".
+.PARAMETER ServiceManagementReference
+  Optionally specify a ServiceManagementReference. Defaults to an empty string if not provided.
 .EXAMPLE
-  .\pre-provision.ps1 -SubscriptionId <SubscriptionId> -AzureEnvName <AzureEnvName> -RequiredCliVersion "2.60"
+  .\pre-provision.ps1 -SubscriptionId <SubscriptionId> -AzureEnvName <AzureEnvName> -RequiredCliVersion "2.60" -ServiceManagementReference <ServiceManagementReference>
 #>
 
 #Requires -Version 7.4
@@ -28,16 +30,19 @@ param (
     
     [version]$RequiredCliVersion = [version]"2.60",
     
+    [string]$ServiceManagementReference = $env:AZURE_ASSET_NUMBER ? $env:AZURE_ASSET_NUMBER : [string]::Empty,
+    
     [switch]$Help
 )
 
 function Show-Help {
-    Write-Host "Usage: .\hook-preprovision.ps1 [-SubscriptionId SUBSCRIPTION_ID] [-AzureEnvName AZURE_ENV_NAME] [-RequiredCliVersion REQUIRED_CLI_VERSION]"
+    Write-Host "Usage: .\hook-preprovision.ps1 [-SubscriptionId SUBSCRIPTION_ID] [-AzureEnvName AZURE_ENV_NAME] [-RequiredCliVersion REQUIRED_CLI_VERSION] [-ServiceManagementReference SERVICE_MANAGEMENT_REFERENCE]"
     Write-Host "Options:"
     Write-Host " -SubscriptionId : Optionally specify a subscription ID to use. If not provided, defaults to the AZURE_SUBSCRIPTION_ID environment variable."
     Write-Host " -ApplicationId : Optionally specify an application ID to use. If not provided, creates one."
     Write-Host " -AzureEnvName : Optionally specify an Azure environment name. Defaults to 'dev' if AZURE_ENV_NAME environment variable is not set."
     Write-Host " -RequiredCliVersion : Optionally specify the required Azure CLI version. Defaults to '2.60'."
+    Write-Host " -ServiceManagementReference : Optionally specify a ServiceManagementReference. Defaults to an empty string if not provided."
     Write-Host " -Help : Print this help message and exit"
 }
 
@@ -155,6 +160,8 @@ function New-Application {
             {
                 'displayName': '$azureClientName',
                 'signInAudience': 'AzureADMyOrg',
+                'serviceManagementReference': '$ServiceManagementReference',
+                'notes': 'OSDU Data Platform',
                 'web': {'redirectUris': ['https://localhost:8080/'],'implicitGrantSettings': {'enableIdTokenIssuance': 'true', 'enableAccessTokenIssuance': 'true'}},
                 'spa': {'redirectUris': ['https://localhost:8080/spa']},
                 'requiredResourceAccess': [{'resourceAppId': '00000003-0000-0000-c000-000000000000', 'resourceAccess': [{'id': 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', 'type': 'Scope'}]}]
@@ -198,12 +205,6 @@ function Set-EnvironmentVariables {
             Write-Host "  Retrieving AZURE_CLIENT_PRINCIPAL_OID..."
             $azureClientPrincipalOid = az ad sp show --id $ApplicationId --query "id" -o tsv
             azd env set AZURE_CLIENT_PRINCIPAL_OID $azureClientPrincipalOid
-        }
-
-        if (-not $env:AZURE_CLIENT_SECRET) {
-            Write-Host "  Retrieving AZURE_CLIENT_SECRET..."
-            $azureClientSecret = az ad app credential reset --id $ApplicationId --query password --only-show-errors -o tsv
-            azd env set AZURE_CLIENT_SECRET $azureClientSecret
         }
 
         if (-not $env:EMAIL_ADDRESS) {

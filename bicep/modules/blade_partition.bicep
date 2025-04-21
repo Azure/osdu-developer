@@ -518,7 +518,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
     publicNetworkAccess: 'Enabled'
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'

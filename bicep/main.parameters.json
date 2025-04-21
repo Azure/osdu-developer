@@ -5,9 +5,6 @@
     "applicationClientId": {
       "value": "${AZURE_CLIENT_ID}"
     },
-    "applicationClientSecret": {
-      "value": "${AZURE_CLIENT_SECRET}"
-    },
     "applicationClientPrincipalOid": {
       "value": "${AZURE_CLIENT_PRINCIPAL_OID}"
     },

@@ -1,8 +1,10 @@
 targetScope = 'resourceGroup'
 
 
+// BUG RIGHT NOW.  https://github.com/Azure/azure-dev/pull/5061
 @description('Specify the Azure region to place the application definition.')
-param location string = resourceGroup().location
+// param location string = resourceGroup().location
+param location string
 
 @description('Specify the User Email.')
 param emailAddress string
@@ -780,7 +782,7 @@ module storage 'modules/storage-account/main.bicep' = {
     publicNetworkAccess: 'Enabled'
 
     // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {

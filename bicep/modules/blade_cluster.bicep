@@ -190,7 +190,7 @@ module cluster './managed-cluster/main.bicep' = {
     enableStorageProfileDiskCSIDriver: true
     enableStorageProfileFileCSIDriver: true
     enableStorageProfileSnapshotController: true
-    enableStorageProfileBlobCSIDriver: true    
+    enableStorageProfileBlobCSIDriver: false    
     enableKeyvaultSecretsProvider: true
     enableSecretRotation: true
     enableImageCleaner: true

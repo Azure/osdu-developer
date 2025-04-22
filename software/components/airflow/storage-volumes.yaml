@@ -26,7 +26,7 @@ spec:
       valuesKey: values.yaml
   values:
     volumes:
-      - volumeName: "airflow-logs-pv"
+      - volumeName: "airflow-logs"
         containerName: "airflow-logs"
-      - volumeName: "airflow-dags-pv"
+      - volumeName: "airflow-dags"
         containerName: "airflow-dags"

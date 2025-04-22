@@ -22,8 +22,8 @@ spec:
       retries: 3
   valuesFrom:
     - kind: ConfigMap
-      name: airflow-configmap
-      valuesKey: value.yaml
+      name: config-map-values
+      valuesKey: values.yaml
   values:
     volumes:
       - volumeName: "airflow-logs-pv"

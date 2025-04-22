@@ -36,8 +36,8 @@ spec:
     #   podAnnotations:
     #     azure.workload.identity/use: "true"
     airflow:
-      podAnnotations:
-        azure.workload.identity/use: "true"
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
       image:
         repository: apache/airflow
         tag: 2.10.1-python3.12
@@ -89,8 +89,8 @@ spec:
         - "osdu-ingestion>=0.27,<1.0.0"
       kubernetesPodTemplate:
         serviceAccountName: workload-identity-sa
-        annotations:
-          azure.workload.identity/use: "true"
+        # annotations:
+        #   azure.workload.identity/use: "true"
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
           - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
@@ -247,19 +247,19 @@ spec:
     scheduler:
       logCleanup:
         enabled: false
-      podAnnotations:
-        azure.workload.identity/use: "true"
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     workers:
       enabled: false
       logCleanup:
         enabled: false
-      podAnnotations:
-        azure.workload.identity/use: "true"
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     web:
       enabled: true
       path: "/airflow"
-      podAnnotations:
-        azure.workload.identity/use: "true"
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     ingress:
       enabled: false
 

@@ -35,6 +35,9 @@ spec:
     # triggerer:
     #   podAnnotations:
     #     azure.workload.identity/use: "true"
+    serviceAccount:
+      create: false
+      name: workload-identity-sa
     airflow:
       # podAnnotations:
       #   azure.workload.identity/use: "true"
@@ -42,9 +45,7 @@ spec:
         repository: apache/airflow
         tag: 2.10.1-python3.12
       executor: KubernetesExecutor
-      serviceAccount:
-        create: false
-        name: workload-identity-sa
+      
       securityContext:
         fsGroup: 1000
         runAsUser: 1000

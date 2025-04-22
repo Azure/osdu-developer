@@ -36,3 +36,7 @@ spec:
     controller:
       replicas: 1
       runOnControlPlane: false
+    serviceAccount:
+      create: true
+      controller: csi-blob-controller-sa
+      node: csi-blob-node-sa

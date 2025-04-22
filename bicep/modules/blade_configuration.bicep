@@ -81,6 +81,9 @@ param osduVersion string = 'master'
 @description('The managed identity name for deployment scripts')
 param managedIdentityName string
 
+@description('The name of the system storage account')
+param storageAccountName string
+
 @description('The name of the partition storage accounts')
 param partitionStorageNames string[]
 
@@ -403,6 +406,7 @@ values.yaml: |
     appId: {6}
     appOid: {7}
     resourceGroup: {8}
+    storageAccountName: {11}
   ingress:
     internalGateway:
       enabled: {9}
@@ -447,7 +451,8 @@ module appConfigMap './aks-config-map/main.bicep' = {
              applicationClientPrincipalOid,
              resourceGroup().name,
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
-             clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false')
+             clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false',
+             storageAccountName)
     ]
   }
 }

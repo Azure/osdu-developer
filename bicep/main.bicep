@@ -139,14 +139,13 @@ var configuration = {
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
       'gitops'
+      'airflow-logs'
+      'airflow-dags'
     ]
     tables: [
       'partitionInfo'
     ]
-    shares: [
-      'airflow-logs'
-      'airflow-dags'
-    ]
+    shares: []
   }
   partitions: [
     {
@@ -1064,6 +1063,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     managedIdentityName: stampIdentity.outputs.name
     kvName: keyvault.outputs.name
     kvUri: keyvault.outputs.uri
+    storageAccountName: storage.outputs.name
     appInsightsKey: insights.outputs.instrumentationKey
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames

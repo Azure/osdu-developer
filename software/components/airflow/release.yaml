@@ -89,8 +89,6 @@ spec:
         - "osdu-ingestion>=0.27,<1.0.0"
       kubernetesPodTemplate:
         serviceAccountName: workload-identity-sa
-        annotations:
-          azure.workload.identity/use: "true"
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
           - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"

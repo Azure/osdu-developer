@@ -32,8 +32,12 @@ spec:
         name: airflow-community
         namespace: flux-system
   values:
-
+    triggerer:
+      podAnnotations:
+        azure.workload.identity/use: "true"
     airflow:
+      podAnnotations:
+        azure.workload.identity/use: "true"
       image:
         repository: apache/airflow
         tag: 2.10.1-python3.12
@@ -41,8 +45,6 @@ spec:
       serviceAccount:
         create: false
         name: workload-identity-sa
-      annotations:
-        azure.workload.identity/use: "true"
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
@@ -59,6 +61,9 @@ spec:
           email: admin@example.com
           firstName: admin
           lastName: admin
+      dbMigrations:
+        podAnnotations:
+          azure.workload.identity/use: "true"
       # extraVolumeMounts:
       #   ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volumemount-v1-core
       #   - name: logs-volume
@@ -242,13 +247,19 @@ spec:
     scheduler:
       logCleanup:
         enabled: false
+      podAnnotations:
+        azure.workload.identity/use: "true"
     workers:
       enabled: false
       logCleanup:
         enabled: false
+      podAnnotations:
+        azure.workload.identity/use: "true"
     web:
       enabled: true
       path: "/airflow"
+      podAnnotations:
+        azure.workload.identity/use: "true"
     ingress:
       enabled: false
 

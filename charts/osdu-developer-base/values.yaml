@@ -1,4 +1,3 @@
-
 fullnameOverride: osdu-svc
 
 ################################################################################
@@ -27,9 +26,11 @@ share:
   enabled: false
   items:
     - name: folder
+      pvc: ""
       file: "file"
       url: "https://example.com/folder/file.json"
     - name: item2
+      pvc: ""
       url: "https://example.com/archive.tar.gz"
       file: "folder_in_archive"
       compress: true

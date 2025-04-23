@@ -31,7 +31,7 @@ spec:
           - name: script
             mountPath: "/script"
           - name: storage
-            mountPath: "/"
+            mountPath: "/share"
         env:
           - name: URL
             value: {{ $item.url | quote }}
@@ -83,21 +83,18 @@ data:
       exit 1
     fi
 
-    # Create the target directory in root of mounted volume
-    mkdir -p /${SHARE}
-
     # Check if the URL indicates a tar.gz file
     if [[ ${URL} == *.tar.gz ]]; then
         echo "URL indicates a tar.gz archive. Extracting contents..."
-        
+
         # Create a directory for extracted files
         mkdir -p extracted_files
-        
+
         # Extract the tar.gz file
         tar -xzf ${url_basename} --strip-components=1 -C extracted_files
-        
+
         if [[ ${compress} == "True" ]]; then
-            echo "Creating zip of contents of ${FILE} and copying it to /${SHARE}"
+            echo "Creating zip of contents of ${FILE} and copying it to /share"
             # Remove the original downloaded tar file
             rm ${url_basename}
             # Create a new zip file with the desired name
@@ -111,23 +108,33 @@ data:
 
             # Create the zip from the contents without including the extracted_files/${FILE} path itself
             zip -r ${original_dir}/${zip_filename} *
-    
+
             # Navigate back to the original directory
             cd ${original_dir}
-    
-            # Copy the zip file to the root of mounted volume
-            cp ${zip_filename} /${SHARE}
-            echo "Zip file ${zip_filename} copied to /${SHARE}."
+
+            # Copy the zip file to the /share mounted volume
+            cp ${zip_filename} /share/
+            echo "Zip file ${zip_filename} copied to /share."
         else
-            # Batch copy the extracted files to the root of mounted volume
-            echo "Copying extracted files to /${SHARE} with pattern ${FILE}/**"
-            cp -r extracted_files/${FILE} /${SHARE}
+            echo "Copying extracted files to /share with pattern ${FILE}/**"
+
+            SOURCE_DIR="extracted_files/${FILE}"
+            TARGET_DIR="/share/${FILE}"
+
+            cd "$SOURCE_DIR"
+
+            find . -type f | while read -r file; do
+              relative_path="${file#./}"
+              dest_path="${TARGET_DIR}/${relative_path}"
+              install -D "$file" "$dest_path"
+              echo "Copied: $file -> $dest_path"
+            done
         fi
-        echo "Files from ${url_basename} copied to /${SHARE}."
+        echo "Files from ${url_basename} copied to /share."
     else
-        # Copy the file to the root of mounted volume
-        echo "Copying file ${FILE} to /${SHARE}"
-        cp ${FILE} /${SHARE}
-        echo "File ${FILE} copied to /${SHARE}."
+        # Copy the file to the /share mounted volume
+        echo "Copying file ${FILE} to /share"
+        cp ${FILE} /share/
+        echo "File ${FILE} copied to /share."
     fi
 {{- end }}

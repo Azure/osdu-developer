@@ -779,6 +779,7 @@ module storage 'modules/storage-account/main.bicep' = {
     // Apply Security
     allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
+    enableHierarchicalNamespace: true
 
     // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
     allowSharedKeyAccess: false

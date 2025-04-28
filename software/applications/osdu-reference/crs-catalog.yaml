@@ -64,7 +64,7 @@ spec:
           - "/api/crs/catalog/api-docs*"
           - "/api/crs/catalog/webjars/*"
       pvc:
-      - name: osdu-reference-osdu-developer-base-reference
+      - name: share-crs-pvc
         existing: true
         volume: shared-data
       mount:

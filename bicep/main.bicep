@@ -141,6 +141,9 @@ var configuration = {
       'gitops'
       'airflow-logs'
       'airflow-dags'
+      'share-unit'
+      'share-crs'
+      'share-crs-conversion'
     ]
     tables: [
       'partitionInfo'
@@ -777,9 +780,9 @@ module storage 'modules/storage-account/main.bicep' = {
     ]
 
     // Apply Security
-    allowBlobPublicAccess: false
+    // allowBlobPublicAccess: false`  
     publicNetworkAccess: 'Enabled'
-    enableHierarchicalNamespace: true
+    enableHierarchicalNamespace: false    // <--- Airflow doesn't like hiearchical.
 
     // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
     allowSharedKeyAccess: false

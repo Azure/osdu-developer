@@ -64,7 +64,7 @@ spec:
           - "/api/crs/converter/api-docs*"
           - "/api/crs/converter/webjars/*"
       pvc:
-      - name: share-crs-conversion-pvc
+      - name: share-crs-conversion
         existing: true
         volume: shared-data
       mount:

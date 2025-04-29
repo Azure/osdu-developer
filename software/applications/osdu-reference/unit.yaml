@@ -64,7 +64,7 @@ spec:
           - "/api/unit/api-docs*"
           - "/api/unit/webjars/*"
       pvc:
-      - name: share-unit-pvc
+      - name: share-unit
         existing: true
         volume: shared-data
       mount:

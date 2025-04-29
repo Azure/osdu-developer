@@ -70,7 +70,6 @@ spec:
       mount:
       - name: shared-data
         path: /mnt/unit_catalogs
-        subPath: unit
       env:
       - name: KEYVAULT_URI
         secret:

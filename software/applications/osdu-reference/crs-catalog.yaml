@@ -70,7 +70,6 @@ spec:
       mount:
       - name: shared-data
         path: /mnt/crs_catalogs
-        subPath: crs
       env:
       - name: KEYVAULT_URI
         secret:

@@ -38,7 +38,7 @@ volumes:
 Install or upgrade the chart with your custom values:
 
 ```bash
-helm upgrade --install storage-claims ./storage-claims -n <namespace> -f values.yaml
+helm upgrade --install storage-volumes ./storage-volumes -n <namespace> -f values.yaml
 ```
 
 This will create a PersistentVolume and PersistentVolumeClaim for each entry in `volumes`, using the Azure Blob CSI driver.

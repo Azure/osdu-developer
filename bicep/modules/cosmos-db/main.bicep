@@ -340,7 +340,7 @@ var databaseAccount_properties = union({
 
 
 // Create Database Account
-resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
   name: length(name) > 26 ? substring(name, 0, 26) : name
   location: resourceLocation
   tags: tags

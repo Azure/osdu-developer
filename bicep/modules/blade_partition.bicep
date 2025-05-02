@@ -518,7 +518,7 @@ module storage 'storage-account/main.bicep' = [for (partition, index) in partiti
     // Apply Security
     allowBlobPublicAccess: enableBlobPublicAccess
     publicNetworkAccess: 'Enabled'
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
       bypass: 'AzureServices'
@@ -602,9 +602,33 @@ module partitionDb './cosmos-db/main.bicep' = [for (partition, index) in partiti
     databaseEndpointSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosEndpoint}'
     databasePrimaryKeySecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosPrimaryKey}'
     databaseConnectionStringSecretName: '${partition.name}-${partitionLayerConfig.secrets.cosmosConnectionString}'
+
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Contributor'
+        principals: [
+          {
+            id: stampIdentity.properties.principalId
+          }
+        ]
+        principalType: 'ServicePrincipal'
+      }
+    ]
   }
 }]
 
+// Add SQL role assignment for the Cosmos DB account
+module sqlRoleAssignment './cosmosdb-sql-role-assignment.bicep' = [for (partition, index) in partitions: {
+  name: '${bladeConfig.sectionName}-cosmos-db-sql-role-${index}'
+  params: {
+    databaseAccountName: partitionDb[index].outputs.name
+    principalId: stampIdentity.properties.principalId
+    roleDefinitionId: '${partitionDb[index].outputs.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002' // Built-in Cosmos DB Built-in Data Contributor
+  }
+  dependsOn: [
+    partitionDb[index]
+  ]
+}]
 
 // First, create a variable to handle the subscription mapping
 var topicsWithSubscriptions = [for topic in partitionLayerConfig.servicebus.topics: {

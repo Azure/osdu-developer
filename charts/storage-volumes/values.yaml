@@ -1,0 +1,12 @@
+azure:
+  clientId: ""                # Azure AD workload identity client ID
+  resourceGroup: ""           # Azure resource group name
+  storageAccountName: ""      # Azure storage account name
+
+volumes:
+  - volumeName: ""            # Persistent volume name
+    containerName: ""         # Azure blob container name for this volume
+    storageSize: "5Gi"        # PVC storage request size
+    accessModes:
+      - ReadWriteMany
+    

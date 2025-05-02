@@ -1,17 +1,4 @@
 {{- if .Values.share.enabled -}}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-pvc
-  namespace: {{ .Release.Namespace }}
-spec:
-  storageClassName: osdu-managed-disk
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
----
 {{- range $index, $item := .Values.share.items }}
 apiVersion: batch/v1
 kind: Job
@@ -28,9 +15,9 @@ spec:
         configMap:
           name: storage-share-script
           defaultMode: 0500
-      - name: {{ $.Release.Name }}-storage
+      - name: storage
         persistentVolumeClaim:
-          claimName: {{ $.Release.Name }}-pvc
+          claimName: {{ $item.pvc }}
       initContainers:
       - name: data-seed
         image: mcr.microsoft.com/cbl-mariner/base/core:2.0
@@ -43,7 +30,7 @@ spec:
         volumeMounts:
           - name: script
             mountPath: "/script"
-          - name: {{ $.Release.Name }}-storage
+          - name: storage
             mountPath: "/share"
         env:
           - name: URL
@@ -96,19 +83,16 @@ data:
       exit 1
     fi
 
-    # Create the target directory in /share mounted volume
-    mkdir -p /share/${SHARE}
-
     # Check if the URL indicates a tar.gz file
     if [[ ${URL} == *.tar.gz ]]; then
         echo "URL indicates a tar.gz archive. Extracting contents..."
-        
+
         # Create a directory for extracted files
         mkdir -p extracted_files
-        
+
         # Extract the tar.gz file
         tar -xzf ${url_basename} --strip-components=1 -C extracted_files
-        
+
         if [[ ${compress} == "True" ]]; then
             echo "Creating zip of contents of ${FILE} and copying it to /share"
             # Remove the original downloaded tar file
@@ -124,23 +108,33 @@ data:
 
             # Create the zip from the contents without including the extracted_files/${FILE} path itself
             zip -r ${original_dir}/${zip_filename} *
-    
+
             # Navigate back to the original directory
             cd ${original_dir}
-    
+
             # Copy the zip file to the /share mounted volume
-            cp ${zip_filename} /share/${SHARE}
+            cp ${zip_filename} /share/
             echo "Zip file ${zip_filename} copied to /share."
         else
-            # Batch copy the extracted files to the /share mounted volume
             echo "Copying extracted files to /share with pattern ${FILE}/**"
-            cp -r extracted_files/${FILE} /share/${SHARE}
+
+            SOURCE_DIR="extracted_files/${FILE}"
+            TARGET_DIR="/share/${FILE}"
+
+            cd "$SOURCE_DIR"
+
+            find . -type f | while read -r file; do
+              relative_path="${file#./}"
+              dest_path="${TARGET_DIR}/${relative_path}"
+              install -D "$file" "$dest_path"
+              echo "Copied: $file -> $dest_path"
+            done
         fi
         echo "Files from ${url_basename} copied to /share."
     else
         # Copy the file to the /share mounted volume
         echo "Copying file ${FILE} to /share"
-        cp ${FILE} /share/${SHARE}
+        cp ${FILE} /share/
         echo "File ${FILE} copied to /share."
     fi
 {{- end }}

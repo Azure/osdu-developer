@@ -35,11 +35,14 @@ spec:
       enabled: true
       items:
         - name: unit
+          pvc: "share-unit-pvc"
           file: "unit_catalog_v2.json"
           url: "https://community.opengroup.org/osdu/platform/system/reference/unit-service/-/raw/master/data/unit_catalog_v2.json"
         - name: crs
+          pvc: "share-crs-pvc"
           file: "crs_catalog_v2.json"
           url: "https://community.opengroup.org/osdu/platform/system/reference/crs-catalog-service/-/raw/master/data/crs_catalog_v2.json"
         - name: crs-conversion
+          pvc: "share-crs-conversion-pvc"
           file: "apachesis_setup"
           url: "https://community.opengroup.org/osdu/platform/system/reference/crs-conversion-service/-/archive/master/crs-conversion-service-master.tar.gz"

@@ -1,0 +1,17 @@
+{{- range .Values.volumes }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .volumeName }}-pvc
+spec:
+  accessModes:
+  {{- range default (list "ReadWriteMany") .accessModes }}
+    - {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ default "5Gi" .storageSize }}
+  volumeName: {{ .volumeName }}
+  storageClassName: azureblob-fuse-premium
+---
+{{- end }}

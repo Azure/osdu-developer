@@ -1,0 +1,33 @@
+{{- range .Values.volumes }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .volumeName }}
+  annotations:
+    pv.kubernetes.io/provisioned-by: blob.csi.azure.com
+spec:
+  capacity:
+    storage: {{ default "5Gi" .storageSize }}
+  accessModes:
+  {{- range default (list "ReadWriteMany") .accessModes }}
+    - {{ . }}
+  {{- end }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azureblob-fuse-premium
+  mountOptions:
+    - "-o allow_other"
+    - "--file-cache-timeout-in-seconds=120"
+    - "--use-attr-cache=true"
+    - "--cancel-list-on-mount-seconds=0"
+    - "--log-level=LOG_DEBUG"
+  csi:
+    driver: blob.csi.azure.com
+    volumeHandle: {{ $.Values.azure.resourceGroup }}#{{ $.Values.azure.storageAccountName }}#{{ .containerName }}
+    volumeAttributes:
+      storageaccount: {{ $.Values.azure.storageAccountName }}
+      containerName: {{ .containerName }}
+      clientID: {{ $.Values.azure.clientId }}
+      resourcegroup: {{ $.Values.azure.resourceGroup }}
+      protocol: fuse
+---
+{{- end }}

@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: blob-csi
+  namespace: flux-system
+spec:
+  interval: 12h  # Check for updates every 12 hours
+  url: https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/charts

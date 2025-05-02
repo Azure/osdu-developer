@@ -32,17 +32,20 @@ spec:
         name: airflow-community
         namespace: flux-system
   values:
-
+    # triggerer:
+    #   podAnnotations:
+    #     azure.workload.identity/use: "true"
+    serviceAccount:
+      create: false
+      name: workload-identity-sa
     airflow:
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
       image:
         repository: apache/airflow
         tag: 2.10.1-python3.12
       executor: KubernetesExecutor
-      # serviceAccount:
-      #   create: false
-      #   name: workload-identity-sa
-      # annotations:
-      #   azure.workload.identity/use: "true"
+      
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
@@ -59,6 +62,9 @@ spec:
           email: admin@example.com
           firstName: admin
           lastName: admin
+      # dbMigrations:
+      #   podAnnotations:
+      #     azure.workload.identity/use: "true"
       # extraVolumeMounts:
       #   ## spec: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#volumemount-v1-core
       #   - name: logs-volume
@@ -84,8 +90,8 @@ spec:
         - "osdu-ingestion>=0.27,<1.0.0"
       kubernetesPodTemplate:
         serviceAccountName: workload-identity-sa
-        annotations:
-          azure.workload.identity/use: "true"
+        # annotations:
+        #   azure.workload.identity/use: "true"
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
           - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
@@ -242,13 +248,19 @@ spec:
     scheduler:
       logCleanup:
         enabled: false
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     workers:
       enabled: false
       logCleanup:
         enabled: false
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     web:
       enabled: true
       path: "/airflow"
+      # podAnnotations:
+      #   azure.workload.identity/use: "true"
     ingress:
       enabled: false
 

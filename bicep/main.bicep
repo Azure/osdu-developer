@@ -1,8 +1,10 @@
 targetScope = 'resourceGroup'
 
 
+// BUG RIGHT NOW.  https://github.com/Azure/azure-dev/pull/5061
 @description('Specify the Azure region to place the application definition.')
-param location string = resourceGroup().location
+// param location string = resourceGroup().location
+param location string
 
 @description('Specify the User Email.')
 param emailAddress string
@@ -137,14 +139,16 @@ var configuration = {
       'azure-webjobs-hosts'
       'azure-webjobs-eventhub'
       'gitops'
+      'airflow-logs'
+      'airflow-dags'
+      'share-unit'
+      'share-crs'
+      'share-crs-conversion'
     ]
     tables: [
       'partitionInfo'
     ]
-    shares: [
-      'airflow-logs'
-      'airflow-dags'
-    ]
+    shares: []
   }
   partitions: [
     {
@@ -776,11 +780,12 @@ module storage 'modules/storage-account/main.bicep' = {
     ]
 
     // Apply Security
-    allowBlobPublicAccess: false
+    // allowBlobPublicAccess: false`  
     publicNetworkAccess: 'Enabled'
+    enableHierarchicalNamespace: false    // <--- Airflow doesn't like hiearchical.
 
     // TODO: This is required for Partition Service to access the storage account. Issue: https://github.com/Azure/osdu-developer/issues/230
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template?tabs=CLI#debug-deployment-scripts
     networkAcls: {
@@ -1062,6 +1067,7 @@ module configBlade 'modules/blade_configuration.bicep' = {
     managedIdentityName: stampIdentity.outputs.name
     kvName: keyvault.outputs.name
     kvUri: keyvault.outputs.uri
+    storageAccountName: storage.outputs.name
     appInsightsKey: insights.outputs.instrumentationKey
     partitionStorageNames: partitionBlade.outputs.partitionStorageNames
     partitionServiceBusNames: partitionBlade.outputs.partitionServiceBusNames

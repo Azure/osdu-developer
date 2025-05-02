@@ -64,13 +64,12 @@ spec:
           - "/api/unit/api-docs*"
           - "/api/unit/webjars/*"
       pvc:
-      - name: osdu-reference-osdu-developer-base-reference
+      - name: share-unit
         existing: true
         volume: shared-data
       mount:
       - name: shared-data
         path: /mnt/unit_catalogs
-        subPath: unit
       env:
       - name: KEYVAULT_URI
         secret:

@@ -1,0 +1,32 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: storage-volumes
+  namespace: default
+  annotations:
+    clusterconfig.azure.com/use-managed-source: "true"
+spec:
+  targetNamespace: airflow
+  releaseName: storage-volumes
+  chart:
+    spec:
+      chart: ./charts/storage-volumes
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  interval: 5m0s
+  install:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: config-map-values
+      valuesKey: values.yaml
+  values:
+    volumes:
+      - volumeName: "airflow-logs"
+        containerName: "airflow-logs"
+      - volumeName: "airflow-dags"
+        containerName: "airflow-dags"

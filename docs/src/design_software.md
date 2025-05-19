@@ -43,7 +43,7 @@ flowchart TD
   FluxSystemComponents("flux-system-components")
   Certs("component-certs")
   CertsCA("component-certs-ca")
-  CertsCAIssuer("component-certs-ca-issuer")
+  CertsCAIssuer("component-certs-issuer")
   OSDUSystem("component-osdu-system")
   Cache("component-cache")
   Database("component-database")
@@ -86,7 +86,7 @@ flowchart TD
     │   └── source.yaml
     ├── certs-ca
     │   └── certificate.yaml
-    ├── certs-ca-issuer
+    ├── certs-issuer
     │   └── issuer.yaml
     ├── database
     │   ├── namespace.yaml

@@ -6,8 +6,8 @@ metadata:
   labels:
     {{- include "dns-configuration.labels" . | nindent 4 }}
 spec:
-  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
-  backoffLimit: {{ .Values.job.backoffLimit }}
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
   template:
     metadata:
       labels:
@@ -30,8 +30,8 @@ spec:
               audience: api://AzureADTokenExchange
       containers:
       - name: dns-config
-        image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}"
-        imagePullPolicy: {{ .Values.job.image.pullPolicy }}
+        image: "mcr.microsoft.com/azure-cli:latest"
+        imagePullPolicy: IfNotPresent
         command: ["/scripts/configure-dns.sh"]
         volumeMounts:
         - name: script
@@ -40,7 +40,12 @@ spec:
           mountPath: /var/run/secrets/azure/tokens
           readOnly: true
         resources:
-          {{- toYaml .Values.job.resources | nindent 10 }}
+          limits:
+            memory: 512Mi
+            cpu: 500m
+          requests:
+            memory: 256Mi
+            cpu: 100m
         env:
         - name: AZURE_CLIENT_ID
           value: {{ .Values.azure.clientId | quote }}
@@ -57,12 +62,12 @@ spec:
         - name: UNIQUE_ID
           value: {{ .Values.azure.uniqueId | quote }}
         - name: MAX_RETRIES
-          value: "{{ .Values.dns.maxRetries }}"
+          value: "60"
         - name: RETRY_INTERVAL
-          value: "{{ .Values.dns.retryInterval }}"
+          value: "10"
         - name: ISTIO_SERVICE_NAME
-          value: {{ .Values.istio.serviceName }}
+          value: "istio-ingressgateway"
         - name: ISTIO_NAMESPACE
-          value: {{ .Values.istio.namespace }}
+          value: "istio-system"
         - name: AZURE_AUTHORITY_HOST
           value: "https://login.microsoftonline.com/"

@@ -1,24 +1,32 @@
-# Helm Chart for DNS Configuration
+# DNS Configuration Helm Chart
 
 This chart configures DNS labels for Azure Kubernetes Service (AKS) LoadBalancer IPs, enabling automatic FQDN assignment for OSDU services.
 
+--------------------------------------------------------------------------------
 ## Prerequisites
 
 - Azure Kubernetes Service (AKS) cluster with workload identity enabled
 - Istio service mesh deployed
 - Azure CLI and kubectl access configured
 
-## Create a Custom Values File
+--------------------------------------------------------------------------------
+## Install Process
 
-Create a custom values file by running the following commands:
+Either manually modify the `values.yaml` for the chart or generate a `custom_values.yaml` to use.
+
+_The following commands can help generate a prepopulated custom values file._
 
 ```bash
+# Setup Variables
 GROUP=<your_resource_group>
 
 SUBSCRIPTION=$(az account show --query id -otsv)
 AKS_NAME=$(az aks list --resource-group $GROUP --query "[0].name" -otsv)
 
-cat > values.yaml <<EOF
+cat > custom_values.yaml << EOF
+################################################################################
+# Azure environment specific values
+#
 azure:
   tenantId: $(az account show --query tenantId -otsv)
   clientId: $(az identity list --resource-group $GROUP --query "[?contains(name, 'osdu-identity')].clientId" -otsv)
@@ -31,18 +39,17 @@ azure:
 EOF
 ```
 
+--------------------------------------------------------------------------------
 ## Manual Testing
 
 Test the chart locally:
 
 ```bash
-# Template the chart to see generated resources
 helm template dns-configuration . -f custom_values.yaml
 ```
 
+--------------------------------------------------------------------------------
 ## Install Helm Chart
-
-Install the chart manually:
 
 ```bash
 # Create the release in the osdu-system namespace where the ServiceAccount exists
@@ -66,9 +73,8 @@ kubectl logs $POD_NAME -n $NAMESPACE
 kubectl get configmap dns-config -n $NAMESPACE -o yaml
 ```
 
+--------------------------------------------------------------------------------
 ## Uninstall
-
-Remove the chart:
 
 ```bash
 # Uninstall the release
@@ -78,30 +84,24 @@ helm uninstall dns-configuration -n $NAMESPACE
 kubectl delete configmap dns-config -n $NAMESPACE
 ```
 
+--------------------------------------------------------------------------------
 ## Configuration Options
 
-The following table lists the configurable parameters and their default values.
+| Parameter                | Description                              | Default                |
+|--------------------------|------------------------------------------|------------------------|
+| `serviceAccount.create`  | Create a new service account             | `false`                |
+| `serviceAccount.name`    | Service account name to use              | `workload-identity-sa` |
+| `azure.tenantId`         | Azure tenant ID                          | `<your_tenant_id>`     |
+| `azure.clientId`         | Azure client ID for workload identity    | `<your_client_id>`     |
+| `azure.subscription`     | Azure subscription ID                    | `<your_subscription_id>` |
+| `azure.resourceGroup`    | Resource group containing the AKS cluster| `<your_resource_group>` |
+| `azure.aksName`          | AKS cluster name                         | `<your_aks_cluster_name>` |
+| `azure.uniqueId`         | Unique ID for the cluster                | `""`                  |
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `serviceAccount.create` | Create a new service account | `false` |
-| `serviceAccount.name` | Service account name to use | `workload-identity-sa` |
-| `azure.tenantId` | Azure tenant ID | `<your_tenant_id>` |
-| `azure.clientId` | Azure client ID for workload identity | `<your_client_id>` |
-| `azure.subscription` | Azure subscription ID | `<your_subscription_id>` |
-| `azure.resourceGroup` | Resource group containing the AKS cluster | `<your_resource_group>` |
-| `azure.aksName` | AKS cluster name | `<your_aks_cluster_name>` |
-| `azure.uniqueId` | Unique ID for the cluster | `""` |
-| `dns.prefix` | DNS prefix for FQDN | `osdu` |
-| `dns.maxRetries` | Max retries for LoadBalancer IP | `60` |
-| `dns.retryInterval` | Retry interval in seconds | `10` |
-| `istio.serviceName` | Istio ingress service name | `istio-ingressgateway` |
-| `istio.namespace` | Istio namespace | `istio-system` |
-| `job.ttlSecondsAfterFinished` | Job cleanup TTL | `300` |
-
+--------------------------------------------------------------------------------
 ## Output
 
-The chart creates a ConfigMap named `dns-config` in the default namespace containing:
+The chart creates a ConfigMap named `dns-config` in the release namespace containing:
 
 - `external_ip`: The LoadBalancer external IP address
 - `fqdn`: The fully qualified domain name

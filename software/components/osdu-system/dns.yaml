@@ -6,7 +6,7 @@ metadata:
 spec:
   targetNamespace: osdu-system
   dependsOn:
-    - name: osdu-istio
+    - name: istio-ingress-external
       namespace: flux-system
   chart:
     spec:

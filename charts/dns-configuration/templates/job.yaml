@@ -21,6 +21,13 @@ spec:
         configMap:
           name: {{ include "dns-configuration.fullname" . }}-script
           defaultMode: 0755
+      - name: azure-identity-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: azure-identity-token
+              expirationSeconds: 3600
+              audience: api://AzureADTokenExchange
       containers:
       - name: dns-config
         image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}"
@@ -29,43 +36,26 @@ spec:
         volumeMounts:
         - name: script
           mountPath: /scripts
+        - name: azure-identity-token
+          mountPath: /var/run/secrets/azure/tokens
+          readOnly: true
         resources:
           {{- toYaml .Values.job.resources | nindent 10 }}
         env:
         - name: AZURE_CLIENT_ID
-          valueFrom:
-            configMapKeyRef:
-              name: osdu-identity-configmap
-              key: IDENTITY_CLIENT_ID
+          value: {{ .Values.azure.clientId | quote }}
         - name: AZURE_TENANT_ID
-          valueFrom:
-            configMapKeyRef:
-              name: osdu-identity-configmap
-              key: AZURE_TENANT_ID
+          value: {{ .Values.azure.tenantId | quote }}
         - name: AZURE_SUBSCRIPTION
-          valueFrom:
-            configMapKeyRef:
-              name: osdu-identity-configmap
-              key: AZURE_SUBSCRIPTION
+          value: {{ .Values.azure.subscription | quote }}
         - name: AZURE_FEDERATED_TOKEN_FILE
           value: /var/run/secrets/azure/tokens/azure-identity-token
         - name: RESOURCE_GROUP
-          valueFrom:
-            configMapKeyRef:
-              name: config-map-values
-              key: resource_group
+          value: {{ .Values.azure.resourceGroup | quote }}
         - name: AKS_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: config-map-values
-              key: aks_name
+          value: {{ .Values.azure.aksName | quote }}
         - name: UNIQUE_ID
-          valueFrom:
-            configMapKeyRef:
-              name: config-map-values
-              key: cluster_unique_id
-        - name: DNS_PREFIX
-          value: {{ .Values.dns.prefix }}
+          value: {{ .Values.azure.uniqueId | quote }}
         - name: MAX_RETRIES
           value: "{{ .Values.dns.maxRetries }}"
         - name: RETRY_INTERVAL
@@ -74,3 +64,5 @@ spec:
           value: {{ .Values.istio.serviceName }}
         - name: ISTIO_NAMESPACE
           value: {{ .Values.istio.namespace }}
+        - name: AZURE_AUTHORITY_HOST
+          value: "https://login.microsoftonline.com/"

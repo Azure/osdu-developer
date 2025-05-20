@@ -17,11 +17,18 @@ azure:
   clientId: <your_client_id>
   keyvaultName: <your_keyvault>
   keyvaultUri: https://<your_keyvault>.vault.azure.net/
+  # Azure subscription ID
+  subscription: <your_subscription_id>
+  # Resource group containing the AKS cluster
+  resourceGroup: <your_resource_group>
+  # AKS cluster name
+  aksName: <your_aks_name>
+  # Unique ID for the cluster (will use DNS prefix if not provided)
+  uniqueId: ""
+
 
 # DNS configuration settings
 dns:
-  # DNS prefix for the FQDN
-  prefix: osdu
   # Maximum retries waiting for LoadBalancer IP
   maxRetries: 60
   # Retry interval in seconds

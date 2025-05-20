@@ -78,8 +78,8 @@ data:
         
         echo "Public IP Resource: $IP_NAME"
         
-        # Set DNS label
-        DNS_LABEL="${DNS_PREFIX}-${UNIQUE_ID}"
+        # Set DNS label to UNIQUE_ID only
+        DNS_LABEL="${UNIQUE_ID}"
         echo "Setting DNS label: $DNS_LABEL"
         
         az network public-ip update \
@@ -104,20 +104,19 @@ data:
         
         echo "FQDN: $FQDN"
     }
-    
-    # Function to create ConfigMap
+      # Function to create ConfigMap
     create_configmap() {
         echo "Creating ConfigMap with DNS information..."
         
+        CURRENT_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
         kubectl create configmap dns-config \
           --from-literal=external_ip=$EXTERNAL_IP \
           --from-literal=fqdn=$FQDN \
           --from-literal=dns_label=$DNS_LABEL \
-          --namespace=default \
+          --namespace=$CURRENT_NAMESPACE \
           --dry-run=client -o yaml | kubectl apply -f -
-        
-        echo "ConfigMap created successfully"
-        kubectl get configmap dns-config -n default
+        echo "ConfigMap created in $CURRENT_NAMESPACE namespace"
+        kubectl get configmap dns-config -n $CURRENT_NAMESPACE
     }
     
     # Main execution

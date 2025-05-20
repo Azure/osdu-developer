@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "dns-configuration.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dns-configuration.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "dns-configuration.selectorLabels" . | nindent 8 }}
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: {{ include "dns-configuration.serviceAccountName" . }}
+      restartPolicy: Never
+      volumes:
+      - name: script
+        configMap:
+          name: {{ include "dns-configuration.fullname" . }}-script
+          defaultMode: 0755
+      containers:
+      - name: dns-config
+        image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}"
+        imagePullPolicy: {{ .Values.job.image.pullPolicy }}
+        command: ["/scripts/configure-dns.sh"]
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+        resources:
+          {{- toYaml .Values.job.resources | nindent 10 }}
+        env:
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: osdu-identity-configmap
+              key: IDENTITY_CLIENT_ID
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: osdu-identity-configmap
+              key: AZURE_TENANT_ID
+        - name: AZURE_SUBSCRIPTION
+          valueFrom:
+            configMapKeyRef:
+              name: osdu-identity-configmap
+              key: AZURE_SUBSCRIPTION
+        - name: AZURE_FEDERATED_TOKEN_FILE
+          value: /var/run/secrets/azure/tokens/azure-identity-token
+        - name: RESOURCE_GROUP
+          valueFrom:
+            configMapKeyRef:
+              name: config-map-values
+              key: resource_group
+        - name: AKS_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: config-map-values
+              key: aks_name
+        - name: UNIQUE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: config-map-values
+              key: cluster_unique_id
+        - name: DNS_PREFIX
+          value: {{ .Values.dns.prefix }}
+        - name: MAX_RETRIES
+          value: "{{ .Values.dns.maxRetries }}"
+        - name: RETRY_INTERVAL
+          value: "{{ .Values.dns.retryInterval }}"
+        - name: ISTIO_SERVICE_NAME
+          value: {{ .Values.istio.serviceName }}
+        - name: ISTIO_NAMESPACE
+          value: {{ .Values.istio.namespace }}

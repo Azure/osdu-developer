@@ -1,0 +1,55 @@
+# Default values for dns-configuration.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Service account to use for workload identity
+serviceAccount:
+  create: false
+  # The name of the service account to use.
+  # If create is false, a service account with this name must already exist
+  name: "workload-identity-sa"
+
+# Azure-specific configuration
+azure:
+  tenantId: <your_tenant_id>
+  configEndpoint: <your_config_endpoint>
+  clientId: <your_client_id>
+  keyvaultName: <your_keyvault>
+  keyvaultUri: https://<your_keyvault>.vault.azure.net/
+
+# DNS configuration settings
+dns:
+  # DNS prefix for the FQDN
+  prefix: osdu
+  # Maximum retries waiting for LoadBalancer IP
+  maxRetries: 60
+  # Retry interval in seconds
+  retryInterval: 10
+
+# Istio service configuration
+istio:
+  # Name of the Istio ingress service
+  serviceName: istio-ingressgateway
+  # Namespace where Istio is deployed
+  namespace: istio-system
+
+# Job configuration
+job:
+  # Image to use for the DNS configuration job
+  image:
+    repository: mcr.microsoft.com/azure-cli
+    tag: latest
+    pullPolicy: IfNotPresent
+  # TTL for job cleanup after completion
+  ttlSecondsAfterFinished: 300
+  # Number of retries if job fails
+  backoffLimit: 3
+  # Resource limits and requests
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 500m
+    requests:
+      memory: 256Mi
+      cpu: 100m

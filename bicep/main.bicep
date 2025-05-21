@@ -158,7 +158,7 @@ var configuration = {
 }
 
 var rg_unique_id = '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
-
+var dnsName = uniqueString(resourceGroup().id, configuration.name)
 
 /*
  __   _______   _______ .__   __. .___________. __  .___________.____    ____
@@ -1050,6 +1050,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
     }
 
     location: location
+
+    dnsName: dnsName
 
     osduVersion: clusterSoftware.osduVersion == '' ? 'master' : clusterSoftware.osduVersion
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true

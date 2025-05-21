@@ -59,8 +59,8 @@ spec:
           value: {{ .Values.azure.resourceGroup | quote }}
         - name: AKS_NAME
           value: {{ .Values.azure.aksName | quote }}
-        - name: UNIQUE_ID
-          value: {{ .Values.azure.uniqueId | quote }}
+        - name: DNS_NAME
+          value: {{ .Values.azure.dnsName | quote }}
         - name: MAX_RETRIES
           value: "60"
         - name: RETRY_INTERVAL

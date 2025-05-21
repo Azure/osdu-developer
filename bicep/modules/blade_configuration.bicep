@@ -11,6 +11,9 @@ param location string
 @description('The tags to apply to the resources')
 param tags object = {}
 
+@description('The unique identifier for the deployment')
+param dnsName string
+
 @description('The name of the Key Vault where the secret exists')
 param kvName string
 
@@ -407,6 +410,9 @@ values.yaml: |
     appOid: {7}
     resourceGroup: {8}
     storageAccountName: {11}
+    subscription: {12}
+    aksName: {13}
+    dnsName {14}
   ingress:
     internalGateway:
       enabled: {9}
@@ -452,7 +458,10 @@ module appConfigMap './aks-config-map/main.bicep' = {
              resourceGroup().name,
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
              clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false',
-             storageAccountName)
+             storageAccountName,
+             subscription().subscriptionId,
+             clusterName,
+             dnsName)
     ]
   }
 }

@@ -21,11 +21,8 @@ serviceAccount:
 #
 azure:
   tenantId: <your_tenant_id>           # Azure tenant ID
-  configEndpoint: <your_config_endpoint> # Azure App Config endpoint
   clientId: <your_client_id>           # Managed identity client ID
-  keyvaultName: <your_keyvault>        # Azure Key Vault name
-  keyvaultUri: https://<your_keyvault>.vault.azure.net/ # Key Vault URI
   subscription: <your_subscription_id> # Azure subscription ID
   resourceGroup: <your_resource_group> # Resource group containing the AKS cluster
   aksName: <your_aks_name>             # AKS cluster name
-  uniqueId: ""                         # Unique ID for the cluster
+  dnsName: ""                         # Unique ID for the cluster

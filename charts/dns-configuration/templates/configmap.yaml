@@ -78,8 +78,8 @@ data:
         
         echo "Public IP Resource: $IP_NAME"
         
-        # Set DNS label to UNIQUE_ID only
-        DNS_LABEL="${UNIQUE_ID}"
+        # Set DNS label to DNS_NAME only
+        DNS_LABEL="${DNS_NAME}"
         echo "Setting DNS label: $DNS_LABEL"
         
         az network public-ip update \

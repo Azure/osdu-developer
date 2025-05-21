@@ -7,138 +7,92 @@ metadata:
     {{- include "dns-configuration.labels" . | nindent 4 }}
 data:
   configure-dns.sh: |
-    #!/bin/bash
+    #!/usr/bin/env bash
     set -euo pipefail
-    
+
     echo "================================================================="
-    echo "  Starting DNS Configuration for AKS LoadBalancer"
+    echo "  Starting DNS + Cert Configuration for AKS LoadBalancer"
     echo "================================================================="
-    
-    # Function to install kubectl
+
     install_kubectl() {
-        echo "Installing kubectl..."
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x kubectl
-        mv kubectl /usr/local/bin/
-        kubectl version --client
+      echo "Installing kubectl…"
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      chmod +x kubectl && mv kubectl /usr/local/bin/
     }
-    
-    # Function to login to Azure
+
     login_azure() {
-        echo "Logging into Azure with workload identity..."
-        az login --federated-token "$(cat ${AZURE_FEDERATED_TOKEN_FILE})" \
-          --service-principal \
-          -u ${AZURE_CLIENT_ID} \
-          -t ${AZURE_TENANT_ID} \
-          --allow-no-subscriptions
-        
-        az account set --subscription ${AZURE_SUBSCRIPTION}
-        echo "Azure login successful"
+      echo "Logging into Azure…"
+      az login --federated-token "$(cat \"${AZURE_FEDERATED_TOKEN_FILE}\")" \
+        --service-principal \
+        -u \"${AZURE_CLIENT_ID}\" \
+        -t \"${AZURE_TENANT_ID}\" \
+        --allow-no-subscriptions
+      az account set --subscription "${AZURE_SUBSCRIPTION}"
     }
-    
-    # Function to wait for LoadBalancer IP
+
     wait_for_loadbalancer() {
-        echo "Waiting for LoadBalancer IP from ${ISTIO_SERVICE_NAME} in ${ISTIO_NAMESPACE}..."
-        local retry_count=0
-        
-        while [ $retry_count -lt $MAX_RETRIES ]; do
-            EXTERNAL_IP=$(kubectl get svc ${ISTIO_SERVICE_NAME} \
-              -n ${ISTIO_NAMESPACE} \
-              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
-            
-            if [ -n "$EXTERNAL_IP" ]; then
-                echo "External IP obtained: $EXTERNAL_IP"
-                return 0
-            fi
-            
-            echo "External IP not ready. Retrying in ${RETRY_INTERVAL}s... (Attempt $((retry_count + 1))/$MAX_RETRIES)"
-            sleep $RETRY_INTERVAL
-            retry_count=$((retry_count + 1))
-        done
-        
-        echo "ERROR: Failed to get external IP after $MAX_RETRIES attempts"
-        return 1
+      echo "Waiting for LoadBalancer IP…"
+      for ((i=0; i<MAX_RETRIES; i++)); do
+        EXTERNAL_IP=$(kubectl get svc "${ISTIO_SERVICE_NAME}" -n "${ISTIO_NAMESPACE}" \
+          -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || :)
+        [[ -n "$EXTERNAL_IP" ]] && { echo "IP: $EXTERNAL_IP"; return 0; }
+        echo "…retry $((i+1))/${MAX_RETRIES}"
+        sleep "${RETRY_INTERVAL}"
+      done
+      echo "ERROR: no IP" && return 1
     }
-    
-    # Function to configure DNS
+
     configure_dns() {
-        echo "Configuring DNS for IP: $EXTERNAL_IP"
-        
-        # Get node resource group
-        NODE_RG=$(az aks show --resource-group ${RESOURCE_GROUP} --name ${AKS_NAME} --query nodeResourceGroup -o tsv)
-        echo "Node Resource Group: $NODE_RG"
-        
-        # Find public IP resource
-        IP_NAME=$(az network public-ip list --resource-group $NODE_RG --query "[?ipAddress=='$EXTERNAL_IP'].name" -o tsv)
-        
-        if [ -z "$IP_NAME" ]; then
-            echo "ERROR: Could not find public IP resource for $EXTERNAL_IP"
-            return 1
-        fi
-        
-        echo "Public IP Resource: $IP_NAME"
-        
-        # Set DNS label to DNS_NAME only
-        DNS_LABEL="${DNS_NAME}"
-        echo "Setting DNS label: $DNS_LABEL"
-        
-        az network public-ip update \
-          --resource-group $NODE_RG \
-          --name $IP_NAME \
-          --dns-name $DNS_LABEL
-        
-        # Get FQDN
-        LOCATION=$(az network public-ip show \
-          --resource-group $NODE_RG \
-          --name $IP_NAME \
-          --query location -o tsv)
-        
-        FQDN=$(az network public-ip show \
-          --resource-group $NODE_RG \
-          --name $IP_NAME \
-          --query dnsSettings.fqdn -o tsv)
-        
-        if [ -z "$FQDN" ] || [ "$FQDN" == "null" ]; then
-            FQDN="${DNS_LABEL}.${LOCATION}.cloudapp.azure.com"
-        fi
-        
-        echo "FQDN: $FQDN"
+      echo "Configuring DNS…"
+      NODE_RG=$(az aks show \
+        --resource-group "${RESOURCE_GROUP}" \
+        --name "${AKS_NAME}" \
+        --query nodeResourceGroup -o tsv)
+      IP_NAME=$(az network public-ip list \
+        --resource-group "${NODE_RG}" \
+        --query "[?ipAddress=='${EXTERNAL_IP}'].name" -o tsv)
+      az network public-ip update \
+        --resource-group "${NODE_RG}" \
+        --name "${IP_NAME}" \
+        --dns-name "${DNS_NAME}"
+      FQDN=$(az network public-ip show \
+        --resource-group "${NODE_RG}" \
+        --name "${IP_NAME}" \
+        --query dnsSettings.fqdn -o tsv)
+      echo "FQDN: $FQDN"
     }
-      # Function to create ConfigMap
-    create_configmap() {
-        echo "Creating ConfigMap with DNS information..."
-        
-        CURRENT_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-        kubectl create configmap dns-config \
-          --from-literal=external_ip=$EXTERNAL_IP \
-          --from-literal=fqdn=$FQDN \
-          --from-literal=dns_label=$DNS_LABEL \
-          --namespace=$CURRENT_NAMESPACE \
-          --dry-run=client -o yaml | kubectl apply -f -
-        echo "ConfigMap created in $CURRENT_NAMESPACE namespace"
-        kubectl get configmap dns-config -n $CURRENT_NAMESPACE
+
+    apply_certificate() {
+      echo "Applying cert-manager Certificate for $FQDN"
+      sed "s/__FQDN__/$FQDN/g" /scripts/istio-certificate.yaml | kubectl apply -f -
     }
-    
-    # Main execution
-    echo "Starting DNS configuration process..."
-    
-    install_kubectl
-    login_azure
-    
-    if ! wait_for_loadbalancer; then
-        exit 1
-    fi
-    
-    if ! configure_dns; then
-        exit 1
-    fi
-    
-    create_configmap
-    
-    echo "================================================================="
-    echo "  DNS Configuration Completed Successfully"
-    echo "================================================================="
-    echo "FQDN: $FQDN"
-    echo "External IP: $EXTERNAL_IP"
-    echo "DNS Label: $DNS_LABEL"
-    echo "================================================================="
+
+    main() {
+      install_kubectl
+      login_azure
+      wait_for_loadbalancer
+      configure_dns
+      apply_certificate
+      echo "✔ Certificate applied for ${FQDN}"
+    }
+
+    main "$@"
+  istio-certificate.yaml: |
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: istio-ingressgateway-certs
+      namespace: istio-system
+    spec:
+      secretName: istio-ingressgateway-certs
+      duration: 2160h # 90 days
+      renewBefore: 360h # 15 days
+      subject:
+        organizations:
+          - Example Organization
+      commonName: __FQDN__
+      dnsNames:
+        - __FQDN__
+      issuerRef:
+        name: letsencrypt-staging
+        kind: ClusterIssuer

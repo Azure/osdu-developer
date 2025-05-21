@@ -412,7 +412,7 @@ values.yaml: |
     storageAccountName: {11}
     subscription: {12}
     aksName: {13}
-    dnsName {14}
+    dnsName: {14}
   ingress:
     internalGateway:
       enabled: {9}

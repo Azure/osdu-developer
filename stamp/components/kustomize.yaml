@@ -75,7 +75,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: component-certs-ca-issuer
+  name: component-certs-issuer
   namespace: flux-system
 spec:
   dependsOn:
@@ -86,7 +86,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./software/components/certs-ca-issuer
+  path: ./software/components/certs-issuer
   prune: true
   wait: true
 
@@ -101,7 +101,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: component-certs-ca-issuer
+    - name: component-certs-issuer
   interval: 1h
   retryInterval: 1m
   timeout: 5m

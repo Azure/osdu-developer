@@ -71,7 +71,7 @@ env:
   AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-  AZCLIVERSION: 2.63.0    # https://github.com/Azure/azure-cli/issues/29828
+  AZCLIVERSION: 2.73.0    # https://github.com/Azure/azure-cli/issues/29828
   ParamFilePath: ".github/parameters.json"
   DEPNAME: "dep${{ github.run_number }}"
 

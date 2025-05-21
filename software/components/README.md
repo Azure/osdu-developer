@@ -6,7 +6,7 @@ flowchart TD
   Airflow("component-airflow")
   Certs("component-certs")
   CertsCA("component-certs-ca")
-  CertsCAIssuer("component-certs-ca-issuer")
+  CertsCAIssuer("component-certs-issuer")
   Cache("component-cache")
   ConfigMap("component-configmap")
   Elastic("component-elastic")

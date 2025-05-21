@@ -158,7 +158,7 @@ var configuration = {
 }
 
 var rg_unique_id = '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
-
+var dnsName = uniqueString(resourceGroup().id, configuration.name)
 
 /*
  __   _______   _______ .__   __. .___________. __  .___________.____    ____
@@ -605,7 +605,7 @@ var vaultSecrets = [
 module keyvault 'br/public:avm/res/key-vault/vault:0.11.2' = {
   name: '${configuration.name}-keyvault'
   params: {
-    name: length(name) > 24 ? substring(name, 0, 24) : name
+    name: length(name) > 17 ? substring(name, 0, 17) : name
     location: location
     enableTelemetry: enableTelemetry
 
@@ -940,7 +940,7 @@ module gitOpsUpload 'br/public:avm/res/resources/deployment-script:0.5.1' = [for
     runOnce: true
 
     managedIdentities: {
-      userAssignedResourcesIds: [
+      userAssignedResourceIds: [
         stampIdentity.outputs.resourceId
       ]
     }
@@ -1050,6 +1050,8 @@ module configBlade 'modules/blade_configuration.bicep' = {
     }
 
     location: location
+
+    dnsName: dnsName
 
     osduVersion: clusterSoftware.osduVersion == '' ? 'master' : clusterSoftware.osduVersion
     enableSoftwareLoad: clusterSoftware.enable == 'false' ? false : true

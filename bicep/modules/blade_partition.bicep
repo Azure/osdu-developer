@@ -648,7 +648,7 @@ var topicsWithSubscriptions = [for topic in partitionLayerConfig.servicebus.topi
 }]
 
 // Then use this variable in the module
-module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for (partition, index) in partitions:  {
+module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.14.1' = [for (partition, index) in partitions:  {
   name: '${bladeConfig.sectionName}-service-bus-${index}'
   params: {
     name: '${replace('data${index}${substring(uniqueString(partition.name), 0, 6)}', '-', '')}${uniqueString(resourceGroup().id, 'data${index}${substring(uniqueString(partition.name), 0, 6)}')}'
@@ -679,6 +679,16 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.9.1' = [for 
     zoneRedundant: partitionLayerConfig.servicebus.sku == 'Premium' ? true : false
 
     disableLocalAuth: false
+
+    roleAssignments: [
+      {
+        name: guid('Custom seed ${bladeConfig.sectionName}')
+        principalId: stampIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Azure Service Bus Data Receiver'
+      }
+     
+    ]
 
     authorizationRules: [
       {

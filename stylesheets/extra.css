@@ -1,0 +1,28 @@
+:root > * {
+    --md-typeset-a-color: #0199a1;
+    --md-footer-fg-color: hsla(0, 0%, 100%, 1);
+    --md-footer-fg-color--light: hsla(0, 0%, 100%, 0.7);
+    --md-footer-fg-color--lighter: hsla(0, 0%, 100%, 0.3);
+    --md-footer-bg-color: #01696e;
+    --md-typeset-a-color: #0199a1;
+}
+
+[data-md-color-scheme="default"] {
+    --md-primary-fg-color: #01696e;
+    --md-accent-fg-color: #02c9d3;
+    --md-footer-bg-color: #01696e;
+}
+
+[data-md-color-scheme="slate"] {
+    --md-primary-fg-color: #01393b;
+    --md-accent-fg-color: #02c9d3;
+    --md-footer-bg-color: #01393b;
+}
+
+li.md-nav__item--section > label.md-nav__link > span.md-ellipsis {
+    color: #01696e;
+}
+
+.md-footer-meta {
+    background-color: var(--md-footer-bg-color);
+}

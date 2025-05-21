@@ -9,6 +9,7 @@ metadata:
   namespace: {{ $namespace }}
 spec:
   ttlSecondsAfterFinished: 120
+  activeDeadlineSeconds: 600
   template:
     metadata:
       labels:

@@ -4,7 +4,7 @@ metadata:
   name: istio-certs
   namespace: default
 spec:
-  targetNamespace: osdu-system
+  targetNamespace: istio-system
   dependsOn:
     - name: istio-ingress-external
       namespace: flux-system

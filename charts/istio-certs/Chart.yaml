@@ -1,5 +1,5 @@
 apiVersion: v2
-name: dns-configuration
+name: istio-certs
 description: A Helm chart for configuring DNS labels on AKS LoadBalancer IPs
 
 # A chart can be either an 'application' or a 'library' chart.

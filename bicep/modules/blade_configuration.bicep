@@ -410,9 +410,8 @@ values.yaml: |
     appOid: {7}
     resourceGroup: {8}
     storageAccountName: {11}
-    subscription: {12}
-    aksName: {13}
-    dnsName: {14}
+    region: {12}
+    dnsName: {13}
   ingress:
     internalGateway:
       enabled: {9}
@@ -459,8 +458,7 @@ module appConfigMap './aks-config-map/main.bicep' = {
              clusterIngress == 'Internal' || clusterIngress == 'Both' ? 'true' : 'false',
              clusterIngress == 'External' || clusterIngress == 'Both' ? 'true' : 'false',
              storageAccountName,
-             subscription().subscriptionId,
-             clusterName,
+             location,
              dnsName)
     ]
   }

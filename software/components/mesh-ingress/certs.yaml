@@ -1,16 +1,16 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: dns-configuration
+  name: istio-certs
   namespace: default
 spec:
-  targetNamespace: osdu-system
+  targetNamespace: istio-system
   dependsOn:
     - name: istio-ingress-external
       namespace: flux-system
   chart:
     spec:
-      chart: ./charts/dns-configuration
+      chart: ./charts/istio-certs
       sourceRef:
         kind: GitRepository
         name: flux-system

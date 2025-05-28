@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: istio-ingress-external-dns
+  namespace: istio-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: istio-ingress-external-manager
+  namespace: istio-system
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "patch", "update"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates"]
+    verbs: ["get", "create", "update", "patch", "apply"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: istio-ingress-external-binding
+  namespace: istio-system
+subjects:
+  - kind: ServiceAccount
+    name: istio-ingress-external-dns
+    namespace: istio-system
+roleRef:
+  kind: Role
+  name: istio-ingress-external-manager
+  apiGroup: rbac.authorization.k8s.io

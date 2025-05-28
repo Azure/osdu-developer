@@ -1,45 +1,33 @@
-# DNS Configuration Helm Chart
+# Istio Certs Helm Chart
 
 This chart configures DNS labels for Azure Kubernetes Service (AKS) LoadBalancer IPs, enabling automatic FQDN assignment for OSDU services.
 
 --------------------------------------------------------------------------------
+
 ## Prerequisites
 
-- Azure Kubernetes Service (AKS) cluster with workload identity enabled
+- Azure Kubernetes Service (AKS) cluster
 - Istio service mesh deployed
-- Azure CLI and kubectl access configured
+- kubectl access configured
 
 --------------------------------------------------------------------------------
+
 ## Install Process
 
-Either manually modify the `values.yaml` for the chart or generate a `custom_values.yaml` to use.
+Modify the `values.yaml` for the chart or create a `custom_values.yaml` with the following required values:
 
-_The following commands can help generate a prepopulated custom values file._
-
-```bash
-# Setup Variables
-GROUP=<your_resource_group>
-
-SUBSCRIPTION=$(az account show --query id -otsv)
-AKS_NAME=$(az aks list --resource-group $GROUP --query "[0].name" -otsv)
-
-cat > custom_values.yaml << EOF
-################################################################################
-# Azure environment specific values
-#
+```yaml
 azure:
-  tenantId: $(az account show --query tenantId -otsv)
-  clientId: $(az identity list --resource-group $GROUP --query "[?contains(name, 'osdu-identity')].clientId" -otsv)
-  configEndpoint: $(az appconfig list --resource-group $GROUP --query "[0].endpoint" -otsv)
-  keyvaultName: $(az keyvault list --resource-group $GROUP --query "[0].name" -otsv)
-  keyvaultUri: $(az keyvault list --resource-group $GROUP --query "[0].properties.vaultUri" -otsv)
-  subscription: $SUBSCRIPTION
-  resourceGroup: $GROUP
-  aksName: $AKS_NAME
-EOF
+  region: <your_azure_region>          # Azure region, e.g. eastus
+  dnsName: <your_dns_label>            # Unique DNS label for the cluster
+istioServiceName: istio-ingressgateway # Name of the Istio service
+istioNamespace: istio-system           # Namespace of the Istio service
+maxRetries: 30                         # Max retries for waiting on LoadBalancer IP
+retryInterval: 10                      # Seconds between retries
 ```
 
 --------------------------------------------------------------------------------
+
 ## Manual Testing
 
 Test the chart locally:
@@ -91,11 +79,6 @@ kubectl delete configmap dns-config -n $NAMESPACE
 |--------------------------|------------------------------------------|------------------------|
 | `serviceAccount.create`  | Create a new service account             | `false`                |
 | `serviceAccount.name`    | Service account name to use              | `workload-identity-sa` |
-| `azure.tenantId`         | Azure tenant ID                          | `<your_tenant_id>`     |
-| `azure.clientId`         | Azure client ID for workload identity    | `<your_client_id>`     |
-| `azure.subscription`     | Azure subscription ID                    | `<your_subscription_id>` |
-| `azure.resourceGroup`    | Resource group containing the AKS cluster| `<your_resource_group>` |
-| `azure.aksName`          | AKS cluster name                         | `<your_aks_cluster_name>` |
 | `azure.uniqueId`         | Unique ID for the cluster                | `""`                  |
 
 --------------------------------------------------------------------------------

@@ -371,6 +371,7 @@ module policy './managed-cluster/aks_policy.bicep' = {
   name: '${bladeConfig.sectionName}-aks-policy'
   params: {
     clusterName: cluster.outputs.name
+    userAssignedIdentityId: identityId
   }
   dependsOn: [
     cluster

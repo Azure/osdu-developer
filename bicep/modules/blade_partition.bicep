@@ -682,12 +682,17 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.14.1' = [for
 
     roleAssignments: [
       {
-        name: guid('Custom seed ${bladeConfig.sectionName}')
+        name: guid('Custom seed ${bladeConfig.sectionName}-receiver')
         principalId: stampIdentity.properties.principalId
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Azure Service Bus Data Receiver'
       }
-     
+      {
+        name: guid('Custom seed ${bladeConfig.sectionName}-sender')
+        principalId: stampIdentity.properties.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Azure Service Bus Data Sender'
+      }
     ]
 
     authorizationRules: [

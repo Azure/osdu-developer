@@ -1,6 +1,9 @@
 @description('The name of the Azure Kubernetes Service Cluster')
 param clusterName string = ''
 
+@description('The user assigned identity ID for policy remediation')
+param userAssignedIdentityId string = ''
+
 resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-09-02-preview' existing = if (clusterName != '') {
   name: clusterName
 }
@@ -8,7 +11,14 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-09-02-p
 var policyDefinitionId = '/providers/Microsoft.Authorization/policySetDefinitions/c047ea8e-9c78-49b2-958b-37e56d291a44'
 resource policyAssignment 'Microsoft.Authorization/policyAssignments@2024-04-01' = {
   name: 'aksDeploymentSafeguardsAssignment'
+  location: resourceGroup().location // Using the resource group location
   scope: managedCluster
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
+  }
   properties: {
     displayName: 'AKS Deployment Safeguards'
     #disable-next-line use-resource-id-functions

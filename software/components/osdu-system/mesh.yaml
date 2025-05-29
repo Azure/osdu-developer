@@ -24,25 +24,25 @@ spec:
   interval: 24h
   url: https://charts.jetstack.io
 ---
-# Create a Gateway Certificate for the istio-ingressgateway.
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: istio-ingressgateway-certs
-  namespace: istio-system
-spec:
-  duration: 2160h # 90 days
-  isCA: false
-  secretName: wild-card-tls
-  commonName: "*.osdu-developer.com"
-  usages:
-    - server auth
-    - client auth
-  dnsNames:
-  - "*.osdu-developer.com"
-  issuerRef:
-    name: root-ca-cluster-issuer
-    kind: ClusterIssuer
+# # Create a Gateway Certificate for the istio-ingressgateway.
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: istio-ingressgateway-certs
+#   namespace: istio-system
+# spec:
+#   duration: 2160h # 90 days
+#   isCA: false
+#   secretName: wild-card-tls
+#   commonName: "*.osdu-developer.com"
+#   usages:
+#     - server auth
+#     - client auth
+#   dnsNames:
+#   - "*.osdu-developer.com"
+#   issuerRef:
+#     name: root-ca-cluster-issuer
+#     kind: ClusterIssuer
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

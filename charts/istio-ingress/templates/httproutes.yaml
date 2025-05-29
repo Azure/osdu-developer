@@ -1,0 +1,61 @@
+# HTTPRoute for ACME challenge path routing and web traffic
+{{- if .Values.ingress.externalGateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: acme-challenge-route
+  namespace: istio-system
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+  - name: external-gateway
+    namespace: istio-system
+    sectionName: http
+  - name: external-gateway
+    namespace: istio-system
+    sectionName: https
+  hostnames:
+  - "*.cloudapp.azure.com"
+  rules:
+  # ACME challenge route - highest priority
+  - matches:
+    - path:
+        type: PathPrefix
+        value: "/.well-known/acme-challenge/"
+    backendRefs:
+    - name: cm-acme-http-solver
+      port: 8089
+      namespace: cert-manager
+{{- end }}
+
+{{- if .Values.ingress.internalGateway.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: internal-acme-challenge-route
+  namespace: istio-system
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+  - name: internal-gateway
+    namespace: istio-system
+    sectionName: http
+  - name: internal-gateway
+    namespace: istio-system
+    sectionName: https
+  hostnames:
+  - "*.cloudapp.azure.com"
+  rules:
+  # ACME challenge route - highest priority
+  - matches:
+    - path:
+        type: PathPrefix
+        value: "/.well-known/acme-challenge/"
+    backendRefs:
+    - name: cm-acme-http-solver
+      port: 8089
+      namespace: cert-manager
+{{- end }}

@@ -1,0 +1,7 @@
+# Certificate will be created by the istio-certs chart after DNS configuration
+# This ensures proper FQDN is available for Let's Encrypt validation
+# The istio-certs Job handles:
+# 1. Waiting for LoadBalancer IP
+# 2. Setting DNS label annotation 
+# 3. Creating Certificate with correct FQDN
+# 4. HTTP-01 challenge routing via Gateway API

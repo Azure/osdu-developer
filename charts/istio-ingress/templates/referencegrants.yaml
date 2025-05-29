@@ -1,0 +1,34 @@
+# ReferenceGrant to allow cross-namespace routing
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-cross-namespace-routing
+  namespace: web-site
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: web
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-acme-challenge-routing
+  namespace: cert-manager
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: cm-acme-http-solver

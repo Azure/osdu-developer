@@ -58,7 +58,6 @@ data:
     }
 
     main "$@"
-
   istio-certificate.yaml: |
     apiVersion: cert-manager.io/v1
     kind: Certificate
@@ -71,10 +70,18 @@ data:
       renewBefore: 360h # 15 days
       subject:
         organizations:
-          - Example Organization
+          - OSDU Developer
       commonName: __FQDN__
       dnsNames:
         - __FQDN__
       issuerRef:
         name: letsencrypt-staging
         kind: ClusterIssuer
+      # Use HTTP-01 challenge which will work with Gateway API HTTPRoute
+      # The ACME challenge solver will create temporary pods that need routing
+      privateKey:
+        algorithm: RSA
+        size: 2048
+      usages:
+      - digital signature
+      - key encipherment

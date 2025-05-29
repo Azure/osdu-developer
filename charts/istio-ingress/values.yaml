@@ -9,11 +9,9 @@ ingress:
       - "*"
     tls:
       mode: SIMPLE
-      credentialName: wild-card-tls
+      credentialName: istio-ingressgateway-certs  # Match the secret created by istio-certs chart
   externalGateway:
     enabled: true
-    hosts:
-      - "*"
     tls:
       mode: SIMPLE
-      credentialName: wild-card-tls
+      credentialName: istio-ingressgateway-certs  # Match the secret created by istio-certs chart

@@ -1,21 +1,26 @@
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: web-site
-  namespace: web-site
-spec:
-  hosts:
-    - "*"
-  gateways:
-    - istio-system/internal-gateway
-    - istio-system/external-gateway
-  http:
-    - match:
-        - uri:
-            prefix: "/"
-      route:
-        - destination:
-            host: "osdu-developer-web-service.web-site.svc.cluster.local"
-            port:
-              number: 80
+# MIGRATED TO GATEWAY API HTTPRoute
+# The VirtualService below has been replaced by HTTPRoute in httproute.yaml
+# This provides better integration with cert-manager HTTP-01 challenges
+# and follows the new Gateway API standard
+
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: web-site
+#   namespace: web-site
+# spec:
+#   hosts:
+#     - "*"
+#   gateways:
+#     - istio-system/internal-gateway
+#     - istio-system/external-gateway
+#   http:
+#     - match:
+#         - uri:
+#             prefix: "/"
+#       route:
+#         - destination:
+#             host: "osdu-developer-web-service.web-site.svc.cluster.local"
+#             port:
+#               number: 80

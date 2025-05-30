@@ -27,7 +27,8 @@ data:
         if [[ -n "$EXTERNAL_IP" ]]; then
           echo "Found IP: $EXTERNAL_IP"
           return 0
-        fi        echo "…retry $((i+1))/60"
+        fi        
+        echo "…retry $((i+1))/60"
         sleep 5
       done
       echo "ERROR: LoadBalancer IP not assigned after 60 attempts."

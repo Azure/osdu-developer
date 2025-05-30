@@ -9,10 +9,9 @@ spec:
   - name: external-gateway
     namespace: istio-system
   - name: internal-gateway
-    namespace: istio-system
-  rules:
-  # Route all web traffic to the web service
-  # ACME challenge paths are handled by the higher-priority route in istio-system
+    namespace: istio-system  rules:
+  # Default route for all web traffic
+  # cert-manager will handle ACME challenges through its own mechanisms
   - matches:
     - path:
         type: PathPrefix

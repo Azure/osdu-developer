@@ -1,0 +1,16 @@
+# ReferenceGrant to allow HTTPRoutes in istio-system to reference services in web-site namespace
+# This is created alongside the web-site deployment to avoid namespace dependency issues
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-cross-namespace-routing
+  namespace: web-site
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: osdu-developer-web-service

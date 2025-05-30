@@ -1,34 +1,9 @@
-# ReferenceGrant to allow cross-namespace routing
-apiVersion: gateway.networking.k8s.io/v1beta1
-kind: ReferenceGrant
-metadata:
-  name: allow-cross-namespace-routing
-  namespace: web-site
-  labels:
-    {{- include "istio-ingress.labels" . | nindent 4 }}
-spec:
-  from:
-  - group: gateway.networking.k8s.io
-    kind: HTTPRoute
-    namespace: istio-system
-  to:
-  - group: ""
-    kind: Service
-    name: web
----
-apiVersion: gateway.networking.k8s.io/v1beta1
-kind: ReferenceGrant
-metadata:
-  name: allow-acme-challenge-routing
-  namespace: cert-manager
-  labels:
-    {{- include "istio-ingress.labels" . | nindent 4 }}
-spec:
-  from:
-  - group: gateway.networking.k8s.io
-    kind: HTTPRoute
-    namespace: istio-system
-  to:
-  - group: ""
-    kind: Service
-    name: cm-acme-http-solver
+# ReferenceGrants are now managed by individual application charts
+# to avoid namespace dependency issues during deployment:
+# - web-site ReferenceGrant is in software/applications/web-site/
+# - cert-manager ReferenceGrant is managed by cert-manager operator
+#
+# This approach ensures that:
+# 1. istio-ingress can deploy without waiting for application namespaces
+# 2. Each application manages its own cross-namespace access permissions
+# 3. No circular dependencies between infrastructure and applications

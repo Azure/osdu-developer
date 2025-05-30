@@ -1,61 +1,12 @@
-# HTTPRoute for ACME challenge path routing and web traffic
-{{- if .Values.ingress.externalGateway.enabled }}
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: acme-challenge-route
-  namespace: istio-system
-  labels:
-    {{- include "istio-ingress.labels" . | nindent 4 }}
-spec:
-  parentRefs:
-  - name: external-gateway
-    namespace: istio-system
-    sectionName: http
-  - name: external-gateway
-    namespace: istio-system
-    sectionName: https
-  hostnames:
-  - "*.cloudapp.azure.com"
-  rules:
-  # ACME challenge route - highest priority
-  - matches:
-    - path:
-        type: PathPrefix
-        value: "/.well-known/acme-challenge/"
-    backendRefs:
-    - name: cm-acme-http-solver
-      port: 8089
-      namespace: cert-manager
-{{- end }}
-
-{{- if .Values.ingress.internalGateway.enabled }}
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: internal-acme-challenge-route
-  namespace: istio-system
-  labels:
-    {{- include "istio-ingress.labels" . | nindent 4 }}
-spec:
-  parentRefs:
-  - name: internal-gateway
-    namespace: istio-system
-    sectionName: http
-  - name: internal-gateway
-    namespace: istio-system
-    sectionName: https
-  hostnames:
-  - "*.cloudapp.azure.com"
-  rules:
-  # ACME challenge route - highest priority
-  - matches:
-    - path:
-        type: PathPrefix
-        value: "/.well-known/acme-challenge/"
-    backendRefs:
-    - name: cm-acme-http-solver
-      port: 8089
-      namespace: cert-manager
-{{- end }}
+# HTTPRoutes for ACME challenge handling with Gateway API
+# 
+# Note: For Gateway API, cert-manager typically uses one of these approaches:
+# 1. Creates temporary Ingress resources that get converted to HTTPRoutes
+# 2. Uses Gateway API native challenge solvers (experimental)
+# 3. Relies on application HTTPRoutes to handle challenge paths
+#
+# Since this is infrastructure-level routing, we'll let individual applications
+# handle ACME challenge routing in their own HTTPRoutes, or cert-manager
+# will create temporary resources as needed.
+#
+# This avoids namespace dependency issues during deployment.

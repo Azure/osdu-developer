@@ -11,7 +11,7 @@ metadata:
 spec:
   parentRefs:
   {{- range .gateways }}
-  - name: {{ . | regexReplaceAll "istio-system/" "" }}
+  - name: {{ . }}
     namespace: istio-system
   {{- end }}
   rules:

@@ -9,7 +9,7 @@ metadata:
 spec:
   parentRefs:
   {{- range .Values.gateways }}
-  - name: {{ . | regexReplaceAll "istio-system/" "" }}
+  - name: {{ . }}
     namespace: istio-system
   {{- end }}
   rules:

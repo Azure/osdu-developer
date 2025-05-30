@@ -7,9 +7,9 @@ metadata:
 spec:
   parentRefs:
   - name: external-gateway
+    namespace: istio-system  - name: internal-gateway
     namespace: istio-system
-  - name: internal-gateway
-    namespace: istio-system  rules:
+  rules:
   # Default route for all web traffic
   # cert-manager will handle ACME challenges through its own mechanisms
   - matches:

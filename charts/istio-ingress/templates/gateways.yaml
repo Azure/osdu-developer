@@ -40,9 +40,6 @@ metadata:
     istio.io/gateway-name: external-gateway
 spec:
   gatewayClassName: istio
-  addresses:
-  - type: NamedAddress
-    value: external-gateway-istio
   listeners:
     - name: http
       protocol: HTTP
@@ -76,9 +73,6 @@ metadata:
     istio.io/gateway-name: internal-gateway
 spec:
   gatewayClassName: istio
-  addresses:
-  - type: NamedAddress
-    value: internal-gateway-istio
   listeners:
     - name: http
       protocol: HTTP

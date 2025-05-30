@@ -133,8 +133,9 @@ spec:
         minProtocolVersion: TLSV1_3
       defaultConfig:
         proxyAdminPort: 15000
-      ingressSelector: istio-ingress
-      ingressService: istio-ingressgateway
+      # Updated for Gateway API - using external gateway as primary
+      ingressSelector: istio-external-gateway
+      ingressService: external-gateway-istio
     pilot:
       env:
         K8S_INGRESS_NS: istio-ingress
@@ -166,6 +167,11 @@ spec:
     remediation:
       retries: 3
   values:
+    # Set unique name for internal gateway
+    name: internal-gateway-istio
+    labels:
+      istio: internal-gateway
+      istio.io/gateway-name: internal-gateway
     service:
         type: LoadBalancer
         ports:
@@ -210,6 +216,11 @@ spec:
     remediation:
       retries: 3
   values:
+    # Set unique name for external gateway  
+    name: external-gateway-istio
+    labels:
+      istio: external-gateway
+      istio.io/gateway-name: external-gateway
     service:
         type: LoadBalancer
         annotations:

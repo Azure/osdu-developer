@@ -1,0 +1,21 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
+{{- $namespace := .Release.Namespace }}
+{{- range .Values.configuration }}
+{{- if and $enabled .service .hosts .gateways }}
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: {{ .service }}-reference-grant
+  namespace: {{ $namespace }}
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: {{ .service }}
+{{- end }}
+{{- end }}

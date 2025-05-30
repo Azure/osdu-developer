@@ -37,8 +37,12 @@ metadata:
   namespace: istio-system
   labels:
     {{- include "istio-ingress.labels" . | nindent 4 }}
+    istio.io/gateway-name: external-gateway
 spec:
   gatewayClassName: istio
+  addresses:
+  - type: NamedAddress
+    value: external-gateway-istio
   listeners:
     - name: http
       protocol: HTTP
@@ -69,8 +73,12 @@ metadata:
   namespace: istio-system
   labels:
     {{- include "istio-ingress.labels" . | nindent 4 }}
+    istio.io/gateway-name: internal-gateway
 spec:
   gatewayClassName: istio
+  addresses:
+  - type: NamedAddress
+    value: internal-gateway-istio
   listeners:
     - name: http
       protocol: HTTP

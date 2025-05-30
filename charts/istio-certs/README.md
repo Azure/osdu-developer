@@ -1,6 +1,6 @@
 # Istio Certs Helm Chart
 
-This chart configures DNS labels for Azure Kubernetes Service (AKS) LoadBalancer IPs, enabling automatic FQDN assignment for OSDU services.
+This chart configures DNS labels for Azure Kubernetes Service (AKS) LoadBalancer IPs associated with Gateway API gateways, enabling automatic FQDN assignment for OSDU services with Let's Encrypt certificate provisioning.
 
 --------------------------------------------------------------------------------
 
@@ -20,8 +20,8 @@ Modify the `values.yaml` for the chart or create a `custom_values.yaml` with the
 azure:
   region: <your_azure_region>          # Azure region, e.g. eastus
   dnsName: <your_dns_label>            # Unique DNS label for the cluster
-istioServiceName: istio-ingressgateway # Name of the Istio service
-istioNamespace: istio-system           # Namespace of the Istio service
+gatewayServiceName: external-gateway-istio # Name of the Gateway API service (LoadBalancer)
+gatewayNamespace: istio-system           # Namespace of the Gateway API service
 maxRetries: 30                         # Max retries for waiting on LoadBalancer IP
 retryInterval: 10                      # Seconds between retries
 ```

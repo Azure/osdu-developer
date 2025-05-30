@@ -1,0 +1,15 @@
+# ReferenceGrant to allow HTTPRoutes in istio-system to reference services in airflow namespace
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: airflow-reference-grant
+  namespace: airflow
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: airflow-web

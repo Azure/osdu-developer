@@ -19,12 +19,10 @@ data:
       tdnf install -y ca-certificates
       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       chmod +x kubectl && mv kubectl /usr/local/bin/
-    }
-
-    wait_for_loadbalancer_ip() {
-      echo "Waiting for LoadBalancer IP on service istio-ingress-external in istio-system..."
+    }    wait_for_loadbalancer_ip() {
+      echo "Waiting for LoadBalancer IP on service external-gateway-istio in istio-system..."
       for ((i=0; i<60; i++)); do
-        EXTERNAL_IP=$(kubectl get svc istio-ingress-external -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || :)
+        EXTERNAL_IP=$(kubectl get svc external-gateway-istio -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || :)
         if [[ -n "$EXTERNAL_IP" ]]; then
           echo "Found IP: $EXTERNAL_IP"
           return 0
@@ -34,11 +32,9 @@ data:
       done
       echo "ERROR: LoadBalancer IP not assigned after 60 attempts."
       return 1
-    }
-
-    annotate_service_with_dns() {
+    }    annotate_service_with_dns() {
       echo "Annotating service with DNS label ${DNS_NAME}..."
-      kubectl annotate svc istio-ingress-external -n istio-system \
+      kubectl annotate svc external-gateway-istio -n istio-system \
         service.beta.kubernetes.io/azure-dns-label-name="${DNS_NAME}" --overwrite
     }
 

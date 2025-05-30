@@ -9,10 +9,11 @@ data:
   configure-dns.sh: |
     #!/usr/bin/env bash
     set -euo pipefail
-
     echo "================================================================="
     echo "  Starting DNS + Cert Configuration for AKS LoadBalancer"
-    echo "================================================================="    install_kubectl() {
+    echo "================================================================="
+
+    install_kubectl() {
       echo "Installing kubectl…"
       tdnf install -y ca-certificates
       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -26,10 +27,10 @@ data:
         if [[ -n "$EXTERNAL_IP" ]]; then
           echo "Found IP: $EXTERNAL_IP"
           return 0
-        fi
-        echo "…retry $((i+1))/60"
+        fi        echo "…retry $((i+1))/60"
         sleep 5
-      done      echo "ERROR: LoadBalancer IP not assigned after 60 attempts."
+      done
+      echo "ERROR: LoadBalancer IP not assigned after 60 attempts."
       return 1
     }
 

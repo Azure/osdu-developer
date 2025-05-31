@@ -16,9 +16,9 @@ azure:
   dnsName: ""                          # DNS name to be used for the LoadBalancer IP
 
 ################################################################################
-# Istio configuration values
+# Gateway API configuration values
 #
-istioServiceName: "istio-ingressgateway" # Name of the Istio service
-istioNamespace: "istio-system"           # Namespace of the Istio service
-maxRetries: 30                          # Max retries for waiting on LoadBalancer IP
-retryInterval: 10                       # Seconds between retries
+gatewayServiceName: "external-gateway-istio" # Name of the Gateway API service (LoadBalancer)
+gatewayNamespace: "istio-system"             # Namespace of the Gateway API service  
+maxRetries: 30                              # Max retries for waiting on LoadBalancer IP
+retryInterval: 10                           # Seconds between retries

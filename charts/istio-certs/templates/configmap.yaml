@@ -9,7 +9,6 @@ data:
   configure-dns.sh: |
     #!/usr/bin/env bash
     set -euo pipefail
-
     echo "================================================================="
     echo "  Starting DNS + Cert Configuration for AKS LoadBalancer"
     echo "================================================================="
@@ -22,13 +21,13 @@ data:
     }
 
     wait_for_loadbalancer_ip() {
-      echo "Waiting for LoadBalancer IP on service istio-ingress-external in istio-system..."
+      echo "Waiting for LoadBalancer IP on service external-gateway-istio in istio-system..."
       for ((i=0; i<60; i++)); do
-        EXTERNAL_IP=$(kubectl get svc istio-ingress-external -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || :)
+        EXTERNAL_IP=$(kubectl get svc external-gateway-istio -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || :)
         if [[ -n "$EXTERNAL_IP" ]]; then
           echo "Found IP: $EXTERNAL_IP"
           return 0
-        fi
+        fi        
         echo "…retry $((i+1))/60"
         sleep 5
       done
@@ -38,7 +37,7 @@ data:
 
     annotate_service_with_dns() {
       echo "Annotating service with DNS label ${DNS_NAME}..."
-      kubectl annotate svc istio-ingress-external -n istio-system \
+      kubectl annotate svc external-gateway-istio -n istio-system \
         service.beta.kubernetes.io/azure-dns-label-name="${DNS_NAME}" --overwrite
     }
 
@@ -58,7 +57,6 @@ data:
     }
 
     main "$@"
-
   istio-certificate.yaml: |
     apiVersion: cert-manager.io/v1
     kind: Certificate
@@ -71,10 +69,18 @@ data:
       renewBefore: 360h # 15 days
       subject:
         organizations:
-          - Example Organization
+          - OSDU Developer
       commonName: __FQDN__
       dnsNames:
         - __FQDN__
       issuerRef:
         name: letsencrypt-staging
         kind: ClusterIssuer
+      # Use HTTP-01 challenge which will work with Gateway API HTTPRoute
+      # The ACME challenge solver will create temporary pods that need routing
+      privateKey:
+        algorithm: RSA
+        size: 2048
+      usages:
+      - digital signature
+      - key encipherment

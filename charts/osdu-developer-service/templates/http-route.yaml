@@ -1,0 +1,52 @@
+{{- $enabled := eq (include "osdu-developer-service.isEnabled" .) "1" -}}
+{{- $namespace := .Release.Namespace }}
+{{- range .Values.configuration }}
+{{- if and $enabled .service .hosts .gateways }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ .service }}-route
+  namespace: {{ $namespace }}
+spec:  parentRefs:
+  {{- range .gateways }}
+  {{- $parts := split "/" . }}
+  {{- if eq (len $parts) 2 }}
+  - name: {{ index $parts 1 }}
+    namespace: {{ index $parts 0 }}
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  {{- else }}
+  - name: {{ . }}
+    namespace: istio-system
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  {{- end }}
+  {{- end }}
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: {{ .path }}
+    backendRefs:
+    - name: {{ .service }}
+      port: 80
+      weight: 100
+  {{- if .cors }}
+    filters:
+    - type: ResponseHeaderModifier
+      responseHeaderModifier:
+        add:
+        - name: Access-Control-Allow-Origin
+          value: {{ join "," .cors }}
+        - name: Access-Control-Allow-Methods
+          value: "GET,PUT,POST,DELETE,OPTIONS"
+        - name: Access-Control-Allow-Headers
+          value: "Authorization,Content-Type"
+        - name: Access-Control-Allow-Credentials
+          value: "true"
+        - name: Access-Control-Max-Age
+          value: "86400"
+  {{- end }}
+{{- end }}
+{{- end }}

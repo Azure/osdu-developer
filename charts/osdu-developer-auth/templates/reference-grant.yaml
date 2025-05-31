@@ -1,0 +1,33 @@
+{{- $namespace := .Release.Namespace }}
+{{- if and .Values.hosts .Values.gateways }} 
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: osdu-auth-reference-grant
+  namespace: {{ $namespace }}
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: osdu-auth
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: osdu-auth-spa-reference-grant
+  namespace: {{ $namespace }}
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: istio-system
+  to:
+  - group: ""
+    kind: Service
+    name: osdu-auth-spa
+{{- end }}

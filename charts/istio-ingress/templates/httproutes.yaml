@@ -1,0 +1,12 @@
+# HTTPRoutes for ACME challenge handling with Gateway API
+# 
+# Note: For Gateway API, cert-manager typically uses one of these approaches:
+# 1. Creates temporary Ingress resources that get converted to HTTPRoutes
+# 2. Uses Gateway API native challenge solvers (experimental)
+# 3. Relies on application HTTPRoutes to handle challenge paths
+#
+# Since this is infrastructure-level routing, we'll let individual applications
+# handle ACME challenge routing in their own HTTPRoutes, or cert-manager
+# will create temporary resources as needed.
+#
+# This avoids namespace dependency issues during deployment.

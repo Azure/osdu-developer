@@ -1,0 +1,23 @@
+# HTTPRoute for web-site application
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web-site-route
+  namespace: web-site
+spec:
+  parentRefs:
+  - name: external-gateway
+    namespace: istio-system
+  - name: internal-gateway
+    namespace: istio-system
+  rules:
+  # Default route for all web traffic
+  # cert-manager will handle ACME challenges through its own mechanisms
+  - matches:
+    - path:
+        type: PathPrefix
+        value: "/"
+    backendRefs:
+    - name: osdu-developer-web-service
+      port: 80
+      weight: 100

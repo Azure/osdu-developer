@@ -1,60 +1,95 @@
 {{- define "gateway" -}}
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: {{ .name | default (printf "%s-gateway" .gatewayType) }}
   namespace: istio-system
 spec:
-  selector:
-    {{- .selector | default (dict "istio" (printf "ingress-%s" .gatewayType)) | toYaml | nindent 4 }}
-  servers:
-    - port:
-        name: http2
-        number: 80
-        protocol: HTTP2
-      hosts:
-        {{- if .hosts }}
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-        {{- else }}
-        - "*"
-        {{- end }}
-    - port:
-        name: https
-        number: 443
-        protocol: HTTPS
-      hosts:
-        {{- if .hosts }}
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-        {{- else }}
-        - "*"
-        {{- end }}
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: {{ printf "%s.%s.cloudapp.azure.com" .azure.dnsName .azure.region | quote }}
       tls:
-        {{- if .requireSSL }}
-        httpsRedirect: true # sends 301 redirect for http requests
-        {{- end }}
-        {{- with .tls }}
-        {{- toYaml . | nindent 8 }}  
-      {{- end }}
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          name: {{ .tls.credentialName | quote }}
+          namespace: istio-system
+      allowedRoutes:
+        namespaces:
+          from: All
 {{- end }}
 
-{{- if .Values.ingress }}
-  {{- if hasKey .Values.ingress "internalGateway" }}
-    {{- if .Values.ingress.internalGateway.enabled }}
+{{- if .Values.ingress.externalGateway.enabled }}
 ---
-{{- $internalGateway := merge (dict "gatewayType" "internal" "requireSSL" .Values.ingress.internalGateway.requireSSL) .Values.ingress.internalGateway -}}
-{{ include "gateway" $internalGateway }}
-    {{- end }}
-  {{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external-gateway
+  namespace: istio-system
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+    istio.io/gateway-name: external-gateway
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          name: {{ .Values.ingress.externalGateway.tls.credentialName | quote }}
+          namespace: istio-system
+      allowedRoutes:
+        namespaces:
+          from: All
+{{- end }}
 
-  {{- if hasKey .Values.ingress "externalGateway" }}
-    {{- if .Values.ingress.externalGateway.enabled }}
+{{- if .Values.ingress.internalGateway.enabled }}
 ---
-{{- $externalGateway := merge (dict "gatewayType" "external" "requireSSL" .Values.ingress.externalGateway.requireSSL) .Values.ingress.externalGateway -}}
-{{ include "gateway" $externalGateway }}
-    {{- end }}
-  {{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal-gateway
+  namespace: istio-system
+  labels:
+    {{- include "istio-ingress.labels" . | nindent 4 }}
+    istio.io/gateway-name: internal-gateway
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          name: {{ .Values.ingress.internalGateway.tls.credentialName | quote }}
+          namespace: istio-system
+      allowedRoutes:
+        namespaces:
+          from: All
 {{- end }}

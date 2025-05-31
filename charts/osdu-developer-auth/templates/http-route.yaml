@@ -6,11 +6,20 @@ kind: HTTPRoute
 metadata:
   name: osdu-auth-route
   namespace: {{ $namespace }}
-spec:
-  parentRefs:
+spec:  parentRefs:
   {{- range .Values.gateways }}
+  {{- $parts := split "/" . }}
+  {{- if eq (len $parts) 2 }}
+  - name: {{ index $parts 1 }}
+    namespace: {{ index $parts 0 }}
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  {{- else }}
   - name: {{ . }}
     namespace: istio-system
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  {{- end }}
   {{- end }}
   rules:
   # Auth SPA route

@@ -175,14 +175,35 @@ function Update-Application {
     try {
         $redirectUris = @()
         $nodeResourceGroup = az aks show -g $ResourceGroup -n $AKS_NAME --query nodeResourceGroup -o tsv
-        $publicIp = az network public-ip list -g "$nodeResourceGroup" --query "[?contains(name, 'kubernetes')].ipAddress" -o tsv
-        if ($publicIp) {
-            Write-Host "`n=================================================================="
-            Write-Host "Adding Public Web Endpoint: $publicIp"
-            Write-Host "=================================================================="
-            $redirectUris += "https://$publicIp/auth/"
+        
+        # Get the public IP resource that contains 'kubernetes' in the name
+        $publicIpResource = az network public-ip list -g "$nodeResourceGroup" --query "[?contains(name, 'kubernetes')]" -o json | ConvertFrom-Json
+        
+        $externalEndpoint = $null
+        if ($publicIpResource -and $publicIpResource.Count -gt 0) {
+            $publicIpData = $publicIpResource[0]
+            
+            # Prefer DNS name if available, otherwise fall back to IP address
+            if ($publicIpData.dnsSettings -and $publicIpData.dnsSettings.fqdn) {
+                $externalEndpoint = $publicIpData.dnsSettings.fqdn
+                Write-Host "`n=================================================================="
+                Write-Host "Adding Public Web Endpoint (DNS): $externalEndpoint"
+                Write-Host "=================================================================="
+            } elseif ($publicIpData.ipAddress) {
+                $externalEndpoint = $publicIpData.ipAddress
+                Write-Host "`n=================================================================="
+                Write-Host "Adding Public Web Endpoint (IP): $externalEndpoint"
+                Write-Host "=================================================================="
+            }
+            
+            if ($externalEndpoint) {
+                $redirectUris += "https://$externalEndpoint/auth/"
+            }
         }
-        azd env set INGRESS_EXTERNAL "https://$publicIp/auth/"
+        
+        if ($externalEndpoint) {
+            azd env set INGRESS_EXTERNAL "https://$externalEndpoint/auth/"
+        }
         $privateIp = az network lb frontend-ip list --lb-name kubernetes-internal -g "$nodeResourceGroup" --query [].privateIPAddress -o tsv
         if ($privateIp) {
             Write-Host "`n=================================================================="

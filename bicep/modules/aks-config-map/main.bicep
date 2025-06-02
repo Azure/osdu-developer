@@ -38,14 +38,10 @@ param namespace string = 'default'
 
 @description('Specify the config map single property data. (e.g. "player_initial_lives=3")')
 param propertyData array = [
-  // 'player_initial_lives=3'
-  // 'ui_properties_file_name=user-interface.properties'
 ]
 
 @description('Specify the config map file data. (e.g. "game.properties: |enemy.types=aliens,monsters\nplayer.maximum-lives=5")')
 param fileData array = [
-  // 'game.properties: |enemy.types=aliens,monsters\nplayer.maximum-lives=5'
-  // 'user-interface.properties: |color.good=purple\ncolor.bad=yellow\nallow.textmode=true'
 ]
 
 @description('A delay before the script import operation starts. Primarily to allow Azure AAD Role Assignments to propagate')
@@ -60,16 +56,16 @@ param isCrossTenant bool = false
 
 var useExistingManagedIdentity = newOrExistingManagedIdentity == 'existing'
 
-resource aks 'Microsoft.ContainerService/managedClusters@2022-11-01' existing = {
+resource aks 'Microsoft.ContainerService/managedClusters@2025-03-01' existing = {
   name: aksName
 }
 
-resource newDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (!useExistingManagedIdentity) {
+resource newDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = if (!useExistingManagedIdentity) {
   name: managedIdentityName
   location: location
 }
 
-resource existingDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (useExistingManagedIdentity) {
+resource existingDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = if (useExistingManagedIdentity) {
   name: managedIdentityName
   scope: resourceGroup(existingManagedIdentitySubId, existingManagedIdentityResourceGroupName)
 }

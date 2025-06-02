@@ -94,7 +94,7 @@ var serviceLayerConfig = {
 // Existing Resources
 /////////////////////////////////
 
-resource appIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+resource appIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = {
   name: managedIdentityName
 }
 

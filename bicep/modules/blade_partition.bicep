@@ -454,11 +454,11 @@ var partitionDatabase = {
 // Existing Resources
 /////////////////////////////////
 
-resource stampIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+resource stampIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = {
   name: managedIdentityName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' existing = {
   name: kvName
 }
 
@@ -712,7 +712,7 @@ module partitonNamespace 'br/public:avm/res/service-bus/namespace:0.14.1' = [for
 
 
 // TODO: This should be moved to the Kubernetes Job.
-module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (partition, index) in partitions: {
+module blobUpload 'br/public:avm/res/resources/deployment-script:0.5.1' = [for (partition, index) in partitions: {
   name: '${bladeConfig.sectionName}-storage-blob-upload-${index}'
   params: {
     name: 'script-${storage[index].outputs.name}-Legal_COO'
@@ -723,7 +723,7 @@ module blobUpload 'br/public:avm/res/resources/deployment-script:0.4.0' = [for (
     runOnce: true
 
     managedIdentities: {
-      userAssignedResourcesIds: [
+      userAssignedResourceIds: [
         stampIdentity.id
       ]
     }

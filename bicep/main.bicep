@@ -110,10 +110,6 @@ var configuration = {
     tenantId: 'tenant-id'
     subscriptionId: 'subscription-id'
     registryName: 'container-registry'
-    // applicationId: 'aad-client-id'
-    // clientId: 'app-dev-sp-username'
-    // clientSecret: 'app-dev-sp-password'
-    // applicationPrincipalId: 'app-dev-sp-id'
     stampIdentity: 'osdu-identity-id'
     storageAccountName: 'common-storage'
     storageAccountKey: 'common-storage-key'
@@ -168,7 +164,7 @@ var dnsName = uniqueString(resourceGroup().id, configuration.name)
 |  | |  '--'  ||  |____ |  |\   |     |  |     |  |     |  |         |  |
 |__| |_______/ |_______||__| \__|     |__|     |__|     |__|         |__|
 */
-module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
   name: '${configuration.name}-user-managed-identity'
   params: {
     // Required parameters
@@ -193,7 +189,7 @@ module stampIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:
  /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |         |  |     |  | |  `----.----)   |
 /__/     \__\ |__| \__| /__/     \__\ |_______|    |__|         |__|     |__|  \______|_______/
 */
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.9.1' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.11.2' = {
   name: '${configuration.name}-log-analytics'
   params: {
     name: rg_unique_id
@@ -220,7 +216,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.9.1' = {
 |__| |__| \__| |_______/    |__|  \______| |__|  |__|     |__|    |_______/
 */
 
-module insights 'br/public:avm/res/insights/component:0.5.0' = {
+module insights 'br/public:avm/res/insights/component:0.6.0' = {
   name: '${configuration.name}-insights'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -261,7 +257,7 @@ module insights 'br/public:avm/res/insights/component:0.5.0' = {
  \______/__/     \__\ \______||__|  |__| |_______|
 */
 // This takes a long time to deploy so we are starting as soon as possible.
-module redis 'br/public:avm/res/cache/redis:0.9.0' = {
+module redis 'br/public:avm/res/cache/redis:0.15.0' = {
   name: '${configuration.name}-cache'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -488,7 +484,7 @@ module extensionClientId 'br/public:avm/res/resources/deployment-script:0.5.1' =
 |  |\  \----.|  |____ |  |__| | |  | .----)   |      |  |     |  |\  \----.   |  |
 | _| `._____||_______| \______| |__| |_______/       |__|     | _| `._____|   |__|
 */
-module registry 'br/public:avm/res/container-registry/registry:0.7.0' = {
+module registry 'br/public:avm/res/container-registry/registry:0.9.1' = {
   name: '${configuration.name}-container-registry'
   params: {
     name: '${replace(configuration.name, '-', '')}${uniqueString(resourceGroup().id, configuration.name)}'
@@ -602,7 +598,7 @@ var vaultSecrets = [
   }
 ]
 
-module keyvault 'br/public:avm/res/key-vault/vault:0.11.2' = {
+module keyvault 'br/public:avm/res/key-vault/vault:0.12.1' = {
   name: '${configuration.name}-keyvault'
   params: {
     name: length(name) > 17 ? substring(name, 0, 17) : name
@@ -684,7 +680,6 @@ module keyvaultSecrets 'modules/keyvault_secrets.bicep' = {
     workspaceName: logAnalytics.outputs.name
     insightsName: insights.outputs.name
     cacheName: redis.outputs.name
-    identityName: stampIdentity.outputs.name
   }
   dependsOn: [
     insights

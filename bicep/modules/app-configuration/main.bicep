@@ -139,7 +139,7 @@ var diagnosticsMetrics = [for metric in metricsToEnable: {
 var identityType = systemAssignedIdentity ? 'SystemAssigned' : !empty(userAssignedIdentities) ? 'UserAssigned' : 'None'
 
 
-resource configStore 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' = {
+resource configStore 'Microsoft.AppConfiguration/configurationStores@2024-06-01' = {
   name: length(name) > 50 ? substring(name, 0, 50) : name
   location: location
   tags: tags
@@ -246,13 +246,13 @@ var publicDNSZoneForwarder = 'azconfig.io'
 var privateDnsZoneName = 'privatelink.${publicDNSZoneForwarder}'
 
 
-resource privateDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
+resource privateDNSZone 'Microsoft.Network/privateDnsZones@2024-06-01' = if (enablePrivateLink) {
   name: privateDnsZoneName
   location: 'global'
   properties: {}
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = if (enablePrivateLink) {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-07-01' = if (enablePrivateLink) {
   name: privateEndpointName
   location: location
   properties: {
@@ -276,7 +276,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = if (e
   ]
 }
 
-resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = if (enablePrivateLink) {
+resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-07-01' = if (enablePrivateLink) {
   parent: privateEndpoint
   name: 'dnsgroupname'
   properties: {

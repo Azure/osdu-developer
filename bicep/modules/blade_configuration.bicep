@@ -111,15 +111,15 @@ param dateStamp string = utcNow()
 // Existing Resources
 /////////////////////////////////
 
-resource appIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+resource appIdentity  'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = {
   name: managedIdentityName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' existing = {
   name: kvName
 }
 
-resource keySecretSpUsername 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource keySecretSpUsername 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: 'app-dev-sp-username'
   parent: keyVault
 
@@ -128,7 +128,7 @@ resource keySecretSpUsername 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource keySecretSpPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource keySecretSpPassword 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: 'app-dev-sp-password'
   parent: keyVault
 
@@ -491,7 +491,7 @@ var serviceLayerConfig = {
  \______| |__|     |__|      \______/  | _|   |_______/
 */
 //--------------Flux Config---------------
-module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.3' = if(enableSoftwareLoad) {
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.5' = if(enableSoftwareLoad) {
   name: '${bladeConfig.sectionName}-cluster-gitops'
   params: {
     name: serviceLayerConfig.gitops.name

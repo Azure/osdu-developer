@@ -21,15 +21,15 @@ param databaseName string = ''
 // Existing Resources
 /////////////////////////////////
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' existing = {
   name: kvName
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
   name: storageName
 }
 
-resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' existing = {
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2025-04-15' existing = {
   name: databaseName
 }
 

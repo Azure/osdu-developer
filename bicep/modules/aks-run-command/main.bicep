@@ -49,12 +49,12 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-11-01' existing = 
   name: aksName
 }
 
-resource newDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (!useExistingManagedIdentity) {
+resource newDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = if (!useExistingManagedIdentity) {
   name: managedIdentityName
   location: location
 }
 
-resource existingDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (useExistingManagedIdentity) {
+resource existingDepScriptId 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = if (useExistingManagedIdentity) {
   name: managedIdentityName
   scope: resourceGroup(existingManagedIdentitySubId, existingManagedIdentityResourceGroupName)
 }
@@ -88,7 +88,7 @@ resource runAksCommand 'Microsoft.Resources/deploymentScripts@2023-08-01' = [for
   ]
   properties: {
     forceUpdateTag: forceUpdateTag
-    azCliVersion: '2.63.0'
+    azCliVersion: '2.73.0'
     timeout: 'PT30M'
     retentionInterval: 'PT1H'
     environmentVariables: [

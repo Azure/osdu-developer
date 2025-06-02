@@ -396,8 +396,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
               keyname: customerManagedKey!.keyName
               keyvaulturi: cMKKeyVault.properties.vaultUri
               keyversion: !empty(customerManagedKey.?keyVersion ?? '')
-                ? customerManagedKey!.keyVersion
-                : last(split(cMKKeyVault::cMKKey.properties.keyUriWithVersion, '/'))
+                ? customerManagedKey.?keyVersion
+                : last(split(cMKKeyVault::cMKKey.properties.?keyUriWithVersion ?? '', '/'))
             }
           : null
         identity: {
@@ -646,43 +646,43 @@ var sasProperties = {
 }
 
 var secretsToSet = concat(
-  empty(secretsExportConfiguration.?accountName ?? []) ? [] : map((secretsExportConfiguration!.accountName ?? []), name => {
+  empty(secretsExportConfiguration.?accountName ?? []) ? [] : map((secretsExportConfiguration.?accountName ?? []), name => {
     name: name
     value: storageAccount.name
   }),
-  empty(secretsExportConfiguration.?accessKey1 ?? []) ? [] : map((secretsExportConfiguration!.accessKey1 ?? []), name => {
+  empty(secretsExportConfiguration.?accessKey1 ?? []) ? [] : map((secretsExportConfiguration.?accessKey1 ?? []), name => {
     name: name
     value: storageAccount.listKeys().keys[0].value
   }),
-  empty(secretsExportConfiguration.?connectionString1 ?? []) ? [] : map((secretsExportConfiguration!.connectionString1 ?? []), name => {
+  empty(secretsExportConfiguration.?connectionString1 ?? []) ? [] : map((secretsExportConfiguration.?connectionString1 ?? []), name => {
     name: name
     value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
   }),
-  empty(secretsExportConfiguration.?accessKey2 ?? []) ? [] : map((secretsExportConfiguration!.accessKey2 ?? []), name => {
+  empty(secretsExportConfiguration.?accessKey2 ?? []) ? [] : map((secretsExportConfiguration.?accessKey2 ?? []), name => {
     name: name
     value: storageAccount.listKeys().keys[1].value
   }),
-  empty(secretsExportConfiguration.?connectionString2 ?? []) ? [] : map((secretsExportConfiguration!.connectionString2 ?? []), name => {
+  empty(secretsExportConfiguration.?connectionString2 ?? []) ? [] : map((secretsExportConfiguration.?connectionString2 ?? []), name => {
     name: name
     value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[1].value};EndpointSuffix=core.windows.net'
   }),
-  empty(secretsExportConfiguration.?blobEndpoint ?? []) ? [] : map((secretsExportConfiguration!.blobEndpoint ?? []), name => {
+  empty(secretsExportConfiguration.?blobEndpoint ?? []) ? [] : map((secretsExportConfiguration.?blobEndpoint ?? []), name => {
     name: name
     value: storageAccount.properties.primaryEndpoints.blob
   }),
-  empty(secretsExportConfiguration.?tableEndpoint ?? []) ? [] : map((secretsExportConfiguration!.tableEndpoint ?? []), name => {
+  empty(secretsExportConfiguration.?tableEndpoint ?? []) ? [] : map((secretsExportConfiguration.?tableEndpoint ?? []), name => {
     name: name
     value: storageAccount.properties.primaryEndpoints.table
   }),
-  empty(secretsExportConfiguration.?queueEndpoint ?? []) ? [] : map((secretsExportConfiguration!.queueEndpoint ?? []), name => {
+  empty(secretsExportConfiguration.?queueEndpoint ?? []) ? [] : map((secretsExportConfiguration.?queueEndpoint ?? []), name => {
     name: name
     value: storageAccount.properties.primaryEndpoints.queue
   }),
-  empty(secretsExportConfiguration.?fileEndpoint ?? []) ? [] : map((secretsExportConfiguration!.fileEndpoint ?? []), name => {
+  empty(secretsExportConfiguration.?fileEndpoint ?? []) ? [] : map((secretsExportConfiguration.?fileEndpoint ?? []), name => {
     name: name
     value: storageAccount.properties.primaryEndpoints.file
   }),
-  empty(secretsExportConfiguration.?sasToken ?? []) ? [] : map((secretsExportConfiguration!.sasToken ?? []), (name) => {
+  empty(secretsExportConfiguration.?sasToken ?? []) ? [] : map((secretsExportConfiguration.?sasToken ?? []), (name) => {
     name: name
     value: listAccountSAS(storageAccount.name, '2022-05-01', sasProperties).accountSasToken
   })
@@ -729,7 +729,7 @@ output privateEndpoints array = [
     name: storageAccount_privateEndpoints[i].outputs.name
     resourceId: storageAccount_privateEndpoints[i].outputs.resourceId
     groupId: storageAccount_privateEndpoints[i].outputs.groupId
-    customDnsConfig: storageAccount_privateEndpoints[i].outputs.customDnsConfig
+    customDnsConfig: storageAccount_privateEndpoints[i].outputs.?customDnsConfig
     networkInterfaceIds: storageAccount_privateEndpoints[i].outputs.networkInterfaceIds
   }
 ]
@@ -737,7 +737,7 @@ output privateEndpoints array = [
 import { secretsOutputType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
 @description('A hashtable of references to the secrets exported to the provided Key Vault. The key of each reference is each secret\'s name.')
 output exportedSecrets secretsOutputType = (secretsExportConfiguration != null)
-  ? toObject(secretsExport.outputs.secretsSet, secret => last(split(secret.secretResourceId, '/')), secret => secret)
+  ? toObject(secretsExport.outputs.?secretsSet ?? [], secret => last(split(secret.secretResourceId, '/')), secret => secret)
   : {}
 
 // =============== //

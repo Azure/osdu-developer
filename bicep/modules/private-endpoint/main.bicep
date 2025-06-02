@@ -68,7 +68,7 @@ param manualPrivateLinkServiceConnections array = []
 var name = 'pep-${replace(resourceName, '-', '')}${uniqueString(resourceGroup().id, resourceName)}'
 
 // TODO Should I change serviceResourceId(param) to accept an array of all the resources yo want to assign this privateEndpoint to?
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-05-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-07-01' = {
   name: length(name) > 24 ? substring(name, 0, 24) : name
   location: location
   tags: tags
@@ -117,7 +117,7 @@ module privateEndpoint_roleAssignments './.bicep/nested_rbac.bicep' = [for (role
 }]
 
 // Apply Resource Lock
-resource resource_lock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource resource_lock 'Microsoft.Authorization/locks@2020-05-01' = if (lock != 'NotSpecified') {
   name: '${privateEndpoint.name}-${lock}-lock'
   properties: {
     level: lock

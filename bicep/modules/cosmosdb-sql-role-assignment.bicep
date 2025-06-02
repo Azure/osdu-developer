@@ -24,7 +24,7 @@ var resolvedScope = !empty(customScope)
     ? '${cosmosDbAccount.id}/sqlDatabases/${databaseName}'
     : cosmosDbAccount.id
 
-resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-11-15' = {
+resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2025-04-15' = {
   name: guid(cosmosDbAccount.id, principalId, roleDefinitionId)
   parent: cosmosDbAccount
   properties: {

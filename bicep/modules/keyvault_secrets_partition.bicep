@@ -7,18 +7,18 @@ param partitionName string
 @description('The name of the service bus.')
 param serviceBusName string
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' existing = {
   name: keyVaultName
 }
 
-resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = if (serviceBusName != 'null') {
+resource serviceBus 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = if (serviceBusName != 'null') {
   name: serviceBusName
 }
 
 // Conditional variable for connection string
 var serviceBusEndpoint = '${serviceBus.id}/AuthorizationRules/RootManageSharedAccessKey'
 
-resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (serviceBusName != 'null') {
+resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = if (serviceBusName != 'null') {
   name: '${partitionName}-sb-connection'
   parent: keyVault
 
@@ -27,7 +27,7 @@ resource serviceBusConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = i
   }
 }
 
-resource serviceBusNamespace 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (serviceBusName != 'null') {
+resource serviceBusNamespace 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = if (serviceBusName != 'null') {
   name: '${partitionName}-sb-namespace'
   parent: keyVault
 
@@ -36,7 +36,7 @@ resource serviceBusNamespace 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if
   }
 }
 
-resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: '${partitionName}-elastic-endpoint'
   parent: keyVault
 
@@ -45,7 +45,7 @@ resource elasticEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: '${partitionName}-elastic-username'
   parent: keyVault
 
@@ -54,7 +54,7 @@ resource elasticUserName 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: '${partitionName}-elastic-password'
   parent: keyVault
 
@@ -63,7 +63,7 @@ resource elasticUserPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-resource elasticKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource elasticKey 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   name: '${partitionName}-elastic-key'
   parent: keyVault
 

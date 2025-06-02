@@ -340,7 +340,7 @@ var databaseAccount_properties = union({
 
 
 // Create Database Account
-resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2025-04-15' = {
   name: length(name) > 26 ? substring(name, 0, 26) : name
   location: resourceLocation
   tags: tags
@@ -376,7 +376,7 @@ module databaseAccount_gremlinDatabases './.bicep/gremlin_database.bicep' = [for
 
 
 // Resource Locking
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (enableDeleteLock) {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (enableDeleteLock) {
   scope: databaseAccount
 
   name: '${databaseAccount.name}-lock'
@@ -450,7 +450,7 @@ var privateEndpointName = '${name}-PrivateEndpoint'
 
 var privateDNSZoneName = 'privatelink.documents.azure.com'
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-02-01' = if (enablePrivateLink) {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-07-01' = if (enablePrivateLink) {
   name: privateEndpointName
   location: resourceLocation
   properties: {
@@ -479,7 +479,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-02-01' = if (e
   ]
 }
 
-resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateLink) {
+resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = if (enablePrivateLink) {
   parent: privateDNSZone
   name: '${privateDNSZone.name}-link'
   location: 'global'
@@ -491,12 +491,12 @@ resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
   }
 }
 
-resource privateDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateLink) {
+resource privateDNSZone 'Microsoft.Network/privateDnsZones@2024-06-01' = if (enablePrivateLink) {
   name: privateDNSZoneName
   location: 'global'
 }
 
-resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = if (enablePrivateLink) {
+resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-07-01' = if (enablePrivateLink) {
   parent: privateEndpoint
   name: 'dnsgroupname'
   properties: {

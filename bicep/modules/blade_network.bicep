@@ -202,7 +202,7 @@ var subnets = {
 |  |\   | .----)   |   |  |__| | 
 |__| \__| |_______/     \______| 
 */
-module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.0' = if (!enableVnetInjection) {
+module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.1' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-nsg-cluster'
   params: {
     name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}-aks'
@@ -234,7 +234,7 @@ module clusterNetworkSecurityGroup 'br/public:avm/res/network/network-security-g
 |  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  
 |__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ 
 */
-module network 'br/public:avm/res/network/virtual-network:0.5.1' = if (!enableVnetInjection) {
+module network 'br/public:avm/res/network/virtual-network:0.7.0' = if (!enableVnetInjection) {
   name: '${bladeConfig.sectionName}-virtual-network'
   params: {
     name: '${replace(bladeConfig.sectionName, '-', '')}${uniqueString(resourceGroup().id, bladeConfig.sectionName)}'

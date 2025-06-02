@@ -38,11 +38,11 @@ param softwareSource string = 'https://github.com/azure/osdu-developer'
 param fileurl string = '/archive/refs/heads/main.zip'
 
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
   name: storageAccountName
 }
 
-resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' existing = {
+resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = {
   name: identityName
 }
 
@@ -56,7 +56,7 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(
   }
 }
 
-module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = {
+module deploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
   name: 'script-${storageAccount.name}-${directoryName}-${replace(replace(filename, ':', ''), '/', '-')}'
   params: {
     name: 'script-${storageAccount.name}-${directoryName}-${replace(replace(filename, ':', ''), '/', '-')}'
@@ -67,7 +67,7 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = 
     runOnce: true
     
     managedIdentities: {
-      userAssignedResourcesIds: [
+      userAssignedResourceIds: [
         identity.id
       ]
     }
@@ -75,11 +75,10 @@ module deploymentScript 'br/public:avm/res/resources/deployment-script:0.4.0' = 
     storageAccountResourceId: newStorageAccount ? '' : storageAccount.id
 
     kind: 'AzureCLI'
-    azCliVersion: '2.63.0'
+    azCliVersion: '2.73.0'
     
     environmentVariables: [
       { name: 'AZURE_STORAGE_ACCOUNT', value: storageAccount.name }
-      { name: 'AZURE_STORAGE_KEY', value: storageAccount.listKeys().keys[0].value }
       { name: 'FILE', value: filename }
       { name: 'URL', value: '${softwareSource}${fileurl}' }
       { name: 'CONTAINER', value: containerName }

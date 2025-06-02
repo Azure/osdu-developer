@@ -22,7 +22,7 @@ param skuFamily string
 @description('SKU name for the Key Vault')
 param skuName string
 
-resource updateNetworkRules 'Microsoft.KeyVault/vaults@2023-07-01' = {
+resource updateNetworkRules 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: keyVaultName
   location: location
   properties: {

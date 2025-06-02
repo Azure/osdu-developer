@@ -14,11 +14,6 @@ param insightsName string
 param cacheName string
 
 
-@description('The name of the identity.')
-@minLength(0)
-param identityName string
-
-
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
 }
@@ -33,10 +28,6 @@ resource insights 'Microsoft.Insights/components@2020-02-02' existing = {
 
 resource redis 'Microsoft.Cache/redis@2022-06-01' existing = {
   name: cacheName
-}
-
-resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' existing = {
-  name: identityName
 }
 
 resource cachePassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
@@ -101,14 +92,5 @@ resource insightsConnection 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
     value: insights.properties.ConnectionString
   }
 }
-
-// resource identityClientIdSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-//   name: 'app-dev-sp-id'
-//   parent: keyVault
-
-//   properties: {
-//     value: identity.properties.clientId
-//   }
-// }
 
 output keyVaultName string = keyVault.name

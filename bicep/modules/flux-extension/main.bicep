@@ -40,7 +40,7 @@ param version string?
 param fluxConfigurations array?
 
 #disable-next-line no-deployments-resources
-resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+resource avmTelemetry 'Microsoft.Resources/deployments@2025-04-01' = if (enableTelemetry) {
   name: '46d3xbcp.res.kubernetesconfiguration-extension.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
   properties: {
     mode: 'Incremental'
@@ -58,11 +58,11 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-07-01' existing = {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-03-01' existing = {
   name: clusterName
 }
 
-resource extension 'Microsoft.KubernetesConfiguration/extensions@2022-03-01' = {
+resource extension 'Microsoft.KubernetesConfiguration/extensions@2024-11-01' = {
   name: name
   scope: managedCluster
   properties: {
@@ -87,7 +87,7 @@ resource extension 'Microsoft.KubernetesConfiguration/extensions@2022-03-01' = {
   }
 }
 
-module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.1' = [
+module fluxConfiguration 'br/public:avm/res/kubernetes-configuration/flux-configuration:0.3.5' = [
   for (fluxConfiguration, index) in (fluxConfigurations ?? []): {
     name: '${uniqueString(deployment().name, location)}-ManagedCluster-FluxConfiguration${index}'
     params: {

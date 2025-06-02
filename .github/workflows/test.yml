@@ -6,7 +6,6 @@
 # - AZURE_ENV_NAME: The Github Environment name to deploy to (default is dev)
 # - AZURE_LOCATION: The Azure region to deploy to (default is eastus2)
 # Required GitHub Secrets:
-#  - AZURE_CLIENT_SECRET: The client secret for Azure authentication
 #  - EMAIL_ADDRESS: The email address to send notifications to
 #  - AZD_INITIAL_ENVIRONMENT_CONFIG: The initial environment config.json file
 
@@ -287,7 +286,7 @@ jobs:
           inlineScript: |
             DEPNAME='${{ env.DEPNAME }}'
             WHATIFPATH='whatif.json'
-            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientSecret=${{ secrets.AZURE_CLIENT_SECRET }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
+            PARAMS='${{ steps.imperitiveparams.outputs.PARAMOVERRIDES }} applicationClientId=${{ env.AZURE_CLIENT_ID }} applicationClientPrincipalOid=${{ env.AZURE_CLIENT_PRINCIPAL_OID }} emailAddress=${{ secrets.EMAIL_ADDRESS }}'
             az deployment group what-if --no-pretty-print -f bicep/main.bicep -g $RESOURCE_GROUP -p ${{ env.ParamFilePath }} -p $PARAMS > $WHATIFPATH
             if [[ -f $WHATIFPATH ]]
             then
@@ -350,7 +349,6 @@ jobs:
           AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
           AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           AZURE_CLIENT_PRINCIPAL_OID: ${{ vars.AZURE_PRINCIPAL_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}

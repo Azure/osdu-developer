@@ -6,16 +6,26 @@ kind: HTTPRoute
 metadata:
   name: osdu-auth-route
   namespace: {{ $namespace }}
-spec:  parentRefs:
+spec:
+  parentRefs:
   {{- range .Values.gateways }}
-  {{- $parts := split "/" . }}
+  {{- $gatewayStr := . | toString }}
+  {{- if contains "/" $gatewayStr }}
+  {{- $parts := splitList "/" $gatewayStr }}
   {{- if eq (len $parts) 2 }}
   - name: {{ index $parts 1 }}
     namespace: {{ index $parts 0 }}
     group: gateway.networking.k8s.io
     kind: Gateway
   {{- else }}
-  - name: {{ . }}
+  # Error: Gateway string "{{ $gatewayStr }}" did not split into exactly 2 parts
+  - name: {{ $gatewayStr }}
+    namespace: istio-system
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  {{- end }}
+  {{- else }}
+  - name: {{ $gatewayStr }}
     namespace: istio-system
     group: gateway.networking.k8s.io
     kind: Gateway

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.35.1.17967",
-      "templateHash": "807687795664775159"
+      "version": "0.36.1.42791",
+      "templateHash": "9012661154443068855"
     }
   },
   "parameters": {
@@ -6713,8 +6713,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "14861769825933833728"
+              "version": "0.36.1.42791",
+              "templateHash": "910664327559585359"
             }
           },
           "definitions": {
@@ -9255,8 +9255,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "1397576487352546509"
+              "version": "0.36.1.42791",
+              "templateHash": "3198364599859879384"
             }
           },
           "definitions": {
@@ -9725,8 +9725,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "10744398661225224184"
+                      "version": "0.36.1.42791",
+                      "templateHash": "12585728094744470138"
                     },
                     "name": "Azure Kubernetes Service (AKS) Managed Clusters",
                     "description": "This module deploys an Azure Kubernetes Service (AKS) Managed Cluster."
@@ -11637,8 +11637,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "3424542700005639924"
+                              "version": "0.36.1.42791",
+                              "templateHash": "3974710706749685675"
                             },
                             "name": "Azure Kubernetes Service (AKS) Managed Cluster Maintenance Configurations",
                             "description": "This module deploys an Azure Kubernetes Service (AKS) Managed Cluster Maintenance Configurations.",
@@ -11837,8 +11837,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "11081360504349596638"
+                              "version": "0.36.1.42791",
+                              "templateHash": "13045265233626301702"
                             },
                             "name": "Azure Kubernetes Service (AKS) Managed Cluster Agent Pools",
                             "description": "This module deploys an Azure Kubernetes Service (AKS) Managed Cluster Agent Pool.",
@@ -12815,8 +12815,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "7833285510198821540"
+                      "version": "0.36.1.42791",
+                      "templateHash": "14453470950083341759"
                     }
                   },
                   "parameters": {
@@ -12860,8 +12860,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "5956363559994753278"
+                      "version": "0.36.1.42791",
+                      "templateHash": "6850011948057896975"
                     }
                   },
                   "parameters": {
@@ -12955,8 +12955,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "3446021844942491827"
+                      "version": "0.36.1.42791",
+                      "templateHash": "9458436474062308528"
                     }
                   },
                   "parameters": {
@@ -13074,8 +13074,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "8370527650643376237"
+              "version": "0.36.1.42791",
+              "templateHash": "9245639556742515443"
             },
             "name": "Kubernetes Configuration Extensions",
             "description": "This module deploys a Kubernetes Configuration Extension.",
@@ -20067,8 +20067,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "16676882767910107006"
+              "version": "0.36.1.42791",
+              "templateHash": "17994893025504865719"
             }
           },
           "parameters": {
@@ -20302,8 +20302,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "8897529537879390285"
+              "version": "0.36.1.42791",
+              "templateHash": "58394501914147675"
             },
             "name": "Storage Accounts",
             "description": "This module deploys a Storage Account.",
@@ -22430,8 +22430,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "17189262002297510491"
+                      "version": "0.36.1.42791",
+                      "templateHash": "2982128089419988035"
                     },
                     "name": "Storage Account Management Policies",
                     "description": "This module deploys a Storage Account Management Policy.",
@@ -22540,8 +22540,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "3991877709429510438"
+                      "version": "0.36.1.42791",
+                      "templateHash": "15320191279517348221"
                     },
                     "name": "Storage Account Local Users",
                     "description": "This module deploys a Storage Account Local User, which is used for SFTP authentication.",
@@ -22755,8 +22755,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "17370923652316971470"
+                      "version": "0.36.1.42791",
+                      "templateHash": "6589884755456900320"
                     },
                     "name": "Storage Account blob Services",
                     "description": "This module deploys a Storage Account Blob Service.",
@@ -23162,8 +23162,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "7804824791048274907"
+                              "version": "0.36.1.42791",
+                              "templateHash": "18263616328662424083"
                             },
                             "name": "Storage Account Blob Containers",
                             "description": "This module deploys a Storage Account Blob Container.",
@@ -23452,8 +23452,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "120565283730988340"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "5200760653357562191"
                                     },
                                     "name": "Storage Account Blob Container Immutability Policies",
                                     "description": "This module deploys a Storage Account Blob Container Immutability Policy.",
@@ -23630,8 +23630,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "4362142015261469712"
+                      "version": "0.36.1.42791",
+                      "templateHash": "6650798729154683206"
                     },
                     "name": "Storage Account File Share Services",
                     "description": "This module deploys a Storage Account File Share Service.",
@@ -23914,8 +23914,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "11930284709973947644"
+                              "version": "0.36.1.42791",
+                              "templateHash": "10642523602434751720"
                             },
                             "name": "Storage Account File Shares",
                             "description": "This module deploys a Storage Account File Share.",
@@ -24121,8 +24121,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "6714744905094702844"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "9070925770762954725"
                                     }
                                   },
                                   "parameters": {
@@ -24397,8 +24397,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "12700067055117121397"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16185856267175972151"
                     },
                     "name": "Storage Account Queue Services",
                     "description": "This module deploys a Storage Account Queue Service.",
@@ -24645,8 +24645,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "9274443847990198337"
+                              "version": "0.36.1.42791",
+                              "templateHash": "5435194219089211597"
                             },
                             "name": "Storage Account Queues",
                             "description": "This module deploys a Storage Account Queue.",
@@ -24913,8 +24913,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "16163291583976716252"
+                      "version": "0.36.1.42791",
+                      "templateHash": "12939538512479620258"
                     },
                     "name": "Storage Account Table Services",
                     "description": "This module deploys a Storage Account Table Service.",
@@ -25158,8 +25158,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "10491438317762842235"
+                              "version": "0.36.1.42791",
+                              "templateHash": "1204154447267336388"
                             },
                             "name": "Storage Account Table",
                             "description": "This module deploys a Storage Account Table.",
@@ -25413,8 +25413,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "7553096445529189386"
+                      "version": "0.36.1.42791",
+                      "templateHash": "2823855493811858717"
                     }
                   },
                   "definitions": {
@@ -25713,8 +25713,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "3525254481582627635"
+              "version": "0.36.1.42791",
+              "templateHash": "14980317109993153173"
             }
           },
           "definitions": {
@@ -26392,8 +26392,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6145980215291948047"
+                      "version": "0.36.1.42791",
+                      "templateHash": "793822894712871402"
                     }
                   },
                   "parameters": {
@@ -26487,8 +26487,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "17406530096337473814"
+                              "version": "0.36.1.42791",
+                              "templateHash": "9491549707033456132"
                             }
                           },
                           "parameters": {
@@ -26665,8 +26665,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "15034978437293444628"
+                      "version": "0.36.1.42791",
+                      "templateHash": "12703590372939748500"
                     }
                   },
                   "parameters": {
@@ -26758,8 +26758,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "13505633236088157828"
+                              "version": "0.36.1.42791",
+                              "templateHash": "13449102276279130614"
                             }
                           },
                           "parameters": {
@@ -26920,8 +26920,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "14770200314272197812"
+                      "version": "0.36.1.42791",
+                      "templateHash": "18000549472596052519"
                     }
                   },
                   "parameters": {
@@ -27065,8 +27065,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -27155,8 +27155,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -27245,8 +27245,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -27335,8 +27335,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -27425,8 +27425,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -27515,8 +27515,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "6900523040693028748"
+                      "version": "0.36.1.42791",
+                      "templateHash": "16253690520942321914"
                     }
                   },
                   "parameters": {
@@ -28280,8 +28280,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "7955233917180913721"
+              "version": "0.36.1.42791",
+              "templateHash": "12001138444048259628"
             }
           },
           "definitions": {
@@ -28908,8 +28908,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "8897529537879390285"
+                      "version": "0.36.1.42791",
+                      "templateHash": "58394501914147675"
                     },
                     "name": "Storage Accounts",
                     "description": "This module deploys a Storage Account.",
@@ -31036,8 +31036,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "17189262002297510491"
+                              "version": "0.36.1.42791",
+                              "templateHash": "2982128089419988035"
                             },
                             "name": "Storage Account Management Policies",
                             "description": "This module deploys a Storage Account Management Policy.",
@@ -31146,8 +31146,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "3991877709429510438"
+                              "version": "0.36.1.42791",
+                              "templateHash": "15320191279517348221"
                             },
                             "name": "Storage Account Local Users",
                             "description": "This module deploys a Storage Account Local User, which is used for SFTP authentication.",
@@ -31361,8 +31361,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "17370923652316971470"
+                              "version": "0.36.1.42791",
+                              "templateHash": "6589884755456900320"
                             },
                             "name": "Storage Account blob Services",
                             "description": "This module deploys a Storage Account Blob Service.",
@@ -31768,8 +31768,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "7804824791048274907"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "18263616328662424083"
                                     },
                                     "name": "Storage Account Blob Containers",
                                     "description": "This module deploys a Storage Account Blob Container.",
@@ -32058,8 +32058,8 @@
                                           "metadata": {
                                             "_generator": {
                                               "name": "bicep",
-                                              "version": "0.35.1.17967",
-                                              "templateHash": "120565283730988340"
+                                              "version": "0.36.1.42791",
+                                              "templateHash": "5200760653357562191"
                                             },
                                             "name": "Storage Account Blob Container Immutability Policies",
                                             "description": "This module deploys a Storage Account Blob Container Immutability Policy.",
@@ -32236,8 +32236,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "4362142015261469712"
+                              "version": "0.36.1.42791",
+                              "templateHash": "6650798729154683206"
                             },
                             "name": "Storage Account File Share Services",
                             "description": "This module deploys a Storage Account File Share Service.",
@@ -32520,8 +32520,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "11930284709973947644"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "10642523602434751720"
                                     },
                                     "name": "Storage Account File Shares",
                                     "description": "This module deploys a Storage Account File Share.",
@@ -32727,8 +32727,8 @@
                                           "metadata": {
                                             "_generator": {
                                               "name": "bicep",
-                                              "version": "0.35.1.17967",
-                                              "templateHash": "6714744905094702844"
+                                              "version": "0.36.1.42791",
+                                              "templateHash": "9070925770762954725"
                                             }
                                           },
                                           "parameters": {
@@ -33003,8 +33003,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "12700067055117121397"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16185856267175972151"
                             },
                             "name": "Storage Account Queue Services",
                             "description": "This module deploys a Storage Account Queue Service.",
@@ -33251,8 +33251,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "9274443847990198337"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "5435194219089211597"
                                     },
                                     "name": "Storage Account Queues",
                                     "description": "This module deploys a Storage Account Queue.",
@@ -33519,8 +33519,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "16163291583976716252"
+                              "version": "0.36.1.42791",
+                              "templateHash": "12939538512479620258"
                             },
                             "name": "Storage Account Table Services",
                             "description": "This module deploys a Storage Account Table Service.",
@@ -33764,8 +33764,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "10491438317762842235"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "1204154447267336388"
                                     },
                                     "name": "Storage Account Table",
                                     "description": "This module deploys a Storage Account Table.",
@@ -34019,8 +34019,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "7553096445529189386"
+                              "version": "0.36.1.42791",
+                              "templateHash": "2823855493811858717"
                             }
                           },
                           "definitions": {
@@ -34306,8 +34306,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "3525254481582627635"
+                      "version": "0.36.1.42791",
+                      "templateHash": "14980317109993153173"
                     }
                   },
                   "definitions": {
@@ -34985,8 +34985,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6145980215291948047"
+                              "version": "0.36.1.42791",
+                              "templateHash": "793822894712871402"
                             }
                           },
                           "parameters": {
@@ -35080,8 +35080,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "17406530096337473814"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "9491549707033456132"
                                     }
                                   },
                                   "parameters": {
@@ -35258,8 +35258,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "15034978437293444628"
+                              "version": "0.36.1.42791",
+                              "templateHash": "12703590372939748500"
                             }
                           },
                           "parameters": {
@@ -35351,8 +35351,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.35.1.17967",
-                                      "templateHash": "13505633236088157828"
+                                      "version": "0.36.1.42791",
+                                      "templateHash": "13449102276279130614"
                                     }
                                   },
                                   "parameters": {
@@ -35513,8 +35513,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "14770200314272197812"
+                              "version": "0.36.1.42791",
+                              "templateHash": "18000549472596052519"
                             }
                           },
                           "parameters": {
@@ -35658,8 +35658,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -35748,8 +35748,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -35838,8 +35838,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -35928,8 +35928,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -36018,8 +36018,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -36108,8 +36108,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "6900523040693028748"
+                              "version": "0.36.1.42791",
+                              "templateHash": "16253690520942321914"
                             }
                           },
                           "parameters": {
@@ -36245,8 +36245,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "17013607326963296824"
+                      "version": "0.36.1.42791",
+                      "templateHash": "12609638433232482773"
                     }
                   },
                   "parameters": {
@@ -42513,8 +42513,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "2939150159445154103"
+                      "version": "0.36.1.42791",
+                      "templateHash": "14340254082286235611"
                     }
                   },
                   "parameters": {
@@ -42747,8 +42747,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "4605717501970461432"
+              "version": "0.36.1.42791",
+              "templateHash": "13728193730322319035"
             }
           },
           "definitions": {
@@ -43037,7 +43037,7 @@
               }
             ],
             "$fxv#0": {
-              "release": "v0.44.0"
+              "release": "v0.45.0"
             },
             "federatedIdentityCredentials": [
               {
@@ -43228,8 +43228,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "366688838332136700"
+                      "version": "0.36.1.42791",
+                      "templateHash": "213394455806152419"
                     },
                     "name": "User Assigned Identity Federated Identity Credential",
                     "description": "This module deploys a User Assigned Identity Federated Identity Credential.",
@@ -43352,8 +43352,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "4207571919893052803"
+                      "version": "0.36.1.42791",
+                      "templateHash": "3726038559373581479"
                     },
                     "name": "App Configuration",
                     "description": "This module deploys an App Configuration.",
@@ -43731,8 +43731,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "12112675682125028207"
+                              "version": "0.36.1.42791",
+                              "templateHash": "1624602300544156929"
                             }
                           },
                           "parameters": {
@@ -43856,8 +43856,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "1482885705754884385"
+                              "version": "0.36.1.42791",
+                              "templateHash": "12298262043953107982"
                             }
                           },
                           "parameters": {
@@ -44051,8 +44051,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "15432586900783492060"
+                      "version": "0.36.1.42791",
+                      "templateHash": "13508588938615695444"
                     },
                     "name": "AKS Config Map",
                     "description": "An Azure CLI Deployment Script that allows you to create a helm char on a Kubernetes cluster.",

@@ -11,14 +11,15 @@ metadata:
 spec:
   parentRefs:
     {{- range .gateways }}
-    {{- $parts := split "/" (toString .) }}
-    {{- if eq (len $parts) 2 }}
-    - name: {{ toString (index $parts 1) }}
-      namespace: {{ toString (index $parts 0) }}
+    {{- $gatewayStr := . | toString }}
+    {{- if contains "/" $gatewayStr }}
+    {{- $parts := split "/" $gatewayStr }}
+    - name: {{ index $parts 1 }}
+      namespace: {{ index $parts 0 }}
       group: gateway.networking.k8s.io
       kind: Gateway
     {{- else }}
-    - name: {{ . }}
+    - name: {{ $gatewayStr }}
       namespace: istio-system
       group: gateway.networking.k8s.io
       kind: Gateway

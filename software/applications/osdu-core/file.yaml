@@ -43,8 +43,10 @@ spec:
       cors:
         - "http://localhost:8080"
       gateways:
-        - istio-system/internal-gateway
-        - istio-system/external-gateway
+        - name: internal-gateway
+          namespace: istio-system
+        - name: external-gateway
+          namespace: istio-system
       repository: community.opengroup.org:5555/osdu/platform/system/file/file-
       branch: release-0-26
       tag: latest

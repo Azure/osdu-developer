@@ -9,27 +9,10 @@ metadata:
 spec:
   parentRefs:
   {{- range .Values.gateways }}
-  {{- $gatewayStr := . | toString }}
-  {{- if contains "/" $gatewayStr }}
-  {{- $parts := splitList "/" $gatewayStr }}
-  {{- if eq (len $parts) 2 }}
-  - name: {{ index $parts 1 }}
-    namespace: {{ index $parts 0 }}
+  - name: {{ .name }}
+    namespace: {{ .namespace | default "istio-system" }}
     group: gateway.networking.k8s.io
     kind: Gateway
-  {{- else }}
-  # Error: Gateway string "{{ $gatewayStr }}" did not split into exactly 2 parts
-  - name: {{ $gatewayStr }}
-    namespace: istio-system
-    group: gateway.networking.k8s.io
-    kind: Gateway
-  {{- end }}
-  {{- else }}
-  - name: {{ $gatewayStr }}
-    namespace: istio-system
-    group: gateway.networking.k8s.io
-    kind: Gateway
-  {{- end }}
   {{- end }}
   rules:
   # Auth SPA route

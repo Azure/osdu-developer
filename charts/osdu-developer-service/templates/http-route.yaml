@@ -10,25 +10,25 @@ metadata:
   namespace: {{ $namespace }}
 spec:
   parentRefs:
-  {{- range .gateways }}
-  {{- $parts := split "/" . }}
-  {{- if eq (len $parts) 2 }}
-  - name: {{ toString (index $parts 1) }}
-    namespace: {{ toString (index $parts 0) }}
-    group: gateway.networking.k8s.io
-    kind: Gateway
-  {{- else }}
-  - name: {{ . }}
-    namespace: istio-system
-    group: gateway.networking.k8s.io
-    kind: Gateway
-  {{- end }}
-  {{- end }}
+    {{- range .gateways }}
+    {{- $parts := split "/" (toString .) }}
+    {{- if eq (len $parts) 2 }}
+    - name: {{ toString (index $parts 1) }}
+      namespace: {{ toString (index $parts 0) }}
+      group: gateway.networking.k8s.io
+      kind: Gateway
+    {{- else }}
+    - name: {{ . }}
+      namespace: istio-system
+      group: gateway.networking.k8s.io
+      kind: Gateway
+    {{- end }}
+    {{- end }}
   rules:
   - matches:
     - path:
         type: PathPrefix
-        value: {{ .path }}
+        value: {{ default "/" .path }}
     backendRefs:
     - name: {{ .service }}
       port: 80

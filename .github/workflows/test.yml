@@ -376,7 +376,6 @@ jobs:
       - name: Azure Login
         uses: Azure/login@v2
         with:
-          azcliversion: ${{ env.AZCLIVERSION }}
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}

@@ -40,7 +40,7 @@ configuration:
   AZURE_BICEP_FILE_EXPANSION: true
 
   #ProjectSpecifc rules
-  Azure_AKSNodeMinimumMaxPods: 30
+  AZURE_AKS_POOL_MINIMUM_MAXPODS: 30
 
 rule:
   exclude:

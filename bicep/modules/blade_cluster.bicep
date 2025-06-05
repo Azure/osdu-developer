@@ -76,7 +76,7 @@ var serviceLayerConfig = {
   cluster: {
     tier: 'Standard'
     sku: 'Base'
-    aksVersion: '1.30'
+    aksVersion: '1.31'
 
     // // D2pds v5 with 2 vCPUs and 8 GiB of memory. Available in 22 regions starting from $44.09 per month.
     // // D4pds v5 with 4 vCPUs and 16 GiB of memory. Available in 22 regions starting from $88.18 per month.

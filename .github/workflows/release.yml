@@ -23,7 +23,7 @@ jobs:
       contents: write
     steps:
       - name: Github Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Azure Login
         uses: Azure/login@v2

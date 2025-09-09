@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.doStandards == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Azure Login
         uses: Azure/login@v2
@@ -110,7 +110,7 @@ jobs:
       REGION: ${{ steps.params.outputs.REGION}}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Job parameter check
         if: github.event.inputs.doDebugSteps == 'true'
@@ -325,7 +325,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install azd
         uses: Azure/setup-azd@v2.2.0
@@ -364,7 +364,7 @@ jobs:
     env:
       RESOURCE_GROUP: ${{ needs.Validate.outputs.RESOURCEGROUP }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Param check
         if: github.event.inputs.doDebugSteps == 'true'
@@ -444,7 +444,7 @@ jobs:
     if: always()  # This ensures the cleanup job always runs
     timeout-minutes: 120  # This sets a timeout of 2 hours for the cleanup job
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Azure Login
         uses: Azure/login@v2

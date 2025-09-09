@@ -76,30 +76,37 @@ spec:
       #     persistentVolumeClaim:
       #       claimName: airflow-logs-pvc
 
-      # OSDU PIP Packages
+      # OSDU PIP Packages - SECURITY FIX: Prevent dependency confusion attacks
       # 148 https://community.opengroup.org/osdu/platform/system/sdks/common-python-sdk
       # 668 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-airflow-lib
       # 823 https://community.opengroup.org/osdu/platform/data-flow/ingestion/osdu-ingestion-lib
+      # 
+      # IMPORTANT: Using --no-index and --find-links to prevent dependency confusion
+      # attacks that could occur with --extra-index-url. This ensures packages are
+      # only sourced from trusted private repositories, not from public PyPI.
       extraPipPackages:
         # - "apache-airflow-providers-microsoft-azure"
-        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
-        - "osdu-api>=0.27.0,<1.0.0"
-        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
-        - "osdu-airflow>=0.27,<1.0.0"
-        - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
-        - "osdu-ingestion>=0.27,<1.0.0"
+        - "--no-index"
+        - "--find-links=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+        - "--find-links=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
+        - "--find-links=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+        - "osdu-api==0.27.0"
+        - "osdu-airflow==0.27.0"
+        - "osdu-ingestion==0.27.0"
       kubernetesPodTemplate:
         serviceAccountName: workload-identity-sa
         # annotations:
         #   azure.workload.identity/use: "true"
         extraPipPackages:
           # - "apache-airflow-providers-microsoft-azure"
-          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
-          - "osdu-api>=0.27.0,<1.0.0"
-          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
-          - "osdu-airflow>=0.27,<1.0.0"
-          - "--extra-index-url=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
-          - "osdu-ingestion>=0.27,<1.0.0"
+          # SECURITY: Using --no-index to prevent dependency confusion attacks
+          - "--no-index"
+          - "--find-links=https://community.opengroup.org/api/v4/projects/148/packages/pypi/simple"
+          - "--find-links=https://community.opengroup.org/api/v4/projects/668/packages/pypi/simple"
+          - "--find-links=https://community.opengroup.org/api/v4/projects/823/packages/pypi/simple"
+          - "osdu-api==0.27.0"
+          - "osdu-airflow==0.27.0"
+          - "osdu-ingestion==0.27.0"
       # Airflow Configuration
       config:
         AIRFLOW__METRICS__USE_PATTERN_MATCH: "True"
@@ -135,6 +142,9 @@ spec:
         #   value: "dev"
         - name: CLOUD_PROVIDER
           value: "azure"
+        # SECURITY: Disable PyPI access to prevent dependency confusion attacks
+        - name: PIP_NO_INDEX
+          value: "true"
         # - name: CI_COMMIT_TAG
         #   value: "v0.12.0"
         # - name: BUILD_TAG

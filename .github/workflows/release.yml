@@ -23,10 +23,10 @@ jobs:
       contents: write
     steps:
       - name: Github Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Azure Login
-        uses: Azure/login@v2
+        uses: Azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Bump Version and Get Next Tag
         id: bump_version
-        uses: anothrNick/github-tag-action@1.75.0
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # 1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
@@ -58,7 +58,7 @@ jobs:
           /home/runner/.azure/bin/bicep build bicep/main.bicep --outfile azuredeploy.json
 
       - name: Commit Changes
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
         with:
           message: "Performing Release ${{ steps.bump_version.outputs.new_tag }}"
           add: |
@@ -67,14 +67,14 @@ jobs:
 
       - name: Generate Changelog
         id: github_release
-        uses: mikepenz/release-changelog-builder-action@v5
+        uses: mikepenz/release-changelog-builder-action@c9dc8369bccbc41e0ac887f8fd674f5925d315f7 # v5.4.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configuration: ".github/changelog_config.json"
 
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           tag: ${{ steps.bump_version.outputs.new_tag }}  # Use directly the tag from bump_version
           artifacts: "azuredeploy.json"
